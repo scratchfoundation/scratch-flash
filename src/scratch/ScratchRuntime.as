@@ -588,15 +588,17 @@ public class ScratchRuntime {
 	}
 
 	public function renameVariable(oldName:String, newName:String, block:Block):void {
-		var v:Variable = app.viewedObj().lookupVar(oldName);
+		var owner:ScratchObj = app.viewedObj();
+		var v:Variable = owner.lookupVar(oldName);
 
 		if (v != null) {
+			if (!owner.ownsVar(v.name)) owner = app.stagePane;
 			v.name = newName;
 			if (v.watcher) v.watcher.changeVarName(newName);
 		} else {
-			app.viewedObj().lookupOrCreateVar(newName);
+			owner.lookupOrCreateVar(newName);
 		}
-		updateVarRefs(oldName, newName);
+		updateVarRefs(oldName, newName, owner);
 		clearAllCaches();
 	}
 
@@ -604,9 +606,9 @@ public class ScratchRuntime {
 	public function makeVariable(varObj:Object):Variable { return new Variable(varObj.name, varObj.value); }
 	public function makeListWatcher():ListWatcher { return new ListWatcher(); }
 
-	private function updateVarRefs(oldName:String, newName:String):void {
+	private function updateVarRefs(oldName:String, newName:String, owner:ScratchObj):void {
 		// Change the variable name in all blocks that use it.
-		for each (var b:Block in allUsesOfVariable(oldName)) {
+		for each (var b:Block in allUsesOfVariable(oldName, owner)) {
 			if (b.op == Specs.GET_VAR) b.setSpec(newName);
 			else b.args[0].setArgValue(newName);
 		}
@@ -712,14 +714,15 @@ public class ScratchRuntime {
 		return false;
 	}
 
-	public function allUsesOfVariable(varName:String):Array {
+	public function allUsesOfVariable(varName:String, owner:ScratchObj):Array {
+		var variableBlocks:Array = [Specs.SET_VAR, Specs.CHANGE_VAR, "showVariable:", "hideVariable:"];
 		var result:Array = [];
-		for each (var stack:Block in allStacks()) {
+		var stacks:Array = owner.isStage ? allStacks() : owner.scripts;
+		for each (var stack:Block in stacks) {
 			// for each block in stack
 			stack.allBlocksDo(function (b:Block):void {
-				if ((b.op == Specs.GET_VAR) && (b.spec == varName)) result.push(b);
-				if ((b.op == Specs.SET_VAR) && (b.args[0].argValue == varName)) result.push(b);
-				if ((b.op == Specs.CHANGE_VAR) && (b.args[0].argValue == varName)) result.push(b);
+				if (b.op == Specs.GET_VAR && b.spec == varName) result.push(b);
+				if (variableBlocks.indexOf(b.op) != -1 && b.args[0].argValue == varName) result.push(b);
 			});
 		}
 		return result;
