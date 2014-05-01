@@ -389,7 +389,7 @@ private function getCheckMark(b:Boolean):Sprite{
 		stage.focus = labelsAndFields[focusIndex][1];
 	}
 
-	private function mouseDown(evt:MouseEvent):void {if (evt.target == this) startDrag();}
+	private function mouseDown(evt:MouseEvent):void {if (evt.target == this || evt.target == title) startDrag();}
 	private function mouseUp(evt:MouseEvent):void { stopDrag() }
 
 	private function keyDown(evt:KeyboardEvent):void {
