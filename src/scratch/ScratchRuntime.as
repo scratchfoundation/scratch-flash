@@ -23,8 +23,8 @@
 package scratch {
 	import flash.display.*;
 	import flash.events.*;
-import flash.external.ExternalInterface;
-import flash.geom.Rectangle;
+	import flash.external.ExternalInterface;
+	import flash.geom.Rectangle;
 	import flash.media.*;
 	import flash.net.*;
 	import flash.system.System;
@@ -36,6 +36,7 @@ import flash.geom.Rectangle;
 	import primitives.VideoMotionPrims;
 	import sound.ScratchSoundPlayer;
 	import ui.media.MediaInfo;
+	import ui.BlockPalette;
 	import uiwidgets.DialogBox;
 	import util.*;
 	import watchers.*;
@@ -202,19 +203,25 @@ public class ScratchRuntime {
 	}
 
 	public function collectBroadcasts():Array {
+		function addBlock(b:Block):void {
+			if ((b.op == 'broadcast:') ||
+				(b.op == 'doBroadcastAndWait') ||
+				(b.op == 'whenIReceive')) {
+					if (b.args[0] is BlockArg) {
+						var msg:String = b.args[0].argValue;
+						if (result.indexOf(msg) < 0) result.push(msg);
+					}
+			}
+		}
 		var result:Array = [];
 		allStacksAndOwnersDo(function (stack:Block, target:ScratchObj):void {
-			stack.allBlocksDo(function (b:Block):void {
-				if ((b.op == 'broadcast:') ||
-					(b.op == 'doBroadcastAndWait') ||
-					(b.op == 'whenIReceive')) {
-						if (b.args[0] is BlockArg) {
-							var msg:String = b.args[0].argValue;
-							if (result.indexOf(msg) < 0) result.push(msg);
-						}
-				}
-			});
+			stack.allBlocksDo(addBlock);
 		});
+		var palette:BlockPalette = app.palette;
+		for (var i:int = 0; i < palette.numChildren; i++) {
+			var b:Block = palette.getChildAt(i) as Block;
+			if (b) addBlock(b);
+		}
 		result.sort();
 		return result;
 	}
