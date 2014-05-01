@@ -432,11 +432,11 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 		g.lineStyle(2, commentLineColor);
 		for (var i:int = 0; i < numChildren; i++) {
 			var c:ScratchComment = getChildAt(i) as ScratchComment;
-			if (c && c.blockRef) updateCommetConnection(c, g);
+			if (c && c.blockRef) updateCommentConnection(c, g);
 		}
 	}
 
-	private function updateCommetConnection(c:ScratchComment, g:Graphics):void {
+	private function updateCommentConnection(c:ScratchComment, g:Graphics):void {
 		// Update the position of the given comment based on the position of the
 		// block it references and update the line connecting it to that block.
 		if (!c.blockRef) return;
