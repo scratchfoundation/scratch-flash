@@ -421,6 +421,7 @@ public class Block extends Sprite {
 					b.subStack1.x = BlockShape.SubstackInset;
 					b.subStack1.y = b.base.substack1y();
 					substackH = b.subStack1.getRect(b).height;
+					if (b.subStack1.bottomBlock().isTerminal) substackH += BlockShape.NotchDepth;
 				}
 				b.base.setSubstack1Height(substackH);
 				substackH = BlockShape.EmptySubstackH;
@@ -429,6 +430,7 @@ public class Block extends Sprite {
 					b.subStack2.x = BlockShape.SubstackInset;
 					b.subStack2.y = b.base.substack2y();
 					substackH = b.subStack2.getRect(b).height;
+					if (b.subStack2.bottomBlock().isTerminal) substackH += BlockShape.NotchDepth;
 				}
 				b.base.setSubstack2Height(substackH);
 				b.base.redraw();
