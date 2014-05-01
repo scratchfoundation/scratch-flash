@@ -521,7 +521,7 @@ public class ExtensionManager {
 
 		var lines:Array = response.split('\n');
 		for each (var line:String in lines) {
-			var tokens:Array = line.split(' ');
+			var tokens:Array = line.split(/\s+/);
 			if (tokens.length > 1) {
 				var key:String = tokens[0];
 				if (key.indexOf('_') == 0) { // internal status update or response
