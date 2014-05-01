@@ -455,7 +455,7 @@ public class ExtensionManager {
 	public function getStateVar(extensionName:String, varName:String, defaultValue:*):* {
 		var ext:ScratchExtension = extensionDict[extensionName];
 		if (ext == null) return defaultValue; // unknown extension
-		var value:* = ext.stateVars[varName];
+		var value:* = ext.stateVars[encodeURIComponent(varName)];
 		return (value == undefined) ? defaultValue : value;
 	}
 
@@ -535,7 +535,12 @@ public class ExtensionManager {
 				} else { // sensor value
 					var val:String = tokens[1];
 					var n:Number = Number(val);
-					ext.stateVars[key] = isNaN(n) ? val : n;
+					var path:Array = key.split('/');
+					for (var i:int = 0; i < path.length; i++) {
+						 // normalize URL encoding for each path segment
+						path[i] = encodeURIComponent(decodeURIComponent(path[i]));
+					}
+					ext.stateVars[path.join('/')] = isNaN(n) ? val : n;
 				}
 			}
 		}
