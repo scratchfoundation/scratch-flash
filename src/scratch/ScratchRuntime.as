@@ -728,12 +728,12 @@ public class ScratchRuntime {
 		return result;
 	}
 
-	public function allCallsOf(callee:String):Array {
+	public function allCallsOf(callee:String, owner:ScratchObj):Array {
 		var result:Array = [];
-		for each (var stack:Block in allStacks()) {
+		for each (var stack:Block in owner.scripts) {
 			// for each block in stack
 			stack.allBlocksDo(function (b:Block):void {
-				if ((b.op == Specs.CALL) && (b.spec == callee)) result.push(b);
+				if (b.op == Specs.CALL && b.spec == callee) result.push(b);
 			});
 		}
 		return result;
