@@ -450,6 +450,8 @@ public class ScratchSprite extends ScratchObj {
 
 	public function menu(evt:MouseEvent):Menu {
 		var m:Menu = new Menu();
+		m.addItem('info', showDetails);
+		m.addLine();
 		m.addItem('duplicate', duplicateSprite);
 		m.addItem('delete', deleteSprite);
 		m.addLine();
@@ -485,6 +487,12 @@ public class ScratchSprite extends ScratchObj {
 				if (grab) app.gh.grabOnMouseUp(dup);
 			}
 		}
+	}
+
+	public function showDetails():void {
+		var app:Scratch = Scratch.app;
+		app.selectSprite(this);
+		app.libraryPart.showSpriteDetails(true);
 	}
 
 	public function unusedSpriteName(baseName:String):String {
