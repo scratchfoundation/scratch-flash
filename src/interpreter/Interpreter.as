@@ -58,6 +58,7 @@
 package interpreter {
 	import flash.utils.Dictionary;
 	import flash.utils.getTimer;
+	import flash.geom.Point;
 	import blocks.*;
 	import primitives.*;
 	import scratch.*;
@@ -116,7 +117,8 @@ public class Interpreter {
 			currentMSecs = getTimer();
 			var oldThread:Thread = activeThread;
 			activeThread = new Thread(b, targetObj);
-			app.log(evalCmd(b));
+			var p:Point = b.localToGlobal(new Point(0, 0));
+			app.showBubble(String(evalCmd(b)), p.x, p.y, b.width);
 			activeThread = oldThread;
 			return;
 		}

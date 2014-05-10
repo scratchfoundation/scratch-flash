@@ -26,16 +26,39 @@ public class TalkBubble extends Sprite {
 	public var pointsLeft:Boolean;
 
 	private var type:String; // 'say' or 'think'
+	private var style:String; // 'say' or 'ask' or 'result'
 	private var shape:Shape;
 	private var text:TextField;
+	private static var textFormat:TextFormat = new TextFormat(CSS.font, 14, 0, true, null, null, null, null, TextFormatAlign.CENTER);
+	private static var resultFormat:TextFormat = new TextFormat(CSS.font, 12, CSS.textColor, null, null, null, null, null, TextFormatAlign.CENTER);
 	private var outlineColor:int = 0xA0A0A0;
 	private var radius:int = 8;  // corner radius
+	private var padding:int = 5;
+	private var minWidth:int = 55;
 	private var lastXY:Array;
+	private var pInset1:int = 16
+	private var pInset2:int = 50
+	private var pDrop:int = 17;
+	private var pDropX:int = 8;
+	private var lineWidth:Number = 3;
 
-	public function TalkBubble(s:String, type:String, isAsk:Boolean) {
+	public function TalkBubble(s:String, type:String, style:String) {
 		this.type = type;
+		this.style = style;
+		if (style == 'ask') {
+			outlineColor = 0x4AADDE;
+		} else if (style == 'result') {
+			outlineColor = 0x888888;
+			minWidth = 16;
+			padding = 3;
+			radius = 5;
+			pInset1 = 8;
+			pInset2 = 16;
+			pDrop = 5;
+			pDropX = 4;
+			lineWidth = 0.5;
+		}
 		pointsLeft = true;
-		if (isAsk) outlineColor = 0x4AADDE;
 		shape = new Shape();
 		addChild(shape);
 		text = makeText();
@@ -49,7 +72,7 @@ public class TalkBubble extends Sprite {
 		var newValue:Boolean = (dir == 'left');
 		if (pointsLeft == newValue) return;
 		pointsLeft = newValue;
-		setWidthHeight(text.width + 10, text.height + 10);
+		setWidthHeight(text.width + padding * 2, text.height + padding * 2);
 	}
 
 	public function getText():String { return text.text }
@@ -58,30 +81,28 @@ public class TalkBubble extends Sprite {
 		var desiredWidth:int = 135;
 		text.width = desiredWidth + 100; // wider than desiredWidth
 		text.text = s;
-		text.width = Math.max(55, Math.min(text.textWidth + 8, desiredWidth)); // fix word wrap
-		setWidthHeight(text.width + 10, text.height + 10);
+		text.width = Math.max(minWidth, Math.min(text.textWidth + 8, desiredWidth)); // fix word wrap
+		setWidthHeight(text.width + padding * 2, text.height + padding * 2);
 	}
 
 	private function setWidthHeight(w:int, h:int):void {
 		var g:Graphics = shape.graphics;
 		g.clear();
 		g.beginFill(0xFFFFFF);
-		g.lineStyle(3, outlineColor);
+		g.lineStyle(lineWidth, outlineColor);
 		if (type == 'think') drawThink(w, h);
 		else drawTalk(w, h);
 	}
 
 	private function makeText():TextField {
-		var format:TextFormat = new TextFormat(CSS.font, 14, 0, true);
-		format.align = TextFormatAlign.CENTER;
 		var result:TextField = new TextField();
 		result.autoSize = TextFieldAutoSize.LEFT;
-		result.defaultTextFormat = format;
+		result.defaultTextFormat = style == 'result' ? resultFormat : textFormat;
 		result.selectable = false;  // not selectable
 		result.type = 'dynamic';  // not editable
 		result.wordWrap = true;
-		result.x = 5;
-		result.y = 5;
+		result.x = padding;
+		result.y = padding;
 		return result;
 	}
 
@@ -89,7 +110,6 @@ public class TalkBubble extends Sprite {
 		var insetW:int = w - radius;
 		var insetH:int = h - radius;
 		// pointer geometry:
-		var pInset1:int = 16, pInset2:int = 50, pDrop:int = 17;
 		startAt(radius, 0);
 		line(insetW, 0);
 		arc(w, radius);
@@ -97,11 +117,11 @@ public class TalkBubble extends Sprite {
 		arc(insetW, h);
 		if (pointsLeft) {
 			line(pInset2, h);
-			line(8, h + pDrop);
+			line(pDropX, h + pDrop);
 			line(pInset1, h);
 		} else {
 			line(w - pInset1, h);
-			line(w - 8, h + pDrop);
+			line(w - pDropX, h + pDrop);
 			line(w - pInset2, h);
 		}
 		line(radius, h);

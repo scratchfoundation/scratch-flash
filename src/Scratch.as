@@ -132,6 +132,7 @@ public class Scratch extends Sprite {
 		stage.addEventListener(MouseEvent.MOUSE_DOWN, gh.mouseDown);
 		stage.addEventListener(MouseEvent.MOUSE_MOVE, gh.mouseMove);
 		stage.addEventListener(MouseEvent.MOUSE_UP, gh.mouseUp);
+		stage.addEventListener(MouseEvent.MOUSE_WHEEL, gh.mouseWheel);
 		stage.addEventListener('rightClick', gh.rightMouseClick);
 		stage.addEventListener(KeyboardEvent.KEY_DOWN, runtime.keyDown);
 		stage.addEventListener(KeyboardEvent.KEY_UP, runtime.keyUp);
@@ -812,6 +813,12 @@ public class Scratch extends Sprite {
 	}
 
 	public function handleTool(tool:String, evt:MouseEvent):void { }
+
+	public function showBubble(text:String, x:* = null, y:* = null, width:Number = 0):void {
+		if (x == null) x = mouseX;
+		if (y == null) y = mouseY;
+		gh.showBubble(text, Number(x), Number(y), width);
+	}
 
 	// -----------------------------
 	// Project Management and Sign in

@@ -49,8 +49,8 @@
 package util {
 	import flash.display.*;
 	import flash.events.MouseEvent;
-import flash.external.ExternalInterface;
-import flash.filters.*;
+	import flash.external.ExternalInterface;
+	import flash.filters.*;
 	import flash.geom.*;
 	import flash.text.*;
 	import flash.utils.getTimer;
@@ -73,6 +73,7 @@ public class GestureHandler {
 	private var originalScale:Number;
 
 	private var app:Scratch;
+	private var stage:Stage;
 	private var dragClient:DragClient;
 	private var mouseDownTime:uint;
 	private var gesture:String = "idle";
@@ -81,13 +82,20 @@ public class GestureHandler {
 	private var mouseDownEvent:MouseEvent;
 	private var inIE:Boolean;
 
+	private var bubble:TalkBubble;
+	private var bubbleStartX:Number;
+	private var bubbleStartY:Number;
+	private static var bubbleRange:Number = 25;
+	private static var bubbleMargin:Number = 5;
+
 	public function GestureHandler(app:Scratch, inIE:Boolean) {
 		this.app = app;
+		this.stage = app.stage;
 		this.inIE = inIE;
 	}
 
 	public function setDragClient(newClient:DragClient, evt:MouseEvent):void {
-		Menu.removeMenusFrom(app.stage);
+		Menu.removeMenusFrom(stage);
 		if (dragClient != null) dragClient.dragEnd(evt);
 		dragClient = newClient as DragClient;
 		dragClient.dragBegin(evt);
@@ -124,12 +132,12 @@ public class GestureHandler {
 	public function rightMouseDown(x:int, y:int, isChrome:Boolean):void {
 		// To avoid getting the Adobe menu on right-click, JavaScript captures
 		// right-button mouseDown events and calls this method.'
-		Menu.removeMenusFrom(app.stage);
+		Menu.removeMenusFrom(stage);
 		var menuTarget:* = findTargetFor('menu', app, x, y);
 		if (!menuTarget) return;
 		try { var menu:Menu = menuTarget.menu(new MouseEvent('right click')) } catch (e:Error) {}
-		if (menu) menu.showOnStage(app.stage, x, y);
-		if (!isChrome) Menu.removeMenusFrom(app.stage); // hack: clear menuJustCreated because there's no rightMouseUp
+		if (menu) menu.showOnStage(stage, x, y);
+		if (!isChrome) Menu.removeMenusFrom(stage); // hack: clear menuJustCreated because there's no rightMouseUp
 	}
 
 	private function findTargetFor(property:String, obj:*, x:int, y:int):DisplayObject {
@@ -150,6 +158,7 @@ public class GestureHandler {
 			ExternalInterface.call('tip_bar_api.fixIE');
 
 		evt.updateAfterEvent(); // needed to avoid losing display updates with later version of Flash 11
+		hideBubble();
 		mouseIsDown = true;
 		if (gesture == 'clickOrDoubleClick') {
 			handleDoubleClick(mouseDownEvent);
@@ -218,6 +227,13 @@ public class GestureHandler {
 			spr.scratchY = 180 - stageP.y;
 			spr.updateBubble();
 		}
+		if (bubble) {
+			var dx:Number = bubbleStartX - app.mouseX;
+			var dy:Number = bubbleStartY - app.mouseY;
+			if (dx * dx + dy * dy > bubbleRange * bubbleRange) {
+				hideBubble();
+			}
+		}
 	}
 
 	public function mouseUp(evt:MouseEvent):void {
@@ -230,7 +246,7 @@ public class GestureHandler {
 			return;
 		}
 		drop(evt);
-		Menu.removeMenusFrom(app.stage);
+		Menu.removeMenusFrom(stage);
 		if (gesture == "unknown") {
 			if (mouseTarget && ('doubleClick' in mouseTarget)) gesture = "clickOrDoubleClick";
 			else {
@@ -251,6 +267,10 @@ public class GestureHandler {
 		}
 	}
 
+	public function mouseWheel(evt:MouseEvent):void {
+		hideBubble();
+	}
+
 	private function findMouseTarget(evt:MouseEvent, target:*):DisplayObject {
 		// Find the mouse target for the given event. Return null if no target found.
 
@@ -266,7 +286,7 @@ public class GestureHandler {
 			}
 			o = o.parent;
 		}
-		var rect:Rectangle = app.stageObj().getRect(app.stage);
+		var rect:Rectangle = app.stageObj().getRect(stage);
 		if(!mouseTarget && rect.contains(evt.stageX, evt.stageY))  return findMouseTargetOnStage(evt.stageX / app.scaleX, evt.stageY / app.scaleY);
 		if (o == null) return null;
 		if ((o is Block) && Block(o).isEmbeddedInProcHat()) return o.parent;
@@ -315,7 +335,7 @@ public class GestureHandler {
 
 	private function handleDrag(evt:MouseEvent):void {
 		// Note: Called with a null event if gesture is click and hold.
-		Menu.removeMenusFrom(app.stage);
+		Menu.removeMenusFrom(stage);
 		if (!('objToGrab' in mouseTarget)) return;
 		if (!app.editMode) {
 			if ((mouseTarget is ScratchSprite) && !ScratchSprite(mouseTarget).isDraggable) return; // don't drag locked sprites in presentation mode
@@ -345,7 +365,7 @@ public class GestureHandler {
 		if (mouseTarget == null) return;
 		var menu:Menu;
 		try { menu = mouseTarget.menu(evt) } catch (e:Error) {}
-		if (menu) menu.showOnStage(app.stage, evt.stageX / app.scaleX, evt.stageY / app.scaleY);
+		if (menu) menu.showOnStage(stage, evt.stageX / app.scaleX, evt.stageY / app.scaleY);
 	}
 
 	private var lastGrowShrinkSprite:Sprite;
@@ -409,7 +429,7 @@ public class GestureHandler {
 		}
 
 		if (app.editMode) addDropShadowTo(obj);
-		app.stage.addChild(obj);
+		stage.addChild(obj);
 		obj.x = globalP.x;
 		obj.y = globalP.y;
 		if (evt && mouseDownEvent) {
@@ -425,7 +445,7 @@ public class GestureHandler {
 		// Search for an object to handle this drop and return true one is found.
 		// Note: Search from front to back, so the front-most object catches the dropped object.
 		if(app.isIn3D) app.stagePane.visible = true;
-		var possibleTargets:Array = app.stage.getObjectsUnderPoint(new Point(evt.stageX / app.scaleX, evt.stageY / app.scaleY));
+		var possibleTargets:Array = stage.getObjectsUnderPoint(new Point(evt.stageX / app.scaleX, evt.stageY / app.scaleY));
 		if(app.isIn3D) {
 			app.stagePane.visible = false;
 			if(possibleTargets.length == 0 && app.stagePane.scrollRect.contains(app.stagePane.mouseX, app.stagePane.mouseY))
@@ -482,6 +502,38 @@ public class GestureHandler {
 			if (!(f is DropShadowFilter)) newFilters.push(f);
 		}
 		o.filters = newFilters;
+	}
+
+	public function showBubble(text:String, x:Number, y:Number, width:Number = 0):void {
+		hideBubble();
+		bubble = new TalkBubble(text || ' ', 'say', 'result');
+		bubbleStartX = app.mouseX;
+		bubbleStartY = app.mouseY;
+		var bx:Number = x + width;
+		var by:Number = y - bubble.height;
+		if (bx + bubble.width > stage.stageWidth - bubbleMargin && x - bubble.width > bubbleMargin) {
+			bx = x - bubble.width;
+			bubble.setDirection('right');
+		} else {
+			bubble.setDirection('left');
+		}
+		bubble.x = Math.max(bubbleMargin, Math.min(stage.stageWidth - bubbleMargin, bx));
+		bubble.y = Math.max(bubbleMargin, Math.min(stage.stageHeight - bubbleMargin, by));
+
+		var f:DropShadowFilter = new DropShadowFilter();
+		f.distance = 4;
+		f.blurX = f.blurY = 8;
+		f.alpha = 0.2;
+		bubble.filters = bubble.filters.concat(f);
+
+		stage.addChild(bubble);
+	}
+
+	public function hideBubble():void {
+		if (bubble) {
+			stage.removeChild(bubble);
+			bubble = null;
+		}
 	}
 
 	/* Debugging */
