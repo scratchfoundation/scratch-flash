@@ -40,7 +40,7 @@ public class SensingPrims {
 		this.interp = interpreter;
 	}
 
-	public function addPrimsTo(primTable:Dictionary):void {
+	public function addPrimsTo(primTable:Dictionary, specialTable:Dictionary):void {
 		// sensing
 		primTable['touching:']			= primTouching;
 		primTable['touchingColor:']		= primTouchingColor;
@@ -75,7 +75,7 @@ public class SensingPrims {
 
 	// TODO: move to stage
 	static private var stageRect:Rectangle = new Rectangle(0, 0, 480, 360);
-	private function primTouching(b:Block):Boolean {
+	private function primTouching(b:Array):Boolean {
 		var s:ScratchSprite = interp.targetSprite();
 		if (s == null) return false;
 		var arg:* = interp.arg(b, 0);
@@ -130,7 +130,7 @@ public class SensingPrims {
 //	private var testSpr:Sprite;
 //	private var myBMTest:Bitmap;
 //	private var stageBMTest:Bitmap;
-	private function primTouchingColor(b:Block):Boolean {
+	private function primTouchingColor(b:Array):Boolean {
 		// Note: Attempted to switch app.stage.quality to LOW to disable anti-aliasing, which
 		// can create false colors. Unfortunately, that caused serious performance issues.
 		var s:ScratchSprite = interp.targetSprite();
@@ -158,7 +158,7 @@ public class SensingPrims {
 		return myBM.hitTest(new Point(0, 0), 1, stageBM, new Point(0, 0), 1);
 	}
 
-	private function primColorSees(b:Block):Boolean {
+	private function primColorSees(b:Array):Boolean {
 		// Note: Attempted to switch app.stage.quality to LOW to disable anti-aliasing, which
 		// can create false colors. Unfortunately, that caused serious performance issues.
 		var s:ScratchSprite = interp.targetSprite();
@@ -213,7 +213,7 @@ public class SensingPrims {
 		return app.stagePane.getBitmapWithoutSpriteFilteredByColor(s, c);
 	}
 
-	private function primAsk(b:Block):void {
+	private function primAsk(b:Array):void {
 		if (app.runtime.askPromptShowing()) {
 			// wait if (1) some other sprite is asking (2) this question is answered (when firstTime is false)
 			interp.doYield();
@@ -236,7 +236,7 @@ public class SensingPrims {
 		}
 	}
 
-	private function primKeyPressed(b:Block):Boolean {
+	private function primKeyPressed(b:Array):Boolean {
 		var key:String = interp.arg(b, 0);
 		var ch:int = key.charCodeAt(0);
 		if (ch > 127) return false;
@@ -248,7 +248,7 @@ public class SensingPrims {
 		return app.runtime.keyIsDown[ch];
 	}
 
-	private function primDistanceTo(b:Block):Number {
+	private function primDistanceTo(b:Array):Number {
 		var s:ScratchSprite = interp.targetSprite();
 		var p:Point = mouseOrSpritePosition(interp.arg(b, 0));
 		if ((s == null) || (p == null)) return 0;
@@ -257,7 +257,7 @@ public class SensingPrims {
 		return Math.sqrt((dx * dx) + (dy * dy));
 	}
 
-	private function primGetAttribute(b:Block):* {
+	private function primGetAttribute(b:Array):* {
 		var attribute:String = interp.arg(b, 0);
 		var obj:ScratchObj = app.stagePane.objNamed(String(interp.arg(b, 1)));
 		if (!(obj is ScratchObj)) return 0;
@@ -292,27 +292,27 @@ public class SensingPrims {
 		return null;
 	}
 
-	private function primShowWatcher(b:Block):* {
+	private function primShowWatcher(b:Array):* {
 		var obj:ScratchObj = interp.targetObj();
 		if (obj) app.runtime.showVarOrListFor(interp.arg(b, 0), false, obj);
 	}
 
-	private function primHideWatcher(b:Block):* {
+	private function primHideWatcher(b:Array):* {
 		var obj:ScratchObj = interp.targetObj();
 		if (obj) app.runtime.hideVarOrListFor(interp.arg(b, 0), false, obj);
 	}
 
-	private function primShowListWatcher(b:Block):* {
+	private function primShowListWatcher(b:Array):* {
 		var obj:ScratchObj = interp.targetObj();
 		if (obj) app.runtime.showVarOrListFor(interp.arg(b, 0), true, obj);
 	}
-	
-	private function primHideListWatcher(b:Block):* {
+
+	private function primHideListWatcher(b:Array):* {
 		var obj:ScratchObj = interp.targetObj();
 		if (obj) app.runtime.hideVarOrListFor(interp.arg(b, 0), true, obj);
 	}
-	
-	private function primTimestamp(b:Block):* {
+
+	private function primTimestamp(b:Array):* {
 		const millisecondsPerDay:int = 24 * 60 * 60 * 1000;
 		const epoch:Date = new Date(2000, 0, 1); // Jan 1, 2000 (Note: Months are zero-based.)
 		var now:Date = new Date();

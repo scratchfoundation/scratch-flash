@@ -38,7 +38,7 @@ public class LooksPrims {
 		this.interp = interpreter;
 	}
 
-	public function addPrimsTo(primTable:Dictionary):void {
+	public function addPrimsTo(primTable:Dictionary, specialTable:Dictionary):void {
 		primTable['lookLike:']				= primShowCostume;
 		primTable['nextCostume']			= primNextCostume;
 		primTable['costumeIndex']			= primCostumeIndex;
@@ -52,9 +52,9 @@ public class LooksPrims {
 		primTable['startScene']				= function(b:*):* { startScene(interp.arg(b, 0), false) };
 		primTable['startSceneAndWait']		= function(b:*):* { startScene(interp.arg(b, 0), true) };
 
-		primTable['say:duration:elapsed:from:']		= function(b:*):* { showBubbleAndWait(b, 'talk') };
+		specialTable['say:duration:elapsed:from:']		= function(b:*):* { showBubbleAndWait(b, 'talk') };
 		primTable['say:']							= function(b:*):* { showBubble(b, 'talk') };
-		primTable['think:duration:elapsed:from:']	= function(b:*):* { showBubbleAndWait(b, 'think') };
+		specialTable['think:duration:elapsed:from:']	= function(b:*):* { showBubbleAndWait(b, 'think') };
 		primTable['think:']							= function(b:*):* { showBubble(b, 'think') };
 
 		primTable['changeGraphicEffect:by:'] = primChangeEffect;
@@ -84,13 +84,13 @@ public class LooksPrims {
 		primTable['setRotationStyle']		= primSetRotationStyle;
 	}
 
-	private function primNextCostume(b:Block):void {
+	private function primNextCostume(b:Array):void {
 		var s:ScratchObj = interp.targetObj();
 		if (s != null) s.showCostume(s.currentCostumeIndex + 1);
 		if (s.visible) interp.redraw();
 	}
 
-	private function primShowCostume(b:Block):void {
+	private function primShowCostume(b:Array):void {
 		var s:ScratchObj = interp.targetObj();
 		if (s == null) return;
 		var arg:* = interp.arg(b, 0);
@@ -113,21 +113,21 @@ public class LooksPrims {
 		if (s.visible) interp.redraw();
 	}
 
-	private function primCostumeIndex(b:Block):Number {
+	private function primCostumeIndex(b:Array):Number {
 		var s:ScratchObj = interp.targetObj();
 		return (s == null) ? 1 : s.costumeNumber();
 	}
 
-	private function primCostumeName(b:Block):String {
+	private function primCostumeName(b:Array):String {
 		var s:ScratchObj = interp.targetObj();
 		return (s == null) ? '' : s.currentCostume().costumeName;
 	}
 
-	private function primSceneIndex(b:Block):Number {
+	private function primSceneIndex(b:Array):Number {
 		return app.stagePane.costumeNumber();
 	}
 
-	private function primSceneName(b:Block):String {
+	private function primSceneName(b:Array):String {
 		return app.stagePane.currentCostume().costumeName;
 	}
 
@@ -150,7 +150,7 @@ public class LooksPrims {
 		return costumes[(i + costumes.length) % costumes.length].costumeName;
 	}
 
-	private function showBubbleAndWait(b:Block, type:String):void {
+	private function showBubbleAndWait(b:Array, type:String):void {
 		var text:*, secs:Number;
 		var s:ScratchSprite = interp.targetSprite();
 		if (s == null) return;
@@ -168,7 +168,7 @@ public class LooksPrims {
 		}
 	}
 
-	private function showBubble(b:Block, type:String = null):void {
+	private function showBubble(b:Array, type:String = null):void {
 		var text:*, secs:Number;
 		var s:ScratchSprite = interp.targetSprite();
 		if (s == null) return;
@@ -182,7 +182,7 @@ public class LooksPrims {
 		if (s.visible) interp.redraw();
 	}
 
-	private function primChangeEffect(b:Block):void {
+	private function primChangeEffect(b:Array):void {
 		var s:ScratchObj = interp.targetObj();
 		if (s == null) return;
 		var filterName:String = interp.arg(b, 0);
@@ -195,7 +195,7 @@ public class LooksPrims {
 		if (s.visible || s == Scratch.app.stagePane) interp.redraw();
 	}
 
-	private function primSetEffect(b:Block):void {
+	private function primSetEffect(b:Array):void {
 		var s:ScratchObj = interp.targetObj();
 		if (s == null) return;
 		var filterName:String = interp.arg(b, 0);
@@ -205,13 +205,13 @@ public class LooksPrims {
 		if (s.visible || s == Scratch.app.stagePane) interp.redraw();
 	}
 
-	private function primClearEffects(b:Block):void {
+	private function primClearEffects(b:Array):void {
 		var s:ScratchObj = interp.targetObj();
 		s.clearFilters();
 		if (s.visible || s == Scratch.app.stagePane) interp.redraw();
 	}
 
-	private function primChangeSize(b:Block):void {
+	private function primChangeSize(b:Array):void {
 		var s:ScratchSprite = interp.targetSprite();
 		if (s == null) return;
 		var oldScale:Number = s.scaleX;
@@ -219,27 +219,27 @@ public class LooksPrims {
 		if (s.visible && (s.scaleX != oldScale)) interp.redraw();
 	}
 
-	private function primSetRotationStyle(b:Block):void {
+	private function primSetRotationStyle(b:Array):void {
 		var s:ScratchSprite = interp.targetSprite();
 		var newStyle:String = interp.arg(b, 0) as String;
 		if ((s == null) || (newStyle == null)) return;
 		s.setRotationStyle(newStyle);
 	}
 
-	private function primSetSize(b:Block):void {
+	private function primSetSize(b:Array):void {
 		var s:ScratchSprite = interp.targetSprite();
 		if (s == null) return;
 		s.setSize(interp.numarg(b, 0));
 		if (s.visible) interp.redraw();
 	}
 
-	private function primSize(b:Block):Number {
+	private function primSize(b:Array):Number {
 		var s:ScratchSprite = interp.targetSprite();
 		if (s == null) return 100;
 		return Math.round(s.getSize()); // reporter returns rounded size, as in Scrath 1.4
 	}
 
-	private function primShow(b:Block):void {
+	private function primShow(b:Array):void {
 		var s:ScratchSprite = interp.targetSprite();
 		if (s == null) return;
 		s.visible = true;
@@ -248,7 +248,7 @@ public class LooksPrims {
 		if (s.visible) interp.redraw();
 	}
 
-	private function primHide(b:Block):void {
+	private function primHide(b:Array):void {
 		var s:ScratchSprite = interp.targetSprite();
 		if ((s == null) || !s.visible) return;
 		s.visible = false;
@@ -257,7 +257,7 @@ public class LooksPrims {
 		interp.redraw();
 	}
 
-	private function primHideAll(b:Block):void {
+	private function primHideAll(b:Array):void {
 		// Hide all sprites and delete all clones. Only works from the stage.
 		if (!interp.targetObj().isStage) return;
 		app.stagePane.deleteClones();
@@ -271,14 +271,14 @@ public class LooksPrims {
 		interp.redraw();
 	}
 
-	private function primGoFront(b:Block):void {
+	private function primGoFront(b:Array):void {
 		var s:ScratchSprite = interp.targetSprite();
 		if ((s == null) || (s.parent == null)) return;
 		s.parent.setChildIndex(s, s.parent.numChildren - 1);
 		if (s.visible) interp.redraw();
 	}
 
-	private function primGoBack(b:Block):void {
+	private function primGoBack(b:Array):void {
 		var s:ScratchSprite = interp.targetSprite();
 		if ((s == null) || (s.parent == null)) return;
 		var newIndex:int = s.parent.getChildIndex(s) - interp.numarg(b, 0);
@@ -296,26 +296,26 @@ public class LooksPrims {
 		return stg.getChildIndex(stg.videoImage ? stg.videoImage : stg.penLayer) + 1;
 	}
 
-	private function primSetVideoState(b:Block):void {
+	private function primSetVideoState(b:Array):void {
 		app.stagePane.setVideoState(interp.arg(b, 0));
 	}
 
-	private function primSetVideoTransparency(b:Block):void {
+	private function primSetVideoTransparency(b:Array):void {
 		app.stagePane.setVideoTransparency(interp.numarg(b, 0));
 		app.stagePane.setVideoState('on');
 	}
 
-	private function primScrollAlign(b:Block):void {
+	private function primScrollAlign(b:Array):void {
 		if (!interp.targetObj().isStage) return;
 		app.stagePane.scrollAlign(interp.arg(b, 0));
 	}
 
-	private function primScrollRight(b:Block):void {
+	private function primScrollRight(b:Array):void {
 		if (!interp.targetObj().isStage) return;
 		app.stagePane.scrollRight(interp.numarg(b, 0));
 	}
 
-	private function primScrollUp(b:Block):void {
+	private function primScrollUp(b:Array):void {
 		if (!interp.targetObj().isStage) return;
 		app.stagePane.scrollUp(interp.numarg(b, 0));
 	}

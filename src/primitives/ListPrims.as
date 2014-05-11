@@ -39,7 +39,7 @@ public class ListPrims {
 		this.interp = interpreter;
 	}
 
-	public function addPrimsTo(primTable:Dictionary):void {
+	public function addPrimsTo(primTable:Dictionary, specialTable:Dictionary):void {
 		primTable[Specs.GET_LIST]		= primContents;
 		primTable['append:toList:']		= primAppend;
 		primTable['deleteLine:ofList:']	= primDelete;
@@ -50,7 +50,7 @@ public class ListPrims {
 		primTable['list:contains:']		= primContains;
 	}
 
-	private function primContents(b:Block):String {
+	private function primContents(b:Array):String {
 		var list:ListWatcher = interp.targetObj().lookupOrCreateList(b.spec);
 		if (!list) return '';
 		var allSingleLetters:Boolean = true;
@@ -63,7 +63,7 @@ public class ListPrims {
 		return (list.contents.join(allSingleLetters ? '' : ' '));
 	}
 
-	private function primAppend(b:Block):void {
+	private function primAppend(b:Array):void {
 		var list:ListWatcher = listarg(b, 1);
 		if (!list) return;
 		listAppend(list, interp.arg(b, 0));
@@ -74,7 +74,7 @@ public class ListPrims {
 		list.contents.push(item);
 	}
 
-	private function primDelete(b:Block):void {
+	private function primDelete(b:Array):void {
 		var which:* = interp.arg(b, 0);
 		var list:ListWatcher = listarg(b, 1);
 		if (!list) return;
@@ -99,7 +99,7 @@ public class ListPrims {
 		list.contents.splice(i - 1, 1);
 	}
 
-	private function primInsert(b:Block):void {
+	private function primInsert(b:Array):void {
 		var val:* = interp.arg(b, 0);
 		var where:* = interp.arg(b, 1);
 		var list:ListWatcher = listarg(b, 2);
@@ -119,7 +119,7 @@ public class ListPrims {
 		list.contents.splice(i - 1, 0, item);
 	}
 
-	private function primReplace(b:Block):void {
+	private function primReplace(b:Array):void {
 		var list:ListWatcher = listarg(b, 1);
 		if (!list) return;
 		var i:int = computeIndex(interp.arg(b, 0), list.contents.length);
@@ -132,7 +132,7 @@ public class ListPrims {
 		list.contents.splice(i - 1, 1, item);
 	}
 
-	private function primGetItem(b:Block):String {
+	private function primGetItem(b:Array):String {
 		var list:ListWatcher = listarg(b, 1);
 		if (!list) return '';
 		var i:int = computeIndex(interp.arg(b, 0), list.contents.length);
@@ -141,13 +141,13 @@ public class ListPrims {
 		return list.contents[i - 1];
 	}
 
-	private function primLength(b:Block):Number {
+	private function primLength(b:Array):Number {
 		var list:ListWatcher = listarg(b, 0);
 		if (!list) return 0;
 		return list.contents.length;
 	}
 
-	private function primContains(b:Block):Boolean {
+	private function primContains(b:Array):Boolean {
 		var list:ListWatcher = listarg(b, 0);
 		if (!list) return false;
 		var item:* = interp.arg(b, 1);
@@ -159,7 +159,7 @@ public class ListPrims {
 		return false;
 	}
 
-	private function listarg(b:Block, i:int):ListWatcher {
+	private function listarg(b:Array, i:int):ListWatcher {
 		var listName:String = interp.arg(b, i);
 		if (listName.length == 0) return null;
 		var obj:ScratchObj = interp.targetObj();

@@ -36,9 +36,9 @@ public class Thread {
 
 	// the following state is pushed and popped when running substacks
 	public var block:Block;
-	public var isLoop:Boolean;
 	public var firstTime:Boolean;	// used by certain control structures
 	public var tmp:int;				// used by repeat and wait
+	public var values:Array;				// the evaluated inputs
 	public var args:Array;			// arguments to a user-defined procedure
 
 	// the stack
@@ -51,34 +51,35 @@ public class Thread {
 		topBlock = b;
 		startDelayCount = startupDelay;
 		// initForBlock
-		block = b;
-		isLoop = false;
+		block = null;
 		firstTime = true;
 		tmp = 0;
+		values = [];
+		pushStateForBlock(b);
 	}
 
 	public function pushStateForBlock(b:Block):void {
 		if (sp >= (stack.length - 1)) growStack();
 		var old:StackFrame = stack[sp++];
 		old.block = block;
-		old.isLoop = isLoop;
 		old.firstTime = firstTime;
 		old.tmp = tmp;
+		old.values = values;
 		old.args = args;
 		// initForBlock
 		block = b;
-		isLoop = false;
 		firstTime = true;
 		tmp = 0;
+		values = [];
 	}
 
 	public function popState():Boolean {
 		if (sp == 0) return false;
 		var old:StackFrame = stack[--sp];
 		block		= old.block;
-		isLoop		= old.isLoop;
 		firstTime	= old.firstTime;
 		tmp			= old.tmp;
+		values		= old.values;
 		args		= old.args;
 		return true;
 	}
@@ -87,6 +88,7 @@ public class Thread {
 
 	public function stop():void {
 		block = null;
+		values = [];
 		stack = new Vector.<StackFrame>(4);
 		stack[0] = new StackFrame();
 		stack[1] = new StackFrame();
@@ -99,7 +101,7 @@ public class Thread {
 		var callCount:int = 5; // maximum number of enclosing procedure calls to examine
 		for (var i:int = sp - 1; i >= 0; i--) {
 			var b:Block = stack[i].block;
-			if (b.op == Specs.CALL) {
+			if (b && b.op == Specs.CALL) {
 				if (procCall == b) return true;
 				if (procHat == target.procCache[b.spec]) return true;
 			}
@@ -108,26 +110,33 @@ public class Thread {
 		return false;
 	}
 
-	public function returnFromProcedure():Boolean {
+	public function returnFromProcedure():Block {
+		if (block && block.op == Specs.CALL) {
+			var b:Block = block;
+			popState();
+			if (b.nextBlock) pushStateForBlock(b.nextBlock);
+			return block;
+		}
 		for (var i:int = sp - 1; i >= 0; i--) {
-			if (stack[i].block.op == Specs.CALL) {
-				sp = i + 1;
+			b = stack[i].block;
+			if (b && b.op == Specs.CALL) {
+				sp = i;
 				popState();
-				return true;
+				if (b.nextBlock) pushStateForBlock(b.nextBlock);
+				return b;
 			}
 		}
-		return false;
+		return null;
 	}
 
 	private function initForBlock(b:Block):void {
 		block = b;
-		isLoop = false;
 		firstTime = true;
 		tmp = 0;
 	}
 
 	private function growStack():void {
-		// The stack is an array of Thread instances, pre-allocated for efficiency.
+		// The stack is an array of StackFrame instances, pre-allocated for efficiency.
 		// When growing, the current size is doubled.
 		var s:int = stack.length;
 		var n:int = s + s;
@@ -143,8 +152,8 @@ import interpreter.*;
 
 class StackFrame {
 	internal var block:Block;
-	internal var isLoop:Boolean;
 	internal var firstTime:Boolean;
 	internal var tmp:int;
+	internal var values:Array;
 	internal var args:Array;
 }

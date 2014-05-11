@@ -43,7 +43,7 @@ public class Primitives {
 		this.interp = interpreter;
 	}
 
-	public function addPrimsTo(primTable:Dictionary):void {
+	public function addPrimsTo(primTable:Dictionary, specialTable:Dictionary):void {
 		// operators
 		primTable["+"]				= function(b:*):* { return interp.numarg(b, 0) + interp.numarg(b, 1) };
 		primTable["-"]				= function(b:*):* { return interp.numarg(b, 0) - interp.numarg(b, 1) };
@@ -78,19 +78,19 @@ public class Primitives {
 		primTable["INCR_COUNT"]			= function(b:*):* { counter++ };
 		primTable["CLR_COUNT"]			= function(b:*):* { counter = 0 };
 
-		new LooksPrims(app, interp).addPrimsTo(primTable);
-		new MotionAndPenPrims(app, interp).addPrimsTo(primTable);
-		new SoundPrims(app, interp).addPrimsTo(primTable);
-		new VideoMotionPrims(app, interp).addPrimsTo(primTable);
+		new LooksPrims(app, interp).addPrimsTo(primTable, specialTable);
+		new MotionAndPenPrims(app, interp).addPrimsTo(primTable, specialTable);
+		new SoundPrims(app, interp).addPrimsTo(primTable, specialTable);
+		new VideoMotionPrims(app, interp).addPrimsTo(primTable, specialTable);
 		addOtherPrims(primTable);
 	}
 
 	protected function addOtherPrims(primTable:Dictionary):void {
-		new SensingPrims(app, interp).addPrimsTo(primTable);
-		new ListPrims(app, interp).addPrimsTo(primTable);
+		new SensingPrims(app, interp).addPrimsTo(primTable, specialTable);
+		new ListPrims(app, interp).addPrimsTo(primTable, specialTable);
 	}
 
-	private function primRandom(b:Block):Number {
+	private function primRandom(b:Array):Number {
 		var n1:Number = interp.numarg(b, 0);
 		var n2:Number = interp.numarg(b, 1);
 		var low:Number = (n1 <= n2) ? n1 : n2;
@@ -103,14 +103,14 @@ public class Primitives {
 		return (Math.random() * (hi - low)) + low;
 	}
 
-	private function primLetterOf(b:Block):String {
+	private function primLetterOf(b:Array):String {
 		var s:String = interp.arg(b, 1);
 		var i:int = interp.numarg(b, 0) - 1;
 		if ((i < 0) || (i >= s.length)) return "";
 		return s.charAt(i);
 	}
 
-	private function primModulo(b:Block):Number {
+	private function primModulo(b:Array):Number {
 		var n:Number = interp.numarg(b, 0);
 		var modulus:Number = interp.numarg(b, 1);
 		var result:Number = n % modulus;
@@ -118,7 +118,7 @@ public class Primitives {
 		return result;
 	}
 
-	private function primMathFunction(b:Block):Number {
+	private function primMathFunction(b:Array):Number {
 		var op:* = interp.arg(b, 0);
 		var n:Number = interp.numarg(b, 1);
 		switch(op) {
@@ -162,7 +162,7 @@ public class Primitives {
 		return 1;
 	}
 
-	private function primCreateCloneOf(b:Block):void {
+	private function primCreateCloneOf(b:Array):void {
 		var objName:String = interp.arg(b, 0);
 		var proto:ScratchSprite = app.stagePane.spriteNamed(objName);
 		if ('_myself_' == objName) proto = interp.activeThread.target;
@@ -181,7 +181,7 @@ public class Primitives {
 		app.runtime.cloneCount++;
 	}
 
-	private function primDeleteClone(b:Block):void {
+	private function primDeleteClone(b:Array):void {
 		var clone:ScratchSprite = interp.targetSprite();
 		if ((clone == null) || (!clone.isClone) || (clone.parent == null)) return;
 		if (clone.bubble && clone.bubble.parent) clone.bubble.parent.removeChild(clone.bubble);
