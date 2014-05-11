@@ -38,7 +38,8 @@ public class ProcedureSpecEditor extends Sprite {
 
 	private var moreLabel:TextField;
 	private var moreButton:IconButton;
-	private var shapeLabel:TextField;
+	private var shapeLabels:Array = [];
+	private var shapeIcons:Array = [];
 	private var shapeButtons:Array = [];
 	private var buttonLabels:Array = [];
 	private var buttons:Array = [];
@@ -184,11 +185,15 @@ public class ProcedureSpecEditor extends Sprite {
 	}
 
 	private function addButtonsAndLabels():void {
-		shapeLabel = makeLabel('Shape:', 14);
+		shapeLabels = [
+			makeLabel("Doesn't report", 14),
+			makeLabel('Reports number or text', 14),
+			makeLabel('Reports true or false', 14),
+		];
 		shapeButtons = [
-			new Button('', function():void { setShape(BlockShape.CmdShape) }),
-			new Button('', function():void { setShape(BlockShape.NumberShape) }),
-			new Button('', function():void { setShape(BlockShape.BooleanShape) })
+			new IconButton(function():void { setShape(BlockShape.CmdShape) }, null),
+			new IconButton(function():void { setShape(BlockShape.NumberShape) }, null),
+			new IconButton(function():void { setShape(BlockShape.BooleanShape) }, null)
 		];
 		buttonLabels = [
 			makeLabel('Add number input:', 14),
@@ -203,20 +208,23 @@ public class ProcedureSpecEditor extends Sprite {
 			new Button('text', function():void { appendObj(makeTextField('')) })
 		];
 
+		shapeButtons[0].setOn(true);
+
 		const lightGray:int = 0xA0A0A0;
 		var icon:BlockShape;
 
+		shapeIcons = [];
 		icon = new BlockShape(BlockShape.CmdShape, Specs.procedureColor);
-		icon.setWidthAndTopHeight(34, 15, true);
-		shapeButtons[0].setIcon(icon);
+		icon.setWidthAndTopHeight(34, 18, true);
+		shapeIcons.push(icon);
 
 		icon = new BlockShape(BlockShape.NumberShape, Specs.procedureColor);
 		icon.setWidthAndTopHeight(34, 18, true);
-		shapeButtons[1].setIcon(icon);
+		shapeIcons.push(icon);
 
 		icon = new BlockShape(BlockShape.BooleanShape, Specs.procedureColor);
 		icon.setWidthAndTopHeight(34, 18, true);
-		shapeButtons[2].setIcon(icon);
+		shapeIcons.push(icon);
 
 		icon = new BlockShape(BlockShape.NumberShape, lightGray);
 		icon.setWidthAndTopHeight(25, 14, true);
@@ -266,21 +274,23 @@ public class ProcedureSpecEditor extends Sprite {
 	}
 
 	private function showButtons(showParams:Boolean):void {
-		var label:TextField, b:Button;
+		var label:TextField, b:Button, ib:IconButton, shape:BlockShape;
 		if (showParams) {
 			for each (label in buttonLabels) addChild(label);
+			if (!isEdit) for each (label in shapeLabels) addChild(label);
 			for each (b in buttons) addChild(b);
-			if (!isEdit) for each (b in shapeButtons) addChild(b);
+			if (!isEdit) for each (ib in shapeButtons) addChild(ib);
+			if (!isEdit) for each (shape in shapeIcons) addChild(shape);
 			addChild(warpCheckbox);
 			addChild(warpLabel);
-			if (!isEdit) addChild(shapeLabel);
 		} else {
 			for each (label in buttonLabels) if (label.parent) removeChild(label);
+			for each (label in shapeLabels) if (label.parent) removeChild(label);
 			for each (b in buttons) if (b.parent) removeChild(b);
-			for each (b in shapeButtons) if (b.parent) removeChild(b);
+			for each (ib in shapeButtons) if (b.parent) removeChild(b);
+			for each (shape in shapeIcons) if (shape.parent) removeChild(shape);
 			if (warpCheckbox.parent) removeChild(warpCheckbox);
 			if (warpLabel.parent) removeChild(warpLabel);
-			if (shapeLabel.parent) removeChild(shapeLabel);
 		}
 
 		moreButton.setOn(showParams);
@@ -292,6 +302,10 @@ public class ProcedureSpecEditor extends Sprite {
 
 	private function setShape(shape:int):void {
 		this.shape = shape;
+		var ob:IconButton = shapeButtons[shape == BlockShape.BooleanShape ? 2 : shape == BlockShape.NumberShape ? 1 : 0];
+		for each (var ib:IconButton in shapeButtons) {
+			ib.setOn(ib == ob);
+		}
 		var k:int = getChildIndex(blockShape);
 		removeChildAt(k);
 		blockShape = new BlockShape(shape, Specs.procedureColor);
@@ -393,7 +407,6 @@ public class ProcedureSpecEditor extends Sprite {
 
 		var rowY:int = blockShape.y + blockShape.height + (shape == BlockShape.CmdShape ? 30 : 33);
 		for (var i:int = 0; i < buttons.length; i++) {
-			var label:TextField = buttonLabels[i];
 			buttonLabels[i].x = blockShape.x + 45;
 			buttonLabels[i].y = rowY;
 			buttons[i].x = 240;
@@ -401,17 +414,16 @@ public class ProcedureSpecEditor extends Sprite {
 			rowY += 30;
 		}
 
-		shapeLabel.x = blockShape.x + 45;
-		shapeLabel.y = rowY + 2;
-
 		if (!isEdit) {
-			var buttonX:int = 240 - (shapeButtons[0].width + 8) * 2;
-			for each (var sb:Button in shapeButtons) {
-				sb.x = buttonX;
-				sb.y = rowY - 4;
-				buttonX += sb.width + 8;
+			for (i = 0; i < shapeButtons.length; i++) {
+				shapeButtons[i].x = blockShape.x + 46;
+				shapeButtons[i].y = rowY + 4;
+				shapeIcons[i].x = shapeButtons[i].x + shapeButtons[i].width + 8;
+				shapeIcons[i].y = rowY;
+				shapeLabels[i].x = shapeIcons[i].x + shapeIcons[i].width + 8;
+				shapeLabels[i].y = rowY;
+				rowY += 30;
 			}
-			rowY += 30;
 		}
 
 		warpCheckbox.x = blockShape.x + 46;
