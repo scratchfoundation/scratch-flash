@@ -393,7 +393,7 @@ public class Block extends Sprite {
 			if ((item is BlockArg) && (!BlockArg(item).isNumber)) item.y += 1;
 		}
 
-		if ([' ', '', 'o'].indexOf(type) >= 0) x = Math.max(x, minCommandWidth); // minimum width for command blocks
+		if ([' ', '', 'o ', 'o'].indexOf(type) >= 0) x = Math.max(x, minCommandWidth); // minimum width for command blocks
 		if (['c', 'cf', 'e'].indexOf(type) >= 0) x = Math.max(x, minLoopWidth); // minimum width for C and E blocks
 		if (['h'].indexOf(type) >= 0) x = Math.max(x, minHatWidth); // minimum width for hat blocks
 
