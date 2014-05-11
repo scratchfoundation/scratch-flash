@@ -379,7 +379,7 @@ public class Block extends Sprite {
 		for (i = 0; i < labelsAndArgs.length; i++) {
 			item = labelsAndArgs[i];
 			// Next line moves the argument of if and if-else blocks right slightly:
-			if ((i == 1) && !(argTypes[i] == 'label')) x = Math.max(x, 30);
+			if (!isReporter && i == 1 && !(argTypes[i] == 'label')) x = Math.max(x, 30);
 			item.x = x;
 			maxH = Math.max(maxH, item.height);
 			x += item.width + 2;
