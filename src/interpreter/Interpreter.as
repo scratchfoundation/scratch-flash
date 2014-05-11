@@ -58,7 +58,6 @@
 package interpreter {
 	import flash.utils.Dictionary;
 	import flash.utils.getTimer;
-	import flash.debugger.enterDebugger;
 	import blocks.*;
 	import primitives.*;
 	import scratch.*;
@@ -674,9 +673,6 @@ public class Interpreter {
 			}
 		} else {
 			activeThread.stop();
-			if (b.length) {
-				activeThread.values.push(b[0]);
-			}
 		}
 	}
 
