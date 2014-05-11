@@ -69,8 +69,12 @@ public class BlockIO {
 		if (b.op == Specs.GET_LIST) return [Specs.GET_LIST, b.spec];	// list reporter
 		if (b.op == Specs.GET_PARAM) return [Specs.GET_PARAM, b.spec, b.type]; // parameter reporter
 		if (b.op == Specs.PROCEDURE_DEF)								// procedure definition
-			return [Specs.PROCEDURE_DEF, b.spec, b.parameterNames, b.defaultArgValues, b.warpProcFlag];
-		if (b.op == Specs.CALL) result = [Specs.CALL, b.spec];			// procedure call - arguments follow spec
+			return [Specs.PROCEDURE_DEF, b.spec, b.parameterNames, b.defaultArgValues, b.warpProcFlag, b.procedureType];
+		if (b.op == Specs.CALL) {
+			// procedure call - arguments follow spec
+			// because procedures used to only be commands, they didn't store their type in the array format; to maintain backwards compatibility, we store the type by splitting Specs.CALL into separate selectors for each type
+			result = [b.type == 'b' ? Specs.CALL_BOOLEAN : b.type == 'r' ? Specs.CALL_NUMBER : Specs.CALL, b.spec];
+		}
 		for each (var a:* in b.normalizedArgs()) {
 			// Note: arguments are always saved in normalized (i.e. left-to-right) order
 			if (a is Block) result.push(blockToArray(a));
@@ -100,8 +104,8 @@ public class BlockIO {
 		b = convertOldCmd(cmd);
 		if (b) { b.fixArgLayout(); return b }
 
-		if (cmd[0] == Specs.CALL) {
-			b = new Block(cmd[1], '', Specs.procedureColor, Specs.CALL);
+		if (cmd[0] == Specs.CALL || cmd[0] == Specs.CALL_BOOLEAN || cmd[0] == Specs.CALL_NUMBER) {
+			b = new Block(cmd[1], cmd[0] == Specs.CALL_BOOLEAN ? 'b' : cmd[0] == Specs.CALL_NUMBER ? 'r' : '', Specs.procedureColor, Specs.CALL);
 			cmd.splice(0, 1);
 		} else {
 			var spec:Array = specForCmd(cmd, undefinedBlockType);
@@ -191,6 +195,7 @@ public class BlockIO {
 			b.parameterNames = cmd[2];
 			b.defaultArgValues = cmd[3];
 			if (cmd.length > 4) b.warpProcFlag = cmd[4];
+			if (cmd.length > 5) b.procedureType = cmd[5];
 			b.setSpec(cmd[1]);
 			b.fixArgLayout();
 			return b;

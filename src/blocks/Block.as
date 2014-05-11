@@ -68,6 +68,7 @@ public class Block extends Sprite {
 	public var parameterIndex:int = -1;	// cache of parameter index, used by GET_PARAM block
 	public var parameterNames:Array;	// used by procedure definition hats; null for other blocks
 	public var warpProcFlag:Boolean;	// used by procedure definition hats to indicate warp speed
+	public var procedureType:String;	// used by procedure definition hats; " ", "r", or "b"
 	public var rightToLeft:Boolean;
 
 	public var isHat:Boolean = false;
@@ -117,14 +118,14 @@ public class Block extends Sprite {
 		if ((type == " ") || (type == "") || (type == "w")) {
 			base = new BlockShape(BlockShape.CmdShape, color);
 			indentTop = 3;
-		} else if (type == "b") {
-			base = new BlockShape(BlockShape.BooleanShape, color);
+		} else if (type == "b" || type == "ob") {
+			base = new BlockShape(type == "ob" ? BlockShape.BooleanOutlineShape : BlockShape.BooleanShape, color);
 			isReporter = true;
 			indentLeft = 9;
 			indentRight = 7;
-		} else if (type == "r" || type == "R") {
+		} else if (type == "r" || type == "R" || type == "or") {
 			this.type = 'r';
-			base = new BlockShape(BlockShape.NumberShape, color);
+			base = new BlockShape(type == "or" ? BlockShape.NumberOutlineShape : BlockShape.NumberShape, color);
 			isReporter = true;
 			isRequester = (type == 'R');
 			indentTop = 2;
@@ -147,7 +148,7 @@ public class Block extends Sprite {
 			base = new BlockShape(BlockShape.FinalCmdShape, color);
 			isTerminal = true;
 			indentTop = 5;
-		} else if (type == "o") { // cmd outline for proc definition
+		} else if (type == "o" || type == "o ") { // cmd outline for proc definition
 			base = new BlockShape(BlockShape.CmdOutlineShape, color);
 			base.filters = []; // no bezel
 			indentTop = 3;
@@ -229,7 +230,7 @@ public class Block extends Sprite {
 		// Create a block representing a procedure declaration to be embedded in a
 		// procedure definition header block. For each formal parameter, embed a
 		// reporter for that parameter.
-		var b:Block = new Block(spec, "o", Specs.procedureColor, 'proc_declaration');
+		var b:Block = new Block(spec, "o" + procedureType, Specs.procedureColor, 'proc_declaration');
 		if (!parameterNames) parameterNames = [];
 		for (var i:int = 0; i < parameterNames.length; i++) {
 			var argType:String = (typeof(defaultArgValues[i]) == 'boolean') ? 'b' : 'r';

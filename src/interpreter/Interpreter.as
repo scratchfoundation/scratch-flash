@@ -436,6 +436,7 @@ public class Interpreter {
 		primTable[Specs.SET_VAR]		= primVarSet;
 		primTable[Specs.CHANGE_VAR]		= primVarChange;
 		primTable[Specs.GET_PARAM]		= primGetParam;
+		primTable["report"]		= primNoop;
 
 		// edge-trigger hat blocks
 		primTable["whenDistanceLessThan"]	= primNoop;
