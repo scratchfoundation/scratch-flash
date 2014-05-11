@@ -64,7 +64,7 @@ public class ListPrims {
 	}
 
 	private function primAppend(b:Array):void {
-		var list:ListWatcher = listarg(b, 1);
+		var list:ListWatcher = listarg(b[1]);
 		if (!list) return;
 		listAppend(list, interp.arg(b, 0));
 		if (list.visible) list.updateWatcher(list.contents.length, false, interp);
@@ -75,8 +75,8 @@ public class ListPrims {
 	}
 
 	private function primDelete(b:Array):void {
-		var which:* = interp.arg(b, 0);
-		var list:ListWatcher = listarg(b, 1);
+		var which:* = b[0];
+		var list:ListWatcher = listarg(b[1]);
 		if (!list) return;
 		var len:int = list.contents.length;
 		if (which == 'all') {
@@ -100,9 +100,9 @@ public class ListPrims {
 	}
 
 	private function primInsert(b:Array):void {
-		var val:* = interp.arg(b, 0);
-		var where:* = interp.arg(b, 1);
-		var list:ListWatcher = listarg(b, 2);
+		var val:* = b[0];
+		var where:* = b[1];
+		var list:ListWatcher = listarg(b[2]);
 		if (!list) return;
 		if (where == 'last') {
 			listAppend(list, val);
@@ -120,9 +120,9 @@ public class ListPrims {
 	}
 
 	private function primReplace(b:Array):void {
-		var list:ListWatcher = listarg(b, 1);
+		var list:ListWatcher = listarg(b[1]);
 		if (!list) return;
-		var i:int = computeIndex(interp.arg(b, 0), list.contents.length);
+		var i:int = computeIndex(b[0], list.contents.length);
 		if (i < 0) return;
 		listReplace(list, i, interp.arg(b, 2));
 		if (list.visible) list.updateWatcher(i, false, interp);
@@ -133,24 +133,24 @@ public class ListPrims {
 	}
 
 	private function primGetItem(b:Array):String {
-		var list:ListWatcher = listarg(b, 1);
+		var list:ListWatcher = listarg(b[1]);
 		if (!list) return '';
-		var i:int = computeIndex(interp.arg(b, 0), list.contents.length);
+		var i:int = computeIndex(b[0], list.contents.length);
 		if (i < 0) return '';
 		if (list.visible) list.updateWatcher(i, true, interp);
 		return list.contents[i - 1];
 	}
 
 	private function primLength(b:Array):Number {
-		var list:ListWatcher = listarg(b, 0);
+		var list:ListWatcher = listarg(b[0]);
 		if (!list) return 0;
 		return list.contents.length;
 	}
 
 	private function primContains(b:Array):Boolean {
-		var list:ListWatcher = listarg(b, 0);
+		var list:ListWatcher = listarg(b[0]);
 		if (!list) return false;
-		var item:* = interp.arg(b, 1);
+		var item:* = b[1];
 		if (list.contents.indexOf(item) >= 0) return true;
 		for each (var el:* in list.contents) {
 			// use Scratch comparision operator (Scratch considers the string '123' equal to the number 123)
@@ -159,8 +159,7 @@ public class ListPrims {
 		return false;
 	}
 
-	private function listarg(b:Array, i:int):ListWatcher {
-		var listName:String = interp.arg(b, i);
+	private function listarg(listName:String):ListWatcher {
 		if (listName.length == 0) return null;
 		var obj:ScratchObj = interp.targetObj();
 		var result:ListWatcher = obj.listCache[listName];

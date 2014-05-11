@@ -60,11 +60,11 @@ public class SensingPrims {
 		primTable['soundLevel']			= function(b:*):* { return app.runtime.soundLevel() };
 		primTable['isLoud']				= function(b:*):* { return app.runtime.isLoud() };
 		primTable['timestamp']			= primTimestamp;
-		primTable['timeAndDate']		= function(b:*):* { return app.runtime.getTimeString(interp.arg(b, 0)) };
+		primTable['timeAndDate']		= function(b:*):* { return app.runtime.getTimeString(b[0]) };
 
 		// sensor
-		primTable['sensor:']			= function(b:*):* { return app.runtime.getSensor(interp.arg(b, 0)) };
-		primTable['sensorPressed:']		= function(b:*):* { return app.runtime.getBooleanSensor(interp.arg(b, 0)) };
+		primTable['sensor:']			= function(b:*):* { return app.runtime.getSensor(b[0]) };
+		primTable['sensorPressed:']		= function(b:*):* { return app.runtime.getBooleanSensor(b[0]) };
 
 		// variable and list watchers
 		primTable['showVariable:']		= primShowWatcher;
@@ -78,7 +78,7 @@ public class SensingPrims {
 	private function primTouching(b:Array):Boolean {
 		var s:ScratchSprite = interp.targetSprite();
 		if (s == null) return false;
-		var arg:* = interp.arg(b, 0);
+		var arg:* = b[0];
 		if ('_edge_' == arg) {
 			if(stageRect.containsRect(s.getBounds(s.parent))) return false;
 
@@ -135,7 +135,7 @@ public class SensingPrims {
 		// can create false colors. Unfortunately, that caused serious performance issues.
 		var s:ScratchSprite = interp.targetSprite();
 		if (s == null) return false;
-		var c:int = interp.arg(b, 0) | 0xFF000000;
+		var c:int = b[0] | 0xFF000000;
 		var myBM:BitmapData = s.bitmap(true);
 		var stageBM:BitmapData = stageBitmapWithoutSpriteFilteredByColor(s, c);
 //		if(s.objName == 'sensor') {
@@ -163,8 +163,8 @@ public class SensingPrims {
 		// can create false colors. Unfortunately, that caused serious performance issues.
 		var s:ScratchSprite = interp.targetSprite();
 		if (s == null) return false;
-		var c1:int = interp.arg(b, 0) | 0xFF000000;
-		var c2:int = interp.arg(b, 1) | 0xFF000000;
+		var c1:int = b[0] | 0xFF000000;
+		var c2:int = b[1] | 0xFF000000;
 		var myBM:BitmapData = bitmapFilteredByColor(s.bitmap(true), c1);
 		var stageBM:BitmapData = stageBitmapWithoutSpriteFilteredByColor(s, c2);
 //		if(!testSpr) {
@@ -221,7 +221,7 @@ public class SensingPrims {
 		}
 		var obj:ScratchObj = interp.targetObj();
 		if (interp.activeThread.firstTime) {
-			var question:String = interp.arg(b, 0);
+			var question:String = b[0];
 			if ((obj is ScratchSprite) && (obj.visible)) {
 				ScratchSprite(obj).showBubble(question, 'talk', true);
 				app.runtime.showAskPrompt('');
@@ -237,7 +237,7 @@ public class SensingPrims {
 	}
 
 	private function primKeyPressed(b:Array):Boolean {
-		var key:String = interp.arg(b, 0);
+		var key:String = b[0];
 		var ch:int = key.charCodeAt(0);
 		if (ch > 127) return false;
 		if (key == 'left arrow') ch = 28;
@@ -250,7 +250,7 @@ public class SensingPrims {
 
 	private function primDistanceTo(b:Array):Number {
 		var s:ScratchSprite = interp.targetSprite();
-		var p:Point = mouseOrSpritePosition(interp.arg(b, 0));
+		var p:Point = mouseOrSpritePosition(b[0]);
 		if ((s == null) || (p == null)) return 0;
 		var dx:Number = p.x - s.scratchX;
 		var dy:Number = p.y - s.scratchY;
@@ -258,8 +258,8 @@ public class SensingPrims {
 	}
 
 	private function primGetAttribute(b:Array):* {
-		var attribute:String = interp.arg(b, 0);
-		var obj:ScratchObj = app.stagePane.objNamed(String(interp.arg(b, 1)));
+		var attribute:String = b[0];
+		var obj:ScratchObj = app.stagePane.objNamed(String(b[1]));
 		if (!(obj is ScratchObj)) return 0;
 		if (obj is ScratchSprite) {
 			var s:ScratchSprite = ScratchSprite(obj);
@@ -294,22 +294,22 @@ public class SensingPrims {
 
 	private function primShowWatcher(b:Array):* {
 		var obj:ScratchObj = interp.targetObj();
-		if (obj) app.runtime.showVarOrListFor(interp.arg(b, 0), false, obj);
+		if (obj) app.runtime.showVarOrListFor(b[0], false, obj);
 	}
 
 	private function primHideWatcher(b:Array):* {
 		var obj:ScratchObj = interp.targetObj();
-		if (obj) app.runtime.hideVarOrListFor(interp.arg(b, 0), false, obj);
+		if (obj) app.runtime.hideVarOrListFor(b[0], false, obj);
 	}
 
 	private function primShowListWatcher(b:Array):* {
 		var obj:ScratchObj = interp.targetObj();
-		if (obj) app.runtime.showVarOrListFor(interp.arg(b, 0), true, obj);
+		if (obj) app.runtime.showVarOrListFor(b[0], true, obj);
 	}
 
 	private function primHideListWatcher(b:Array):* {
 		var obj:ScratchObj = interp.targetObj();
-		if (obj) app.runtime.hideVarOrListFor(interp.arg(b, 0), true, obj);
+		if (obj) app.runtime.hideVarOrListFor(b[0], true, obj);
 	}
 
 	private function primTimestamp(b:Array):* {

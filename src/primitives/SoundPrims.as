@@ -56,20 +56,20 @@ public class SoundPrims {
 		primTable["setVolumeTo:"]		= primSetVolume;
 		primTable["volume"]				= primVolume;
 
-		primTable["changeTempoBy:"]		= function(b:*):* { app.stagePane.setTempo(app.stagePane.tempoBPM + interp.numarg(b, 0)) };
-		primTable["setTempoTo:"]		= function(b:*):* { app.stagePane.setTempo(interp.numarg(b, 0)) };
+		primTable["changeTempoBy:"]		= function(b:*):* { app.stagePane.setTempo(app.stagePane.tempoBPM + interp.numarg(b[0])) };
+		primTable["setTempoTo:"]		= function(b:*):* { app.stagePane.setTempo(interp.numarg(b[0])) };
 		primTable["tempo"]				= function(b:*):* { return app.stagePane.tempoBPM };
 	}
 
 	private function primPlaySound(b:Array):void {
-		var snd:ScratchSound = interp.targetObj().findSound(interp.arg(b, 0));
+		var snd:ScratchSound = interp.targetObj().findSound(b[0]);
 		if (snd != null) playSound(snd, interp.targetObj());
 	}
 
 	private function primPlaySoundUntilDone(b:Array):void {
 		var activeThread:Thread = interp.activeThread;
 		if (activeThread.firstTime) {
-			var snd:ScratchSound = interp.targetObj().findSound(interp.arg(b, 0));
+			var snd:ScratchSound = interp.targetObj().findSound(b[0]);
 			if (snd == null) return;
 			activeThread.tmpObj = playSound(snd, interp.targetObj());
 			activeThread.firstTime = false;
@@ -90,8 +90,8 @@ public class SoundPrims {
 		var s:ScratchObj = interp.targetObj();
 		if (s == null) return;
 		if (interp.activeThread.firstTime) {
-			var key:Number = interp.numarg(b, 0);
-			var secs:Number = beatsToSeconds(interp.numarg(b, 1));
+			var key:Number = interp.numarg(b[0]);
+			var secs:Number = beatsToSeconds(interp.numarg(b[1]));
 			interp.activeThread.tmpObj = playNote(s.instrument, key, secs, s);
 			interp.startTimer(secs);
 		} else {
@@ -103,9 +103,9 @@ public class SoundPrims {
 		var s:ScratchObj = interp.targetObj();
 		if (s == null) return;
 		if (interp.activeThread.firstTime) {
-			var drum:int = Math.round(interp.numarg(b, 0));
+			var drum:int = Math.round(interp.numarg(b[0]));
 			var isMIDI:Boolean = (b.op == 'drum:duration:elapsed:from:');
-			var secs:Number = beatsToSeconds(interp.numarg(b, 1));
+			var secs:Number = beatsToSeconds(interp.numarg(b[1]));
 			playDrum(drum, isMIDI, 10, s); // always play entire drum sample
 			interp.startTimer(secs);
 		} else {
@@ -142,7 +142,7 @@ public class SoundPrims {
 		var s:ScratchObj = interp.targetObj();
 		if (s == null) return;
 		if (interp.activeThread.firstTime) {
-			var secs:Number = beatsToSeconds(interp.numarg(b, 0));
+			var secs:Number = beatsToSeconds(interp.numarg(b[0]));
 			interp.startTimer(secs);
 		} else {
 			interp.checkTimer();
@@ -155,7 +155,7 @@ public class SoundPrims {
 
 	private function primSetInstrument(b:Array):void {
 		// Set Scratch 2.0 instrument.
-		var instr:int = interp.numarg(b, 0) - 1;
+		var instr:int = interp.numarg(b[0]) - 1;
 		if (b.op == 'midiInstrument:') {
 			// map old to new instrument number
 			instr = instrumentMap[instr] - 1; // maps to -1 if out of range
@@ -166,12 +166,12 @@ public class SoundPrims {
 
 	private function primChangeVolume(b:Array):void {
 		var s:ScratchObj = interp.targetObj();
-		if (s != null) s.setVolume(s.volume + interp.numarg(b, 0));
+		if (s != null) s.setVolume(s.volume + interp.numarg(b[0]));
 	}
 
 	private function primSetVolume(b:Array):void {
 		var s:ScratchObj = interp.targetObj();
-		if (s != null) s.setVolume(interp.numarg(b, 0));
+		if (s != null) s.setVolume(interp.numarg(b[0]));
 	}
 
 	private function primVolume(b:Array):Number {

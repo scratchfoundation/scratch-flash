@@ -81,31 +81,31 @@ public class MotionAndPenPrims {
 		var s:ScratchSprite = interp.targetSprite();
 		if (s == null) return;
 		var radians:Number = (Math.PI * (90 - s.direction)) / 180;
-		var d:Number = interp.numarg(b, 0);
+		var d:Number = interp.numarg(b[0]);
 		moveSpriteTo(s, s.scratchX + (d * Math.cos(radians)), s.scratchY + (d * Math.sin(radians)));
 	}
 
 	private function primTurnRight(b:Array):void {
 		var s:ScratchSprite = interp.targetSprite();
-		if (s != null) s.setDirection(s.direction + interp.numarg(b, 0));
+		if (s != null) s.setDirection(s.direction + interp.numarg(b[0]));
 		if (s.visible) interp.redraw();
 	}
 
 	private function primTurnLeft(b:Array):void {
 		var s:ScratchSprite = interp.targetSprite();
-		if (s != null) s.setDirection(s.direction - interp.numarg(b, 0));
+		if (s != null) s.setDirection(s.direction - interp.numarg(b[0]));
 		if (s.visible) interp.redraw();
 	}
 
 	private function primSetDirection(b:Array):void {
 		var s:ScratchSprite = interp.targetSprite();
-		if (s != null) s.setDirection(interp.numarg(b, 0));
+		if (s != null) s.setDirection(interp.numarg(b[0]));
 		if (s.visible) interp.redraw();
 	}
 
 	private function primPointTowards(b:Array):void {
 		var s:ScratchSprite = interp.targetSprite();
-		var p:Point = mouseOrSpritePosition(interp.arg(b, 0));
+		var p:Point = mouseOrSpritePosition(b[0]);
 		if ((s == null) || (p == null)) return;
 		var dx:Number = p.x - s.scratchX;
 		var dy:Number = p.y - s.scratchY;
@@ -116,12 +116,12 @@ public class MotionAndPenPrims {
 
 	private function primGoTo(b:Array):void {
 		var s:ScratchSprite = interp.targetSprite();
-		if (s != null) moveSpriteTo(s, interp.numarg(b, 0), interp.numarg(b, 1));
+		if (s != null) moveSpriteTo(s, interp.numarg(b[0]), interp.numarg(b[1]));
 	}
 
 	private function primGoToSpriteOrMouse(b:Array):void {
 		var s:ScratchSprite = interp.targetSprite();
-		var p:Point = mouseOrSpritePosition(interp.arg(b, 0));
+		var p:Point = mouseOrSpritePosition(b[0]);
 		if ((s == null) || (p == null)) return;
 		moveSpriteTo(s, p.x, p.y);
 	}
@@ -130,9 +130,9 @@ public class MotionAndPenPrims {
 		var s:ScratchSprite = interp.targetSprite();
 		if (s == null) return;
 		if (interp.activeThread.firstTime) {
-			var secs:Number = interp.numarg(b, 0);
-			var destX:Number = interp.numarg(b, 1);
-			var destY:Number = interp.numarg(b, 2);
+			var secs:Number = interp.numarg(b[0]);
+			var destX:Number = interp.numarg(b[1]);
+			var destY:Number = interp.numarg(b[2]);
 			if (secs <= 0) {
 				moveSpriteTo(s, destX, destY);
 				return;
@@ -171,22 +171,22 @@ public class MotionAndPenPrims {
 
 	private function primChangeX(b:Array):void {
 		var s:ScratchSprite = interp.targetSprite();
-		if (s != null) moveSpriteTo(s, s.scratchX + interp.numarg(b, 0), s.scratchY);
+		if (s != null) moveSpriteTo(s, s.scratchX + interp.numarg(b[0]), s.scratchY);
 	}
 
 	private function primSetX(b:Array):void {
 		var s:ScratchSprite = interp.targetSprite();
-		if (s != null) moveSpriteTo(s, interp.numarg(b, 0), s.scratchY);
+		if (s != null) moveSpriteTo(s, interp.numarg(b[0]), s.scratchY);
 	}
 
 	private function primChangeY(b:Array):void {
 		var s:ScratchSprite = interp.targetSprite();
-		if (s != null) moveSpriteTo(s, s.scratchX, s.scratchY + interp.numarg(b, 0));
+		if (s != null) moveSpriteTo(s, s.scratchX, s.scratchY + interp.numarg(b[0]));
 	}
 
 	private function primSetY(b:Array):void {
 		var s:ScratchSprite = interp.targetSprite();
-		if (s != null) moveSpriteTo(s, s.scratchX, interp.numarg(b, 0));
+		if (s != null) moveSpriteTo(s, s.scratchX, interp.numarg(b[0]));
 	}
 
 	private function primBounceOffEdge(b:Array):void {
@@ -238,37 +238,37 @@ public class MotionAndPenPrims {
 
 	private function primSetPenColor(b:Array):void {
 		var s:ScratchSprite = interp.targetSprite();
-		if (s != null) s.setPenColor(interp.numarg(b, 0));
+		if (s != null) s.setPenColor(interp.numarg(b[0]));
 	}
 
 	private function primSetPenHue(b:Array):void {
 		var s:ScratchSprite = interp.targetSprite();
-		if (s != null) s.setPenHue(interp.numarg(b, 0));
+		if (s != null) s.setPenHue(interp.numarg(b[0]));
 	}
 
 	private function primChangePenHue(b:Array):void {
 		var s:ScratchSprite = interp.targetSprite();
-		if (s != null) s.setPenHue(s.penHue + interp.numarg(b, 0));
+		if (s != null) s.setPenHue(s.penHue + interp.numarg(b[0]));
 	}
 
 	private function primSetPenShade(b:Array):void {
 		var s:ScratchSprite = interp.targetSprite();
-		if (s != null) s.setPenShade(interp.numarg(b, 0));
+		if (s != null) s.setPenShade(interp.numarg(b[0]));
 	}
 
 	private function primChangePenShade(b:Array):void {
 		var s:ScratchSprite = interp.targetSprite();
-		if (s != null) s.setPenShade(s.penShade + interp.numarg(b, 0));
+		if (s != null) s.setPenShade(s.penShade + interp.numarg(b[0]));
 	}
 
 	private function primSetPenSize(b:Array):void {
 		var s:ScratchSprite = interp.targetSprite();
-		if (s != null) s.setPenSize(Math.max(1, Math.min(960, Math.round(interp.numarg(b, 0)))));
+		if (s != null) s.setPenSize(Math.max(1, Math.min(960, Math.round(interp.numarg(b[0])))));
 	}
 
 	private function primChangePenSize(b:Array):void {
 		var s:ScratchSprite = interp.targetSprite();
-		if (s != null) s.setPenSize(s.penWidth + interp.numarg(b, 0));
+		if (s != null) s.setPenSize(s.penWidth + interp.numarg(b[0]));
 	}
 
 	private function primStamp(b:Array):void {

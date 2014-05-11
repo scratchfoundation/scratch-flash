@@ -308,18 +308,13 @@ public class Interpreter {
 		return false;
 	}
 
-	public function arg(b:Array, i:int):* {
-		return b[i] == undefined ? 0 : b[i];
-	}
-
-	public function numarg(b:Array, i:int):Number {
-		var n:Number = Number(b[i]);
+	public function numarg(o:*):Number {
+		var n:Number = Number(o);
 		if (n != n) return 0; // return 0 if NaN (uses fast, inline test for NaN)
 		return n;
 	}
 
-	public function boolarg(b:Array, i:int):Boolean {
-		var o:* = b[i];
+	public function boolarg(o:*):Boolean {
 		if (o is Boolean) return o;
 		if (o is String) {
 			var s:String = o;
@@ -407,25 +402,26 @@ public class Interpreter {
 		primTable["doBroadcastAndWait"]	= function(b:*):* { broadcast(b[0], true); }
 		primTable["whenIReceive"]		= primNoop;
 		specialTable["doForeverIf"]		= function(b:*):* {
-			if (activeThread.values.pop()) {
+			if (boolarg(activeThread.values.pop())) {
 				startCmdList(this.subStack1, true);
 			} else {
 				yield = true;
 			}
 		};
 		// primTable["doForLoop"]			= primForLoop;
-		primTable["doIf"]				= function(b:*):* { if (b[0]) startCmdList(this.subStack1); };
-		primTable["doIfElse"]			= function(b:*):* { if (b[0]) startCmdList(this.subStack1); else startCmdList(this.subStack2); };
+		primTable["doIf"]				= function(b:*):* { if (boolarg(b[0])) startCmdList(this.subStack1); };
+		primTable["doIfElse"]			= function(b:*):* { if (boolarg(b[0])) startCmdList(this.subStack1); else startCmdList(this.subStack2); };
 		specialTable["doWaitUntil"]		= function(b:*):* {
-			if (activeThread.values.pop()) {
+			if (boolarg(b[0])) {
 				activeThread.popState();
 				if (this.nextBlock) activeThread.pushStateForBlock(this.nextBlock);
 			} else {
+				activeThread.values.pop();
 				yield = true;
 			}
 		};
 		specialTable["doWhile"]			= function(b:*):* {
-			if (b[0]) {
+			if (boolarg(b[0])) {
 				activeThread.values.pop();
 				startCmdList(this.subStack1, true);
 			} else {
@@ -434,7 +430,7 @@ public class Interpreter {
 			}
 		};
 		specialTable["doUntil"]			= function(b:*):* {
-			if (b[0]) {
+			if (boolarg(b[0])) {
 				activeThread.popState();
 				if (this.nextBlock) activeThread.pushStateForBlock(this.nextBlock);
 			} else {
@@ -496,8 +492,8 @@ public class Interpreter {
 		var loopVar:Variable;
 
 		if (activeThread.firstTime) {
-			if (!(arg(b, 0) is String)) return;
-			var listArg:* = arg(b, 1);
+			if (!(b[0] is String)) return;
+			var listArg:* = b[1];
 			if (listArg is Array) {
 				list = listArg as Array;
 			}
@@ -512,7 +508,7 @@ public class Interpreter {
 					for (var i:int = 0; i < last; i++) list[i] = i + 1;
 				}
 			}
-			loopVar = activeThread.target.lookupOrCreateVar(arg(b, 0));
+			loopVar = activeThread.target.lookupOrCreateVar(b[0]);
 			activeThread.args = [list, loopVar];
 			activeThread.tmp = 0;
 			activeThread.firstTime = false;
@@ -538,7 +534,7 @@ public class Interpreter {
 
 	private function primRepeat(b:Array):void {
 		if (activeThread.firstTime) {
-			var repeatCount:Number = Math.max(0, Math.min(Math.round(numarg(b, 0)), 2147483647)); // clip to range: 0 to 2^31-1
+			var repeatCount:Number = Math.max(0, Math.min(Math.round(numarg(b[0])), 2147483647)); // clip to range: 0 to 2^31-1
 			activeThread.tmp = repeatCount;
 			activeThread.firstTime = false;
 		}
@@ -554,7 +550,7 @@ public class Interpreter {
 	}
 
 	private function primStop(b:Array):void {
-		var type:String = arg(b, 0);
+		var type:String = b[0];
 		if (type == 'all') { app.runtime.stopAll(); yield = true }
 		if (type == 'this script') primReturn([]);
 		if (type == 'other scripts in sprite') stopThreadsFor(activeThread.target, true);
@@ -563,7 +559,7 @@ public class Interpreter {
 
 	private function primWait(b:Array):void {
 		if (activeThread.firstTime) {
-			startTimer(numarg(b, 0));
+			startTimer(numarg(b[0]));
 			redraw();
 		} else checkTimer();
 	}

@@ -71,9 +71,9 @@ public class VideoMotionPrims {
 	}
 
 	private function primVideoMotion(b:Array):Number {
-		var motionType:String = interp.arg(b, 0);
-		var obj:ScratchObj = app.stagePane.objNamed(String(interp.arg(b, 1)));
-		if ('this sprite' == interp.arg(b, 1)) obj = interp.targetObj();
+		var motionType:String = b[0];
+		var obj:ScratchObj = app.stagePane.objNamed(String(b[1]));
+		if ('this sprite' == b[1]) obj = interp.targetObj();
 		return getMotionOn(motionType, obj);
 	}
 
