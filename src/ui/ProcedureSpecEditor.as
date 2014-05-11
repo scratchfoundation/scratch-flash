@@ -92,7 +92,9 @@ public class ProcedureSpecEditor extends Sprite {
 			'Add string input:',
 			'Add boolean input:',
 			'Add label text:',
-			'Shape:',
+			"Doesn't report",
+			'Reports number or text',
+			'Reports true or false',
 		];
 	}
 
