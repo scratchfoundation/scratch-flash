@@ -1,0 +1,36 @@
+<languageVersion: 1.0;>
+
+kernel Fisheye
+<	vendor : "MIT Media Laboratory";
+	namespace : "filters";
+	version : 1;
+	description : "Scratch Fisheye";
+>
+{
+	parameter float scaledPower
+	<
+		minValue:float(0);
+		maxValue:float(10);
+		defaultValue:float(1);
+	>;
+	parameter float2 center
+	<
+		minValue:float2(0, 0);
+		maxValue:float2(1000, 1000);
+		defaultValue:float2(100, 100);
+	>;
+
+	input image4 src;
+	output float4 dst;
+
+	void evaluatePixel() {
+		float2 p = outCoord();
+		float2 vec = (p - center) / center;
+		float r = pow(length(vec), scaledPower);
+		float angle = atan(vec[1], vec[0]);
+
+		p = center + (r * float2(cos(angle), sin(angle)) * center);
+		if (r > 1.0) p = outCoord();
+		dst = sample(src, p);
+	}
+}

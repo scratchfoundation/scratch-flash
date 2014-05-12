@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Scratch for latest Flash Player" default="compile">
+	<!-- load LOCAL configuration properties file -->
+	<property file="local.properties" />
+
+	<!-- load previously defined configuration properties file -->
+	<property file="build.properties" />
+
+	<!-- points to our flexTasks.jar we copied to the libs folder to distribute with the project -->
+	<taskdef resource="flexTasks.tasks" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar" />
+
+	<!-- delete and create the DEPLOY dir again -->
+	<target name="init">
+		<delete dir="${DEPLOY_DIR}" />
+		<mkdir dir="${DEPLOY_DIR}" />
+		<delete file="${LIBS_DIR}/RenderIn3D.swf" />
+	</target>
+
+	<!-- Build and output RenderIn3D.swf-->
+	<target name="3d_lib">
+		<mxmlc file="${SRC_DIR_3D}/DisplayObjectContainerIn3D.as" output="${LIBS_DIR}/RenderIn3D.swf"
+		       target-player="11.4" swf-version="17" debug="false">
+			<source-path path-element="${SRC_DIR_3D}"/>
+		</mxmlc>
+	</target>
+
+	<!-- Build for Flash Player 10.2 -->
+	<target name="test_10.2" depends="init,3d_lib">
+		<mxmlc file="${SRC_DIR}/Scratch.as" output="${DEPLOY_DIR}/ScratchFor10.2.swf"
+		                target-player="10.2" swf-version="11" debug="false">
+			<source-path path-element="${SRC_DIR}" />
+			<library-path file="${LIBS_DIR}/blooddy_crypto.swc" />
+			<library-path file="${FLEX_HOME}/frameworks/libs/framework.swc" />
+			<static-link-runtime-shared-libraries>true</static-link-runtime-shared-libraries>
+			<default-size width="800" height="600" />
+		</mxmlc>
+	</target>
+
+	<!-- Build and output Scratch.swf-->
+	<target name="compile" depends="test_10.2,init,3d_lib">
+		<mxmlc file="${SRC_DIR}/Scratch.as" output="${DEPLOY_DIR}/Scratch.swf"
+		                target-player="11.4" swf-version="17" debug="false">
+			<source-path path-element="${SRC_DIR}" />
+			<library-path file="${LIBS_DIR}/blooddy_crypto.swc" />
+			<library-path file="${FLEX_HOME}/frameworks/libs/framework.swc" />
+			<static-link-runtime-shared-libraries>true</static-link-runtime-shared-libraries>
+			<default-size width="800" height="600" />
+		</mxmlc>
+	</target>
+</project>
