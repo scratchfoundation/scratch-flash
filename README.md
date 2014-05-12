@@ -10,7 +10,7 @@ To build the Scratch 2.0 SWF you will need [Ant](http://ant.apache.org/), the [F
 
 After downloading ``playerglobal11_4.swc`` and ``playerglobal10_2.swc``, move them to ``<path to flex>/frameworks/libs/player/<version>/playerglobal.swc``. E.g., ``playerglobal11_4.swc`` should be located at ``<path to flex>/frameworks/libs/player/11.4/playerglobal.swc``.
 
-The build.properties file sets the default location for the Flex SDK. Create a local.properties file to set the location on your filesystem. Your local.properties file may look something like this:
+The ``build.properties`` file sets the default location for the Flex SDK. Create a ``local.properties`` file to set the location on your filesystem. Your ``local.properties`` file may look something like this:
 ```
 FLEX_HOME=/home/joe/downloads/flex_sdk_4.11
 ```
