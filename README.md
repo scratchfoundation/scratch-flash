@@ -8,6 +8,8 @@ Unfortunately, when migrating the issues to this new repository the existing pul
 ### Building
 To build the Scratch 2.0 SWF you will need [Ant](http://ant.apache.org/), the [Flex SDK](http://flex.apache.org/) version 4.10+, and [playerglobal.swc files](http://helpx.adobe.com/flash-player/kb/archived-flash-player-versions.html#playerglobal) for Flash Player versions 10.2 and 11.4 added to the Flex SDK. Scratch is used in a multitude of settings and some users have older versions of Flash which we try to support (as far back as 10.2).
 
+After downloading ``playerglobal11_4.swc`` and ``playerglobal10_2.swc``, move them to ``<path to flex>/frameworks/libs/player/<version>/playerglobal.swc``. E.g., ``playerglobal11_4.swc`` should be located at ``<path to flex>/frameworks/libs/player/11.4/playerglobal.swc``.
+
 The build.properties file sets the default location for the Flex SDK. Create a local.properties file to set the location on your filesystem. Your local.properties file may look something like this:
 ```
 FLEX_HOME=/home/joe/downloads/flex_sdk_4.11
