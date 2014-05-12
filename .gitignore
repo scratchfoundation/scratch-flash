@@ -3,6 +3,7 @@
 .flexLibProperties
 .project
 *.iml
+local.properties
 .idea/
 .settings/
 bin-debug/
