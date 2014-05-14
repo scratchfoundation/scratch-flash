@@ -298,13 +298,22 @@ public class Block extends Sprite {
 	}
 
 	public function showRunFeedback():void {
-		if (!filters || (filters.length == 0)) {
-			filters = runFeedbackFilters();
+		if (filters.length > 0) {
+			for each (var f:* in filters) {
+				if (f is GlowFilter) return;
+			}
 		}
+		filters = runFeedbackFilters().concat(filters || []);
 	}
 
 	public function hideRunFeedback():void {
-		if (filters && (filters.length > 0)) filters = [];
+		if (filters && filters.length > 0) {
+			var newFilters:Array = [];
+			for each (var f:* in filters) {
+				if (!(f is GlowFilter)) newFilters.push(f);
+			}
+			filters = newFilters;
+		}
 	}
 
 	private function runFeedbackFilters():Array {
