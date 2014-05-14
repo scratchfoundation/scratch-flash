@@ -27,6 +27,7 @@
 package blocks {
 	import scratch.*;
 	import util.*;
+	import translation.*;
 
 public class BlockIO {
 
@@ -295,10 +296,10 @@ public class BlockIO {
 		if ((b.args.length == 2) && (b.args[1] is BlockArg)) arg = b.args[1];
 		if (arg) {
 			var oldVal:String = arg.argValue;
-			if ((oldVal == 'edge') || (oldVal == '_edge_')) arg.setArgValue('_edge_', 'edge');
-			if ((oldVal == 'mouse') || (oldVal == '_mouse_')) arg.setArgValue('_mouse_', 'mouse-pointer');
-			if (oldVal == '_myself_') arg.setArgValue('_myself_', 'myself');
-			if (oldVal == '_stage_') arg.setArgValue('_stage_', 'Stage');
+			if (oldVal == 'edge' || oldVal == '_edge_') arg.setArgValue('_edge_', Translator.map('edge'));
+			if (oldVal == 'mouse' || oldVal == '_mouse_') arg.setArgValue('_mouse_', Translator.map('mouse-pointer'));
+			if (oldVal == '_myself_') arg.setArgValue('_myself_', Translator.map('myself'));
+			if (oldVal == '_stage_') arg.setArgValue('_stage_', Translator.map('Stage'));
 		}
 	}
 
