@@ -71,6 +71,7 @@ public class Interpreter {
 
 	private var app:Scratch;
 	private var primTable:Dictionary;		// maps opcodes to functions
+	private var specialTable:Dictionary;		// maps opcodes to special op functions
 	private var threads:Array = [];			// all threads
 	private var yield:Boolean;				// set true to indicate that active thread should yield control
 	private var startTime:int;				// start time for stepThreads()
@@ -82,6 +83,10 @@ public class Interpreter {
 	private var warpBlock:Block;			// proc call block that entered warp mode
 
 	protected var debugFunc:Function;
+
+	static private var yieldBlock:Block = new Block('', '', 0, 'yield');
+	static private var returnBlock:Block = new Block('', '', 0, 'doReturn', [0]);
+	static private var report0Block:Block = new Block('', '%s', 0, 'report', [0]);
 
 	public function Interpreter(app:Scratch) {
 		this.app = app;
@@ -111,15 +116,6 @@ public class Interpreter {
 	public function threadCount():int { return threads.length }
 
 	public function toggleThread(b:Block, targetObj:*, startupDelay:int = 0):void {
-		if (b.isReporter) {
-			// click on reporter shows value in log
-			currentMSecs = getTimer();
-			var oldThread:Thread = activeThread;
-			activeThread = new Thread(b, targetObj);
-			app.log(evalCmd(b));
-			activeThread = oldThread;
-			return;
-		}
 		var i:int, newThreads:Array = [], wasRunning:Boolean = false;
 		for (i = 0; i < threads.length; i++) {
 			if ((threads[i].topBlock == b) && (threads[i].target == targetObj)) {
@@ -231,36 +227,21 @@ public class Interpreter {
 				return;
 			}
 		}
+
 		yield = false;
 		while (true) {
 			if (activeThread == warpThread) currentMSecs = getTimer();
 			evalCmd(activeThread.block);
-			if (yield) {
-				if (activeThread == warpThread) {
-					if ((currentMSecs - startTime) > warpMSecs) return;
-					yield = false;
-					continue;
-				} else return;
+			if (activeThread.block == null) {
+				// click on reporter shows value in log
+				if (activeThread.values.length) {
+					app.browserTrace(activeThread.values[0]);
+				}
+				return;
 			}
-
-			if (activeThread.block != null)
-				activeThread.block = activeThread.block.nextBlock;
-
-			while (activeThread.block == null) { // end of block sequence
-				if (!activeThread.popState()) return; // end of script
-				if ((activeThread.block == warpBlock) && activeThread.firstTime) { // end of outer warp block
-					clearWarpBlock();
-					activeThread.block = activeThread.block.nextBlock;
-					continue;
-				}
-				if (activeThread.isLoop) {
-					if (activeThread == warpThread) {
-						if ((currentMSecs - startTime) > warpMSecs) return;
-					} else return;
-				} else {
-					if (activeThread.block.op == Specs.CALL) activeThread.firstTime = true; // in case set false by call
-					activeThread.block = activeThread.block.nextBlock;
-				}
+			if (yield) {
+				if (activeThread != warpThread || currentMSecs - startTime > warpMSecs) return;
+				yield = false;
 			}
 		}
 	}
@@ -271,74 +252,73 @@ public class Interpreter {
 	}
 
 	/* Evaluation */
-	public function evalCmd(b:Block):* {
-		if (!b) return 0; // arg() and friends can pass null if arg index is out of range
+	public function evalCmd(b:Block):void {
 		var op:String = b.op;
 		if (b.opFunction == null) {
-			if (op.indexOf('.') > -1) b.opFunction = app.extensionManager.primExtensionOp;
-			else b.opFunction = (primTable[op] == undefined) ? primNoop : primTable[op];
+			if (op.indexOf('.') > -1) {
+				b.isSpecialOp = true;
+				b.opFunction = app.extensionManager.primExtensionOp;
+			} else if (specialTable[op]) {
+				b.isSpecialOp = true;
+				b.opFunction = specialTable[op];
+			} else {
+				b.opFunction = (primTable[op] == undefined) ? primNoop : primTable[op];
+			}
 		}
-
-//      TODO: Optimize this into a cached check if the args *could* block at all
-//		if(b.args.length && checkBlockingArgs(b)) {
-//			doYield();
-//			return null;
-//		}
 
 		// Debug code
 		if(debugFunc != null)
 			debugFunc(b);
 
-		return b.opFunction(b);
-	}
-
-	// Returns true if the thread needs to yield while data is requested
-	public function checkBlockingArgs(b:Block):Boolean {
-		// Do any of the arguments request data?  If so, start any requests and yield.
-		var shouldYield:Boolean = false;
-		var args:Array = b.args;
-		for(var i:uint=0; i<args.length; ++i) {
-			var barg:Block = args[i] as Block;
-			if(barg) {
-				if(checkBlockingArgs(barg))
-					shouldYield = true;
-
-				// Don't start a request if the arguments for it are blocking
-				else if(barg.isRequester && barg.requestState < 2) {
-					if(barg.requestState == 0) evalCmd(barg);
-					shouldYield = true;
-				}
-			}
+		if (b.opFunction == primNoop) {
+			// kludge: don't evaluate args for primNoop because procDef has weird ones
+			activeThread.popState();
+			if (b.nextBlock) activeThread.pushStateForBlock(b.nextBlock);
+			return;
 		}
 
-		return shouldYield;
+		while (activeThread.values.length < b.args.length) {
+			if (evalArg(b, activeThread.values.length)) return;
+		}
+		var v:Array = activeThread.values;
+		if (!b.isSpecialOp) {
+			activeThread.popState();
+			if (b.nextBlock) activeThread.pushStateForBlock(b.nextBlock);
+		}
+		var r:* = b.opFunction(v);
+		if (!b.isSpecialOp && b.isReporter) activeThread.values.push(r);
 	}
 
-	public function arg(b:Block, i:int):* {
+	public function evalArg(b:Block, i:int):Boolean {
 		var args:Array = b.args;
 		if (b.rightToLeft) { i = args.length - i - 1; }
-		return (b.args[i] is BlockArg) ?
-			BlockArg(args[i]).argValue : evalCmd(Block(args[i]));
+		var a:* = b.args[i];
+		if (a is BlockArg) {
+			activeThread.values.push((a as BlockArg).argValue);
+			return false;
+		}
+		activeThread.pushStateForBlock(a as Block);
+		return true;
 	}
 
-	public function numarg(b:Block, i:int):Number {
-		var args:Array = b.args;
-		if (b.rightToLeft) { i = args.length - i - 1; }
-		var n:Number = (args[i] is BlockArg) ?
-			Number(BlockArg(args[i]).argValue) : Number(evalCmd(Block(args[i])));
+	public function evalArgs(b:Block):Boolean {
+		while (activeThread.values.length < b.args.length) {
+			if (evalArg(b, activeThread.values.length)) return true;
+		}
+		return false;
+	}
 
+	public function numarg(o:*):Number {
+		var n:Number = Number(o);
 		if (n != n) return 0; // return 0 if NaN (uses fast, inline test for NaN)
 		return n;
 	}
 
-	public function boolarg(b:Block, i:int):Boolean {
-		if (b.rightToLeft) { i = b.args.length - i - 1; }
-		var o:* = (b.args[i] is BlockArg) ? BlockArg(b.args[i]).argValue : evalCmd(Block(b.args[i]));
+	public function boolarg(o:*):Boolean {
 		if (o is Boolean) return o;
 		if (o is String) {
 			var s:String = o;
-			if ((s == '') || (s == '0') || (s.toLowerCase() == 'false')) return false
-			return true; // treat all other strings as true
+			return s != '' && s != '0' && s.toLowerCase() != 'false';
 		}
 		return Boolean(o); // coerce Number and anything else
 	}
@@ -359,15 +339,13 @@ public class Interpreter {
 		return Number(n);
 	}
 
-	private function startCmdList(b:Block, isLoop:Boolean = false, argList:Array = null):void {
+	private function startCmdList(b:Block, isLoop:Boolean = false):void {
 		if (b == null) {
 			if (isLoop) yield = true;
 			return;
 		}
-		activeThread.isLoop = isLoop;
+		if (isLoop) activeThread.pushStateForBlock(yieldBlock);
 		activeThread.pushStateForBlock(b);
-		if (argList) activeThread.args = argList;
-		evalCmd(activeThread.block);
 	}
 
 	/* Timer */
@@ -387,6 +365,9 @@ public class Interpreter {
 			activeThread.tmp = 0;
 			activeThread.tmpObj = null;
 			activeThread.firstTime = true;
+			var b:Block = activeThread.block;
+			activeThread.popState();
+			if (b.nextBlock) activeThread.pushStateForBlock(b.nextBlock);
 			return true;
 		} else {
 			// time not yet expired
@@ -398,44 +379,81 @@ public class Interpreter {
 	/* Primitives */
 
 	public function isImplemented(op:String):Boolean {
-		return primTable[op] != undefined;
+		return primTable[op] != undefined || specialTable[op] != undefined;
 	}
 
 	public function getPrim(op:String):Function { return primTable[op] }
 
 	private function initPrims():void {
 		primTable = new Dictionary();
+		specialTable = new Dictionary();
+
 		// control
 		primTable["whenGreenFlag"]		= primNoop;
 		primTable["whenKeyPressed"]		= primNoop;
 		primTable["whenClicked"]		= primNoop;
 		primTable["whenSceneStarts"]	= primNoop;
-		primTable["wait:elapsed:from:"]	= primWait;
-		primTable["doForever"]			= function(b:*):* { startCmdList(b.subStack1, true); };
-		primTable["doRepeat"]			= primRepeat;
-		primTable["broadcast:"]			= function(b:*):* { broadcast(arg(b, 0), false); }
-		primTable["doBroadcastAndWait"]	= function(b:*):* { broadcast(arg(b, 0), true); }
+		specialTable["wait:elapsed:from:"]	= primWait;
+		specialTable["doForever"]			= function(b:*):* {
+			startCmdList(this.subStack1, true);
+		};
+		specialTable["doRepeat"]			= primRepeat;
+		primTable["broadcast:"]			= function(b:*):* { broadcast(b[0], false); }
+		primTable["doBroadcastAndWait"]	= function(b:*):* { broadcast(b[0], true); }
 		primTable["whenIReceive"]		= primNoop;
-		primTable["doForeverIf"]		= function(b:*):* { if (arg(b, 0)) startCmdList(b.subStack1, true); else yield = true; };
-		primTable["doForLoop"]			= primForLoop;
-		primTable["doIf"]				= function(b:*):* { if (arg(b, 0)) startCmdList(b.subStack1); };
-		primTable["doIfElse"]			= function(b:*):* { if (arg(b, 0)) startCmdList(b.subStack1); else startCmdList(b.subStack2); };
-		primTable["doWaitUntil"]		= function(b:*):* { if (!arg(b, 0)) yield = true; };
-		primTable["doWhile"]			= function(b:*):* { if (arg(b, 0)) startCmdList(b.subStack1, true); };
-		primTable["doUntil"]			= function(b:*):* { if (!arg(b, 0)) startCmdList(b.subStack1, true); };
+		specialTable["doForeverIf"]		= function(b:*):* {
+			if (boolarg(activeThread.values.pop())) {
+				startCmdList(this.subStack1, true);
+			} else {
+				yield = true;
+			}
+		};
+		// primTable["doForLoop"]			= primForLoop;
+		primTable["doIf"]				= function(b:*):* { if (boolarg(b[0])) startCmdList(this.subStack1); };
+		primTable["doIfElse"]			= function(b:*):* { if (boolarg(b[0])) startCmdList(this.subStack1); else startCmdList(this.subStack2); };
+		specialTable["doWaitUntil"]		= function(b:*):* {
+			if (boolarg(b[0])) {
+				activeThread.popState();
+				if (this.nextBlock) activeThread.pushStateForBlock(this.nextBlock);
+			} else {
+				activeThread.values.pop();
+				yield = true;
+			}
+		};
+		specialTable["doWhile"]			= function(b:*):* {
+			if (boolarg(b[0])) {
+				activeThread.values.pop();
+				startCmdList(this.subStack1, true);
+			} else {
+				activeThread.popState();
+				if (this.nextBlock) activeThread.pushStateForBlock(this.nextBlock);
+			}
+		};
+		specialTable["doUntil"]			= function(b:*):* {
+			if (boolarg(b[0])) {
+				activeThread.popState();
+				if (this.nextBlock) activeThread.pushStateForBlock(this.nextBlock);
+			} else {
+				activeThread.values.pop();
+				startCmdList(this.subStack1, true);
+			}
+		};
 		primTable["doReturn"]			= primReturn;
 		primTable["stopAll"]			= function(b:*):* { app.runtime.stopAll(); yield = true; };
 		primTable["stopScripts"]		= primStop;
 		primTable["warpSpeed"]			= primOldWarpSpeed;
 
 		// procedures
-		primTable[Specs.CALL]			= primCall;
+		specialTable[Specs.CALL]			= primCall;
+		specialTable[Specs.PROCEDURE_DEF]	= primNoop;
+		primTable["report"]			= primReturn;
+		primTable["yield"]			= function(b:*):* { yield = true; }
 
 		// variables
-		primTable[Specs.GET_VAR]		= primVarGet;
+		specialTable[Specs.GET_VAR]		= primVarGet;
 		primTable[Specs.SET_VAR]		= primVarSet;
 		primTable[Specs.CHANGE_VAR]		= primVarChange;
-		primTable[Specs.GET_PARAM]		= primGetParam;
+		specialTable[Specs.GET_PARAM]		= primGetParam;
 
 		// edge-trigger hat blocks
 		primTable["whenDistanceLessThan"]	= primNoop;
@@ -448,7 +466,7 @@ public class Interpreter {
 
 	protected function addOtherPrims(primTable:Dictionary):void {
 		// other primitives
-		new Primitives(app, this).addPrimsTo(primTable);
+		new Primitives(app, this).addPrimsTo(primTable, specialTable);
 	}
 
 	private function checkPrims():void {
@@ -466,15 +484,16 @@ public class Interpreter {
 		}
 	}
 
-	public function primNoop(b:Block):void { }
+	public function primNoop(b:Array):void {}
 
-	private function primForLoop(b:Block):void {
+	private function primForLoop(b:Array):void {
+		// unimplemented in new interpreter
 		var list:Array = [];
 		var loopVar:Variable;
 
 		if (activeThread.firstTime) {
-			if (!(arg(b, 0) is String)) return;
-			var listArg:* = arg(b, 1);
+			if (!(b[0] is String)) return;
+			var listArg:* = b[1];
 			if (listArg is Array) {
 				list = listArg as Array;
 			}
@@ -489,7 +508,7 @@ public class Interpreter {
 					for (var i:int = 0; i < last; i++) list[i] = i + 1;
 				}
 			}
-			loopVar = activeThread.target.lookupOrCreateVar(arg(b, 0));
+			loopVar = activeThread.target.lookupOrCreateVar(b[0]);
 			activeThread.args = [list, loopVar];
 			activeThread.tmp = 0;
 			activeThread.firstTime = false;
@@ -507,37 +526,40 @@ public class Interpreter {
 		}
 	}
 
-	private function primOldWarpSpeed(b:Block):void {
+	private function primOldWarpSpeed(b:Array):void {
 		// Semi-support for old warp block: run substack at normal speed.
 		if (b.subStack1 == null) return;
 		startCmdList(b.subStack1);
 	}
 
-	private function primRepeat(b:Block):void {
+	private function primRepeat(b:Array):void {
 		if (activeThread.firstTime) {
-			var repeatCount:Number = Math.max(0, Math.min(Math.round(numarg(b, 0)), 2147483647)); // clip to range: 0 to 2^31-1
+			var repeatCount:Number = Math.max(0, Math.min(Math.round(numarg(b[0])), 2147483647)); // clip to range: 0 to 2^31-1
 			activeThread.tmp = repeatCount;
 			activeThread.firstTime = false;
 		}
+		var block:Block = activeThread.block;
 		if (activeThread.tmp > 0) {
 			activeThread.tmp--; // decrement count
-			startCmdList(b.subStack1, true);
+			startCmdList(block.subStack1, true);
 		} else {
+			activeThread.popState();
 			activeThread.firstTime = true;
+			if (block.nextBlock) activeThread.pushStateForBlock(block.nextBlock);
 		}
 	}
 
-	private function primStop(b:Block):void {
-		var type:String = arg(b, 0);
+	private function primStop(b:Array):void {
+		var type:String = b[0];
 		if (type == 'all') { app.runtime.stopAll(); yield = true }
-		if (type == 'this script') primReturn(b);
+		if (type == 'this script') primReturn([]);
 		if (type == 'other scripts in sprite') stopThreadsFor(activeThread.target, true);
 		if (type == 'other scripts in stage') stopThreadsFor(activeThread.target, true);
 	}
 
-	private function primWait(b:Block):void {
+	private function primWait(b:Array):void {
 		if (activeThread.firstTime) {
-			startTimer(numarg(b, 0));
+			startTimer(numarg(b[0]));
 			redraw();
 		} else checkTimer();
 	}
@@ -603,64 +625,69 @@ public class Interpreter {
 
 	// Procedure call/return
 
-	private function primCall(b:Block):void {
+	private function primCall(b:Array):void {
 		// Call a procedure. Handle recursive calls and "warp" procedures.
-		// The activeThread.firstTime flag is used to mark the first call
-		// to a procedure running in warp mode. activeThread.firstTime is
-		// false for subsequent calls to warp mode procedures.
+
+		var block:Block = activeThread.block;
 
 		// Lookup the procedure and cache for future use
 		var obj:ScratchObj = activeThread.target;
-		var spec:String = b.spec;
+		var spec:String = block.spec;
 		var proc:Block = obj.procCache[spec];
 		if (!proc) {
 			proc = obj.lookupProcedure(spec);
 			obj.procCache[spec] = proc;
 		}
-		if (!proc) return;
+		if (!proc) {
+			activeThread.popState();
+			if (block.nextBlock) activeThread.pushStateForBlock(block.nextBlock);
+			return;
+		}
 
 		if (warpThread) {
-			activeThread.firstTime = false;
-			if ((currentMSecs - startTime) > warpMSecs) yield = true;
+			if (currentMSecs - startTime > warpMSecs) yield = true;
 		} else {
 			if (proc.warpProcFlag) {
 				// Start running in warp mode.
-				warpBlock = b;
+				warpBlock = block;
 				warpThread = activeThread;
-				activeThread.firstTime = true;
-			}
-			else if (activeThread.isRecursiveCall(b, proc)) {
+			} else if (activeThread.isRecursiveCall(block, proc)) {
 				yield = true;
 			}
 		}
-		var argCount:int = proc.parameterNames.length;
-		var argList:Array = [];
-		for (var i:int = 0; i < argCount; ++i) argList.push(arg(b, i));
-		startCmdList(proc, false, argList);
+		activeThread.pushStateForBlock(b.isReporter ? report0Block : returnBlock);
+		activeThread.args = b;
+		startCmdList(proc);
 	}
 
-	private function primReturn(b:Block):void {
+	private function primReturn(b:Array):void {
 		// Return from the innermost procedure. If not in a procedure, stop the thread.
-		var didReturn:Boolean = activeThread.returnFromProcedure();
-		if (!didReturn) {
+		var call:Block = activeThread.returnFromProcedure();
+		if (call) {
+			if (call.isReporter) {
+				activeThread.values.push(b[0]);
+			}
+		} else {
 			activeThread.stop();
-			yield = true;
 		}
 	}
 
 	// Variable Primitives
 	// Optimization: to avoid the cost of looking up the variable every time,
-	// a reference to the Variable object is cached in the block.
-	// Note: Procedures can only reference global variables.
+	// a reference to the Variable object is cached in the target.
 
-	private function primVarGet(b:Block):* {
-		var v:Variable = activeThread.target.varCache[b.spec];
+	private function primVarGet(b:Array):void {
+		var block:Block = activeThread.block;
+		activeThread.popState();
+		var v:Variable = activeThread.target.varCache[block.spec];
 		if (v == null) {
-			v = activeThread.target.varCache[b.spec] = activeThread.target.lookupOrCreateVar(b.spec);
-			if (v == null) return 0;
+			v = activeThread.target.varCache[block.spec] = activeThread.target.lookupOrCreateVar(block.spec);
+			if (v == null) {
+				activeThread.values.push(0);
+				return;
+			}
 		}
-		// XXX: Do we need a get() for persistent variables here ?
-		return v.value;
+		activeThread.values.push(v.value);
 	}
 
 	protected function primVarSet(b:Block):Variable {
@@ -684,14 +711,22 @@ public class Interpreter {
 		return v;
 	}
 
-	private function primGetParam(b:Block):* {
-		if (b.parameterIndex < 0) {
-			var proc:Block = b.topBlock();
-			if (proc.parameterNames) b.parameterIndex = proc.parameterNames.indexOf(b.spec);
-			if (b.parameterIndex < 0) return 0;
+	private function primGetParam(b:Array):* {
+		var block:Block = activeThread.block;
+		activeThread.popState();
+		if (block.parameterIndex < 0) {
+			var proc:Block = block.topBlock();
+			if (proc.parameterNames) block.parameterIndex = proc.parameterNames.indexOf(block.spec);
+			if (block.parameterIndex < 0) {
+				activeThread.values.push(0);
+				return;
+			}
 		}
-		if ((activeThread.args == null) || (b.parameterIndex >= activeThread.args.length)) return 0;
-		return activeThread.args[b.parameterIndex];
+		if (activeThread.args == null || block.parameterIndex >= activeThread.args.length) {
+			activeThread.values.push(0);
+			return;
+		}
+		activeThread.values.push(activeThread.args[block.parameterIndex]);
 	}
 
 }}

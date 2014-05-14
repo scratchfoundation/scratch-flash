@@ -39,16 +39,16 @@ public class SoundPrims {
 		this.interp = interpreter;
 	}
 
-	public function addPrimsTo(primTable:Dictionary):void {
+	public function addPrimsTo(primTable:Dictionary, specialTable:Dictionary):void {
 		primTable["playSound:"]			= primPlaySound;
-		primTable["doPlaySoundAndWait"]	= primPlaySoundUntilDone;
+		specialTable["doPlaySoundAndWait"]	= primPlaySoundUntilDone;
 		primTable["stopAllSounds"]		= function(b:*):* { ScratchSoundPlayer.stopAllSounds() };
 
-		primTable["drum:duration:elapsed:from:"]	= primPlayDrum; // Scratch 1.4 drum numbers
-		primTable["playDrum"]						= primPlayDrum;
-		primTable["rest:elapsed:from:"]				= primPlayRest;
+		specialTable["drum:duration:elapsed:from:"]	= primPlayDrum; // Scratch 1.4 drum numbers
+		specialTable["playDrum"]						= primPlayDrum;
+		specialTable["rest:elapsed:from:"]				= primPlayRest;
 
-		primTable["noteOn:duration:elapsed:from:"]	= primPlayNote;
+		specialTable["noteOn:duration:elapsed:from:"]	= primPlayNote;
 		primTable["midiInstrument:"]				= primSetInstrument; // Scratch 1.4 instrument numbers
 		primTable["instrument:"]					= primSetInstrument;
 
@@ -56,39 +56,42 @@ public class SoundPrims {
 		primTable["setVolumeTo:"]		= primSetVolume;
 		primTable["volume"]				= primVolume;
 
-		primTable["changeTempoBy:"]		= function(b:*):* { app.stagePane.setTempo(app.stagePane.tempoBPM + interp.numarg(b, 0)) };
-		primTable["setTempoTo:"]		= function(b:*):* { app.stagePane.setTempo(interp.numarg(b, 0)) };
+		primTable["changeTempoBy:"]		= function(b:*):* { app.stagePane.setTempo(app.stagePane.tempoBPM + interp.numarg(b[0])) };
+		primTable["setTempoTo:"]		= function(b:*):* { app.stagePane.setTempo(interp.numarg(b[0])) };
 		primTable["tempo"]				= function(b:*):* { return app.stagePane.tempoBPM };
 	}
 
-	private function primPlaySound(b:Block):void {
-		var snd:ScratchSound = interp.targetObj().findSound(interp.arg(b, 0));
+	private function primPlaySound(b:Array):void {
+		var snd:ScratchSound = interp.targetObj().findSound(b[0]);
 		if (snd != null) playSound(snd, interp.targetObj());
 	}
 
-	private function primPlaySoundUntilDone(b:Block):void {
+	private function primPlaySoundUntilDone(b:Array):void {
 		var activeThread:Thread = interp.activeThread;
 		if (activeThread.firstTime) {
-			var snd:ScratchSound = interp.targetObj().findSound(interp.arg(b, 0));
+			var snd:ScratchSound = interp.targetObj().findSound(b[0]);
 			if (snd == null) return;
 			activeThread.tmpObj = playSound(snd, interp.targetObj());
 			activeThread.firstTime = false;
 		}
 		var player:ScratchSoundPlayer = ScratchSoundPlayer(activeThread.tmpObj);
-		if ((player == null) || (player.atEnd())) { // finished playing
+		if ((player == null) || player.atEnd()) { // finished playing
 			activeThread.tmp = 0;
 			activeThread.firstTime = true;
+			var block:Block = activeThread.block;
+			activeThread.popState();
+			if (block.nextBlock) activeThread.pushStateForBlock(block.nextBlock);
 		} else {
 			interp.doYield();
 		}
 	}
 
-	private function primPlayNote(b:Block):void {
+	private function primPlayNote(b:Array):void {
 		var s:ScratchObj = interp.targetObj();
 		if (s == null) return;
 		if (interp.activeThread.firstTime) {
-			var key:Number = interp.numarg(b, 0);
-			var secs:Number = beatsToSeconds(interp.numarg(b, 1));
+			var key:Number = interp.numarg(b[0]);
+			var secs:Number = beatsToSeconds(interp.numarg(b[1]));
 			interp.activeThread.tmpObj = playNote(s.instrument, key, secs, s);
 			interp.startTimer(secs);
 		} else {
@@ -96,13 +99,13 @@ public class SoundPrims {
 		}
 	}
 
-	private function primPlayDrum(b:Block):void {
+	private function primPlayDrum(b:Array):void {
 		var s:ScratchObj = interp.targetObj();
 		if (s == null) return;
 		if (interp.activeThread.firstTime) {
-			var drum:int = Math.round(interp.numarg(b, 0));
+			var drum:int = Math.round(interp.numarg(b[0]));
 			var isMIDI:Boolean = (b.op == 'drum:duration:elapsed:from:');
-			var secs:Number = beatsToSeconds(interp.numarg(b, 1));
+			var secs:Number = beatsToSeconds(interp.numarg(b[1]));
 			playDrum(drum, isMIDI, 10, s); // always play entire drum sample
 			interp.startTimer(secs);
 		} else {
@@ -135,11 +138,11 @@ public class SoundPrims {
 		return player;
 	}
 
-	private function primPlayRest(b:Block):void {
+	private function primPlayRest(b:Array):void {
 		var s:ScratchObj = interp.targetObj();
 		if (s == null) return;
 		if (interp.activeThread.firstTime) {
-			var secs:Number = beatsToSeconds(interp.numarg(b, 0));
+			var secs:Number = beatsToSeconds(interp.numarg(b[0]));
 			interp.startTimer(secs);
 		} else {
 			interp.checkTimer();
@@ -150,9 +153,9 @@ public class SoundPrims {
 		return (beats * 60) / app.stagePane.tempoBPM;
 	}
 
-	private function primSetInstrument(b:Block):void {
+	private function primSetInstrument(b:Array):void {
 		// Set Scratch 2.0 instrument.
-		var instr:int = interp.numarg(b, 0) - 1;
+		var instr:int = interp.numarg(b[0]) - 1;
 		if (b.op == 'midiInstrument:') {
 			// map old to new instrument number
 			instr = instrumentMap[instr] - 1; // maps to -1 if out of range
@@ -161,17 +164,17 @@ public class SoundPrims {
 		if (interp.targetObj()) interp.targetObj().instrument = instr;
 	}
 
-	private function primChangeVolume(b:Block):void {
+	private function primChangeVolume(b:Array):void {
 		var s:ScratchObj = interp.targetObj();
-		if (s != null) s.setVolume(s.volume + interp.numarg(b, 0));
+		if (s != null) s.setVolume(s.volume + interp.numarg(b[0]));
 	}
 
-	private function primSetVolume(b:Block):void {
+	private function primSetVolume(b:Array):void {
 		var s:ScratchObj = interp.targetObj();
-		if (s != null) s.setVolume(interp.numarg(b, 0));
+		if (s != null) s.setVolume(interp.numarg(b[0]));
 	}
 
-	private function primVolume(b:Block):Number {
+	private function primVolume(b:Array):Number {
 		var s:ScratchObj = interp.targetObj();
 		return (s != null) ? s.volume : 0;
 	}
@@ -181,7 +184,7 @@ public class SoundPrims {
 		// Acoustic Grand, Bright Acoustic, Electric Grand, Honky-Tonk
 		1, 1, 1, 1,
 		// Electric Piano 1, Electric Piano 2, Harpsichord, Clavinet
-		2, 2, 4, 4,	
+		2, 2, 4, 4,
 		// Celesta, Glockenspiel, Music Box, Vibraphone
 		17, 17, 17, 16,
 		// Marimba, Xylophone, Tubular Bells, Dulcimer
@@ -197,7 +200,7 @@ public class SoundPrims {
 		// Acoustic Bass, Electric Bass (finger), Electric Bass (pick), Fretless Bass
 		6, 6, 6, 6,
 		// Slap Bass 1, Slap Bass 2, Synth Bass 1, Synth Bass 2
-		6, 6, 6, 6, 
+		6, 6, 6, 6,
 		// Violin, Viola, Cello, Contrabass
 		8, 8, 8, 8,
 		// Tremolo Strings, Pizzicato Strings, Orchestral Strings, Timpani
@@ -209,7 +212,7 @@ public class SoundPrims {
 		// Trumpet, Trombone, Tuba, Muted Trumpet
 		9, 9, 9, 9,
 		// French Horn, Brass Section, SynthBrass 1, SynthBrass 2
-		9, 9, 9, 9, 
+		9, 9, 9, 9,
 		// Soprano Sax, Alto Sax, Tenor Sax, Baritone Sax
 		11, 11, 11, 11,
 		// Oboe, English Horn, Bassoon, Clarinet
@@ -221,7 +224,7 @@ public class SoundPrims {
 		// Lead 1 (square), Lead 2 (sawtooth), Lead 3 (calliope), Lead 4 (chiff)
 		20, 20, 20, 20,
 		// Lead 5 (charang), Lead 6 (voice), Lead 7 (fifths), Lead 8 (bass+lead)
-		20, 20, 20, 20, 
+		20, 20, 20, 20,
 		// Pad 1 (new age), Pad 2 (warm), Pad 3 (polysynth), Pad 4 (choir)
 		21, 21, 21, 21,
 		// Pad 5 (bowed), Pad 6 (metallic), Pad 7 (halo), Pad 8 (sweep)
@@ -242,6 +245,6 @@ public class SoundPrims {
 		21, 21, 21, 21,
 		// Telephone Ring, Helicopter, Applause, Gunshot
 		21, 21, 21, 21
-	];		
+	];
 
 }}

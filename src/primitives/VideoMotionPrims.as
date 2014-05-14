@@ -65,15 +65,15 @@ public class VideoMotionPrims {
 		frameBuffer = new BitmapData(WIDTH, HEIGHT);
 	}
 
-	public function addPrimsTo(primTable:Dictionary):void {
+	public function addPrimsTo(primTable:Dictionary, specialTable:Dictionary):void {
 		primTable['senseVideoMotion'] = primVideoMotion;
 		readMotionSensor = getMotionOn;
 	}
 
-	private function primVideoMotion(b:Block):Number {
-		var motionType:String = interp.arg(b, 0);
-		var obj:ScratchObj = app.stagePane.objNamed(String(interp.arg(b, 1)));
-		if ('this sprite' == interp.arg(b, 1)) obj = interp.targetObj();
+	private function primVideoMotion(b:Array):Number {
+		var motionType:String = b[0];
+		var obj:ScratchObj = app.stagePane.objNamed(String(b[1]));
+		if ('this sprite' == b[1]) obj = interp.targetObj();
 		return getMotionOn(motionType, obj);
 	}
 

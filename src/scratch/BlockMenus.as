@@ -545,7 +545,7 @@ public class BlockMenus implements DragClient {
 		}
 		var d:DialogBox = new DialogBox(editSpec2);
 		d.addTitle('Edit Block');
-		d.addWidget(new ProcedureSpecEditor(block.spec, block.parameterNames, block.warpProcFlag));
+		d.addWidget(new ProcedureSpecEditor(block.spec, block.parameterNames, block.warpProcFlag, block.procedureType, true));
 		d.addAcceptCancelButtons('OK');
 		d.showOnStage(app.stage, true);
 		ProcedureSpecEditor(d.widget).setInitialFocus();
@@ -559,6 +559,7 @@ public class BlockMenus implements DragClient {
 			block.parameterNames = ProcedureSpecEditor(dialog.widget).inputNames();
 			block.defaultArgValues = ProcedureSpecEditor(dialog.widget).defaultArgValues();
 			block.warpProcFlag = ProcedureSpecEditor(dialog.widget).warpFlag();
+			block.procedureType = ProcedureSpecEditor(dialog.widget).type();
 			block.setSpec(newSpec);
 			if (block.nextBlock) block.nextBlock.allBlocksDo(function(b:Block):void {
 				if (b.op == Specs.GET_PARAM) b.parameterIndex = -1; // parameters may have changed; clear cached indices

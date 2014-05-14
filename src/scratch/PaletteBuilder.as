@@ -123,7 +123,7 @@ public class PaletteBuilder {
 		addItem(new Button(Translator.map('Make a Block'), makeNewBlock, false, '/help/studio/tips/blocks/make-a-block/'));
 		nextY += 5;
 		for each (var proc:Block in app.viewedObj().procedureDefinitions()) {
-			var b:Block = new Block(proc.spec, ' ', Specs.procedureColor, Specs.CALL, proc.defaultArgValues);
+			var b:Block = new Block(proc.spec, proc.procedureType, Specs.procedureColor, Specs.CALL, proc.defaultArgValues);
 			addItem(b);
 		}
 
@@ -224,6 +224,7 @@ public class PaletteBuilder {
 			newHat.parameterNames = specEditor.inputNames();
 			newHat.defaultArgValues = specEditor.defaultArgValues();
 			newHat.warpProcFlag = specEditor.warpFlag();
+			newHat.procedureType = specEditor.type();
 			newHat.setSpec(spec);
 			newHat.x = 10 - app.scriptsPane.x + Math.random() * 100;
 			newHat.y = 10 - app.scriptsPane.y + Math.random() * 100;
@@ -233,7 +234,7 @@ public class PaletteBuilder {
 			app.updatePalette();
 			app.setSaveNeeded();
 		}
-		var specEditor:ProcedureSpecEditor = new ProcedureSpecEditor('', [], false);
+		var specEditor:ProcedureSpecEditor = new ProcedureSpecEditor('', [], false, ' ', false);
 		var d:DialogBox = new DialogBox(addBlockHat);
 		d.addTitle('New Block');
 		d.addWidget(specEditor);

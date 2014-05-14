@@ -271,14 +271,14 @@ public class ScratchRuntime {
 		if (!hat.isHat || !hat.nextBlock) return; // skip disconnected hats
 		var triggerCondition:Boolean = false;
 		if ('whenSensorGreaterThan' == hat.op) {
-			var sensorName:String = interp.arg(hat, 0);
-			var threshold:Number = interp.numarg(hat, 1);
+			var sensorName:String = (hat.args[0] as BlockArg).argValue;
+			var threshold:Number = Number((hat.args[1] as BlockArg).argValue) || 0;
 			triggerCondition = (
 					(('loudness' == sensorName) && (soundLevel() > threshold)) ||
 					(('timer' == sensorName) && (timer() > threshold)) ||
 					(('video motion' == sensorName) && (VideoMotionPrims.readMotionSensor('motion', target) > threshold)));
 		} else if ('whenSensorConnected' == hat.op) {
-			triggerCondition = getBooleanSensor(interp.arg(hat, 0));
+			triggerCondition = getBooleanSensor((hat.args[0] as BlockArg).argValue);
 		} else if (app.jsEnabled) {
 			var dotIndex:int = hat.op.indexOf('.');
 			if (dotIndex > -1) {
@@ -288,7 +288,7 @@ public class ScratchRuntime {
 					var args:Array = hat.args;
 					var finalArgs:Array = new Array(args.length);
 					for (var i:uint=0; i<args.length; ++i)
-						finalArgs[i] = interp.arg(hat, i);
+						finalArgs[i] = (hat.args[i] as BlockArg).argValue;
 
 					if (ExternalInterface.call('ScratchExtensions.getReporter', extName, op, finalArgs)) {
 						triggerCondition = true;
@@ -317,7 +317,7 @@ public class ScratchRuntime {
 		stack.allBlocksDo(function(b:Block):void {
 			var op:String = b.op;
 			if (('senseVideoMotion' == op) ||
-				(('whenSensorGreaterThan' == op) && ('video motion' == interp.arg(b, 0)))) {
+				(('whenSensorGreaterThan' == op) && ('video motion' == (b.args[0] as BlockArg).argValue))) {
 					app.libraryPart.showVideoButton();
 			}
 
