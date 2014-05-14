@@ -88,6 +88,7 @@ public class GestureHandler {
 
 	public function setDragClient(newClient:DragClient, evt:MouseEvent):void {
 		Menu.removeMenusFrom(app.stage);
+		if (carriedObj) return;
 		if (dragClient != null) dragClient.dragEnd(evt);
 		dragClient = newClient as DragClient;
 		dragClient.dragBegin(evt);
