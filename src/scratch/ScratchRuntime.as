@@ -462,6 +462,7 @@ public class ScratchRuntime {
 
 	public function showAskPrompt(question:String = ''):void {
 		var p:AskPrompter = new AskPrompter(question, app);
+		interp.askThread = interp.activeThread;
 		p.x = 15;
 		p.y = ScratchObj.STAGEH - p.height - 5;
 		app.stagePane.addChild(p);
@@ -469,6 +470,7 @@ public class ScratchRuntime {
 	}
 
 	public function hideAskPrompt(p:AskPrompter):void {
+		interp.askThread = null;
 		lastAnswer = p.answer();
 		p.parent.removeChild(p);
 		app.stage.focus = null;
@@ -484,6 +486,7 @@ public class ScratchRuntime {
 	}
 
 	public function clearAskPrompts():void {
+		interp.askThread = null;
 		var allPrompts:Array = [];
 		var uiLayer:Sprite = app.stagePane.getUILayer();
 		var c:DisplayObject;
