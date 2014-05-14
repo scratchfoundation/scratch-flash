@@ -563,7 +563,7 @@ public class BlockMenus implements DragClient {
 			if (block.nextBlock) block.nextBlock.allBlocksDo(function(b:Block):void {
 				if (b.op == Specs.GET_PARAM) b.parameterIndex = -1; // parameters may have changed; clear cached indices
 			});
-			for each (var caller:Block in app.runtime.allCallsOf(oldSpec)) {
+			for each (var caller:Block in app.runtime.allCallsOf(oldSpec, app.viewedObj())) {
 				var oldArgs:Array = caller.args;
 				caller.setSpec(newSpec, block.defaultArgValues);
 				for (var i:int = 0; i < oldArgs.length; i++) {
