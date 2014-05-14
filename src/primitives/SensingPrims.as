@@ -61,6 +61,7 @@ public class SensingPrims {
 		primTable['isLoud']				= function(b:*):* { return app.runtime.isLoud() };
 		primTable['timestamp']			= primTimestamp;
 		primTable['timeAndDate']		= function(b:*):* { return app.runtime.getTimeString(interp.arg(b, 0)) };
+		primTable['getUserName']		= function(b:*):* { return '' };
 
 		// sensor
 		primTable['sensor:']			= function(b:*):* { return app.runtime.getSensor(interp.arg(b, 0)) };
@@ -306,12 +307,12 @@ public class SensingPrims {
 		var obj:ScratchObj = interp.targetObj();
 		if (obj) app.runtime.showVarOrListFor(interp.arg(b, 0), true, obj);
 	}
-	
+
 	private function primHideListWatcher(b:Block):* {
 		var obj:ScratchObj = interp.targetObj();
 		if (obj) app.runtime.hideVarOrListFor(interp.arg(b, 0), true, obj);
 	}
-	
+
 	private function primTimestamp(b:Block):* {
 		const millisecondsPerDay:int = 24 * 60 * 60 * 1000;
 		const epoch:Date = new Date(2000, 0, 1); // Jan 1, 2000 (Note: Months are zero-based.)
