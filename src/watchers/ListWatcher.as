@@ -523,14 +523,14 @@ public class ListWatcher extends Sprite {
 			if (cell.tf == cellContents) {
 				e.preventDefault();
 				if (contents.length < 2) return; // only one cell, and it's already selected
-				if ((i + 1) < visibleCells.length) {
-					stage.focus = visibleCells[i + 1];
+				if (i + 1 < visibleCells.length) {
+					visibleCells[i + 1].select();
 					return;
 				} else {
 					var selectIndex:int = (firstVisibleIndex + i + 1) % contents.length;
 					scrollToIndex(selectIndex);
 					var j:int = firstVisibleIndex - selectIndex;
-					if ((j >= 0) && (j < visibleCells.length)) stage.focus = visibleCells[j];
+					if (j >= 0 && j < visibleCells.length) visibleCells[j].select();
 				}
 			}
 		}

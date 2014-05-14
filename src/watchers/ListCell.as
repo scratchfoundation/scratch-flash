@@ -67,4 +67,9 @@ public class ListCell extends Sprite {
 		addChild(tf);
 	}
 
+	public function select():void {
+		stage.focus = tf;
+		tf.setSelection(0, tf.getLineLength(0));
+	}
+
 }}
