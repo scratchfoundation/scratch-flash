@@ -203,13 +203,14 @@ package svgeditor.tools
 				g.beginGradientFill(GradientType.LINEAR, colors, alphas, ratios, m);
 				break;
 			case 'radial':
-				var focusX:Number = (centerX - (r.x + (r.width / 2))) / (r.width / 2);
-				var focusY:Number = (centerY - (r.y + (r.height / 2))) / (r.height / 2);
-				var focalPointAngle:Number = Math.atan2(focusY, focusX);
-				var focalPointRatio:Number = Math.sqrt((focusX * focusX) + (focusY * focusY));
-				m.createGradientBox(r.width, r.height, focalPointAngle, 0, 0);
+				var cx:Number = centerX / r.width;
+				var cy:Number = centerY / r.height;
+				var rScale:Number = (65 + 1.3*Math.max(Math.abs(cx*100-50), Math.abs(cy*100-50))) / 100;
+				var rx:Number = r.width * rScale;
+				var ry:Number = r.height * rScale;
+				m.createGradientBox(2 * rx, 2 * ry, 0, centerX - rx, centerY - ry);
 				g.beginGradientFill(GradientType.RADIAL, colors, alphas, ratios, m,
-					SpreadMethod.PAD, InterpolationMethod.RGB, focalPointRatio);
+					SpreadMethod.PAD, InterpolationMethod.RGB, 0);
 				break;
 			default: // solid fill
 				g.beginFill(colors[0], alphas[0]);
