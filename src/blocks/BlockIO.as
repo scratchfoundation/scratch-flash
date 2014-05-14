@@ -94,7 +94,7 @@ public class BlockIO {
 
 		if (cmd[0] == 'getUserName') Scratch.app.usesUserNameBlock = true;
 
-		var special:Block = specialCmd(cmd);
+		var special:Block = specialCmd(cmd, forStage);
 		if (special) { special.fixArgLayout(); return special }
 
 		var b:Block;
@@ -178,7 +178,7 @@ public class BlockIO {
 
 	private static const controlColor:int = Specs.blockColor(Specs.controlCategory);
 
-	private static function specialCmd(cmd:Array):Block {
+	private static function specialCmd(cmd:Array, forStage:Boolean):Block {
 		// If the given command is special (e.g. a reporter or old-style a hat blocK), return a block for it.
 		// Otherwise, return null.
 		var b:Block;
@@ -228,6 +228,8 @@ public class BlockIO {
 		case 'stopScripts':
 			var type:String = (cmd[1].indexOf('other scripts') == 0) ? ' ' : 'f'; // block type depends on menu arg
 			b = new Block('stop %m.stop', type, controlColor, 'stopScripts');
+			if (forStage && b.op == 'stopScripts' && cmd[1] == 'other scripts in sprite') cmd[1] = 'other scripts in stage';
+			if (!forStage && b.op == 'stopScripts' && cmd[1] != 'other scripts in stage') cmd[1] = 'other scripts in sprite';
 			b.setArg(0, cmd[1]);
 			return b;
 		}
