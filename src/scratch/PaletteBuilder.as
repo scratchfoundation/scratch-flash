@@ -121,13 +121,16 @@ public class PaletteBuilder {
 		// show creation button, hat, and call blocks
 		var catColor:int = Specs.blockColor(Specs.procedureColor);
 		addItem(new Button(Translator.map('Make a Block'), makeNewBlock, false, '/help/studio/tips/blocks/make-a-block/'));
-		nextY += 5;
-		for each (var proc:Block in app.viewedObj().procedureDefinitions()) {
-			var b:Block = new Block(proc.spec, ' ', Specs.procedureColor, Specs.CALL, proc.defaultArgValues);
-			addItem(b);
+		var definitions:Array = app.viewedObj().procedureDefinitions();
+		if (definitions.length > 0) {
+			nextY += 5;
+			for each (var proc:Block in definitions) {
+				var b:Block = new Block(proc.spec, ' ', Specs.procedureColor, Specs.CALL, proc.defaultArgValues);
+				addItem(b);
+			}
+			nextY += 5;
 		}
 
-		nextY += 5;
 		addItem(new Button(Translator.map('Add an Extension'), showAnExtension, false, '/help/studio/tips/blocks/add-an-extension/'));
 		for each (var ext:* in app.extensionManager.enabledExtensions()) {
 			addExtensionSeparator(ext);
