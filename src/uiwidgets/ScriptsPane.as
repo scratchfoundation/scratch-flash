@@ -483,6 +483,7 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 			}
 			nextX += columnWidths[i] + pad;
 		}
+		saveScripts();
 	}
 
 	private function stacksSortedByX():Array {
