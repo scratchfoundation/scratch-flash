@@ -178,13 +178,17 @@ public class ScratchComment extends Sprite {
 
 	public function menu(evt:MouseEvent):Menu {
 		var m:Menu = new Menu();
-		m.addItem('duplicate', duplicateComment);
+		var startX:Number = stage.mouseX;
+		var startY:Number = stage.mouseY;
+		m.addItem('duplicate', function():void {
+			duplicateComment(stage.mouseX - startX, stage.mouseY - startY);
+		});
 		m.addItem('delete', deleteComment);
 		return m;
 	}
 
 	public function handleTool(tool:String, evt:MouseEvent):void {
-		if (tool == 'copy') duplicateComment();
+		if (tool == 'copy') duplicateComment(10, 5);
 		if (tool == 'cut') deleteComment();
 	}
 
@@ -194,11 +198,11 @@ public class ScratchComment extends Sprite {
 		Scratch.app.scriptsPane.saveScripts();
 	}
 
-	public function duplicateComment():void {
+	public function duplicateComment(deltaX:Number, deltaY:Number):void {
 		if (!parent) return;
 		var dup:ScratchComment = new ScratchComment(contents.text, isOpen);
-		dup.x = x + 10;
-		dup.y = y + 10;
+		dup.x = x + deltaX;
+		dup.y = y + deltaY;
 		parent.addChild(dup);
 		Scratch.app.gh.grabOnMouseUp(dup);
 	}
