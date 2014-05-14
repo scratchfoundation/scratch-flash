@@ -135,7 +135,7 @@ public class GestureHandler {
 	private function findTargetFor(property:String, obj:*, x:int, y:int):DisplayObject {
 		// Return the innermost child  of obj that contains the given (global) point
 		// and implements the menu() method.
-		if (!obj.hitTestPoint(x, y, true)) return null;
+		if (!obj.visible || !obj.hitTestPoint(x, y, true)) return null;
 		if (obj is DisplayObjectContainer) {
 			for (var i:int = obj.numChildren - 1; i >= 0; i--) {
 				var found:DisplayObject = findTargetFor(property, obj.getChildAt(i), x, y);
