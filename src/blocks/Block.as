@@ -37,12 +37,13 @@ import flash.display.*;
 	import flash.events.*;
 	import flash.filters.GlowFilter;
 	import flash.geom.*;
-import flash.net.URLLoader;
-import flash.text.*;
+	import flash.net.URLLoader;
+	import flash.text.*;
 	import assets.Resources;
 	import translation.Translator;
 	import util.*;
 	import uiwidgets.*;
+	import scratch.ScratchStage;
 
 public class Block extends Sprite {
 
@@ -453,13 +454,21 @@ public class Block extends Sprite {
 
 	public function duplicate(forClone:Boolean, forStage:Boolean = false):Block {
 		var newSpec:String = spec;
-		if(forStage && op == 'whenClicked') newSpec = 'when Stage clicked';
+		if (forStage && op == 'whenClicked') newSpec = 'when Stage clicked';
 		var dup:Block = new Block(newSpec, type, (int)(forClone ? -1 : base.color), op);
 		dup.isRequester = isRequester;
 		dup.parameterNames = parameterNames;
 		dup.defaultArgValues = defaultArgValues;
 		dup.warpProcFlag = warpProcFlag;
-		if (forClone) dup.copyArgsForClone(args); else dup.copyArgs(args);
+		if (forClone) {
+			dup.copyArgsForClone(args);
+		} else {
+			dup.copyArgs(args);
+			if (op == 'stopScripts' && args[0] is BlockArg) {
+				if (forStage && args[0].argValue == 'other scripts in sprite') dup.args[0].setArgValue('other scripts in stage');
+				if (!forStage && args[0].argValue == 'other scripts in stage') dup.args[0].setArgValue('other scripts in sprite');
+			}
+		}
 		if (nextBlock != null) dup.addChild(dup.nextBlock = nextBlock.duplicate(forClone, forStage));
 		if (subStack1 != null) dup.addChild(dup.subStack1 = subStack1.duplicate(forClone, forStage));
 		if (subStack2 != null) dup.addChild(dup.subStack2 = subStack2.duplicate(forClone, forStage));
@@ -749,7 +758,7 @@ public class Block extends Sprite {
 	/* Dragging */
 
 	public function objToGrab(evt:MouseEvent):Block {
-		if (isEmbeddedParameter() || isInPalette()) return duplicate(false);
+		if (isEmbeddedParameter() || isInPalette()) return duplicate(false, Scratch.app.viewedObj() is ScratchStage);
 		return this;
 	}
 
