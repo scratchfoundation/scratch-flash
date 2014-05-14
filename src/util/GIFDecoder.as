@@ -209,7 +209,7 @@ public class GIFDecoder {
 						// assume background is transparent
 						var c:Number = transparency ? 0x00000000 : lastBgColor;
 						// use given background color
-						bitmap.fillRect(lastRect, c);
+						bitmap.fillRect(bitmap.rect, c);
 					}
 				}
 			}
