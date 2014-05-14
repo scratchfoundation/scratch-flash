@@ -81,6 +81,8 @@ public class Interpreter {
 	private var warpThread:Thread;			// thread that is in warp mode
 	private var warpBlock:Block;			// proc call block that entered warp mode
 
+	public var askThread:Thread;				// thread that opened the ask prompt
+
 	protected var debugFunc:Function;
 
 	public function Interpreter(app:Scratch) {
@@ -170,6 +172,7 @@ public class Interpreter {
 		var wasRunning:Boolean = false;
 		for (var i:int = 0; i < threads.length; i++) {
 			if ((threads[i].topBlock == b) && (threads[i].target == targetObj)) {
+				if (askThread == threads[i]) app.runtime.clearAskPrompts();
 				threads[i] = newThread;
 				wasRunning = true;
 			}

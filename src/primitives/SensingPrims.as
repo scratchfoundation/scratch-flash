@@ -306,12 +306,12 @@ public class SensingPrims {
 		var obj:ScratchObj = interp.targetObj();
 		if (obj) app.runtime.showVarOrListFor(interp.arg(b, 0), true, obj);
 	}
-	
+
 	private function primHideListWatcher(b:Block):* {
 		var obj:ScratchObj = interp.targetObj();
 		if (obj) app.runtime.hideVarOrListFor(interp.arg(b, 0), true, obj);
 	}
-	
+
 	private function primTimestamp(b:Block):* {
 		const millisecondsPerDay:int = 24 * 60 * 60 * 1000;
 		const epoch:Date = new Date(2000, 0, 1); // Jan 1, 2000 (Note: Months are zero-based.)
