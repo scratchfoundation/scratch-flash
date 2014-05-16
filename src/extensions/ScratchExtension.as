@@ -69,14 +69,9 @@ public class ScratchExtension {
 
 	public static function PicoBoard():ScratchExtension {
 		// Return a descriptor for the Scratch PicoBoard extension.
-		var result:ScratchExtension = new ScratchExtension('PicoBoard', 17302);
+		var result:ScratchExtension = new ScratchExtension('PicoBoard', 0);
 		result.isInternal = true;
-		result.useScratchPrimitives = true;
-		result.blockSpecs = [
-			['h', 'when %m.booleanSensor',		'whenSensorConnected',	'button pressed'],
-			['b', 'sensor %m.booleanSensor?',	'sensorPressed:',		'button pressed'],
-			['r', '%m.sensor sensor value',		'sensor:', 				'slider'],
-		];
+		result.javascriptURL = '/scratchr2/static/js/scratch_extensions/picoExtension.js';
 		result.thumbnailMD5 = '82318df0f682b1de33f64da8726660dc.png';
 		result.url = 'http://wiki.scratch.mit.edu/wiki/Sensor_Board_Blocks';
 		result.tags = ['hardware'];

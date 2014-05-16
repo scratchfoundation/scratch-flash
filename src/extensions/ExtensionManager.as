@@ -61,7 +61,7 @@ public class ExtensionManager {
 	public function clearImportedExtensions():void {
 		// Clear imported extensions before loading a new project.
 		extensionDict = {};
-		//extensionDict['PicoBoard'] = ScratchExtension.PicoBoard();
+		extensionDict['PicoBoard'] = ScratchExtension.PicoBoard();
 		extensionDict[wedoExt] = ScratchExtension.WeDo();
 	}
 
