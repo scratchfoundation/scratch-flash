@@ -187,6 +187,10 @@ public class Scratch extends Sprite {
 		return new ScratchStage();
 	}
 
+	public function getPaletteBuilder():PaletteBuilder {
+		return new PaletteBuilder(this);
+	}
+
 	private function uncaughtErrorHandler(event:UncaughtErrorEvent):void
 	{
 		if (event.error is Error)

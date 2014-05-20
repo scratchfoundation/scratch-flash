@@ -53,7 +53,7 @@ public class PaletteSelector extends Sprite {
 		}
 		var oldID:int = selectedCategory;
 		selectedCategory = id;
-		new PaletteBuilder(app).showBlocksForCategory(selectedCategory, (id != oldID), shiftKey);
+		app.getPaletteBuilder().showBlocksForCategory(selectedCategory, (id != oldID), shiftKey);
 	}
 
 	private function initCategories():void {
