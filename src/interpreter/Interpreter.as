@@ -282,11 +282,11 @@ public class Interpreter {
 			else b.opFunction = (primTable[op] == undefined) ? primNoop : primTable[op];
 		}
 
-//      TODO: Optimize this into a cached check if the args *could* block at all
-//		if(b.args.length && checkBlockingArgs(b)) {
-//			doYield();
-//			return null;
-//		}
+		// TODO: Optimize this into a cached check if the args *could* block at all
+		if(b.args.length && checkBlockingArgs(b)) {
+			doYield();
+			return null;
+		}
 
 		// Debug code
 		if(debugFunc != null)
