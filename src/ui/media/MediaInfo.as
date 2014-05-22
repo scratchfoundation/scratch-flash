@@ -256,19 +256,18 @@ public class MediaInfo extends Sprite {
 	//------------------------------
 
 	public function objToGrab(evt:MouseEvent):* {
-		var result:MediaInfo = new MediaInfo({
+		var result:MediaInfo = Scratch.app.createMediaInfo({
 			type: objType,
 			name: objName,
 			md5: md5
 		});
-		if (mycostume) result = new MediaInfo(mycostume, owner);
-		if (mysound) result = new MediaInfo(mysound, owner);
-		if (mysprite) result = new MediaInfo(mysprite);
-		if (scripts) result = new MediaInfo(scripts);
+		if (mycostume) result = Scratch.app.createMediaInfo(mycostume, owner);
+		if (mysound) result = Scratch.app.createMediaInfo(mysound, owner);
+		if (mysprite) result = Scratch.app.createMediaInfo(mysprite);
+		if (scripts) result = Scratch.app.createMediaInfo(scripts);
 
 		result.removeDeleteButton();
 		if (thumbnail.bitmapData) result.thumbnail.bitmapData = thumbnail.bitmapData;
-		//if (getBackpack()) result.fromBackpack = true;
 		result.hideTextFields();
 		return result;
 	}

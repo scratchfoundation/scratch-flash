@@ -208,7 +208,7 @@ public class SpriteThumbnail extends Sprite {
 
 	public function objToGrab(evt:MouseEvent):MediaInfo {
 		if (targetObj.isStage) return null;
-		var result:MediaInfo = new MediaInfo(targetObj);
+		var result:MediaInfo = app.createMediaInfo(targetObj);
 		result.removeDeleteButton();
 		result.computeThumbnail();
 		result.hideTextFields();
