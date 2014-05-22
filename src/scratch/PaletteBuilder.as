@@ -346,8 +346,11 @@ public class PaletteBuilder {
 			m.showOnStage(app.stage);
 		}
 		function showAbout():void {
-			// TODO: Currently opens a browser tab, but should navigate to a tip
-			if (ext.url) navigateToURL(new URLRequest(ext.url));
+			// Open in the tips window if the URL starts with /info/ and another tab otherwise
+			if (ext.url) {
+				if (ext.url.indexOf('/info/') === 0) app.showTip(ext.url);
+				else navigateToURL(new URLRequest(ext.url));
+			}
 		}
 		function hideExtension():void {
 			app.extensionManager.setEnabled(ext.name, false);
