@@ -229,7 +229,7 @@ public class BlockIO {
 			var type:String = (cmd[1].indexOf('other scripts') == 0) ? ' ' : 'f'; // block type depends on menu arg
 			b = new Block('stop %m.stop', type, controlColor, 'stopScripts');
 			if (forStage && b.op == 'stopScripts' && cmd[1] == 'other scripts in sprite') cmd[1] = 'other scripts in stage';
-			if (!forStage && b.op == 'stopScripts' && cmd[1] != 'other scripts in stage') cmd[1] = 'other scripts in sprite';
+			if (!forStage && b.op == 'stopScripts' && cmd[1] == 'other scripts in stage') cmd[1] = 'other scripts in sprite';
 			b.setArg(0, cmd[1]);
 			return b;
 		}
