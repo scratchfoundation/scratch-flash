@@ -465,8 +465,10 @@ public class Block extends Sprite {
 		} else {
 			dup.copyArgs(args);
 			if (op == 'stopScripts' && args[0] is BlockArg) {
-				if (forStage && args[0].argValue == 'other scripts in sprite') dup.args[0].setArgValue('other scripts in stage');
-				if (!forStage && args[0].argValue == 'other scripts in stage') dup.args[0].setArgValue('other scripts in sprite');
+				if(args[0].argValue.indexOf('other scripts') == 0) {
+					if (forStage) dup.args[0].setArgValue('other scripts in stage');
+					else dup.args[0].setArgValue('other scripts in sprite');
+				}
 			}
 		}
 		if (nextBlock != null) dup.addChild(dup.nextBlock = nextBlock.duplicate(forClone, forStage));
