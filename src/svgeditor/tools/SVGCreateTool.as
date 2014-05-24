@@ -17,120 +17,119 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package svgeditor.tools
-{
+package svgeditor.tools {
 	import flash.display.DisplayObject;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
-	
+
 	import svgeditor.ImageEdit;
 	import svgeditor.ImageCanvas;
 	import svgeditor.DrawProperties;
 	import svgeditor.objs.ISVGEditable;
 	import svgeditor.objs.SVGShape;
 
-	public class SVGCreateTool extends SVGTool
-	{
-		protected var newObject:ISVGEditable;
-		protected var contentLayer:Sprite;
-		protected var isQuick:Boolean;
-		private var lastPos:Point;
+public class SVGCreateTool extends SVGTool {
 
-		public function SVGCreateTool(svgEditor:ImageEdit, quick:Boolean = true) {
-			super(svgEditor);
-			contentLayer = editor.getContentLayer();
-			isQuick = quick;
-		}
+	protected var newObject:ISVGEditable;
+	protected var contentLayer:Sprite;
+	protected var isQuick:Boolean;
+	private var lastPos:Point;
 
-		// Pretend these are abstract ;)
-		// Mouse down
-		protected function mouseDown(p:Point):void {}
+	public function SVGCreateTool(svgEditor:ImageEdit, quick:Boolean = true) {
+		super(svgEditor);
+		contentLayer = editor.getContentLayer();
+		isQuick = quick;
+	}
 
-		// Mouse move
-		protected function mouseMove(p:Point):void {}
+	// Pretend these are abstract ;)
+	// Mouse down
+	protected function mouseDown(p:Point):void {}
 
-		// Mouse up
-		protected function mouseUp(p:Point):void {}
+	// Mouse move
+	protected function mouseMove(p:Point):void {}
 
-		public function getObject():ISVGEditable {
-			return newObject;
-		}
+	// Mouse up
+	protected function mouseUp(p:Point):void {}
 
-		override protected function init():void {
-			super.init();
-			addEventHandlers();
-		}
+	public function getObject():ISVGEditable {
+		return newObject;
+	}
 
-		override protected function shutdown():void {
-			//editor.toggleZoomUI(true);
-			removeEventHandlers();
-			super.shutdown();
+	override protected function init():void {
+		super.init();
+		addEventHandlers();
+	}
+
+	override protected function shutdown():void {
+		//editor.toggleZoomUI(true);
+		removeEventHandlers();
+		super.shutdown();
+		newObject = null;
+		contentLayer = null;
+	}
+
+	override public function cancel():void {
+		// Remove the object if it was added to the display list
+		if (newObject && newObject is DisplayObject) {
+			var dObj:DisplayObject = newObject as DisplayObject;
+			if (dObj.parent) {
+				dObj.parent.removeChild(dObj);
+			}
 			newObject = null;
-			contentLayer = null;
 		}
 
-		override public function cancel():void {
-			// Remove the object if it was added to the display list
-			if(newObject && newObject is DisplayObject) {
-				var dObj:DisplayObject = newObject as DisplayObject;
-				if(dObj.parent) {
-					dObj.parent.removeChild(dObj);
-				}
-				newObject = null;
-			}
-			
-			super.cancel();
-		}
+		super.cancel();
+	}
 
-		public function eventHandler(e:MouseEvent = null):void {
-			if(!contentLayer) return;
-			var p:Point = new Point(contentLayer.mouseX, contentLayer.mouseY);
-			p.x = Math.min(ImageCanvas.canvasWidth, Math.max(0, p.x));
-			p.y = Math.min(ImageCanvas.canvasHeight, Math.max(0, p.y));
-			currentEvent = e;
-			
-			if(e.type == MouseEvent.MOUSE_DOWN) {
-				//editor.toggleZoomUI(false);
-				mouseDown(p);
-				if(isQuick && !isShuttingDown) {
-					// Add the mouse event handlers
-					editor.stage.addEventListener(MouseEvent.MOUSE_MOVE, eventHandler, false, 0, true);
-					editor.stage.addEventListener(MouseEvent.MOUSE_UP, eventHandler, false, 0, true);
-				}
-				lastPos = p;
-			} else if(e.type == MouseEvent.MOUSE_MOVE) {
-				mouseMove(p);
-				lastPos = p;
-			} else if(e.type == MouseEvent.MOUSE_UP) {
-				//editor.toggleZoomUI(true);
-				if(!stage) return;
+	public function eventHandler(e:MouseEvent = null):void {
+		if (!contentLayer) return;
+		var p:Point = new Point(contentLayer.mouseX, contentLayer.mouseY);
+		p.x = Math.min(ImageCanvas.canvasWidth, Math.max(0, p.x));
+		p.y = Math.min(ImageCanvas.canvasHeight, Math.max(0, p.y));
+		currentEvent = e;
 
-				// If the mouse came up outside of the canvas, use the last mouse position within the canvas
-				if(!editor.getCanvasLayer().hitTestPoint(stage.mouseX, stage.mouseY, true))
-					p = lastPos;
-
-				mouseUp(p);
-				if(isQuick) editor.endCurrentTool(newObject);
-			}
-		}
-
-		private function addEventHandlers():void  {
-			editor.getCanvasLayer().addEventListener(MouseEvent.MOUSE_DOWN, eventHandler, false, 0, true);
-			if(!isQuick) {
+		if (e.type == MouseEvent.MOUSE_DOWN) {
+			//editor.toggleZoomUI(false);
+			mouseDown(p);
+			if (isQuick && !isShuttingDown) {
+				// Add the mouse event handlers
 				editor.stage.addEventListener(MouseEvent.MOUSE_MOVE, eventHandler, false, 0, true);
 				editor.stage.addEventListener(MouseEvent.MOUSE_UP, eventHandler, false, 0, true);
 			}
-		}
+			lastPos = p;
+		} else if (e.type == MouseEvent.MOUSE_MOVE) {
+			mouseMove(p);
+			lastPos = p;
+		} else if (e.type == MouseEvent.MOUSE_UP) {
+			//editor.toggleZoomUI(true);
+			if (!stage) return;
 
-		private function removeEventHandlers():void {
-			editor.getCanvasLayer().removeEventListener(MouseEvent.MOUSE_DOWN, eventHandler);
-			if(editor.stage) {
-				editor.stage.removeEventListener(MouseEvent.MOUSE_MOVE, eventHandler);
-				editor.stage.removeEventListener(MouseEvent.MOUSE_UP, eventHandler);
-			}
+			// If the mouse came up outside of the canvas, use the last mouse position within the canvas
+			if (!editor.getCanvasLayer().hitTestPoint(stage.mouseX, stage.mouseY, true))
+				p = lastPos;
+
+			mouseUp(p);
+			if (isQuick) editor.endCurrentTool(newObject);
 		}
 	}
-}
+
+	private function addEventHandlers():void {
+		editor.getCanvasLayer().addEventListener(MouseEvent.MOUSE_DOWN, eventHandler, false, 0, true);
+		if (!isQuick) {
+			editor.stage.addEventListener(MouseEvent.MOUSE_MOVE, eventHandler, false, 0, true);
+			editor.stage.addEventListener(MouseEvent.MOUSE_UP, eventHandler, false, 0, true);
+		}
+	}
+
+	private function removeEventHandlers():void {
+		editor.getCanvasLayer().removeEventListener(MouseEvent.MOUSE_DOWN, eventHandler);
+		if (editor.stage) {
+			editor.stage.removeEventListener(MouseEvent.MOUSE_MOVE, eventHandler);
+			editor.stage.removeEventListener(MouseEvent.MOUSE_UP, eventHandler);
+		}
+	}
+
+}}

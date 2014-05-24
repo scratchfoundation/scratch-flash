@@ -116,7 +116,7 @@ public class TopBarPart extends UIPart {
 		helpTool.x = shrinkTool.right() + space;
 		copyTool.y = cutTool.y = shrinkTool.y = growTool.y = helpTool.y = buttonY - 3;
 
-		if(offlineNotice) {
+		if (offlineNotice) {
 			offlineNotice.x = w - offlineNotice.width - 5;
 			offlineNotice.y = 5;
 		}

@@ -107,7 +107,7 @@ public class BlockIO {
 		} else {
 			var spec:Array = specForCmd(cmd, undefinedBlockType);
 			var label:String = spec[0];
-			if(forStage && spec[3] == 'whenClicked') label = 'when Stage clicked';
+			if (forStage && spec[3] == 'whenClicked') label = 'when Stage clicked';
 			b = new Block(label, spec[1], Specs.blockColor(spec[2]), spec[3]);
 		}
 

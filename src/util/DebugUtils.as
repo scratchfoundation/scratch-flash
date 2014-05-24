@@ -19,9 +19,9 @@
 
 package util {
 
-import flash.utils.getQualifiedClassName;
-import flash.display.DisplayObjectContainer;
-import flash.display.DisplayObject;
+	import flash.utils.getQualifiedClassName;
+	import flash.display.DisplayObjectContainer;
+	import flash.display.DisplayObject;
 
 public class DebugUtils {
 

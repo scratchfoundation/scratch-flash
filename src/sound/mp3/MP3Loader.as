@@ -20,8 +20,8 @@
 package sound.mp3 {
 	import flash.display.*;
 	import flash.events.Event;
-import flash.events.IOErrorEvent;
-import flash.media.Sound;
+	import flash.events.IOErrorEvent;
+	import flash.media.Sound;
 	import flash.system.*;
 	import flash.utils.*;
 	import scratch.ScratchSound;

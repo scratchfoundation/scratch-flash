@@ -23,10 +23,10 @@
 // Interface for 3D rendering layer
 
 package {
-import flash.display.BitmapData;
-import flash.display.DisplayObject;
-import flash.display.Sprite;
-import flash.events.Event;
+	import flash.display.BitmapData;
+	import flash.display.DisplayObject;
+	import flash.display.Sprite;
+	import flash.events.Event;
 
 public interface IRenderIn3D {
 	function setStage(stage:Sprite, penLayer:DisplayObject):void;
@@ -40,5 +40,4 @@ public interface IRenderIn3D {
 	function getRender(bmd:BitmapData):void;
 	function setStatusCallback(callback:Function):void;
 	function spriteIsLarge(dispObj:DisplayObject):Boolean;
-}
-}
+}}

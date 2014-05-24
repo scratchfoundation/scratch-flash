@@ -89,15 +89,15 @@ public class WAVFile {
 			result.adpcmBlockSize = ((samplesPerBlock - 1) / 2) + 4; // block size in bytes
 			var factChunk:ByteArray = extractChunk('fact', waveData);
 			if ((factChunk != null) && (factChunk.length == 4)) {
-				result.sampleCount = factChunk.readInt();				
+				result.sampleCount = factChunk.readInt();
 			} else {
 				// this should never happen, since there should always be a 'fact' chunk
-				result.sampleCount = 2 * result.sampleDataSize;	 // slight over-estimate (doesn't take ADPCM headers into account)
+				result.sampleCount = 2 * result.sampleDataSize;	// slight over-estimate (doesn't take ADPCM headers into account)
 			}
 		} else if (encoding == 85) {
 			factChunk = extractChunk('fact', waveData);
 			if ((factChunk != null) && (factChunk.length == 4)) {
-				result.sampleCount = factChunk.readInt();				
+				result.sampleCount = factChunk.readInt();
 			}
 		} else {
 			throw Error("WAVFile: unknown encoding " + encoding);
@@ -234,7 +234,7 @@ public class WAVFile {
 
 	private static function imaCompress(sampleData:ByteArray, blockSize:int):ByteArray {
 		// Compress sample data using the IMA ADPCM algorithm.
-		// Note: Handles only one channel, 4-bits/sample. 
+		// Note: Handles only one channel, 4-bits/sample.
 		var sample:int, predicted:int, index:int = 0;
 		var step:int, code:int, diff:int, delta:int;
 		var savedNibble:int = -1; // -1 indicates that there is no saved nibble
@@ -291,7 +291,7 @@ public class WAVFile {
 
 	private static function imaDecompress(compressedData:ByteArray, blockSize:int):ByteArray {
 		// Decompress sample data using the IMA ADPCM algorithm.
-		// Note: Handles only one channel, 4-bits/sample. 
+		// Note: Handles only one channel, 4-bits/sample.
 		var sample:int, index:int = 0;
 		var step:int, code:int, delta:int;
 		var lastByte:int = -1; // -1 indicates that there is no saved lastByte

@@ -23,8 +23,8 @@
 package scratch {
 	import flash.display.*;
 	import flash.events.*;
-import flash.external.ExternalInterface;
-import flash.geom.Rectangle;
+	import flash.external.ExternalInterface;
+	import flash.geom.Rectangle;
 	import flash.media.*;
 	import flash.net.*;
 	import flash.system.System;
@@ -89,7 +89,7 @@ public class ScratchRuntime {
 		processEdgeTriggeredHats();
 		interp.stepThreads();
 		app.stagePane.commitPenStrokes();
-	 }
+	}
 
 //-------- recording test ---------
 	public var recording:Boolean;
@@ -192,7 +192,7 @@ public class ScratchRuntime {
 		if (31 == ch) keyName = 'down arrow';
 		if (32 == ch) keyName = 'space';
 		if (keyName == null) return;
-		var startMatchingKeyHats:Function = function (stack:Block, target:ScratchObj):void {
+		var startMatchingKeyHats:Function = function(stack:Block, target:ScratchObj):void {
 			if ((stack.op == 'whenKeyPressed') && (stack.args[0].argValue == keyName)) {
 				// only start the stack if it is not already running
 				if (!interp.isRunning(stack, target)) interp.toggleThread(stack, target);
@@ -203,8 +203,8 @@ public class ScratchRuntime {
 
 	public function collectBroadcasts():Array {
 		var result:Array = [];
-		allStacksAndOwnersDo(function (stack:Block, target:ScratchObj):void {
-			stack.allBlocksDo(function (b:Block):void {
+		allStacksAndOwnersDo(function(stack:Block, target:ScratchObj):void {
+			stack.allBlocksDo(function(b:Block):void {
 				if ((b.op == 'broadcast:') ||
 					(b.op == 'doBroadcastAndWait') ||
 					(b.op == 'whenIReceive')) {
@@ -221,11 +221,11 @@ public class ScratchRuntime {
 
 	public function hasUnofficialExtensions():Boolean {
 		var found:Boolean = false;
-		allStacksAndOwnersDo(function (stack:Block, target:ScratchObj):void {
-			if(found) return;
-			stack.allBlocksDo(function (b:Block):void {
-				if(found) return;
-				if(isUnofficialExtensionBlock(b))
+		allStacksAndOwnersDo(function(stack:Block, target:ScratchObj):void {
+			if (found) return;
+			stack.allBlocksDo(function(b:Block):void {
+				if (found) return;
+				if (isUnofficialExtensionBlock(b))
 					found = true;
 			});
 		});
@@ -234,18 +234,18 @@ public class ScratchRuntime {
 
 	private function isUnofficialExtensionBlock(b:Block):Boolean {
 		var i:int = b.op.indexOf('.');
-		if(i == -1) return false;
+		if (i == -1) return false;
 		var extName:String = b.op.substr(0, i);
 		return !app.extensionManager.isInternal(extName);
 	}
 
 	public function hasGraphicEffects():Boolean {
 		var found:Boolean = false;
-		allStacksAndOwnersDo(function (stack:Block, target:ScratchObj):void {
-			if(found) return;
-			stack.allBlocksDo(function (b:Block):void {
-				if(found) return;
-				if(isGraphicEffectBlock(b))
+		allStacksAndOwnersDo(function(stack:Block, target:ScratchObj):void {
+			if (found) return;
+			stack.allBlocksDo(function(b:Block):void {
+				if (found) return;
+				if (isGraphicEffectBlock(b))
 					found = true;
 			});
 		});
@@ -322,7 +322,7 @@ public class ScratchRuntime {
 			}
 
 			// Should we go 3D?
-			if(isGraphicEffectBlock(b))
+			if (isGraphicEffectBlock(b))
 				app.go3D();
 		});
 	}
@@ -425,11 +425,11 @@ public class ScratchRuntime {
 		if (app.stagePane != null) stopAll();
 		if (app.scriptsPane) app.scriptsPane.viewScriptsFor(null);
 
-		if(app.isIn3D) app.render3D.setStage(project, project.penLayer);
+		if (app.isIn3D) app.render3D.setStage(project, project.penLayer);
 
 		for each (var obj:ScratchObj in project.allObjects()) {
 			obj.showCostume(obj.currentCostumeIndex);
-			if(Scratch.app.isIn3D) obj.updateCostume();
+			if (Scratch.app.isIn3D) obj.updateCostume();
 			var spr:ScratchSprite = obj as ScratchSprite;
 			if (spr) spr.setDirection(spr.direction);
 		}
@@ -452,7 +452,7 @@ public class ScratchRuntime {
 	}
 
 	public function checkForGraphicEffects():void {
-		if(hasGraphicEffects()) app.go3D();
+		if (hasGraphicEffects()) app.go3D();
 		else app.go2D();
 	}
 
@@ -649,7 +649,7 @@ public class ScratchRuntime {
 	public function soundLevel():int {
 		if (microphone == null) {
 			microphone = Microphone.getMicrophone();
-			if(microphone) {
+			if (microphone) {
 				microphone.setLoopBack(true);
 				microphone.soundTransform = new SoundTransform(0, 0);
 			}
@@ -662,7 +662,7 @@ public class ScratchRuntime {
 	//------------------------------
 
 	public function clearRunFeedback():void {
-		if(app.editMode) {
+		if (app.editMode) {
 			for each (var stack:Block in allStacks()) {
 				stack.allBlocksDo(function(b:Block):void {
 					b.hideRunFeedback();
@@ -693,7 +693,7 @@ public class ScratchRuntime {
 	private function sendsBroadcast(obj:ScratchObj, msg:String):Boolean {
 		for each (var stack:Block in obj.scripts) {
 			var found:Boolean;
-			stack.allBlocksDo(function (b:Block):void {
+			stack.allBlocksDo(function(b:Block):void {
 				if ((b.op == 'broadcast:') || (b.op == 'doBroadcastAndWait')) {
 					if (b.args[0].argValue == msg) found = true;
 				}
@@ -707,7 +707,7 @@ public class ScratchRuntime {
 		msg = msg.toLowerCase();
 		for each (var stack:Block in obj.scripts) {
 			var found:Boolean;
-			stack.allBlocksDo(function (b:Block):void {
+			stack.allBlocksDo(function(b:Block):void {
 				if (b.op == 'whenIReceive') {
 					if (b.args[0].argValue.toLowerCase() == msg) found = true;
 				}
@@ -723,7 +723,7 @@ public class ScratchRuntime {
 		var stacks:Array = owner.isStage ? allStacks() : owner.scripts;
 		for each (var stack:Block in stacks) {
 			// for each block in stack
-			stack.allBlocksDo(function (b:Block):void {
+			stack.allBlocksDo(function(b:Block):void {
 				if (b.op == Specs.GET_VAR && b.spec == varName) result.push(b);
 				if (variableBlocks.indexOf(b.op) != -1 && b.args[0].argValue == varName) result.push(b);
 			});
@@ -735,7 +735,7 @@ public class ScratchRuntime {
 		var result:Array = [];
 		for each (var stack:Block in owner.scripts) {
 			// for each block in stack
-			stack.allBlocksDo(function (b:Block):void {
+			stack.allBlocksDo(function(b:Block):void {
 				if (b.op == Specs.CALL && b.spec == callee) result.push(b);
 			});
 		}
@@ -743,13 +743,14 @@ public class ScratchRuntime {
 	}
 
 	public function updateCalls():void {
-		allStacksAndOwnersDo(function (b:Block, target:ScratchObj):void {
+		allStacksAndOwnersDo(function(b:Block, target:ScratchObj):void {
 			if (b.op == Specs.CALL) {
 				if (target.lookupProcedure(b.spec) == null) {
 					b.base.setColor(0xFF0000);
 					b.base.redraw();
+				} else {
+					b.base.setColor(Specs.procedureColor);
 				}
-				else b.base.setColor(Specs.procedureColor);
 			}
 		});
 		clearAllCaches();
@@ -759,7 +760,7 @@ public class ScratchRuntime {
 		// return an array containing all stacks in all objects
 		var result:Array = [];
 		allStacksAndOwnersDo(
-			function (stack:Block, target:ScratchObj):void { result.push(stack) });
+			function(stack:Block, target:ScratchObj):void { result.push(stack) });
 		return result;
 	}
 
@@ -868,16 +869,17 @@ public class ScratchRuntime {
 			var varName:String = data.varName;
 			var uiLayer:Sprite = app.stagePane.getUILayer();
 			var i:int;
-			if(data.isList)
+			if (data.isList) {
 				for (i = 0; i < uiLayer.numChildren; i++) {
 					var listW:ListWatcher = uiLayer.getChildAt(i) as ListWatcher;
 					if (listW && (listW.listName == varName) && listW.visible) return true;
 				}
-			else
+			} else {
 				for (i = 0; i < uiLayer.numChildren; i++) {
 					var varW:Watcher = uiLayer.getChildAt(i) as Watcher;
 					if (varW && varW.isVarWatcherFor(targetObj, varName) && varW.visible) return true;
 				}
+			}
 		}
 		if ('reporter' == data.type) {
 			var w:Watcher = findReporterWatcher(data);

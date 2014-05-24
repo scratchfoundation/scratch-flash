@@ -86,7 +86,7 @@ public class PaletteBuilder {
 				var blockColor:int = (app.interp.isImplemented(spec[3])) ? catColor : 0x505050;
 				var defaultArgs:Array = targetObj.defaultArgsFor(spec[3], spec.slice(4));
 				var label:String = spec[0];
-				if(targetObj.isStage && spec[3] == 'whenClicked') label = 'when Stage clicked';
+				if (targetObj.isStage && spec[3] == 'whenClicked') label = 'when Stage clicked';
 				var block:Block = new Block(label, spec[1], blockColor, spec[3], defaultArgs);
 				var showCheckbox:Boolean = isCheckboxReporter(spec[3]);
 				if (showCheckbox) addReporterCheckbox(block);

@@ -25,7 +25,7 @@
 // A simplified path contains only M, L, C, and Q commands with absolute coordinates.
 //
 // Using a standard path format simplifies the rendering and editing code.
-	
+
 package svgutils {
 	import flash.geom.Point;
 
@@ -65,7 +65,7 @@ public class SVGImportPath {
 			quarterCircle(false, cx + rx, cy, cx, cy + ry),
 			quarterCircle(true, cx, cy + ry, cx - rx, cy),
 			quarterCircle(false, cx - rx, cy, cx, cy - ry),['Z']);
-	
+
 		path.splitCurve(1, 0.5);
 		path.splitCurve(3, 0.5);
 		path.splitCurve(5, 0.5);
@@ -83,7 +83,7 @@ public class SVGImportPath {
 			['C', srcX + (k * dx), srcY, dstX, dstY - (k * dy), dstX, dstY] :
 			['C', srcX, srcY + (k * dy), dstX - (k * dx), dstY, dstX, dstY];
 	}
-	
+
 	private function cmdsForLine(el:SVGElement):SVGPath {
 		return new SVGPath(
 			['M', el.getAttribute('x1', 0), el.getAttribute('y1', 0)],
@@ -144,7 +144,7 @@ public class SVGImportPath {
 		lastX = lastY = 0;
 		lastCX = lastCY = 0;
 		var svgPath:String = el.getAttribute('d');
-		for each(var cmdString:String in svgPath.match(/[A-DF-Za-df-z][^A-Za-df-z]*/g)) {
+		for each (var cmdString:String in svgPath.match(/[A-DF-Za-df-z][^A-Za-df-z]*/g)) {
 			var cmd:String = cmdString.charAt(0);
 			var args:Array = el.extractNumericArgs(cmdString.substr(1));
 			var argCount:int = pathCmdArgCount[cmd];
@@ -312,7 +312,7 @@ public class SVGImportPath {
 		var c1y:Number = p0y + (lastCY - p0y) * 2/3;
 		var c2x:Number = lastX + (lastCX - lastX) * 2/3;
 		var c2y:Number = lastY + (lastCY - lastY) * 2/3;
-		
+
 		return ['C', c1x, c1y, c2x, c2y, lastX, lastY];
 	}
 
@@ -329,7 +329,7 @@ public class SVGImportPath {
 		var c1y:Number = p0y + (lastCY - p0y) * 2/3;
 		var c2x:Number = lastX + (lastCX - lastX) * 2/3;
 		var c2y:Number = lastY + (lastCY - lastY) * 2/3;
-		
+
 		return ['C', c1x, c1y, c2x, c2y, lastX, lastY];
 	}
 

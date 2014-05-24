@@ -37,7 +37,7 @@
 //	'%b' - boolean argument slot
 
 package extensions {
-import flash.utils.Dictionary;
+	import flash.utils.Dictionary;
 
 public class ScratchExtension {
 
@@ -75,7 +75,7 @@ public class ScratchExtension {
 		result.blockSpecs = [
 			['h', 'when %m.booleanSensor',		'whenSensorConnected',	'button pressed'],
 			['b', 'sensor %m.booleanSensor?',	'sensorPressed:',		'button pressed'],
-			['r', '%m.sensor sensor value',		'sensor:', 				'slider'],
+			['r', '%m.sensor sensor value',		'sensor:',				'slider'],
 		];
 		result.thumbnailMD5 = '82318df0f682b1de33f64da8726660dc.png';
 		result.url = 'http://wiki.scratch.mit.edu/wiki/Sensor_Board_Blocks';

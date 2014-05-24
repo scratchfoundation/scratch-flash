@@ -69,7 +69,7 @@ public class Transition {
 		var now:uint = getTimer();
 		var newActive:Array = [];
 		for each (var t:Transition in activeTransitions) {
-			 if (t.apply(now)) newActive.push(t);
+			if (t.apply(now)) newActive.push(t);
 		}
 		activeTransitions = newActive;
 	}

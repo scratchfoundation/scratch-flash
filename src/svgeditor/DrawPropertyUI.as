@@ -173,8 +173,8 @@ public class DrawPropertyUI extends Sprite {
 		strokeWidthSlider.visible = !enabled;
 		if (enabled) {
 			updateFillUI();
-			for(var i:uint=0; i<fillUI.numChildren; ++i)
-				if(fillUI.getChildAt(i) is IconButton) {
+			for (var i:uint=0; i<fillUI.numChildren; ++i)
+				if (fillUI.getChildAt(i) is IconButton) {
 					var ib:IconButton = (fillUI.getChildAt(i) as IconButton);
 					ib.setOn(ib.name == settings.fillType);
 				}
@@ -210,7 +210,7 @@ public class DrawPropertyUI extends Sprite {
 	}
 
 	public function sendChangeEvent():void {
-		if(!disableEvents) dispatchEvent(new Event(ONCHANGE));
+		if (!disableEvents) dispatchEvent(new Event(ONCHANGE));
 		if (fillUI.visible) updateFillUI();
 		if (shapeUI.visible) updateShapeUI();
 	}
@@ -394,7 +394,7 @@ public class DrawPropertyUI extends Sprite {
 		currentValues.filledShape = (ib.name == 'filled');
 
 		// If they want to draw a hollow shape and the stroke width was zero, set it to 2.
-		if(!currentValues.filledShape && currentValues.strokeWidth == 0) {
+		if (!currentValues.filledShape && currentValues.strokeWidth == 0) {
 			currentValues.strokeWidth = 2;
 		}
 	}
@@ -433,7 +433,7 @@ public class DrawPropertyUI extends Sprite {
 			updateStrokeWidthDisplay();
 			sendChangeEvent();
 		}
-		
+
 		var ttBg:Sprite = new Sprite();
 		addChild(ttBg);
 

@@ -59,7 +59,7 @@ public class SqueakSoundPlayer extends ScratchSoundPlayer {
 		startOffset = 0;
 		endOffset = soundData.length;
 		getSample = getSqueakSample;
-		switch(bitsPerSample) {
+		switch (bitsPerSample) {
 		case 2:
 			indexTable = [-1, 2];
 			break;
@@ -113,7 +113,7 @@ public class SqueakSoundPlayer extends ScratchSoundPlayer {
 				} else {
 					currentByte = 0;
 					bitPosition = 0;
-					break;  // no more input					
+					break;  // no more input
 				}
 			} else {  // still some bits left in currentByte
 				bitPosition -= remaining;

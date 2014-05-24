@@ -319,7 +319,7 @@ public class ColorPicker extends Sprite {
 		var i:uint, sel:Sprite;
 		var stride:uint = paletteSwatchW + 2;
 		for (i = 0; i < grays.length; ++i) {
-			sel = makeColorSelector( Color.fromHSV(0, 0, grays[i]) );
+			sel = makeColorSelector(Color.fromHSV(0, 0, grays[i]));
 			sel.x = i * stride + leftSide;
 			sel.y = 0;
 			palette.addChild(sel);
@@ -339,7 +339,7 @@ public class ColorPicker extends Sprite {
 
 		for each (s in [0.2, 0.4, 1]) {
 			for each (h in hues) {
-				sel = makeColorSelector( Color.fromHSV(h, s, 1.0) );
+				sel = makeColorSelector(Color.fromHSV(h, s, 1.0));
 				sel.x = (i % hues.length) * stride + leftSide;
 				sel.y = y;
 				palette.addChild(sel);
@@ -350,7 +350,7 @@ public class ColorPicker extends Sprite {
 
 		for each (v in [0.8, 0.6, 0.4]) {
 			for each (h in hues) {
-				sel = makeColorSelector( Color.fromHSV(h, 1.0, v) );
+				sel = makeColorSelector(Color.fromHSV(h, 1.0, v));
 				sel.x = (i % hues.length) * stride + leftSide;
 				sel.y = y;
 				palette.addChild(sel);

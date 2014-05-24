@@ -25,23 +25,23 @@
 
 package scratch {
 	import blocks.*;
-	
+
 	import filters.FilterPack;
-	
+
 	import flash.display.*;
 	import flash.events.MouseEvent;
-import flash.geom.ColorTransform;
-import flash.utils.*;
-	
-	import interpreter.*;
-	
-	import scratch.ScratchComment;
-import scratch.ScratchSprite;
+	import flash.geom.ColorTransform;
+	import flash.utils.*;
 
-import translation.Translator;
-	
+	import interpreter.*;
+
+	import scratch.ScratchComment;
+	import scratch.ScratchSprite;
+
+	import translation.Translator;
+
 	import util.*;
-	
+
 	import watchers.*;
 
 public class ScratchObj extends Sprite {
@@ -180,7 +180,7 @@ public class ScratchObj extends Sprite {
 		var currChild:DisplayObject = (img.numChildren == 1 ? img.getChildAt(0) : null);
 		var currDispObj:DisplayObject = currentCostume().displayObj();
 		var change:Boolean = (currChild != currDispObj);
-		if(change) {
+		if (change) {
 			while (img.numChildren > 0) img.removeChildAt(0);
 			img.addChild(currDispObj);
 		}
@@ -190,36 +190,36 @@ public class ScratchObj extends Sprite {
 	}
 
 	protected function updateRenderDetails(reason:uint):void {
-		if(((parent && parent is ScratchStage) || this is ScratchStage)) {
+		if (((parent && parent is ScratchStage) || this is ScratchStage)) {
 			var renderOpts:Object = {};
 			var costume:ScratchCostume = currentCostume();
 
 			// 0 - costume change, 1 - rotation style change
-			if(reason == 0) {
-				if(costume && costume.baseLayerID == ScratchCostume.WasEdited)
+			if (reason == 0) {
+				if (costume && costume.baseLayerID == ScratchCostume.WasEdited)
 					costume.prepareToSave();
 
 				var id:String = (costume ? costume.baseLayerMD5 : null);
-				if(!id) id = objName + (costume ? costume.costumeName : '_' + currentCostumeIndex);
-				else if(costume && costume.textLayerMD5) id += costume.textLayerMD5;
+				if (!id) id = objName + (costume ? costume.costumeName : '_' + currentCostumeIndex);
+				else if (costume && costume.textLayerMD5) id += costume.textLayerMD5;
 
 				renderOpts.bitmap = (costume && costume.bitmap ? costume.bitmap : null);
 			}
 
 			// TODO: Clip original bitmap to match visible bounds?
-			if(reason == 1)
+			if (reason == 1)
 				renderOpts.costumeFlipped = (this is ScratchSprite ? (this as ScratchSprite).isCostumeFlipped() : false);
 
-			if(reason == 0) {
-				if(this is ScratchSprite) {
+			if (reason == 0) {
+				if (this is ScratchSprite) {
 					renderOpts.bounds = (this as ScratchSprite).getVisibleBounds(this);
 					renderOpts.raw_bounds = getBounds(this);
-				}
-				else
+				} else {
 					renderOpts.bounds = getBounds(this);
+				}
 			}
 
-			if(parent is ScratchStage)
+			if (parent is ScratchStage)
 				(parent as ScratchStage).updateRender(this, id, renderOpts);
 			else
 				(this as ScratchStage).updateRender(img, id, renderOpts);
@@ -259,25 +259,24 @@ public class ScratchObj extends Sprite {
 	public function applyFilters(forDragging:Boolean = false):void {
 		img.filters = filterPack.buildFilters(forDragging);
 		clearCachedBitmap();
-		if(!Scratch.app.isIn3D || forDragging) {
+		if (!Scratch.app.isIn3D || forDragging) {
 			var n:Number = Math.max(0, Math.min(filterPack.getFilterSetting('ghost'), 100));
 			cTrans.alphaMultiplier = 1.0 - (n / 100.0);
 			n = 255 * Math.max(-100, Math.min(filterPack.getFilterSetting('brightness'), 100)) / 100;
 			cTrans.redOffset = cTrans.greenOffset = cTrans.blueOffset = n;
 			img.transform.colorTransform = cTrans;
-		}
-		else {
+		} else {
 			updateEffects();
 		}
 	}
 
 	protected function updateEffects():void {
-		if((parent && parent is ScratchStage) || this is ScratchStage) {
-			if(parent is ScratchStage)
+		if ((parent && parent is ScratchStage) || this is ScratchStage) {
+			if (parent is ScratchStage)
 				(parent as ScratchStage).updateSpriteEffects(this, filterPack.getAllSettings());
 			else {
 				(this as ScratchStage).updateSpriteEffects(img, filterPack.getAllSettings());
-//				if((this as ScratchStage).videoImage)
+//				if ((this as ScratchStage).videoImage)
 //					(this as ScratchStage).updateSpriteEffects((this as ScratchStage).videoImage, filterPack.getAllSettings());
 			}
 		}
@@ -295,7 +294,7 @@ public class ScratchObj extends Sprite {
 		img.transform.colorTransform = clearColorTrans;
 		clearCachedBitmap();
 
-		if(parent && parent is ScratchStage) {
+		if (parent && parent is ScratchStage) {
 			(parent as ScratchStage).updateSpriteEffects(this, null);
 		}
 	}
@@ -479,8 +478,9 @@ public class ScratchObj extends Sprite {
 					v.watcher.parent.removeChild(v.watcher);
 				}
 				v.watcher = v.value = null;
+			} else {
+				newVars.push(v);
 			}
-			else newVars.push(v);
 		}
 		variables = newVars;
 	}

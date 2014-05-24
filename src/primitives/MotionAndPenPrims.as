@@ -24,13 +24,13 @@
 
 package primitives {
 	import blocks.*;
-	
+
 	import flash.display.*;
 	import flash.geom.*;
 	import flash.utils.Dictionary;
-	
+
 	import interpreter.*;
-	
+
 	import scratch.*;
 
 public class MotionAndPenPrims {

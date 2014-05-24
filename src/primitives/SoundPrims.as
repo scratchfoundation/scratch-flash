@@ -181,7 +181,7 @@ public class SoundPrims {
 		// Acoustic Grand, Bright Acoustic, Electric Grand, Honky-Tonk
 		1, 1, 1, 1,
 		// Electric Piano 1, Electric Piano 2, Harpsichord, Clavinet
-		2, 2, 4, 4,	
+		2, 2, 4, 4,
 		// Celesta, Glockenspiel, Music Box, Vibraphone
 		17, 17, 17, 16,
 		// Marimba, Xylophone, Tubular Bells, Dulcimer
@@ -197,7 +197,7 @@ public class SoundPrims {
 		// Acoustic Bass, Electric Bass (finger), Electric Bass (pick), Fretless Bass
 		6, 6, 6, 6,
 		// Slap Bass 1, Slap Bass 2, Synth Bass 1, Synth Bass 2
-		6, 6, 6, 6, 
+		6, 6, 6, 6,
 		// Violin, Viola, Cello, Contrabass
 		8, 8, 8, 8,
 		// Tremolo Strings, Pizzicato Strings, Orchestral Strings, Timpani
@@ -209,7 +209,7 @@ public class SoundPrims {
 		// Trumpet, Trombone, Tuba, Muted Trumpet
 		9, 9, 9, 9,
 		// French Horn, Brass Section, SynthBrass 1, SynthBrass 2
-		9, 9, 9, 9, 
+		9, 9, 9, 9,
 		// Soprano Sax, Alto Sax, Tenor Sax, Baritone Sax
 		11, 11, 11, 11,
 		// Oboe, English Horn, Bassoon, Clarinet
@@ -221,7 +221,7 @@ public class SoundPrims {
 		// Lead 1 (square), Lead 2 (sawtooth), Lead 3 (calliope), Lead 4 (chiff)
 		20, 20, 20, 20,
 		// Lead 5 (charang), Lead 6 (voice), Lead 7 (fifths), Lead 8 (bass+lead)
-		20, 20, 20, 20, 
+		20, 20, 20, 20,
 		// Pad 1 (new age), Pad 2 (warm), Pad 3 (polysynth), Pad 4 (choir)
 		21, 21, 21, 21,
 		// Pad 5 (bowed), Pad 6 (metallic), Pad 7 (halo), Pad 8 (sweep)
@@ -242,6 +242,6 @@ public class SoundPrims {
 		21, 21, 21, 21,
 		// Telephone Ring, Helicopter, Applause, Gunshot
 		21, 21, 21, 21
-	];		
+	];
 
 }}

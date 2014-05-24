@@ -31,9 +31,9 @@
 // sequence from a specification string (e.g. "%n + %n") and type (e.g. reporter).
 
 package blocks {
-import extensions.ExtensionManager;
+	import extensions.ExtensionManager;
 
-import flash.display.*;
+	import flash.display.*;
 	import flash.events.*;
 	import flash.filters.GlowFilter;
 	import flash.geom.*;
@@ -545,7 +545,7 @@ public class Block extends Sprite {
 			fixExpressionLayout();
 
 			// Cancel any outstanding requests (for blocking reporters, isRequester=true)
-			if(b.requestLoader)
+			if (b.requestLoader)
 				b.requestLoader.close();
 		}
 		topBlock().fixStackLayout();
@@ -711,14 +711,13 @@ public class Block extends Sprite {
 
 	public function showHelp():void {
 		var i:int = -1;
-		if((i = op.indexOf('.')) > -1) {
+		if ((i = op.indexOf('.')) > -1) {
 			var extName:String = op.substr(0, i);
-			if(Scratch.app.extensionManager.isInternal(extName))
+			if (Scratch.app.extensionManager.isInternal(extName))
 				Scratch.app.showTip('ext:'+extName);
 			else
 				DialogBox.notify('Help Missing', 'There is no documentation available for experimental extension "'+extName+'".', Scratch.app.stage);
-		}
-		else {
+		} else {
 			Scratch.app.showTip(op);
 		}
 	}

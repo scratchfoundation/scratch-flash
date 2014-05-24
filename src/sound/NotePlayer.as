@@ -54,8 +54,8 @@ public class NotePlayer extends ScratchSoundPlayer {
 		super(null); // required by compiler since signature of this constructor differs from superclass
 		if (soundData == null) soundData = new ByteArray(); // missing instrument or drum resource
 		this.soundData = soundData;
-		this.originalPitch = originalPitch; 
-		stepSize = 0.5; // default, no pitch shift   
+		this.originalPitch = originalPitch;
+		stepSize = 0.5; // default, no pitch shift
 		startOffset = 0;
 		endOffset = soundData.length / 2; // end of sample data
 		getSample = function():int { return 0 } // called once at startup time
@@ -91,16 +91,16 @@ public class NotePlayer extends ScratchSoundPlayer {
 		samplesSinceStart = 0;
 		samplesRemaining = 44100 * secs;
 		if (!isLooped) samplesRemaining = Math.min(samplesRemaining, endOffset / stepSize);
-		 envelopeValue = (attackEnd > 0) ? 1 / 33000 : 1;
+		envelopeValue = (attackEnd > 0) ? 1 / 33000 : 1;
 	}
 
 	protected override function interpolatedSample():Number {
 		if (samplesRemaining-- <= 0) { noteFinished(); return 0 }
 		index += stepSize;
-		if(index >= endOffset) {
-			if(!isLooped) return 0;
+		if (index >= endOffset) {
+			if (!isLooped) return 0;
 			var sub:Number = loopLength - ((index - endOffset) % loopLength);
-			if(sub == 0) index = endOffset - loopLength;
+			if (sub == 0) index = endOffset - loopLength;
 			else index = endOffset - sub;
 		}
 		var i:int = int(index);
@@ -115,7 +115,7 @@ public class NotePlayer extends ScratchSoundPlayer {
 			if (isLooped) i = loopPoint;
 			else next = 0;
 		}
-		if(next < 0) {
+		if (next < 0) {
 			byteIndex = i << 1;
 			result = (soundData[byteIndex + 1] << 8) + soundData[byteIndex];
 			next = (result <= 32767 ? result : result - 65536);
@@ -137,4 +137,5 @@ public class NotePlayer extends ScratchSoundPlayer {
 			envelopeValue *= decayRate;
 		}
 	}
+
 }}

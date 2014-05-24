@@ -258,7 +258,7 @@ public class ProcedureSpecEditor extends Sprite {
 		if (parent is DialogBox) DialogBox(parent).fixLayout();
 	}
 
-	private function makeBooleanArg():BlockArg { 
+	private function makeBooleanArg():BlockArg {
 		var result:BlockArg = new BlockArg('b', 0xFFFFFF, true);
 		result.setArgValue(unusedArgName('boolean'));
 		return result;
@@ -443,7 +443,7 @@ public class ProcedureSpecEditor extends Sprite {
 				labelCount++;
 			}
 			if (o is BlockArg) {
-				if (stage.focus == BlockArg(o).field ) focusItem = o;
+				if (stage.focus == BlockArg(o).field) focusItem = o;
 			}
 		}
 		if (focusItem) {

@@ -17,42 +17,40 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package svgeditor.objs
-{
+package svgeditor.objs {
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.DisplayObject;
 	import flash.events.Event;
-	
+
 	import svgeditor.objs.ISVGEditable;
-	
+
 	import svgutils.SVGDisplayRender;
 	import svgutils.SVGElement;
-	
-	public class SVGBitmap extends Bitmap implements ISVGEditable
-	{
-		private var element:SVGElement;
 
-		public function SVGBitmap(elem:SVGElement, bitmapData:BitmapData=null)
-		{
-			element = elem;
-			super(bitmapData);
-		}
+public class SVGBitmap extends Bitmap implements ISVGEditable {
 
-		public function getElement():SVGElement {
-			element.transform = transform.matrix;
-			return element;
-		}
+	private var element:SVGElement;
 
-		public function redraw(forHitTest:Boolean = false):void {
-			element.renderImageOn(this);
-		}
-
-		public function clone():ISVGEditable {
-			var copy:ISVGEditable = new SVGBitmap(element.clone(), bitmapData);
-			(copy as DisplayObject).transform.matrix = transform.matrix.clone();
-			copy.redraw();
-			return copy;
-		}
+	public function SVGBitmap(elem:SVGElement, bitmapData:BitmapData=null) {
+		element = elem;
+		super(bitmapData);
 	}
-}
+
+	public function getElement():SVGElement {
+		element.transform = transform.matrix;
+		return element;
+	}
+
+	public function redraw(forHitTest:Boolean = false):void {
+		element.renderImageOn(this);
+	}
+
+	public function clone():ISVGEditable {
+		var copy:ISVGEditable = new SVGBitmap(element.clone(), bitmapData);
+		(copy as DisplayObject).transform.matrix = transform.matrix.clone();
+		copy.redraw();
+		return copy;
+	}
+
+}}

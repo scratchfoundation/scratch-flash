@@ -19,14 +19,14 @@
 
 package util {
 	import flash.display.Graphics;
-  
+
 public class DrawPath {
 
 	static public function drawPath(path:Array, g:Graphics):void {
 		var startx:Number = 0, starty:Number = 0;
 		var pathx:Number = 0, pathy:Number = 0;
 		for each (var item:Array in path) {
-			switch (item[0].toLowerCase()) { 
+			switch (item[0].toLowerCase()) {
 			case 'm':
 				startx = item[1];
 				starty = item[2];
@@ -35,7 +35,7 @@ public class DrawPath {
 			case 'l': g.lineTo(pathx += item[1], pathy += item[2]); break;
 			case 'h': g.lineTo(pathx += item[1], pathy); break;
 			case 'v': g.lineTo(pathx, pathy += item[1]); break;
-			case 'c': 
+			case 'c':
 				var cx:Number = pathx + item[1];
 				var cy:Number = pathy + item[2];
 				var px:Number = pathx + item[3];

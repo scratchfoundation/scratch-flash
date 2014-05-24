@@ -36,8 +36,8 @@ package ui.parts {
 	import flash.text.*;
 	import translation.Translator;
 	import uiwidgets.IconButton;
- 	import util.DrawPath;
- 
+	import util.DrawPath;
+
 public class UIPart extends Sprite {
 
 	protected static const cornerRadius:int = 8;

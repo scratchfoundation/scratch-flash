@@ -19,26 +19,27 @@
 
 package {
 	import flash.display.BitmapData;
-	
-	public class SpriteStamp extends BitmapData {
-		private var fx:Object;
-		public function SpriteStamp(width:int, height:int, fx:Object) {
-			super(width, height, true, 0x00ffffff);
-			effects = fx;
-		}
 
-		public function set effects(o:Object):void {
-			fx = null;
+public class SpriteStamp extends BitmapData {
 
-			if(o) {
-				fx = {};
-				for(var prop:String in o)
-					fx[prop] = o[prop];
-			}
-		}
-		
-		public function get effects():Object {
-			return fx;
+	private var fx:Object;
+	public function SpriteStamp(width:int, height:int, fx:Object) {
+		super(width, height, true, 0x00ffffff);
+		effects = fx;
+	}
+
+	public function set effects(o:Object):void {
+		fx = null;
+
+		if (o) {
+			fx = {};
+			for (var prop:String in o)
+				fx[prop] = o[prop];
 		}
 	}
-}
+
+	public function get effects():Object {
+		return fx;
+	}
+
+}}

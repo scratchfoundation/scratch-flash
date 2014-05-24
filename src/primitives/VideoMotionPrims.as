@@ -150,8 +150,7 @@ public class VideoMotionPrims {
 			for (i = ymin; i < ymax; i++) { // y
 				for (j = xmin; j < xmax; j++) { // x
 					if (j>0 && (j< WIDTH-1) && i>0 && (i< HEIGHT-1)
-						&& ((s.bitmap().getPixel32(j-xmin,i-ymin) >> 24 & 0xff) == 0xff))
-					{
+						&& ((s.bitmap().getPixel32(j-xmin,i-ymin) >> 24 & 0xff) == 0xff)) {
 						address = i * WIDTH + j;
 						A2 += gradA2Array[address];
 						A1B2 += gradA1B2Array[address];

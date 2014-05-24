@@ -171,7 +171,7 @@ public class IconButton extends Sprite {
 	}
 
 	private function mouseOver(evt:MouseEvent):void { if (!isDisabled()) { mouseIsOver = true; redraw() }}
-	private function mouseOut(evt:MouseEvent):void  { if (!isDisabled()) { mouseIsOver = false; redraw() }}
+	private function mouseOut(evt:MouseEvent):void { if (!isDisabled()) { mouseIsOver = false; redraw() }}
 
 	private function turnOffOtherRadioButtons():void {
 		if (parent == null) return;

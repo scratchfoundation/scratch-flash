@@ -82,7 +82,7 @@ public class SoundsPart extends UIPart {
 		editor.updateTranslation();
 		SimpleTooltips.add(libraryButton, {text: 'Choose sound from library', direction: 'bottom'});
 		SimpleTooltips.add(recordButton, {text: 'Record new sound', direction: 'bottom'});
-		SimpleTooltips.add(importButton, {text: 'Upload sound from file', direction: 'bottom'});			
+		SimpleTooltips.add(importButton, {text: 'Upload sound from file', direction: 'bottom'});
 		fixlayout();
 	}
 
@@ -169,7 +169,7 @@ public class SoundsPart extends UIPart {
 		editor.x = contentsX;
 		editor.y = 50;
 	}
-	
+
 	private function addNewSoundButtons():void {
 		var left:int = 16;
 		var buttonY:int = 31;
@@ -185,7 +185,7 @@ public class SoundsPart extends UIPart {
 		b.y = y;
 		return b;
 	}
-	
+
 	private function addListFrame():void {
 		listFrame = new ScrollFrame();
 		listFrame.setContents(app.getMediaPane(app, 'sounds'));
@@ -208,7 +208,7 @@ public class SoundsPart extends UIPart {
 	// -----------------------------
 	// Undo/Redo
 	//------------------------------
-	
+
 	private function addUndoButtons():void {
 		addChild(undoButton = new IconButton(editor.waveform.undo, makeButtonImg('undo', true), makeButtonImg('undo', false)));
 		addChild(redoButton = new IconButton(editor.waveform.redo, makeButtonImg('redo', true), makeButtonImg('redo', false)));
@@ -220,7 +220,7 @@ public class SoundsPart extends UIPart {
 		undoButton.setDisabled(!editor.waveform.canUndo(), 0.5);
 		redoButton.setDisabled(!editor.waveform.canRedo(), 0.5);
 	}
-	
+
 	public static function makeButtonImg(iconName:String, isOn:Boolean, buttonSize:Point = null):Sprite {
 		var icon:Bitmap = Resources.createBmp(iconName + (isOn ? 'On' : 'Off'));
 		var buttonW:int = Math.max(icon.width, buttonSize ? buttonSize.x : 24);

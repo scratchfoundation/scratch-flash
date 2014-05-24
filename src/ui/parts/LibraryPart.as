@@ -199,7 +199,7 @@ public class LibraryPart extends UIPart {
 		var index:int = 1;
 		for each (var spr:ScratchSprite in sortedSprites) {
 			spr.indexInLibrary = index++; // renumber to ensure unique indices
- 			var tn:SpriteThumbnail = new SpriteThumbnail(spr, app);
+			var tn:SpriteThumbnail = new SpriteThumbnail(spr, app);
 			tn.x = nextX;
 			tn.y = nextY;
 			spritesPane.addChild(tn);
@@ -374,7 +374,7 @@ public class LibraryPart extends UIPart {
 				if (spr.costumes.length > 1) spr.costumes.shift(); // remove default costume
 				spr.showCostumeNamed(list[0].costumeName);
 				app.addNewSprite(spr);
-				
+
 			}
 		}
 		var lib:MediaLibrary = new MediaLibrary(app, 'sprite', addSprite);
@@ -385,7 +385,7 @@ public class LibraryPart extends UIPart {
 	// -----------------------------
 	// New Backdrop Operations
 	//------------------------------
-	
+
 	private function backdropFromCamera(b:IconButton):void {
 		function savePhoto(photo:BitmapData):void {
 			addBackdrop(new ScratchCostume(Translator.map('photo1'), photo));
@@ -393,7 +393,7 @@ public class LibraryPart extends UIPart {
 		}
 		app.openCameraDialog(savePhoto);
 	}
-	
+
 	private function backdropFromComputer(b:IconButton):void {
 		var lib:MediaLibrary = new MediaLibrary(app, 'backdrop', addBackdrop);
 		lib.importFromDisk();
@@ -407,7 +407,7 @@ public class LibraryPart extends UIPart {
 	private function paintBackdrop(b:IconButton):void {
 		addBackdrop(ScratchCostume.emptyBitmapCostume(Translator.map('backdrop1'), true));
 	}
-	
+
 	private function addBackdrop(costumeOrList:*):void {
 		var c:ScratchCostume = costumeOrList as ScratchCostume;
 		if (c) {

@@ -132,7 +132,7 @@ public class Interpreter {
 		}
 		threads = newThreads;
 		if (wasRunning) {
-			if(app.editMode) b.hideRunFeedback();
+			if (app.editMode) b.hideRunFeedback();
 			clearWarpBlock();
 		} else {
 			b.showRunFeedback();
@@ -179,7 +179,7 @@ public class Interpreter {
 		}
 		if (!wasRunning) {
 			threads.push(newThread);
-			if(app.editMode) b.showRunFeedback();
+			if (app.editMode) b.showRunFeedback();
 			app.threadStarted();
 		}
 		return newThread;
@@ -213,7 +213,7 @@ public class Interpreter {
 				var newThreads:Array = [];
 				for each (var t:Thread in threads) {
 					if (t.block != null) newThreads.push(t);
-					else if(app.editMode) t.topBlock.hideRunFeedback();
+					else if (app.editMode) t.topBlock.hideRunFeedback();
 				}
 				threads = newThreads;
 				if (threads.length == 0) return;
@@ -283,13 +283,13 @@ public class Interpreter {
 		}
 
 //      TODO: Optimize this into a cached check if the args *could* block at all
-//		if(b.args.length && checkBlockingArgs(b)) {
+//		if (b.args.length && checkBlockingArgs(b)) {
 //			doYield();
 //			return null;
 //		}
 
 		// Debug code
-		if(debugFunc != null)
+		if (debugFunc != null)
 			debugFunc(b);
 
 		return b.opFunction(b);
@@ -300,15 +300,15 @@ public class Interpreter {
 		// Do any of the arguments request data?  If so, start any requests and yield.
 		var shouldYield:Boolean = false;
 		var args:Array = b.args;
-		for(var i:uint=0; i<args.length; ++i) {
+		for (var i:uint=0; i<args.length; ++i) {
 			var barg:Block = args[i] as Block;
-			if(barg) {
-				if(checkBlockingArgs(barg))
+			if (barg) {
+				if (checkBlockingArgs(barg))
 					shouldYield = true;
 
 				// Don't start a request if the arguments for it are blocking
-				else if(barg.isRequester && barg.requestState < 2) {
-					if(barg.requestState == 0) evalCmd(barg);
+				else if (barg.isRequester && barg.requestState < 2) {
+					if (barg.requestState == 0) evalCmd(barg);
 					shouldYield = true;
 				}
 			}
@@ -553,7 +553,7 @@ public class Interpreter {
 			var receivers:Array = [];
 			var newThreads:Array = [];
 			msg = msg.toLowerCase();
-			var findReceivers:Function = function (stack:Block, target:ScratchObj):void {
+			var findReceivers:Function = function(stack:Block, target:ScratchObj):void {
 				if ((stack.op == "whenIReceive") && (stack.args[0].argValue.toLowerCase() == msg)) {
 					receivers.push([stack, target]);
 				}
@@ -631,8 +631,7 @@ public class Interpreter {
 				warpBlock = b;
 				warpThread = activeThread;
 				activeThread.firstTime = true;
-			}
-			else if (activeThread.isRecursiveCall(b, proc)) {
+			} else if (activeThread.isRecursiveCall(b, proc)) {
 				yield = true;
 			}
 		}

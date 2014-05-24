@@ -131,7 +131,7 @@ public class MediaPane extends ScrollFrameContents {
 		if (!this.parent || !this.parent.parent) return;
 		var sp:SoundsPart = this.parent.parent as SoundsPart;
 		if (sp == null) return;
-	 	sp.currentIndex = Math.min(sp.currentIndex, viewedObj.sounds.length - 1);
+		sp.currentIndex = Math.min(sp.currentIndex, viewedObj.sounds.length - 1);
 		var current:ScratchSound = viewedObj.sounds[sp.currentIndex] as ScratchSound;
 		for (var i:int = 0 ; i < numChildren ; i++) {
 			var si:MediaInfo = getChildAt(i) as MediaInfo;

@@ -187,7 +187,7 @@ public class LooksPrims {
 		if (s == null) return;
 		var filterName:String = interp.arg(b, 0);
 		var delta:Number = interp.numarg(b, 1);
-		if(delta == 0) return;
+		if (delta == 0) return;
 
 		var newValue:Number = s.filterPack.getFilterSetting(filterName) + delta;
 		s.filterPack.setFilter(filterName, newValue);
@@ -200,7 +200,7 @@ public class LooksPrims {
 		if (s == null) return;
 		var filterName:String = interp.arg(b, 0);
 		var newValue:Number = interp.numarg(b, 1);
-		if(s.filterPack.setFilter(filterName, newValue))
+		if (s.filterPack.setFilter(filterName, newValue))
 			s.applyFilters();
 		if (s.visible || s == Scratch.app.stagePane) interp.redraw();
 	}
@@ -243,7 +243,7 @@ public class LooksPrims {
 		var s:ScratchSprite = interp.targetSprite();
 		if (s == null) return;
 		s.visible = true;
-		if(!app.isIn3D) s.applyFilters();
+		if (!app.isIn3D) s.applyFilters();
 		s.updateBubble();
 		if (s.visible) interp.redraw();
 	}
@@ -252,7 +252,7 @@ public class LooksPrims {
 		var s:ScratchSprite = interp.targetSprite();
 		if ((s == null) || !s.visible) return;
 		s.visible = false;
-		if(!app.isIn3D) s.applyFilters();
+		if (!app.isIn3D) s.applyFilters();
 		s.updateBubble();
 		interp.redraw();
 	}
@@ -319,4 +319,5 @@ public class LooksPrims {
 		if (!interp.targetObj().isStage) return;
 		app.stagePane.scrollUp(interp.numarg(b, 0));
 	}
+
 }}

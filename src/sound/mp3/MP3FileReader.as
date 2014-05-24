@@ -94,7 +94,7 @@ public class MP3FileReader {
 			channels: channels,
 			sampleCount: frameCount * ((version == 1) ? 1152 : 576),
 			mpegVersion: version
-		}	
+		}
 	}
 
 	private function skipInitialTags():void {

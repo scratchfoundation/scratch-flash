@@ -53,6 +53,7 @@ package util {
 	import watchers.*;
 
 public class ObjReader {
+
 	private const OBJ_REF:int = 99;
 
 	private var s:IDataInput;

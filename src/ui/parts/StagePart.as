@@ -413,7 +413,7 @@ public class StagePart extends UIPart {
 	}
 
 	public function playButtonPressed(evt:MouseEvent):void {
-		if(app.loadInProgress) {
+		if (app.loadInProgress) {
 			stopEvent(evt);
 			return;
 		}

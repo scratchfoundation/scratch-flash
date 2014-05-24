@@ -44,12 +44,11 @@ public dynamic class SVGPath extends Array {
 		if (n == 1 && (args[0] is Number)) {
 			var dlen:Number = args[0];
 			var ulen:uint = dlen;
-			if(ulen != dlen) throw new RangeError("Array index is not a 32-bit unsigned integer ("+dlen+")");
+			if (ulen != dlen) throw new RangeError("Array index is not a 32-bit unsigned integer ("+dlen+")");
 			length = ulen;
-		}
-		else {
+		} else {
 			length = n;
-			for(var i:int=0; i < n; ++i)
+			for (var i:int=0; i < n; ++i)
 				this[i] = args[i];
 		}
 		dirty = false;
@@ -57,7 +56,7 @@ public dynamic class SVGPath extends Array {
 
 	public function clone():SVGPath {
 		var p:SVGPath = new SVGPath(length);
-		for(var i:int=0; i < length; ++i)
+		for (var i:int=0; i < length; ++i)
 			p[i] = this[i].slice();
 
 		return p;
@@ -65,7 +64,7 @@ public dynamic class SVGPath extends Array {
 
 	public function set(cmds:Array):void {
 		length = cmds.length;
-		for(var i:int=0; i < length; ++i)
+		for (var i:int=0; i < length; ++i)
 			this[i] = cmds[i];
 	}
 
@@ -80,7 +79,7 @@ public dynamic class SVGPath extends Array {
 	};
 
 	public function move(index:uint, pt:Point, adjust:uint = 1):void {
-		if(index < length) {
+		if (index < length) {
 			var cmd:Array = this[index];
 			var ends:Array = getSegmentEndPoints(index);
 			switch (cmd[0]) {
@@ -91,7 +90,7 @@ public dynamic class SVGPath extends Array {
 					break;
 				case 'C':
 					cmd[5] = pt.x; cmd[6] = pt.y;
-					if(adjust == ADJUST.CORNER) {
+					if (adjust == ADJUST.CORNER) {
 						cmd[3] = pt.x; cmd[4] = pt.y;
 					}
 					dirty = true;
@@ -104,18 +103,18 @@ public dynamic class SVGPath extends Array {
 			}
 
 			// If we're moving the end point of a closed path, then move the first point too
-			if(ends[2] && (cmd[0] == 'C' || cmd[0] == 'L') && index == ends[1] && ends[0] != index && this[ends[0]][0] == 'M') {
+			if (ends[2] && (cmd[0] == 'C' || cmd[0] == 'L') && index == ends[1] && ends[0] != index && this[ends[0]][0] == 'M') {
 				move(ends[0], pt, ADJUST.NONE);
 			}
 
 			// Adjust the path?
-			if(adjust == ADJUST.NORMAL)
+			if (adjust == ADJUST.NORMAL)
 				adjustPathAroundAnchor(index);
 		}
 	}
 
 	public function transform(src:DisplayObject, dst:DisplayObject):void {
-		for(var i:uint=0; i<length; ++i) {
+		for (var i:uint=0; i<length; ++i) {
 			var cmd:Array = this[i];
 			var pt:Point;
 			switch (cmd[0]) {
@@ -135,17 +134,16 @@ public dynamic class SVGPath extends Array {
 	}
 
 	public function remove(index:uint):void {
-		if(index < length) {
+		if (index < length) {
 			var ends:Array = getSegmentEndPoints(index);
 			var p:Point;
 
 			// If the point removed is on a closed path segment and it is the last point,
 			// then move the first move command to match the new last point
-			if(index == ends[1] && ends[2] && ends[0]>0 && this[ends[0] - 1][0] == 'M') {
+			if (index == ends[1] && ends[2] && ends[0]>0 && this[ends[0] - 1][0] == 'M') {
 				p = getPos(index - 1);
 				this[ends[0] - 1] = ['M', p.x, p.y];
-			}
-			else if(index == ends[0] && !ends[2] && index < length - 1 && this[index][0] == 'M') {
+			} else if (index == ends[0] && !ends[2] && index < length - 1 && this[index][0] == 'M') {
 				p = getPos(index + 1);
 				this[index + 1] = ['M', p.x, p.y];
 			}
@@ -159,17 +157,17 @@ public dynamic class SVGPath extends Array {
 	}
 
 	public function add(index:uint, pt:Point, normal:Boolean):void {
-		if(index < length) {
+		if (index < length) {
 			var curve:Boolean = this[index][0] == 'C';
-			if(!normal) curve = !curve;
+			if (!normal) curve = !curve;
 			var cmd:Array;
-			if(curve) {
+			if (curve) {
 				var indices:Array = getIndicesAroundAnchor(index, 2);
 				var cPts1:Array = SVGPath.getControlPointsAdjacentAnchor(getPos(indices[0]), getPos(indices[1]), pt);
 				var cPts2:Array = SVGPath.getControlPointsAdjacentAnchor(getPos(indices[1]), pt, getPos(indices[2]));
 
 				// Keep the original control point from curve before the added curve
-				if(this[index][0] == 'C') {
+				if (this[index][0] == 'C') {
 					cmd = this[index];
 					cPts1[1].x = cmd[1];
 					cPts1[1].y = cmd[2];
@@ -179,7 +177,7 @@ public dynamic class SVGPath extends Array {
 				cmd = ['C', cPts1[1].x, cPts1[1].y, cPts2[0].x, cPts2[0].y, pt.x, pt.y];
 
 				// Apply the second control point to the next cubic bezier curve if there is one
-				if(this[indices[2]][0] == 'C') {
+				if (this[indices[2]][0] == 'C') {
 					var cmd2:Array = this[indices[2]];
 					cmd2[1] = cPts2[1].x;
 					cmd2[2] = cPts2[1].y;
@@ -196,18 +194,18 @@ public dynamic class SVGPath extends Array {
 	}
 
 	public function getPos(index:uint, time:Number = 1.0):Point {
-		if(index < length) {
+		if (index < length) {
 			var cmd:Array = this[index];
 			switch (cmd[0]) {
 				case 'M':
 					return new Point(cmd[1], cmd[2]);
 				case 'L':
-					if(time > 0.999)
+					if (time > 0.999)
 						return new Point(cmd[1], cmd[2]);
 					else
 						return getPosByTime(time, getPos(index-1), null, null, new Point(cmd[1], cmd[2]));
 				case 'C':
-					if(time > 0.999)
+					if (time > 0.999)
 						return new Point(cmd[5], cmd[6]);
 					else
 						return getPosByTime(time, getPos(index-1),  new Point(cmd[1], cmd[2]),  new Point(cmd[3], cmd[4]), new Point(cmd[5], cmd[6]));
@@ -218,10 +216,9 @@ public dynamic class SVGPath extends Array {
 				case 'Z':
 					// Return the position of the first point
 					var indices:Array = getSegmentEndPoints(index);
-					if(indices[0] < index) {
+					if (indices[0] < index) {
 						return getPos(indices[0]);
-					}
-					else {
+					} else {
 						trace("ERROR! Couldn't find beginning of path.");
 						return new Point();
 					}
@@ -232,14 +229,14 @@ public dynamic class SVGPath extends Array {
 	}
 
 	public function adjustPathAroundAnchor(index:uint, proximity:uint = 1, strength:Number = 0.5):void {
-		if(index >= length) return;
+		if (index >= length) return;
 
 		var ends:Array = getSegmentEndPoints(index);
 		// Handle the special 2-point path case
 		var cmd:Array;
-		if(!ends[2] && ends[1] - ends[0] == 1) {
+		if (!ends[2] && ends[1] - ends[0] == 1) {
 			cmd = this[ends[1]];
-			if(cmd[0] == 'C') {
+			if (cmd[0] == 'C') {
 				var p:Point = getPos(ends[0]);
 				cmd[1] = p.x;
 				cmd[2] = p.y;
@@ -254,37 +251,34 @@ public dynamic class SVGPath extends Array {
 		var midIdx:uint = indices.indexOf(index);
 		var lastIdx:uint = indices.length - 1;
 		var lastC2:Point;
-		for(var i:uint = 1; i < lastIdx; ++i) {
+		for (var i:uint = 1; i < lastIdx; ++i) {
 			var before:Point = here ? here : getPos(indices[i - 1]);
 			var here:Point = after ? after : getPos(indices[i]);
 			var after:Point = getPos(indices[i + 1]);
 			var cPts:Array = SVGPath.getControlPointsAdjacentAnchor(before, here, after);
 			cmd = this[indices[i]];
 			var currStr:Number = Math.pow(strength, 1+Math.abs(midIdx - i));
-			if(!ends[2] && (indices[i] == ends[0] || indices[i] == ends[1]))
+			if (!ends[2] && (indices[i] == ends[0] || indices[i] == ends[1]))
 				currStr = 1;
 
-			if(cmd[0] == 'C') {
-				if(indices[i] == ends[1] && !ends[2]) {
+			if (cmd[0] == 'C') {
+				if (indices[i] == ends[1] && !ends[2]) {
 					cmd[3] = here.x;
 					cmd[4] = here.y;
-				}
-				else {
+				} else {
 					var c1:Point = Point.interpolate(cPts[0], new Point(cmd[3], cmd[4]), currStr);
 					cmd[3] = c1.x;
 					cmd[4] = c1.y;
 				}
-			}
-			else if(!ends[2] && cmd[0] == 'M'){
+			} else if (!ends[2] && cmd[0] == 'M'){
 				cPts = SVGPath.getControlPointsAdjacentAnchor(before, before, here);
-			}
-			else {
+			} else {
 				cPts = SVGPath.getControlPointsAdjacentAnchor(before, here, here.add(here.subtract(before)));
 			}
 
 			// Apply the second control point to the next cubic bezier curve if there is one
 			var cmd2:Array = this[indices[i+1]];
-			if(indices[i] != indices[i+1] && cmd2[0] == 'C') {
+			if (indices[i] != indices[i+1] && cmd2[0] == 'C') {
 				var c2:Point = Point.interpolate(cPts[1], new Point(cmd2[1], cmd2[2]), currStr);
 				cmd2[1] = c2.x;
 				cmd2[2] = c2.y;
@@ -300,22 +294,20 @@ public dynamic class SVGPath extends Array {
 
 		proximity = Math.min(Math.max(index - ends[0], ends[1] - index), proximity);
 		// Walk down the path and store the indices
-		for(var i:int = index - proximity; i <= index + proximity; ++i) {
+		for (var i:int = index - proximity; i <= index + proximity; ++i) {
 			var realIndex:uint = i;
-			if(i < ends[0] || (i == ends[0] && closed)) {
-				if(closed)
+			if (i < ends[0] || (i == ends[0] && closed)) {
+				if (closed)
 					realIndex = ends[1] + (i - ends[0]);
 				else
 					continue;
-			}
-			else if(closed && i > ends[1]) {
+			} else if (closed && i > ends[1]) {
 				realIndex = ends[0] + (i - ends[1]);
-			}
-			else if(i > ends[1]) {
+			} else if (i > ends[1]) {
 				continue;
 			}
 
-			if(i == index) centerIndex = realIndex;
+			if (i == index) centerIndex = realIndex;
 
 			indices.push(realIndex);
 		}
@@ -323,10 +315,10 @@ public dynamic class SVGPath extends Array {
 		// If we didn't get enough points then duplicate the points on the ends
 		var indexPos:uint = indices.indexOf(centerIndex);
 		var lastIndex:uint = indices.length - 1;
-		if(indexPos < ends[0] + proximity) {
+		if (indexPos < ends[0] + proximity) {
 			indices.unshift(indices[0]);
 		}
-		if(lastIndex - indexPos < proximity) {
+		if (lastIndex - indexPos < proximity) {
 			indices.push(indices[indices.length-1]);
 		}
 
@@ -339,7 +331,7 @@ public dynamic class SVGPath extends Array {
 
 		var last:uint = index;
 		i = index + 1;
-		while(i <= length - 1 && this[i][0] != 'Z' && this[i][0] != 'M') {
+		while (i <= length - 1 && this[i][0] != 'Z' && this[i][0] != 'M') {
 			last = i;
 			++i;
 		}
@@ -351,7 +343,7 @@ public dynamic class SVGPath extends Array {
 		var first:uint = last;
 		var i:int = last - 1;
 		// TODO: handle nested closed segments
-		while(i >= 0 && this[i][0] != 'Z' && this[first][0] != 'M') {
+		while (i >= 0 && this[i][0] != 'Z' && this[first][0] != 'M') {
 			first = i;
 			--i;
 		}
@@ -462,7 +454,7 @@ public dynamic class SVGPath extends Array {
 		var pa3:Point = Point.interpolate(pc3, pc4, 1/2);
 
 		// draw the four quadratic subsegments
-		if(cmds) {
+		if (cmds) {
 			cmds.push(
 				GraphicsPathCommand.CURVE_TO,
 				GraphicsPathCommand.CURVE_TO,
@@ -473,7 +465,7 @@ public dynamic class SVGPath extends Array {
 				pc2.x, pc2.y, pa2.x, pa2.y,
 				pc3.x, pc3.y, pa3.x, pa3.y,
 				pc4.x, pc4.y, p3.x, p3.y);
-		} else if(g) {
+		} else if (g) {
 			g.curveTo(pc1.x, pc1.y, pa1.x, pa1.y);
 			g.curveTo(pc2.x, pc2.y, pa2.x, pa2.y);
 			g.curveTo(pc3.x, pc3.y, pa3.x, pa3.y);
@@ -499,7 +491,7 @@ public dynamic class SVGPath extends Array {
 			alpha = Math.max(0, Math.min(alpha, 1));
 
 			var capStyle:String = el.getAttribute('stroke-linecap', 'butt');
-			if(capStyle in capConversion)
+			if (capStyle in capConversion)
 				capStyle = capConversion[capStyle];
 			else
 				capStyle = CapsStyle.NONE;
@@ -518,7 +510,7 @@ public dynamic class SVGPath extends Array {
 
 			if (fill is SVGElement) setGradient(g, fill, box, alpha);
 			else g.beginFill(el.getColorValue(fill), alpha);
-		} else if(el.path && el.path.getSegmentEndPoints(0)[2] && !forHitTest) {
+		} else if (el.path && el.path.getSegmentEndPoints(0)[2] && !forHitTest) {
 			// TODO: Make this only happen on objects spawned by the SVGEditor
 			g.beginFill(0xFFFFFF, 0.01);
 		}
@@ -536,30 +528,27 @@ public dynamic class SVGPath extends Array {
 		}
 
 		// Fix old gradients which went to the wrong transparent color
-		if(colors.length == 2) {
-			if(alphas[0] == 0) colors[0] = colors[1];
-			else if(alphas[1] == 0) colors[1] = colors[0];
+		if (colors.length == 2) {
+			if (alphas[0] == 0) colors[0] = colors[1];
+			else if (alphas[1] == 0) colors[1] = colors[0];
 		}
 
 		if (colors.length == 0) {
-			if(!isLine) g.beginFill(0x808080);
+			if (!isLine) g.beginFill(0x808080);
 			else g.lineStyle(lineWidth, 0x808080);
-		}
-		else if (colors.length == 1) {
-			if(!isLine) g.beginFill(gradEl.getColorValue(colors[0]));
+		} else if (colors.length == 1) {
+			if (!isLine) g.beginFill(gradEl.getColorValue(colors[0]));
 			else g.lineStyle(lineWidth, gradEl.getColorValue(colors[0]));
-		}
-		else if (gradEl.tag == 'linearGradient') {
+		} else if (gradEl.tag == 'linearGradient') {
 			m = linearGradientMatrix(gradEl, box);
-			if(!isLine) g.beginGradientFill(GradientType.LINEAR, colors, alphas, ratios, m);
+			if (!isLine) g.beginGradientFill(GradientType.LINEAR, colors, alphas, ratios, m);
 			else {
 				g.lineStyle(lineWidth);
 				g.lineGradientStyle(GradientType.LINEAR, colors, alphas, ratios, m);
 			}
-		}
-		else if (gradEl.tag == 'radialGradient') {
+		} else if (gradEl.tag == 'radialGradient') {
 			m = radialGradientMatrix(gradEl, box);
-			if(!isLine) g.beginGradientFill(GradientType.RADIAL, colors, alphas, ratios, m, "pad", "rgb", gradEl.getAttribute('fpRatio', 0));
+			if (!isLine) g.beginGradientFill(GradientType.RADIAL, colors, alphas, ratios, m, "pad", "rgb", gradEl.getAttribute('fpRatio', 0));
 			else {
 				g.lineStyle(lineWidth);
 				g.lineGradientStyle(GradientType.RADIAL, colors, alphas, ratios, m, "pad", "rgb", gradEl.getAttribute('fpRatio', 0));
@@ -643,10 +632,9 @@ public dynamic class SVGPath extends Array {
 		var first:Point = points[0];
 		length = 0;
 		this.push(['M', first.x, first.y]);
-		if (points.length < 3 ) {
+		if (points.length < 3) {
 			this.push(['L', points[1].x, points[1].y]);
-		}
-		else {
+		} else {
 			var ctx:PathDrawContext = new PathDrawContext();
 			ctx.cmds = this;
 			for (var i:uint = 1; i < points.length - 1; ++i)
@@ -658,8 +646,7 @@ public dynamic class SVGPath extends Array {
 			if (fairlyClose) {
 				processSegment(points[points.length-2], lastpoint, first, ctx);
 				ctx.cmds.push(['z']);
-			}
-			else {
+			} else {
 				processSegment(points[points.length-2], lastpoint, lastpoint, ctx);
 			}
 		}
@@ -672,7 +659,7 @@ public dynamic class SVGPath extends Array {
 
 		// Pre-render to get ther path bounds
 		g.lineStyle(0.5);
-		for each(var cmd:Array in this)
+		for each (var cmd:Array in this)
 			renderPathCmd(cmd, g, lastCP);
 
 		var dRect:Rectangle = s.getBounds(s);
@@ -705,23 +692,23 @@ public dynamic class SVGPath extends Array {
 	// return the index of the command before the split
 	public function splitCurve(index:uint, t:Number):uint {
 //trace('splitCurve('+index+', '+t+')');
-		if(index < 1)
+		if (index < 1)
 			return 0;
 
-		if(index >= length)
+		if (index >= length)
 			return length - 1;
 
-		if(t < 0.01)
+		if (t < 0.01)
 			return index - 1;
 
-		if(t > 0.99)
+		if (t > 0.99)
 			return index;
 
 		var cmd:Array = this[index];
 		var p1:Point = getPos(index - 1);
 		var p2:Point = getPos(index);
 		var newCmd:Array;
-		if(cmd[0] == 'C') {
+		if (cmd[0] == 'C') {
 //trace('Splitting curve #'+index+' @ '+t);
 			var c1:Point = new Point(cmd[1], cmd[2]);
 			var c2:Point = new Point(cmd[3], cmd[4]);
@@ -745,8 +732,7 @@ public dynamic class SVGPath extends Array {
 			newCmd[3] = nc2.x;
 			newCmd[4] = nc2.y;
 			splice(index + 1, 0, newCmd);
-		}
-		else if(cmd[0] == 'L') {
+		} else if (cmd[0] == 'L') {
 			var np:Point = Point.interpolate(p2, p1, t);
 			splice(index, 0, ['L', np.x, np.y]);
 		}
@@ -758,30 +744,28 @@ public dynamic class SVGPath extends Array {
 		var minWidth:Number = Math.min(Math.max(1, strokeWidth * 0.2), 5);
 		var i:int = 0;
 		// Remove any segments with very short lengths
-		while(i<length) {
+		while (i<length) {
 			var indices:Array = getSegmentEndPoints(i);
 			var start:Point = getPos(indices[0]);
 			var next:int = indices[0]+1;
 			var len:int = indices[1] - indices[0];
-			if(len>0) {
+			if (len>0) {
 				var dist:Number = start.subtract(getPos(next)).length;
-				if(getPos(indices[1]).subtract(start).length < minWidth && dist < minWidth) {
+				if (getPos(indices[1]).subtract(start).length < minWidth && dist < minWidth) {
 					do {
 						splice(next, 1);
 						--len;
-						if(next < length)
+						if (next < length)
 							dist+= start.subtract(getPos(next)).length;
-					} while(dist < minWidth && len>1);
-					if(len < 2)
+					} while (dist < minWidth && len>1);
+					if (len < 2)
 						splice(indices[0], len+1);
 					else
 						i = indices[1] + 1;
-				}
-				else {
+				} else {
 					i = indices[1] + 1;
 				}
-			}
-			else {
+			} else {
 				splice(indices[0], 1);
 			}
 		}
@@ -792,20 +776,17 @@ public dynamic class SVGPath extends Array {
 		var newCmds:Array = new Array(indices[1] - indices[0] + (indices[2] ? 2 : 1));
 		var lastCmd:Array = null;
 		var j:int = 0;
-		for(var i:int=indices[1]; i>=indices[0]; --i) {
+		for (var i:int=indices[1]; i>=indices[0]; --i) {
 			var cmd:Array = this[i];
 			var pos:Point = getPos(i);
 			var newCmd:Array;
-			if(lastCmd == null) {
+			if (lastCmd == null) {
 				newCmd = ['M', pos.x, pos.y];
-			}
-			else if(lastCmd[0] == 'C') {
+			} else if (lastCmd[0] == 'C') {
 				newCmd = ['C', lastCmd[3], lastCmd[4], lastCmd[1], lastCmd[2], pos.x, pos.y];
-			}
-			else if(lastCmd[0] == 'L') {
+			} else if (lastCmd[0] == 'L') {
 				newCmd = ['L', pos.x, pos.y];
-			}
-			else {
+			} else {
 				throw new Error('Invalid path command!');
 			}
 
@@ -814,7 +795,7 @@ public dynamic class SVGPath extends Array {
 			++j;
 		}
 
-		if(indices[2])
+		if (indices[2])
 			newCmds[j] = ['Z'];
 
 		// Delete existing commands
@@ -828,7 +809,7 @@ public dynamic class SVGPath extends Array {
 
 	static public function getPosByTime(ratio:Number, p1:Point, cp1:Point, cp2:Point, p2:Point):Point {
 		// Do Bezier
-		if(cp1) {
+		if (cp1) {
 			ratio = 1 - ratio;
 			function b1(t:Number):Number { return t*t*t }
 			function b2(t:Number):Number { return 3*t*t*(1-t) }
@@ -836,8 +817,7 @@ public dynamic class SVGPath extends Array {
 			function b4(t:Number):Number { return (1-t)*(1-t)*(1-t) }
 			return new Point(p1.x*b1(ratio) + cp1.x*b2(ratio) + cp2.x*b3(ratio) + p2.x*b4(ratio),
 				p1.y*b1(ratio) + cp1.y*b2(ratio) + cp2.y*b3(ratio) + p2.y*b4(ratio));
-		}
-		else {
+		} else {
 			return Point.interpolate(p2, p1, ratio);
 		}
 	}
@@ -900,7 +880,7 @@ public dynamic class SVGPath extends Array {
 			}
 		} else {
 			var mp:Point = Point.interpolate(a, d, 0.5);
-			if(Point.distance(a, mp) <= tolerance || ctx.adjust) {
+			if (Point.distance(a, mp) <= tolerance || ctx.adjust) {
 				ctx.cmds.push(['Q', mp.x, mp.y, d.x, d.y]);
 				return;
 			}
@@ -962,7 +942,7 @@ public dynamic class SVGPath extends Array {
 				break;
 			case 'M':
 				g.moveTo(cmd[1], cmd[2]);
-				if(startP) {
+				if (startP) {
 					startP.x = cmd[1];
 					startP.y = cmd[2];
 				}
@@ -971,7 +951,7 @@ public dynamic class SVGPath extends Array {
 				g.curveTo(cmd[1], cmd[2], cmd[3], cmd[4]);
 				break;
 			case 'Z':
-				if(startP)
+				if (startP)
 					g.lineTo(startP.x, startP.y);
 				break;
 		}
@@ -994,10 +974,11 @@ public dynamic class SVGPath extends Array {
 	}
 
 	public function outputCommands(start:int=0, end:int=-1):void {
-		if(end==-1) end=length-1;
-		for(var k:int=start; k<=end; ++k) {
+		if (end==-1) end=length-1;
+		for (var k:int=start; k<=end; ++k) {
 			var c:Array = this[k];
 			trace('Command #'+k+': '+c.join(','));
 		}
 	}
+
 }}

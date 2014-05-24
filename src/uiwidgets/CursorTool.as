@@ -24,7 +24,7 @@ package uiwidgets {
 	import flash.system.Capabilities;
 	import flash.ui.*;
 	import assets.Resources;
-	
+
 public class CursorTool {
 
 	public static var tool:String; // null or one of: copy, cut, grow, shrink, help
@@ -40,7 +40,7 @@ public class CursorTool {
 		tool = toolName;
 		app.enableEditorTools(tool == null);
 		if (tool == null) return;
-		switch(tool) {
+		switch (tool) {
 		case 'copy':
 			showSoftwareCursor(Resources.createBmp('copyCursor'));
 			break;

@@ -62,7 +62,7 @@ public class ScratchCostume {
 	public var baseLayerData:ByteArray;
 
 	public static const WasEdited:int = -10; // special baseLayerID used to indicate costumes that have been edited
-	
+
 	public var svgRoot:SVGElement; // non-null for an SVG costume
 	public var svgLoading:Boolean; // true while loading bitmaps embedded in an SVG
 	private var svgSprite:Sprite;
@@ -239,23 +239,23 @@ public class ScratchCostume {
 	private static var shapeDict:Object = {};
 	public function getShape():Shape {
 		var id:String = baseLayerMD5;
-		if(id && textLayerMD5) id += textLayerMD5;
-		else if(textLayerMD5) id = textLayerMD5;
+		if (id && textLayerMD5) id += textLayerMD5;
+		else if (textLayerMD5) id = textLayerMD5;
 
 		var s:Shape = shapeDict[id];
-		if(!s) {
+		if (!s) {
 			s = new Shape();
 			var pts:Array = RasterHull();
 			s.graphics.clear();
 
-			if(pts.length) {
+			if (pts.length) {
 				s.graphics.lineStyle(1);
 				s.graphics.moveTo(pts[pts.length-1].x, pts[pts.length-1].y);
-				for each(var pt:Point in pts)
+				for each (var pt:Point in pts)
 					s.graphics.lineTo(pt.x, pt.y);
 			}
 
-			if(id)
+			if (id)
 				shapeDict[id] = s;
 		}
 
@@ -269,18 +269,13 @@ public class ScratchCostume {
 		return ((B.x-A.x)*(C.y-A.y)-(B.y-A.y)*(C.x-A.x));
 	}
 
-	/* make a convex hull of boundary of forground object in the binary
-	 image */
-	/* in some case L[0]=R[0], or L[ll]=R[rr] if first line or last line of
-	 object is composed of
-	 ** a single point
-	 */
-	private function RasterHull():Array
-	{
+	/* make a convex hull of boundary of forground object in the binary image */
+	/* in some case L[0]=R[0], or L[ll]=R[rr] if first line or last line of object is composed of a single point */
+	private function RasterHull():Array {
 		var dispObj:DisplayObject = displayObj();
 		var r:Rectangle = dispObj.getBounds(dispObj);
 //trace('flash bounds: '+r);
-		if(r.width < 1 || r.height < 1)
+		if (r.width < 1 || r.height < 1)
 			return [new Point()];
 
 		r.width += Math.floor(r.left) - r.left;
@@ -308,16 +303,16 @@ public class ScratchCostume {
 //		var maxX:int = 0;
 //		var maxY:int = 0;
 		var c:uint;
-		for(var y:int=0; y<h; ++y) {
-			for(var x:int=0; x<w; ++x){
+		for (var y:int=0; y<h; ++y) {
+			for (var x:int=0; x<w; ++x){
 				c = (image.getPixel32(x, y) >> 24) & 0xff;
-				if(c > 0) break;
+				if (c > 0) break;
 			}
-			if(x==w) continue;
+			if (x==w) continue;
 
 			Q.x = x + r.left; Q.y = y + r.top;
-			while(ll>0){
-				if(CCW(L[ll-1],L[ll],Q)<0)
+			while (ll>0){
+				if (CCW(L[ll-1],L[ll],Q)<0)
 					break;
 				else
 					--ll;
@@ -328,16 +323,16 @@ public class ScratchCostume {
 //			maxX = Math.max(maxX, Q.x);
 //			maxY = Math.max(maxY, Q.y);
 			L[++ll] = Q.clone();
-			for(x=w-1; x>=0; --x) {//x=-1 never occurs;
+			for (x=w-1; x>=0; --x) {//x=-1 never occurs;
 				c = (image.getPixel32(x, y) >> 24) & 0xff;
-				if(c > 0) break;
+				if (c > 0) break;
 			}
 
 			Q.x = x + r.left;
 //			minX = Math.min(minX, Q.x);
 //			maxX = Math.max(maxX, Q.x);
-			while(rr>0) {
-				if(CCW(R[rr-1], R[rr], Q)>0)
+			while (rr>0) {
+				if (CCW(R[rr-1], R[rr], Q)>0)
 					break;
 				else
 					--rr;
@@ -346,10 +341,10 @@ public class ScratchCostume {
 		}
 
 		/* collect final results*/
-		for(var i:int=0; i<(ll+1); ++i)
+		for (var i:int=0; i<(ll+1); ++i)
 			H[i] = L[i]; //left part;
 
-		for(var j:int=rr; j>=0; --j)
+		for (var j:int=rr; j>=0; --j)
 			H[i++] = R[j]; //right part;
 
 		R.length = L.length = 0;
@@ -390,7 +385,7 @@ public class ScratchCostume {
 		dup.fontName = fontName;
 		dup.fontSize = fontSize;
 
-		if(svgRoot && svgSprite) dup.setSVGSprite(cloneSprite(svgSprite));
+		if (svgRoot && svgSprite) dup.setSVGSprite(cloneSprite(svgSprite));
 
 		return dup;
 	}
@@ -404,11 +399,11 @@ public class ScratchCostume {
 		clone.scaleY = spr.scaleY;
 		clone.rotation = spr.rotation;
 
-		for(var i:int=0; i<spr.numChildren; ++i) {
+		for (var i:int=0; i<spr.numChildren; ++i) {
 			var dispObj:DisplayObject = spr.getChildAt(i);
-			if(dispObj is Sprite)
+			if (dispObj is Sprite)
 				clone.addChild(cloneSprite(dispObj as Sprite));
-			else if(dispObj is Shape) {
+			else if (dispObj is Shape) {
 				var shape:Shape = new Shape();
 				shape.graphics.copyFrom((dispObj as Shape).graphics);
 				shape.x = dispObj.x;
@@ -417,8 +412,7 @@ public class ScratchCostume {
 				shape.scaleY = dispObj.scaleY;
 				shape.rotation = dispObj.rotation;
 				clone.addChild(shape);
-			}
-			else if(dispObj is Bitmap) {
+			} else if (dispObj is Bitmap) {
 				var bm:Bitmap = new Bitmap((dispObj as Bitmap).bitmapData);
 				bm.x = dispObj.x;
 				bm.y = dispObj.y;
@@ -427,8 +421,7 @@ public class ScratchCostume {
 				bm.rotation = dispObj.rotation;
 				bm.alpha = dispObj.alpha;
 				clone.addChild(bm);
-			}
-			else if(dispObj is TextField) {
+			} else if (dispObj is TextField) {
 				var tf:TextField = new TextField();
 				tf.selectable = false;
 				tf.mouseEnabled = false;
@@ -521,7 +514,7 @@ public class ScratchCostume {
 			json.writeKeyValue('textLayerMD5', textLayerMD5);
 		}
 	}
- 
+
 	public function readJSON(jsonObj:Object):void {
 		costumeName = jsonObj.costumeName;
 		baseLayerID = jsonObj.baseLayerID;
