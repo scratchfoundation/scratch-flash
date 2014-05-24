@@ -340,7 +340,7 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 
 	private function addScratchExtensions():void {
 		const extList:Array = [
-			//ScratchExtension.PicoBoard(),
+			ScratchExtension.PicoBoard(),
 			ScratchExtension.WeDo()];
 		allItems = [];
 		for each (var ext:ScratchExtension in extList) {

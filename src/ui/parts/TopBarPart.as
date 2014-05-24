@@ -71,11 +71,15 @@ public class TopBarPart extends UIPart {
 		return ['File', 'Edit', 'Tips', 'Duplicate', 'Delete', 'Grow', 'Shrink', 'Block help', 'Offline Editor'];
 	}
 
-	public function updateTranslation():void {
+	protected function removeTextButtons():void {
 		if (fileMenu.parent) {
 			removeChild(fileMenu);
 			removeChild(editMenu);
 		}
+	}
+
+	public function updateTranslation():void {
+		removeTextButtons();
 		addTextButtons();
 		if (offlineNotice) offlineNotice.text = Translator.map('Offline Editor') + ' (beta)';
 		refresh();

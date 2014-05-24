@@ -1,0 +1,16 @@
+language: node_js
+node_js:
+  - "0.10"
+cache:
+  directories:
+    - node_modules
+before_script:
+  - npm install flex-sdk
+
+notifications:
+  hipchat:
+    rooms:
+      secure: "RP6i3+3IPgwkCj78UAjISXCv67RIU8u84OOAAcLT64pRoJ2aZvNo4ITlU28AVnRojO8V9JoXo/UBiTSTnNZsiL6LIqh1BScIE8lfIHLZ4pEqrvrjSmx56jT9jf3kttjjp00qaQ2QlpV7v9Dyg4GOvLRfOYTOhTSQTKgfWN+/dJA="
+    template:
+      - '%{repository}#%{build_number} (%{branch} - %{commit} : %{author}): %{message} (<a href="%{build_url}">Details</a>/<a href="%{compare_url}">Change view</a>)'
+    format: html

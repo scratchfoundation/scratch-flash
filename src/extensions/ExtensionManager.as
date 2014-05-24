@@ -61,7 +61,7 @@ public class ExtensionManager {
 	public function clearImportedExtensions():void {
 		// Clear imported extensions before loading a new project.
 		extensionDict = {};
-		//extensionDict['PicoBoard'] = ScratchExtension.PicoBoard();
+		extensionDict['PicoBoard'] = ScratchExtension.PicoBoard();
 		extensionDict[wedoExt] = ScratchExtension.WeDo();
 	}
 
@@ -324,7 +324,7 @@ public class ExtensionManager {
 					value = ExternalInterface.call('ScratchExtensions.getReporter', ext.name, sensorName, args);
 				}
 				if (value == undefined) value = 0; // default to zero if missing
-				if ('b' == b.type) value = ('true' == value); // coerce value to a boolean
+				if ('b' == b.type) value = (ext.port>0 ? 'true' == value : true == value); // coerce value to a boolean
 				return value;
 			}
 		} else {

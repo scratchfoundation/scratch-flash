@@ -1,0 +1,23 @@
+{
+  "name": "Scratch",
+  "description": "Open source version of the Scratch 2.0 project editor.",
+  "version": "1.0.0",
+  "homepage": "http://scratch.mit.edu/",
+  "main": "scratch-flash",
+  "license": "GPL-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/LLK/scratch-flash.git"
+  },
+  "scripts": {
+    "test": "node tests/build.js"
+  },
+  "engines": {
+    "node": ">= 0.10"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "flex-sdk": "4.6.0-0"
+  }
+}
+

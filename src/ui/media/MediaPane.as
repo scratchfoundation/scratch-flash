@@ -78,7 +78,7 @@ public class MediaPane extends ScrollFrameContents {
 		var result:Array = [];
 		var viewedObj:ScratchObj = app.viewedObj();
 		for each (var c:ScratchCostume in viewedObj.costumes) {
-			result.push(new MediaInfo(c, viewedObj));
+			result.push(Scratch.app.createMediaInfo(c, viewedObj));
 		}
 		return result;
 	}
@@ -87,7 +87,7 @@ public class MediaPane extends ScrollFrameContents {
 		var result:Array = [];
 		var viewedObj:ScratchObj = app.viewedObj();
 		for each (var snd:ScratchSound in viewedObj.sounds) {
-			result.push(new MediaInfo(snd, viewedObj));
+			result.push(Scratch.app.createMediaInfo(snd, viewedObj));
 		}
 		return result;
 	}
