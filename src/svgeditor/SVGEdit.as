@@ -74,7 +74,7 @@ public class SVGEdit extends ImageEdit {
 
 	override protected function selectHandler(event:Event = null):void {
 		// Send ShapeProperties to the ShapePropertiesUI
-		//if (toolMode != 'select') return;
+		// if (toolMode != 'select') return;
 
 		// Reset the smoothness ui
 		drawPropsUI.showSmoothnessUI(false);
@@ -139,7 +139,7 @@ public class SVGEdit extends ImageEdit {
 	}
 
 	private function showPanel(panel:Sprite):void {
-		//panel.fixLayout();
+		// panel.fixLayout();
 		var dx:int = (w - panel.width) / 2;
 		var dy:int = (h - panel.height) / 2;
 		panel.x = dx;
@@ -187,7 +187,7 @@ public class SVGEdit extends ImageEdit {
 			if (obj) {
 				var el:SVGElement = obj.getElement();
 				el.setAttribute('stroke-width', drawPropsUI.settings.strokeWidth);
-				//el.applyShapeProps(drawPropsUI.settings);
+				// el.applyShapeProps(drawPropsUI.settings);
 				obj.redraw();
 				saveContent();
 			}
@@ -229,7 +229,7 @@ public class SVGEdit extends ImageEdit {
 			t.removeEventListener(TimerEvent.TIMER_COMPLETE, arguments.callee);
 			t.stop();
 			t = null;
-			//s.toggleHighlight(false);
+			// s.toggleHighlight(false);
 
 			var filters:Array = [];
 			for each (var dObj:DisplayObject in s.getObjs())
@@ -242,7 +242,7 @@ public class SVGEdit extends ImageEdit {
 	// Flipping
 	//------------------------------
 	override protected function flipAll(vertical:Boolean):void {
-		//var anchorPt:Point = new Point(targetCostume.rotationCenterX, targetCostume.rotationCenterY);
+		// var anchorPt:Point = new Point(targetCostume.rotationCenterX, targetCostume.rotationCenterY);
 
 		var cl:Sprite = workArea.getContentLayer();
 		if (cl.numChildren == 0) return;
@@ -290,7 +290,7 @@ public class SVGEdit extends ImageEdit {
 			var p:Point = new Point(ImageCanvas.canvasWidth / 2, ImageCanvas.canvasHeight / 2);
 			p = p.subtract(destP);
 			// TODO: Can we place the loaded SVG better? (Use the actual center instead of the rotation center)
-			//p = p.add(new Point(c.width()/2, c.height()/2));
+			// p = p.add(new Point(c.width()/2, c.height()/2));
 			p = p.add(new Point(c.rotationCenterX, c.rotationCenterY));
 			installSVGData(c.baseLayerData, Math.round(p.x), Math.round(p.y), true);
 		}

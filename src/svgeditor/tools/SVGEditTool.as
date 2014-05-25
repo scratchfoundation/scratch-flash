@@ -60,14 +60,14 @@ public class SVGEditTool extends SVGTool {
 		if (obj == object) return;
 
 		if (object) {
-			//(object as DisplayObject).filters = [];
+			// (object as DisplayObject).filters = [];
 		}
 
 		if (obj && (!editTag || editTag.indexOf(obj.getElement().tag) > -1)) {
 			object = obj;
 
 			if (object) {
-				//(object as DisplayObject).filters = [new GlowFilter(0x28A5DA)];
+				// (object as DisplayObject).filters = [new GlowFilter(0x28A5DA)];
 			}
 		} else {
 			object = null;

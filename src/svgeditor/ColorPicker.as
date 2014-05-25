@@ -108,7 +108,7 @@ public class ColorPicker extends Sprite {
 		paletteSwitchButton.getChildAt(0).visible = palette.visible;
 		paletteSwitchButton.getChildAt(1).visible = !palette.visible;
 		if (hsvColorPicker.visible) {
-			//pickWheelColor();
+			// pickWheelColor();
 		}
 		SimpleTooltips.hideAll();
 	}
@@ -158,11 +158,11 @@ public class ColorPicker extends Sprite {
 		if (color) drawColorSelector(color, true); // highlight the new selection
 		selectedColor = color;
 
-		//if (hsvColorPicker.visible) pickWheelColor();
+		// if (hsvColorPicker.visible) pickWheelColor();
 	}
 
 	private function pickWheelColor():void {
-		//trace('pickWheelColor()');
+// trace('pickWheelColor()');
 		// Convert current color to HSV to find it
 		var hsv:Array = Color.rgb2hsv(drawPropsUI.settings.color);
 		var bmp:Bitmap = hsvColorPicker.getChildAt(0) as Bitmap;
@@ -224,7 +224,7 @@ public class ColorPicker extends Sprite {
 		}
 		setCurrentColor(color, alpha);
 		drawPropsUI.sendChangeEvent();
-		//pickWheelColor();
+		// pickWheelColor();
 	}
 
 	/* Continuous Color Picker */

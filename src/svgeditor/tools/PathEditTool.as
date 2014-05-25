@@ -251,7 +251,7 @@ public final class PathEditTool extends SVGEditTool {
 
 		// If we want to prevent removing 2-point paths by removing a point,
 		// then uncomment this code:
-		//if (endPoints[1] - endPoints[0] < 2) return;
+		// if (endPoints[1] - endPoints[0] < 2) return;
 
 		// Cut the path here if the shift key was down and the point is not an end-point
 		var pos:Point;

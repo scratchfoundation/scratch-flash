@@ -227,8 +227,8 @@ public class SVGElement {
 
 	public function renderPathOn(s:Shape, forHitTest:Boolean = false):void {
 		SVGPath.render(this, s.graphics, forHitTest);
-		//s.alpha = alpha();
-		//if (transform) s.transform.matrix = transform;
+		// s.alpha = alpha();
+		// if (transform) s.transform.matrix = transform;
 	}
 
 	public function renderTextOn(tf:TextField):void {

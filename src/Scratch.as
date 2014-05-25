@@ -147,9 +147,9 @@ public class Scratch extends Sprite {
 		else runtime.installEmptyProject();
 
 		fixLayout();
-//Analyze.collectAssets(0, 119110);
-//Analyze.checkProjects(56086, 64220);
-//Analyze.countMissingAssets();
+// Analyze.collectAssets(0, 119110);
+// Analyze.checkProjects(56086, 64220);
+// Analyze.countMissingAssets();
 	}
 
 	protected function initTopBarPart():void {

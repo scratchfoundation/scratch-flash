@@ -161,13 +161,13 @@ public final class EraserTool extends SVGTool {
 
 	private function updateEraserShape():void {
 		var g:Graphics = eraserShape.graphics;
-		//var w:Number = strokeWidth * editor.getContentLayer().
+		// var w:Number = strokeWidth * editor.getContentLayer().
 		g.clear();
 		var p:Point = new Point(eraserShape.mouseX, eraserShape.mouseY);
 		if (lastPos) {
 			g.lineStyle(strokeWidth, 0xFF0000, 1, false, LineScaleMode.NORMAL, CapsStyle.ROUND);
 			g.moveTo(lastPos.x, lastPos.y);
-			//var p:Point = obj.globalToLocal(lastPos).subtract(new Point(obj.mouseX, obj.mouseY));
+			// var p:Point = obj.globalToLocal(lastPos).subtract(new Point(obj.mouseX, obj.mouseY));
 			g.lineTo(p.x, p.y);
 		} else {
 			g.lineStyle(0, 0, 0);
@@ -199,18 +199,18 @@ public final class EraserTool extends SVGTool {
 	private function eraseFromShape(svgShape:SVGShape):void {
 		// Does the path collide with the backdrop shapes?
 		if (!PixelPerfectCollisionDetection.isColliding(svgShape, eraserShape)) return;
-		//trace("Path intersects with backdrop!");
+// trace("Path intersects with backdrop!");
 
 		var thisSW:* = svgShape.getElement().getAttribute('stroke-width');
 		var thisSC:* = svgShape.getElement().getAttribute('stroke-linecap');
 
 		// Make sure that it isn't just the stroke width that is causing the intersection.
 		// We want paths which intersect and not just "touch"
-		//svgShape.getElement().setAttribute('stroke-width', 2.0);
+		// svgShape.getElement().setAttribute('stroke-width', 2.0);
 		svgShape.getElement().setAttribute('stroke-linecap', 'butt');
 		svgShape.redraw();
 
-		//svgShape.debugMode = true;
+		// svgShape.debugMode = true;
 		if (svgShape.getElement().tag != 'path')
 			svgShape.getElement().convertToPath();
 
@@ -222,9 +222,9 @@ public final class EraserTool extends SVGTool {
 		// Okay, they definitely intersect, let's find out where
 		var path:SVGPath = svgShape.getElement().path;
 
-//trace('___Original Commands___ ('+intersections.length+' intersections)');
-//path.outputCommands();
-//svgShape.showIntersections(intersections);
+// trace('___Original Commands___ ('+intersections.length+' intersections)');
+// path.outputCommands();
+// svgShape.showIntersections(intersections);
 
 		// Cut the path in two
 		var origLen:int = path.length;
@@ -232,16 +232,14 @@ public final class EraserTool extends SVGTool {
 		for (var i:int=0; i<intersections.length; ++i) {
 			var ofs:int = path.length - origLen;
 			var inter:Object = intersections[i];
-if (false) {
-var str:String = 'Intersection #'+i+':  start ('+inter.start.index+', '+inter.start.time+')';
-if (inter.end) {
-str+= '   end ('+inter.end.index+', '+inter.end.time+')';
-}
-trace(str);
-}
+// var str:String = 'Intersection #'+i+':  start ('+inter.start.index+', '+inter.start.time+')';
+// if (inter.end) {
+// 	str+= '   end ('+inter.end.index+', '+inter.end.time+')';
+// }
+// trace(str);
 			var startIndex:int = inter.start.index + ofs;
 			var indices:Array = path.getSegmentEndPoints(startIndex);
-			//trace(indices);
+// trace(indices);
 			if (indices[2]) {
 				if (svgShape.getElement().getAttribute('fill') != 'none' &&
 						svgShape.getElement().getAttribute('fill-opacity') !== 0) {
@@ -274,7 +272,7 @@ trace(str);
 			path.push(['M', pt.x, pt.y]);
 			path.push.apply(path, endCmds);
 
-//path.outputCommands();
+// path.outputCommands();
 		}
 		svgShape.getElement().setAttribute('stroke-width', thisSW);
 		svgShape.getElement().setAttribute('stroke-linecap', thisSC);
@@ -282,9 +280,9 @@ trace(str);
 
 		if (intersections.length) {
 			path.removeInvalidSegments(thisSW);
-//trace('___Altered Commands___');
-//path.outputCommands();
-//trace('DONE\n');
+// trace('___Altered Commands___');
+// path.outputCommands();
+// trace('DONE\n');
 			// Bind a segment which had closed the path to the beginning of the path
 			if (closingSegment > 0) {
 				indices = path.getSegmentEndPoints(closingSegment);

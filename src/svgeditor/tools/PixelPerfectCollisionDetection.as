@@ -35,7 +35,7 @@ public class PixelPerfectCollisionDetection {
 
 	/** Are the two display objects colliding (overlapping)? **/
 	public static function isColliding(target1:DisplayObject, target2:DisplayObject, sensitive:Boolean = false, debugSpr:Sprite = null):Boolean {
-		//var collisionRect:Rectangle = getCollisionRect(target1, target2, commonParent, pixelPrecise, tolerance);
+		// var collisionRect:Rectangle = getCollisionRect(target1, target2, commonParent, pixelPrecise, tolerance);
 		var collisionRect:Rectangle = areaOfCollision(target1, target2, sensitive, debugSpr);
 
 		if (collisionRect != null && collisionRect.size.length> 0) return true;
@@ -89,19 +89,19 @@ public class PixelPerfectCollisionDetection {
 			// find color
 			var intersection:Rectangle = sensitive ? alpha1.getColorBoundsRect(0x010100, 0x010100) : alpha1.getColorBoundsRect(0x070700, 0x070700);
 if (debugSpr) {
-//	var spr:Sprite = object1.stage.getChildAt(0) as Sprite;
-//	spr.graphics.lineStyle(1);
-//	spr.graphics.drawRect(limits.x, limits.y, limits.width, limits.height);
-if (debugSpr.width > debugSpr.stage.stageWidth)
-	while (debugSpr.numChildren)
-		debugSpr.removeChildAt(0);
-var bm:Bitmap = new Bitmap(alpha1);
-bm.alpha = (intersection.width == 0 ? 0.5 : 1.0);
-bm.x = debugSpr.width + 2;
-debugSpr.addChild(bm);
+	// var spr:Sprite = object1.stage.getChildAt(0) as Sprite;
+	// spr.graphics.lineStyle(1);
+	// spr.graphics.drawRect(limits.x, limits.y, limits.width, limits.height);
+	if (debugSpr.width > debugSpr.stage.stageWidth)
+		while (debugSpr.numChildren)
+			debugSpr.removeChildAt(0);
+	var bm:Bitmap = new Bitmap(alpha1);
+	bm.alpha = (intersection.width == 0 ? 0.5 : 1.0);
+	bm.x = debugSpr.width + 2;
+	debugSpr.addChild(bm);
 }
 			if (intersection.width == 0) return null;
-//if (debugSpr) trace(intersection);
+// if (debugSpr) trace(intersection);
 			intersection.offset(limits.left, limits.top);
 			return intersection;
 		}

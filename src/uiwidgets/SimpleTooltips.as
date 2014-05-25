@@ -151,7 +151,7 @@ class SimpleTooltip {
 	}
 
 	private function startShow():void {
-		//trace('startShow()');
+// trace('startShow()');
 		showTimer.reset();
 		hideTimer.reset();
 		sprite.alpha = 0;
@@ -170,7 +170,7 @@ class SimpleTooltip {
 
 	public function showOnce(dObj:DisplayObject, ttOpts:Object):void {
 		if (!stage && dObj.stage) stage = dObj.stage;
-		//trace('showOnce()');
+// trace('showOnce()');
 		forceHide();
 		showTimer.reset();
 		hideTimer.reset();
@@ -220,7 +220,7 @@ class SimpleTooltip {
 	}
 
 	private function startHide(timer:Timer):void {
-		//trace('startHide()');
+// trace('startHide()');
 		hideTimer.reset();
 		currentTipObj = null;
 		sprite.alpha = 0;
@@ -228,7 +228,7 @@ class SimpleTooltip {
 	}
 
 	private function renderTooltip(text:String):void {
-		//trace('renderTooltip(\''+text+'\')');
+// trace('renderTooltip(\''+text+'\')');
 		var g:Graphics = sprite.graphics;
 		textField.text = Translator.map(text);
 		g.clear();
@@ -239,7 +239,7 @@ class SimpleTooltip {
 	}
 
 	private function startShowTimer(dObj:DisplayObject):void {
-		//trace('startShowTimer()');
+// trace('startShowTimer()');
 		if (!stage && dObj.stage) stage = dObj.stage;
 
 		dObj.addEventListener(MouseEvent.MOUSE_OUT, eventHandler);
@@ -258,7 +258,7 @@ class SimpleTooltip {
 	}
 
 	private function startHideTimer(dObj:DisplayObject):void {
-		//trace('startHideTimer()');
+// trace('startHideTimer()');
 		if (dObj !== currentTipObj) return;
 
 		hideTimer.reset();

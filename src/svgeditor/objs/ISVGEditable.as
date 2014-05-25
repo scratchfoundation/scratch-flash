@@ -31,5 +31,5 @@ public interface ISVGEditable {
 	function clone():ISVGEditable;
 
 	// Fixes up the transform and element specific position data
-	//function normalize():void;
+	// function normalize():void;
 }}

@@ -132,16 +132,16 @@ public class SVGShape extends Shape implements ISVGEditable {
 				if (time > -1) {
 					if (collisionState) {
 						// Should we make sure that we've moved at least a certain amount?
-						//if (!curr || time - curr.end.time > minDist) {
+						// if (!curr || time - curr.end.time > minDist) {
 							curr = {start:{index: index, time: time}};
 							intersections.push(curr);
 							interval = Math.min(0.1, interval * 32);
-						//}
+						// }
 					} else {
 						intersections[intersections.length-1].end = {index: index, time: time};
 						interval = 0.1;
 					}
-					//trace('intersecting at ('+time+')');
+// trace('intersecting at ('+time+')');
 				} else {
 					break;
 				}
@@ -153,19 +153,19 @@ public class SVGShape extends Shape implements ISVGEditable {
 
 	private function getNextCollisionChange(time:Number, p1:Point, cp1:Point, cp2:Point, p2:Point, otherShape:DisplayObject):Number {
 		var g:Graphics = graphics;
-//trace('getNextCollisionChange('+time+', '+interval+')');
+// trace('getNextCollisionChange('+time+', '+interval+')');
 		for (var i:Number=time + interval; i<=1.0; i+= interval) {
 			g.clear();
 			var ct:Number = i - interval;
 			var pt:Point = SVGPath.getPosByTime(ct - interval, p1, cp1, cp2, p2);
 			g.moveTo(pt.x, pt.y);
 			setTestStroke();
-			//if (npt) trace("Moving "+npt.subtract(SVGPath.getPosByTime(i, p1, cp1, cp2, p2)).length+" @ t="+i);
+// if (npt) trace("Moving "+npt.subtract(SVGPath.getPosByTime(i, p1, cp1, cp2, p2)).length+" @ t="+i);
 			var npt:Point = SVGPath.getPosByTime(i, p1, cp1, cp2, p2);
 			g.lineTo(npt.x, npt.y);
-			var colliding:Boolean = PixelPerfectCollisionDetection.isColliding(this, otherShape);//, false, debugCD);
+			var colliding:Boolean = PixelPerfectCollisionDetection.isColliding(this, otherShape); // false, debugCD);
 			if (colliding != collisionState) {
-				//trace("At time "+ct+" colliding="+colliding)
+// trace("At time "+ct+" colliding="+colliding)
 				if (npt.subtract(pt).length > distCheck) {
 					// Recurse to get a more precise time
 					interval *= 0.5;
@@ -274,7 +274,7 @@ public class SVGShape extends Shape implements ISVGEditable {
 								++pixelCount;
 					var len:Number = (new Point(r.width, r.height)).length;
 					var ratio:Number = pixelCount / len;
-					//trace(r + '    '+ratio + ' > '+maxRatio + ' '+ (ratio > maxRatio ? 'SAVED' : 'DISCARDED'));
+// trace(r + '    '+ratio + ' > '+maxRatio + ' '+ (ratio > maxRatio ? 'SAVED' : 'DISCARDED'));
 					if (ratio > maxRatio) {
 						elem.path.splice(index, 0, cmd);
 						elem.path.adjustPathAroundAnchor(index);
@@ -339,7 +339,7 @@ public class SVGShape extends Shape implements ISVGEditable {
 		var passCount:uint = 0;
 		var endPointDistFromEnd:uint = elem.path.length - elem.path.getSegmentEndPoints()[1];
 		do {
-//trace('Starting pass #'+(passCount+1));
+// trace('Starting pass #'+(passCount+1));
 			var tries:uint = elem.path.length - endPointDistFromEnd;
 			var index:uint = 1;
 			removedPoint = false;
@@ -351,7 +351,7 @@ public class SVGShape extends Shape implements ISVGEditable {
 
 				// Skip Move and Close commands
 				if (elem.path[index][0] == 'Z' || elem.path[index][0] == 'M') {
-					//++index;
+					// ++index;
 					continue;
 				}
 
@@ -367,14 +367,14 @@ public class SVGShape extends Shape implements ISVGEditable {
 				img2.threshold(img, img.rect, new Point, "<", 0xF0000000, 0, 0xF0000000);
 				var r:Rectangle = img.getColorBoundsRect(0xFF000000, 0xFF000000, true);
 				if (r && r.width > 1 && r.height > 1) {
-//trace(or + ' : ' + r);
+// trace(or + ' : ' + r);
 					var pixelCount:uint = 0;
 					for (i = r.left; i<r.right; ++i)
 						for (j = r.top; j<r.bottom; ++j)
 							if ((img2.getPixel32(i, j)>>24) & 0xF0)
 								++pixelCount;
 					var ratio:Number = pixelCount / totalPixels;
-//trace('Cmd #'+index+'    '+ratio + ' > '+maxRatio + ' '+ (ratio > maxRatio ? 'SAVED' : 'DISCARDED'));
+// trace('Cmd #'+index+'    '+ratio + ' > '+maxRatio + ' '+ (ratio > maxRatio ? 'SAVED' : 'DISCARDED'));
 					if (ratio > maxRatio) {
 						elem.path.splice(index, 0, cmd);
 						elem.path.adjustPathAroundAnchor(index);
@@ -387,7 +387,7 @@ public class SVGShape extends Shape implements ISVGEditable {
 				elem.path.adjustPathAroundAnchor(index, 3, 1);
 				elem.path.adjustPathAroundAnchor(index, 3, 1);
 				elem.path.adjustPathAroundAnchor(index, 3, 1);
-				//++index;
+				// ++index;
 			}
 			++passCount;
 		} while (removedPoint)
@@ -399,7 +399,7 @@ public class SVGShape extends Shape implements ISVGEditable {
 		elem.setAttribute('stroke-width', strokeWidth);
 		elem.setAttribute('fill', fill);
 		redraw();
-//trace('smoothPath() took '+((new Date).getTime() - start)+'ms.  '+elem.path.length+' commands left.');
+// trace('smoothPath() took '+((new Date).getTime() - start)+'ms.  '+elem.path.length+' commands left.');
 	}
 
 	// Debugging stuff!
@@ -414,7 +414,7 @@ public class SVGShape extends Shape implements ISVGEditable {
 			} else {
 				debugShape = new Shape();
 				debugShape.alpha = 0.25;
-				//debugShape.x = 15;
+				// debugShape.x = 15;
 			}
 			parent.addChild(debugShape);
 			debugShape.transform = transform;
@@ -457,12 +457,12 @@ public class SVGShape extends Shape implements ISVGEditable {
 		g.moveTo(pt.x, pt.y);
 		g.lineStyle(5, 0xFF0000, 0.7, true, "normal", CapsStyle.NONE, JointStyle.MITER);
 		for (var i:Number=start; i<=stop; i += interval) {
-			//g.clear();
+			// g.clear();
 			var percComp:Number = (i - start) / Math.min(stop - start, 0.01);
 			pt = SVGPath.getPosByTime(i - interval - overlap, p1, c1, c2, p2);
-			//g.moveTo(pt.x, pt.y);
-			//var grn:int = ((1 - percComp) * 0xFF) << 8;
-			//g.lineStyle(5, 0xFF0000 + grn, 0.5, false, "normal", CapsStyle.NONE, JointStyle.MITER, 0);
+			// g.moveTo(pt.x, pt.y);
+			// var grn:int = ((1 - percComp) * 0xFF) << 8;
+			// g.lineStyle(5, 0xFF0000 + grn, 0.5, false, "normal", CapsStyle.NONE, JointStyle.MITER, 0);
 
 			pt = SVGPath.getPosByTime(i, p1, c1, c2, p2);
 			g.lineTo(pt.x, pt.y);

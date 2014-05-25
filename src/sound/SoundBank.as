@@ -338,7 +338,7 @@ public class SoundBank {
 
 	// Approximate Scratch 1.4 (i.e. MIDI) drums using Scratch 2.0 drum samples.
 	static private var midiDrums:Array = [
-		['BassDrum', -4], //35
+		['BassDrum', -4], // 35
 		['BassDrum', 0],
 		['SideStick', 0],
 		['SnareDrum', 0],
@@ -373,7 +373,7 @@ public class SoundBank {
 		['Cowbell', 19], // high agogo
 		['Cowbell', 12], // low agogo
 		['Cabasa', 0],
-		['Maracas', 0], //70
+		['Maracas', 0], // 70
 		['Cuica', 12], // short whistle
 		['Cuica', 5], // long whistle
 		['GuiroShort', 0],

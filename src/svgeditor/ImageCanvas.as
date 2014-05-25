@@ -302,7 +302,7 @@ return 1; // Force integer scaling in both editors for now
 		setHScroll(Math.min(1, Math.max(0, (p.x - visibleMask.width * 0.5) / maxScrollH())));
 		setVScroll(Math.min(1, Math.max(0, (p.y - visibleMask.height * 0.5) / maxScrollV())));
 		resize(currWidth, currHeight);
-		//updateScrollbars();
+		// updateScrollbars();
 	}
 
 	public function zoomOut():void {

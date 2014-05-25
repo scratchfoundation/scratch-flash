@@ -91,11 +91,11 @@ public class ScratchTextureBitmap extends BitmapData {
 			rect.width = rect.width - 1;
 			rect.height = rect.height - 1;
 			rect = rect.clone();
-			//trace('Made rectangle for '+bmID+' to '+rect);
+// trace('Made rectangle for '+bmID+' to '+rect);
 			tmpPt.x = rect.x; tmpPt.y = rect.y;
 			rect.x = rect.y = 0;
 			bmd = bitmapsByID[bmID];
-			//trace('Copying pixels from bitmap with id: '+bmID+' @ '+bmd.width+'x'+bmd.height+'  -  '+tmpPt);
+// trace('Copying pixels from bitmap with id: '+bmID+' @ '+bmd.width+'x'+bmd.height+'  -  '+tmpPt);
 			copyPixels(bmd, rect, tmpPt, null, null, false);
 
 			if (bmd is ChildRender) {
@@ -124,7 +124,7 @@ public class ScratchTextureBitmap extends BitmapData {
 		rect = rect.clone();
 		tmpPt.x = rect.x; tmpPt.y = rect.y;
 		rect.x = rect.y = 0;
-//trace('Copying pixels from '+Dbg.printObj(bmd)+' with id: '+id+' @ '+bmd.width+'x'+bmd.height+'  -  '+pt);
+// trace('Copying pixels from '+Dbg.printObj(bmd)+' with id: '+id+' @ '+bmd.width+'x'+bmd.height+'  -  '+pt);
 		copyPixels(bmd, rect, tmpPt, null, null, false);
 		dirty = true;
 	}

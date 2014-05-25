@@ -129,10 +129,10 @@ public class Translator {
 	}
 
 	public static function map(s:String):String {
-//return TranslatableStrings.has(s) ? s.toUpperCase() : s;
-//return (s.indexOf('%') > -1) ? s : s.toUpperCase(); // xxx testing only
+// return TranslatableStrings.has(s) ? s.toUpperCase() : s;
+// return (s.indexOf('%') > -1) ? s : s.toUpperCase(); // xxx testing only
 		var result:* = dictionary[s];
-//if (!isEnglish && (s.indexOf('%') == -1)) return s.toUpperCase(); // xxx for testing only; comment out before pushing!
+// if (!isEnglish && (s.indexOf('%') == -1)) return s.toUpperCase(); // xxx for testing only; comment out before pushing!
 		if ((result == null) || (result.length == 0)) return s;
 		return result;
 	}

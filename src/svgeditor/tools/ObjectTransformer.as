@@ -168,14 +168,14 @@ public class ObjectTransformer extends SVGEditTool {
 	}
 
 	private function startDblClickTimer():void {
-//trace('startDblClickTimer() - ' + (new Date()).getTime());
+// trace('startDblClickTimer() - ' + (new Date()).getTime());
 		clearPreEditTF();
 		if (targetObj && targetObj.isTextField()) {
 			dblClickTimer = new Timer(250);
 			dblClickTimer.start();
 			dblClickTimer.addEventListener(TimerEvent.TIMER, dblClickTimeout, false, 0, true);
 
-//trace('Starting double click timer.');
+// trace('Starting double click timer.');
 			preEditTF = targetObj.getObjs()[0] as TextField;
 			preEditTF.type = TextFieldType.INPUT;
 			preEditTF.addEventListener(FocusEvent.FOCUS_IN, handleTextFocus, false, 0, true);
@@ -184,7 +184,7 @@ public class ObjectTransformer extends SVGEditTool {
 	}
 
 	private function handleTextFocus(e:FocusEvent):void {
-//trace('got focus, changing to text mode. - ' + (new Date()).getTime());
+// trace('got focus, changing to text mode. - ' + (new Date()).getTime());
 		clearDblClickTimeout();
 		clearPreEditTF(true);
 		editor.setToolMode('text');
@@ -192,7 +192,7 @@ public class ObjectTransformer extends SVGEditTool {
 
 	private function clearPreEditTF(edit:Boolean = false):void {
 		if (preEditTF) {
-			//trace('Clearing text field!');
+// trace('Clearing text field!');
 			if (!edit) preEditTF.type = TextFieldType.DYNAMIC;
 
 			preEditTF.removeEventListener(FocusEvent.FOCUS_IN, handleTextFocus);
@@ -201,13 +201,13 @@ public class ObjectTransformer extends SVGEditTool {
 	}
 
 	private function dblClickTimeout(event:TimerEvent = null):void {
-//trace('dblClickTimeout() - ' + (new Date()).getTime());
+// trace('dblClickTimeout() - ' + (new Date()).getTime());
 		clearPreEditTF();
 		clearDblClickTimeout();
 	}
 
 	private function clearDblClickTimeout():void {
-//trace('clearDblClickTimeout() - ' + (new Date()).getTime());
+// trace('clearDblClickTimeout() - ' + (new Date()).getTime());
 		if (!dblClickTimer) return;
 
 		dblClickTimer.removeEventListener(TimerEvent.TIMER, dblClickTimeout);
@@ -237,7 +237,7 @@ public class ObjectTransformer extends SVGEditTool {
 			targetObj.toggleHighlight(false);
 			targetObj.removeEventListener(MouseEvent.MOUSE_DOWN, moveHandler);
 			// Remove the move cursor
-//trace('removing events');
+// trace('removing events');
 			targetObj.removeEventListener(MouseEvent.ROLL_OVER, handleMoveCursor);
 			targetObj.removeEventListener(MouseEvent.ROLL_OUT, handleMoveCursor);
 			targetObj.shutdown();
@@ -253,7 +253,7 @@ public class ObjectTransformer extends SVGEditTool {
 			// Add to the displaylist of the object's parent
 			targetObj.addEventListener(MouseEvent.MOUSE_DOWN, moveHandler, false, 0, true);
 			// Add the move cursor
-//trace('adding events');
+// trace('adding events');
 			targetObj.addEventListener(MouseEvent.ROLL_OVER, handleMoveCursor, false, 0, true);
 			targetObj.addEventListener(MouseEvent.ROLL_OUT, handleMoveCursor, false, 0, true);
 
@@ -372,28 +372,27 @@ public class ObjectTransformer extends SVGEditTool {
 				changed = false;
 				if (e.ctrlKey) {
 					// Copy
-					//editor.setToolMode('clone');
+					// editor.setToolMode('clone');
 				}
 				break;
-			/* TODO: Move to clone tool
-			case 118:
-				if (e.ctrlKey) {
-					// Paste
-					if (!copiedObjects || !copiedObjects.length) return;
+			// TODO: Move to clone tool
+			// case 118:
+			// 	if (e.ctrlKey) {
+			// 		// Paste
+			// 		if (!copiedObjects || !copiedObjects.length) return;
 
-					for (var i:uint=0; i<copiedObjects.length; ++i) {
-						contentLayer.addChild(copiedObjects[i] as DisplayObject);
-					}
+			// 		for (var i:uint=0; i<copiedObjects.length; ++i) {
+			// 			contentLayer.addChild(copiedObjects[i] as DisplayObject);
+			// 		}
 
-					select(new Selection(copiedObjects));
+			// 		select(new Selection(copiedObjects));
 
-					// Get another copy
-					getCopyOfSelection();
-				} else {
-					changed = false;
-				}
-				break;
-			*/
+			// 		// Get another copy
+			// 		getCopyOfSelection();
+			// 	} else {
+			// 		changed = false;
+			// 	}
+			// 	break;
 			case 103:
 				// Group / Ungroup!
 				var s:Selection = getSelection();
@@ -469,7 +468,7 @@ public class ObjectTransformer extends SVGEditTool {
 		if (e.type == MouseEvent.ROLL_OUT) {
 			// Keep the current operations cursor even if the mouse moves away from the handle
 			if (!isTransforming) {
-				//trace('removing cursor, no operation in progress');
+// trace('removing cursor, no operation in progress');
 				editor.setCurrentCursor(null);
 			}
 			return;
@@ -477,10 +476,10 @@ public class ObjectTransformer extends SVGEditTool {
 
 		// Don't switch cursors while transforming
 		if (isTransforming) {
-			//trace('not changing cursor during operation');
+// trace('not changing cursor during operation');
 			return;
 		}
-//trace('Setting cursor for ' + handleType);
+// trace('Setting cursor for ' + handleType);
 		switch (handleType) {
 			case HT_RESIZER:
 				updateResizeCursor(e.target as Sprite);
@@ -601,10 +600,10 @@ public class ObjectTransformer extends SVGEditTool {
 				} else {
 					moveOffset = new Point(parent.mouseX - x, parent.mouseY - y);
 				}
-				wasMoved = false;//newSelection;
+				wasMoved = false; // newSelection;
 				setActive(true);
 				e.stopImmediatePropagation();
-				//break;
+				// break;
 
 			case MouseEvent.MOUSE_MOVE:
 				if (!editor.getCanvasLayer().getBounds(stage).containsPoint(new Point(stage.mouseX, stage.mouseY)))
@@ -708,7 +707,7 @@ public class ObjectTransformer extends SVGEditTool {
 		var botLeft:Point = globalToLocal(pts.botLeft);
 		var botRight:Point = globalToLocal(pts.botRight);
 
-		//trace("drawing the box");
+// trace("drawing the box");
 		// Draw the dashed box
 		var dLen:uint = (targetObj.isGroup() ? grpDashLength : targetObj.isImage() ? bmDashLength : dashLength);
 		var dCol:uint = (targetObj.isGroup() ? grpDashColor : targetObj.isImage() ? bmDashColor : dashColor);
@@ -718,7 +717,7 @@ public class ObjectTransformer extends SVGEditTool {
 		graphics.lineTo(botRight.x, botRight.y);
 		graphics.lineTo(botLeft.x, botLeft.y);
 		graphics.lineTo(topLeft.x, topLeft.y);
-		//DashDrawer.drawPoly(graphics, [topLeft, topRight, botRight, botLeft], dLen, dCol);
+		// DashDrawer.drawPoly(graphics, [topLeft, topRight, botRight, botLeft], dLen, dCol);
 
 		// Re-position the move handle
 		if (!centerMoved) {
@@ -754,7 +753,7 @@ public class ObjectTransformer extends SVGEditTool {
 		// Draw a line to the rotator handle
 		graphics.moveTo(topHandle.x, topHandle.y);
 		graphics.lineTo(rotateHandle.x, rotateHandle.y);
-		//DashDrawer.drawLine(graphics, new Point(topHandle.x, topHandle.y), new Point(rotateHandle.x, rotateHandle.y), dashLength, dashColor);
+		// DashDrawer.drawLine(graphics, new Point(topHandle.x, topHandle.y), new Point(rotateHandle.x, rotateHandle.y), dashLength, dashColor);
 		x = y = 0;
 	}
 

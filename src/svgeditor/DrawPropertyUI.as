@@ -130,7 +130,7 @@ public class DrawPropertyUI extends Sprite {
 		modeButton.y = modeLabel.y + 22;
 
 		// hide in embedded editor???
-		//modeLabel.visible = modeButton.visible = !isEmbedded;
+		// modeLabel.visible = modeButton.visible = !isEmbedded;
 		updateZoomReadout();
 	}
 

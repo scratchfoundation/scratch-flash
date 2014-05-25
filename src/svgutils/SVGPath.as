@@ -691,7 +691,7 @@ public dynamic class SVGPath extends Array {
 	// Split a cubic bezier curve into two at t and
 	// return the index of the command before the split
 	public function splitCurve(index:uint, t:Number):uint {
-//trace('splitCurve('+index+', '+t+')');
+// trace('splitCurve('+index+', '+t+')');
 		if (index < 1)
 			return 0;
 
@@ -709,7 +709,7 @@ public dynamic class SVGPath extends Array {
 		var p2:Point = getPos(index);
 		var newCmd:Array;
 		if (cmd[0] == 'C') {
-//trace('Splitting curve #'+index+' @ '+t);
+// trace('Splitting curve #'+index+' @ '+t);
 			var c1:Point = new Point(cmd[1], cmd[2]);
 			var c2:Point = new Point(cmd[3], cmd[4]);
 			var sp:Point = Point.interpolate(c2, c1, t);
@@ -835,7 +835,7 @@ public dynamic class SVGPath extends Array {
 		var l3:Number = before.subtract(after).length;
 		var l:Number = l3 / (l1 + l2);
 		var min:Number = Math.min(l1,l2);
-		//if ((l1 + l2) >  3 * l3)	l = 0;
+		// if ((l1 + l2) >  3 * l3)	l = 0;
 
 		// This is the key equation that creates a control point
 		var vTangent:Point = getCurveTangent(before, here, after);

@@ -45,8 +45,8 @@ public final class TextTool extends SVGEditTool {
 	private var created:Boolean;
 	public function TextTool(ed:ImageEdit) {
 		super(ed, 'text');
-		//cursorBMName = 'textOff';
-		//cursorHotSpot = new Point(12,18);
+		// cursorBMName = 'textOff';
+		// cursorHotSpot = new Point(12,18);
 		cursorName = 'ibeam';
 	}
 
@@ -135,7 +135,7 @@ public final class TextTool extends SVGEditTool {
 		tf.removeEventListener(Event.CHANGE, handleEvents);
 		saveState();
 		// TODO: Fix redraw, it's currently moving the text field (due to the matrix?)
-		//tf.redraw();
+		// tf.redraw();
 		if (editor is SVGEdit) tf.filters = [];
 
 		if (tf.text == '' || tf.text == ' ') {// || tf.text.match(new RegExp('/^\s+$/'))) {

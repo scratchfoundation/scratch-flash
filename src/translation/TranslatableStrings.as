@@ -100,7 +100,7 @@ public class TranslatableStrings {
 
 		// collect strings from various UI classes
 		Menu.stringCollectionMode = true;
-		//addAll(BackpackPart.strings());
+		// addAll(BackpackPart.strings());
 		addAll(BlockMenus.strings());
 		addAll(BlockPalette.strings());
 		addAll(ColorPicker.strings());

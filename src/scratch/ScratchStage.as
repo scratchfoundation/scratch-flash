@@ -503,11 +503,11 @@ public class ScratchStage extends ScratchObj {
 		commitPenStrokes(); // force any pen strokes to be rendered so they can be sensed
 
 		var bm1:BitmapData;
-		var mask:uint = 0x00F8F8F0; //0xF0F8F8F0;
+		var mask:uint = 0x00F8F8F0; // 0xF0F8F8F0;
 		if (Scratch.app.isIn3D) {
 			var b:Rectangle = s.currentCostume().bitmap ? s.img.getChildAt(0).getBounds(s) : s.getVisibleBounds(s);
 			bm1 = Scratch.app.render3D.getOtherRenderedChildren(s, 1);
-			//mask = 0x80F8F8F0;
+			// mask = 0x80F8F8F0;
 		} else {
 			// OLD code here
 			bm1 = bitmapWithoutSprite(s);
@@ -515,25 +515,25 @@ public class ScratchStage extends ScratchObj {
 
 		var bm2:BitmapData = new BitmapData(bm1.width, bm1.height, true, 0);
 		bm2.threshold(bm1, bm1.rect, bm1.rect.topLeft, '==', c, 0xFF000000, mask); // match only top five bits of each component
-//		if (!testBM.parent) {
-//			testBM.filters = [new GlowFilter(0xFF00FF, 0.8)];
-//			stage.addChild(testBM);
-//		}
-//		testBM.x = bm1.width;
-//		testBM.y = 300;
-//		testBM.bitmapData = bm1;
-//		if (dumpPixels) {
-//			var arr:Vector.<uint> = bm1.getVector(bm1.rect);
-//			var pxs:String = '';
-//			for (var i:int=0; i<arr.length; ++i)
-//				pxs += getNumberAsHexString(arr[i], 8) + ', ';
-//			trace('Looking for '+getNumberAsHexString(c, 8)+'   bitmap pixels: '+pxs);
-//			dumpPixels = false;
-//		}
+		// if (!testBM.parent) {
+		// 	testBM.filters = [new GlowFilter(0xFF00FF, 0.8)];
+		// 	stage.addChild(testBM);
+		// }
+		// testBM.x = bm1.width;
+		// testBM.y = 300;
+		// testBM.bitmapData = bm1;
+		// if (dumpPixels) {
+		// 	var arr:Vector.<uint> = bm1.getVector(bm1.rect);
+		// 	var pxs:String = '';
+		// 	for (var i:int=0; i<arr.length; ++i)
+		// 		pxs += getNumberAsHexString(arr[i], 8) + ', ';
+		// 	trace('Looking for '+getNumberAsHexString(c, 8)+'   bitmap pixels: '+pxs);
+		// 	dumpPixels = false;
+		// }
 
 		return bm2;
 	}
-//	private var dumpPixels:Boolean = false;
+	// private var dumpPixels:Boolean = false;
 
 	private function getNumberAsHexString(number:uint, minimumLength:uint = 1, showHexDenotation:Boolean = true):String {
 		// The string that will be output at the end of the function.

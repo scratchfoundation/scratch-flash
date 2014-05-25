@@ -316,9 +316,9 @@ public class ScratchSprite extends ScratchObj {
 	}
 
 	public override function getBounds(space:DisplayObject):Rectangle {
-		//if (space == this && geomShape.parent) img.removeChild(geomShape);
+		// if (space == this && geomShape.parent) img.removeChild(geomShape);
 		var b:Rectangle = getChildAt(0).getBounds(space);
-		//img.addChild(geomShape);
+		// img.addChild(geomShape);
 		return b;
 	}
 

@@ -64,7 +64,7 @@ public class SVGCreateTool extends SVGTool {
 	}
 
 	override protected function shutdown():void {
-		//editor.toggleZoomUI(true);
+		// editor.toggleZoomUI(true);
 		removeEventHandlers();
 		super.shutdown();
 		newObject = null;
@@ -92,7 +92,7 @@ public class SVGCreateTool extends SVGTool {
 		currentEvent = e;
 
 		if (e.type == MouseEvent.MOUSE_DOWN) {
-			//editor.toggleZoomUI(false);
+			// editor.toggleZoomUI(false);
 			mouseDown(p);
 			if (isQuick && !isShuttingDown) {
 				// Add the mouse event handlers
@@ -104,7 +104,7 @@ public class SVGCreateTool extends SVGTool {
 			mouseMove(p);
 			lastPos = p;
 		} else if (e.type == MouseEvent.MOUSE_UP) {
-			//editor.toggleZoomUI(true);
+			// editor.toggleZoomUI(true);
 			if (!stage) return;
 
 			// If the mouse came up outside of the canvas, use the last mouse position within the canvas

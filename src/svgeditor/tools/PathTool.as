@@ -236,40 +236,38 @@ public final class PathTool extends SVGCreateTool {
 			lastSaveDir = mousePos.subtract(lastMousePt);
 			lastMousePt = mousePos;
 			previewShape.graphics.lineTo(mousePos.x, mousePos.y);
-			//lastSaveDir.normalize(1);
+			// lastSaveDir.normalize(1);
 			return;
 		}
 
 		var curDir:Point = mousePos.subtract(lastMousePt);
 		lastMousePt = mousePos;
-//			var div:Number = curDir.length*lastSaveDir.length;
-//			if (div == 0) div = 0.01;
-//			var factor:Number = (curDir.x * lastSaveDir.x + curDir.y * lastSaveDir.y) / div;
-		//trace('dot product = '+factor);
+		// var div:Number = curDir.length*lastSaveDir.length;
+		// if (div == 0) div = 0.01;
+		// var factor:Number = (curDir.x * lastSaveDir.x + curDir.y * lastSaveDir.y) / div;
+// trace('dot product = '+factor);
 		var distFromLastSaved:Number = mousePos.subtract(lastSavePt).length;
 		var np:Point = lastSaveDir.clone();
 		np.normalize(distFromLastSaved);
 		var proj:Point = np.add(lastSavePt);
 		var dev:Point = mousePos.subtract(proj);
 		if (lastSaveDev) {
-/*
-previewShape.graphics.clear();
-previewShape.graphics.lineStyle(3, 0xFF0000);
-previewShape.graphics.drawCircle(lastSavePt.x, lastSavePt.y, 8);
-previewShape.graphics.moveTo(lastSavePt.x, lastSavePt.y);
-previewShape.graphics.lineTo(proj.x, proj.y);
-*/
+// previewShape.graphics.clear();
+// previewShape.graphics.lineStyle(3, 0xFF0000);
+// previewShape.graphics.drawCircle(lastSavePt.x, lastSavePt.y, 8);
+// previewShape.graphics.moveTo(lastSavePt.x, lastSavePt.y);
+// previewShape.graphics.lineTo(proj.x, proj.y);
 			var div:Number = dev.length*lastSaveDev.length;
 			if (div == 0) div = 0.01;
 			var factor:Number = (dev.x * lastSaveDev.x + dev.y * lastSaveDev.y) / div;
-			//trace(factor);
+// trace(factor);
 		}
-//			if (factor < dotProd && distFromLastSaved > maxDist || dev > maxDev || final) {
-//trace('distFromLastSaved='+distFromLastSaved+'   '+dev+' > '+maxDev);
-//trace('np=('+np.x+', '+np.y+')');
+		// if (factor < dotProd && distFromLastSaved > maxDist || dev > maxDev || final) {
+// trace('distFromLastSaved='+distFromLastSaved+'   '+dev+' > '+maxDev);
+// trace('np=('+np.x+', '+np.y+')');
 		var devDiff:Number = lastSaveDev ? Math.abs(dev.length - lastSaveDev.length) : 0;
-//trace('('+dev.length+' > '+maxDev+' && (!'+(!!lastSaveDev)+' || '+factor+' < '+dotProd+' || '+devDiff+' > '+strokeWidth+')');
-		//if ((dev.length > maxDev && (!lastSaveDev || factor < dotProd || devDiff > strokeWidth)) || final) {
+// trace('('+dev.length+' > '+maxDev+' && (!'+(!!lastSaveDev)+' || '+factor+' < '+dotProd+' || '+devDiff+' > '+strokeWidth+')');
+		// if ((dev.length > maxDev && (!lastSaveDev || factor < dotProd || devDiff > strokeWidth)) || final) {
 		if (((dev.length > maxDev && !lastSaveDev) || factor < maxDot || devDiff > maxDevDiff) || final) {
 			var before:Point = beforeLastSavePt || lastSavePt;
 			var here:Point = lastSavePt;
@@ -288,7 +286,7 @@ previewShape.graphics.lineTo(proj.x, proj.y);
 			lastSavePt = mousePos;
 			lastSaveDir = curDir;
 			lastSaveDev = dev;
-			//lastSaveDir.normalize(1);
+			// lastSaveDir.normalize(1);
 
 			setLineStyle(previewShape.graphics);
 			SVGPath.drawCubicBezier(previewShape.graphics, here, c2, after, after, null, null);
@@ -299,7 +297,7 @@ previewShape.graphics.lineTo(proj.x, proj.y);
 				newElement.path.push(['C', c2.x, c2.y, after.x, after.y, after.x, after.y]);
 			}
 		} else {
-			//trace(factor+' < '+dotProd+' && '+distFromLastSaved+' > '+maxDist+' || '+dev+' > '+maxDev);
+// trace(factor+' < '+dotProd+' && '+distFromLastSaved+' > '+maxDist+' || '+dev+' > '+maxDev);
 			previewShape.graphics.lineTo(mousePos.x, mousePos.y);
 		}
 	}
@@ -407,7 +405,7 @@ previewShape.graphics.lineTo(proj.x, proj.y);
 		}
 
 		if (strokeWidth>1.5 && newElement.path.length < 100) {
-			//trace('Smoothing path of '+newElement.path.length+' commands.');
+// trace('Smoothing path of '+newElement.path.length+' commands.');
 			svgShape.smoothPath2(editor.getStrokeSmoothness());
 		}
 
@@ -429,7 +427,7 @@ previewShape.graphics.lineTo(proj.x, proj.y);
 			newElement.path.adjustPathAroundAnchor(1);
 
 			if (strokeWidth>1.5 && newElement.path.length < 100) {
-				//trace('Smoothing path of '+newElement.path.length+' commands.');
+// trace('Smoothing path of '+newElement.path.length+' commands.');
 				svgShape.smoothPath2(editor.getStrokeSmoothness());
 			}
 
@@ -462,7 +460,7 @@ previewShape.graphics.lineTo(proj.x, proj.y);
 
 		if (tryIntersection) {
 			if (!newElement.path.pathIsClosed()) {
-//trace("Path is open, checking against backdrop...");
+// trace("Path is open, checking against backdrop...");
 				intersectPathWithBackdrop();
 			}
 		}
@@ -516,23 +514,23 @@ previewShape.graphics.lineTo(proj.x, proj.y);
 		svgShape.visible = true;
 
 		var cl:Sprite = editor.getContentLayer();
-		//svgShape.debugMode = true;
+		// svgShape.debugMode = true;
 		svgShape.distCheck = SVGShape.bisectionDistCheck;
 		var intersections:Array = svgShape.getAllIntersectionsWithShape(otherShape);
 
 		// Okay, they definitely intersect, let's find out where
 		var path:SVGPath = svgShape.getElement().path.clone();
-/*
-		for (var j:int=0; j<intersections.length; ++j) {
-			var d:Object = intersections[j];
-			var str:String = 'Intersection #'+j+':  start ('+d.start.index+', '+d.start.time+')';
-			if (d.end) {
-				str+= '   end ('+d.end.index+', '+d.end.time+')';
-			}
-			trace(str);
-		}
-*/
-		//trace("Reverse intersection check");
+
+// for (var j:int=0; j<intersections.length; ++j) {
+// 	var d:Object = intersections[j];
+// 	var str:String = 'Intersection #'+j+':  start ('+d.start.index+', '+d.start.time+')';
+// 	if (d.end) {
+// 		str+= '   end ('+d.end.index+', '+d.end.time+')';
+// 	}
+// 	trace(str);
+// }
+
+// trace("Reverse intersection check");
 		svgShape.visible = false;
 		svgShape.redraw();
 		svgShape.visible = true;
@@ -570,7 +568,7 @@ previewShape.graphics.lineTo(proj.x, proj.y);
 				if (path.splitCurve(index, t))
 					--ofs;
 			}
-			//var pt:Point = path.getPos(index+1);
+			// var pt:Point = path.getPos(index+1);
 			// Cut off the beginning portion
 			path.splice(0, index, ['M', firstPt.x, firstPt.y]);
 			// If we just truncate the first curve, then put the first control point
@@ -581,7 +579,7 @@ previewShape.graphics.lineTo(proj.x, proj.y);
 			path.adjustPathAroundAnchor(0,1,1);
 			inter = intersections[1];
 			index = inter.start.index - ofs;
-//trace('new index for intersection #1 is '+index);
+// trace('new index for intersection #1 is '+index);
 			if (inter.end && index == (inter.end.index - ofs)) {
 				t = (inter.start.time + inter.end.time) / 2;
 				path.splitCurve(index, t);
@@ -612,7 +610,7 @@ previewShape.graphics.lineTo(proj.x, proj.y);
 				var pathReversed:SVGPath = path.clone();
 				pathReversed.reversePath(0);
 				if (firstPt.subtract(oFirstPt).length > firstPt.subtract(oSecondPt).length) {
-//trace("reversed!");
+// trace("reversed!");
 					var tmp:SVGPath = path;
 					path = pathReversed;
 					pathReversed = tmp;
@@ -624,8 +622,8 @@ previewShape.graphics.lineTo(proj.x, proj.y);
 
 				var startOfEnd:uint = firstPath.splitCurve(otherIntersections[1].end.index, otherIntersections[1].end.time);
 				var endOfStart:uint = firstPath.splitCurve(otherIntersections[0].start.index, otherIntersections[0].start.time);
-//trace("Look at index #"+endOfStart+" and #"+startOfEnd);
-//firstPath.outputCommands();
+// trace("Look at index #"+endOfStart+" and #"+startOfEnd);
+// firstPath.outputCommands();
 				var deleteCount:uint = startOfEnd - endOfStart + 1;
 				var drawnPath:SVGPath = path.clone();
 				path.transform(svgShape, otherShape);
@@ -634,21 +632,21 @@ previewShape.graphics.lineTo(proj.x, proj.y);
 				args.unshift(endOfStart + 1);
 				var removedCommands:SVGPath = new SVGPath();
 				removedCommands.set(firstPath.splice.apply(firstPath, args));
-//trace("moving #"+endOfStart+" to ("+oFirstPt.x+", "+oFirstPt+")");
+// trace("moving #"+endOfStart+" to ("+oFirstPt.x+", "+oFirstPt+")");
 				firstPath.move(endOfStart, oFirstPt, SVGPath.ADJUST.CORNER);
-//trace("moving #"+(startOfEnd - deleteCount + path.length)+" to ("+oSecondPt.x+", "+oSecondPt+")");
+// trace("moving #"+(startOfEnd - deleteCount + path.length)+" to ("+oSecondPt.x+", "+oSecondPt+")");
 				firstPath.move(startOfEnd - deleteCount + path.length, oSecondPt, SVGPath.ADJUST.CORNER);
 				if (firstPath[firstPath.length - 1][0] != 'Z')
 					firstPath.push(['Z']);
-//firstPath.outputCommands();
+// firstPath.outputCommands();
 
 				// Create the second part of the bisected shape
-//pathReversed.outputCommands();
+// pathReversed.outputCommands();
 				removedCommands.transform(otherShape, svgShape);
 				pathReversed.push.apply(pathReversed, removedCommands.slice(0));
 				if (pathReversed[pathReversed.length - 1][0] != 'Z')
 					pathReversed.push(['Z']);
-//pathReversed.outputCommands();
+// pathReversed.outputCommands();
 
 				var fill1:SVGShape = (svgShape.clone() as SVGShape);
 				firstPath.transform(otherShape, svgShape);

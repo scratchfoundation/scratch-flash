@@ -74,7 +74,7 @@ public final class RectangleTool extends SVGCreateTool {
 		newElement.setAttribute('y', Math.min(p.y, createOrigin.y));
 		newElement.setAttribute('width', w);
 		newElement.setAttribute('height', h);
-//newElement.setAttribute('scratch-type', 'backdrop-fill');
+// newElement.setAttribute('scratch-type', 'backdrop-fill');
 		newElement.updatePath();
 		newObject.redraw();
 	}

@@ -534,7 +534,7 @@ public class ImageEdit extends Sprite {
 	public function setToolMode(newMode:String, bForce:Boolean = false):void {
 		if (newMode == toolMode && !bForce) return;
 
-		var toolChanged:Boolean = true;//!currentTool || (immediateTools.indexOf(newMode) == -1);
+		var toolChanged:Boolean = true; // !currentTool || (immediateTools.indexOf(newMode) == -1);
 		var s:Selection = null;
 		if (currentTool) {
 			if (toolMode == 'select' && newMode != 'select')
@@ -831,7 +831,7 @@ public class ImageEdit extends Sprite {
 	}
 
 	public function setCurrentCursor(name:String, bmp:* = null, hotSpot:Point = null, reuse:Boolean = true):void {
-		//trace('setting cursor to '+name);
+// trace('setting cursor to '+name);
 		if (name == null || [MouseCursor.HAND, MouseCursor.BUTTON].indexOf(name) > -1) {
 			currentCursor = (name == null ? MouseCursor.AUTO : name);
 			CursorTool.setCustomCursor(currentCursor);

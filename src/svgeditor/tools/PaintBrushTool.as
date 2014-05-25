@@ -61,7 +61,7 @@ public final class PaintBrushTool extends SVGEditTool {
 	private function rollOver(e:MouseEvent):void {
 		editor.getContentLayer().addEventListener(MouseEvent.MOUSE_MOVE, previewColorChange, false, 0, true);
 		previewColorChange(e);
-		//timer.start();
+		// timer.start();
 	}
 
 	private function rollOut(e:MouseEvent):void {

@@ -412,7 +412,7 @@ public class ScratchRuntime {
 
 	public function projectLoadFailed(ignore:* = null):void {
 		app.removeLoadProgressBox();
-		//DialogBox.notify('Error!', 'Project did not load.', app.stage);
+		// DialogBox.notify('Error!', 'Project did not load.', app.stage);
 		app.loadProjectFailed();
 	}
 

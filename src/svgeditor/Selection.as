@@ -329,8 +329,8 @@ public class Selection implements IEventDispatcher {
 		}
 
 		// Don't flip the object
-		//sx = Math.max(sx, 0);
-		//sy = Math.max(sy, 0);
+		// sx = Math.max(sx, 0);
+		// sy = Math.max(sy, 0);
 
 		for (var i:uint=0; i<selectedObjects.length; ++i) {
 			var obj:DisplayObject = selectedObjects[i];
@@ -426,14 +426,14 @@ public class Selection implements IEventDispatcher {
 		var parentSpaceTL:Point = refDispObj.parent.globalToLocal(p);
 		var globalCurrentTL:Point = refDispObj.localToGlobal(getBounds(refDispObj).topLeft);
 		var offset:Point = parentSpaceTL.subtract(refDispObj.parent.globalToLocal(globalCurrentTL));
-//trace('offset: '+offset);
+// trace('offset: '+offset);
 
 		for (var i:uint=0; i<selectedObjects.length; ++i) {
 			var obj:DisplayObject = selectedObjects[i];
 			obj.x += offset.x;
 			obj.y += offset.y;
 			var p2:Point = new Point(obj.x, obj.y);
-//trace(obj+': '+p2);
+// trace(obj+': '+p2);
 		}
 
 		refDispObj.x += offset.x;
