@@ -309,13 +309,14 @@ public class ListWatcher extends Sprite {
 	// Add Item Button Support
 	//------------------------------
 
-	private function addItem(b:IconButton):void {
+	private function addItem(b:IconButton = null):void {
 		// Called when addItemButton is clicked.
 		if ((root is Scratch) && !(root as Scratch).editMode) return;
 		if (insertionIndex < 0) insertionIndex = contents.length;
-		contents.splice(insertionIndex, 0, '***');
+		contents.splice(insertionIndex, 0, '');
 		updateContents();
 		updateScrollbar();
+		selectCell(insertionIndex);
 	}
 
 	private function gotFocus(e:FocusEvent):void {
@@ -327,7 +328,7 @@ public class ListWatcher extends Sprite {
 		insertionIndex = -1;
 		for (var i:int = 0; i < visibleCells.length; i++) {
 			if (visibleCells[i] == newFocus.parent) {
-				insertionIndex = firstVisibleIndex + i;
+				insertionIndex = firstVisibleIndex + i + 1;
 				return;
 			}
 		}
@@ -462,7 +463,7 @@ public class ListWatcher extends Sprite {
 	private function allocateCell(s:String, width:int):ListCell {
 		// Allocate a ListCell with the given contents and width.
 		// Recycle one from the cell pool if possible.
-		if (cellPool.length == 0) return new ListCell(s, width, textChanged, nextCell);
+		if (cellPool.length == 0) return new ListCell(s, width, textChanged, keyPress);
 		var result:ListCell = cellPool.pop();
 		result.setText(s, width);
 		return result;
@@ -515,23 +516,37 @@ public class ListWatcher extends Sprite {
 		}
 	}
 
-	private function nextCell(e:Event):void {
-		// Triggered by tab key. Select the next cell in the list.
+	private function selectCell(i:int, scroll:Boolean = true):void {
+		var j:int = i - firstVisibleIndex;
+		if (j >= 0 && j < visibleCells.length) {
+			visibleCells[j].select();
+			insertionIndex = i + 1;
+		} else if (scroll) {
+			scrollToIndex(i);
+			selectCell(i, false);
+		}
+	}
+
+	private function keyPress(e:KeyboardEvent):void {
+		// Respond to a key press on a cell.
+		if (e.keyCode == 13) {
+			if (e.shiftKey) insertionIndex--;
+			addItem();
+			return;
+		}
+		if (contents.length < 2) return; // only one cell, and it's already selected
+		var direction:int =
+			e.keyCode == 38 ? -1 :
+			e.keyCode == 40 ? 1 :
+			e.keyCode == 9 ? (e.shiftKey ? -1 : 1) : 0;
+		if (direction == 0) return;
 		var cellContents:TextField = e.target as TextField;
 		for (var i:int = 0; i < visibleCells.length; i++) {
 			var cell:ListCell = visibleCells[i];
 			if (cell.tf == cellContents) {
 				e.preventDefault();
-				if (contents.length < 2) return; // only one cell, and it's already selected
-				if (i + 1 < visibleCells.length) {
-					visibleCells[i + 1].select();
-					return;
-				} else {
-					var selectIndex:int = (firstVisibleIndex + i + 1) % contents.length;
-					scrollToIndex(selectIndex);
-					var j:int = firstVisibleIndex - selectIndex;
-					if (j >= 0 && j < visibleCells.length) visibleCells[j].select();
-				}
+				selectCell((firstVisibleIndex + i + direction + contents.length) % contents.length);
+				return;
 			}
 		}
 	}

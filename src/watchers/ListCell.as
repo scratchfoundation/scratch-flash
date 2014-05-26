@@ -30,10 +30,10 @@ public class ListCell extends Sprite {
 	public var tf:TextField;
 	private var frame:ResizeableFrame;
 
-	public function ListCell(s:String, width:int, whenChanged:Function, nextCell:Function) {
+	public function ListCell(s:String, width:int, whenChanged:Function, keyPress:Function) {
 		frame = new ResizeableFrame(0xFFFFFF, Specs.listColor, 6, true);
 		addChild(frame);
-		addTextField(whenChanged, nextCell);
+		addTextField(whenChanged, keyPress);
 		tf.text = s;
 		setWidth(width);
 	}
@@ -54,7 +54,7 @@ public class ListCell extends Sprite {
 		frame.setWidthHeight(tf.width, frameH);
 	}
 
-	private function addTextField(whenChanged:Function, nextCell:Function):void {
+	private function addTextField(whenChanged:Function, keyPress:Function):void {
 		tf = new TextField();
 		tf.type = 'input';
 		tf.wordWrap = true;
@@ -63,13 +63,13 @@ public class ListCell extends Sprite {
 		tf.x = 3;
 		tf.y = 1;
 		tf.addEventListener(Event.CHANGE, whenChanged);
-		tf.addEventListener(FocusEvent.KEY_FOCUS_CHANGE, nextCell);
+		tf.addEventListener(KeyboardEvent.KEY_DOWN, keyPress);
 		addChild(tf);
 	}
 
 	public function select():void {
 		stage.focus = tf;
-		tf.setSelection(0, tf.getLineLength(0));
+		tf.setSelection(0, tf.text.length);
 	}
 
 }}
