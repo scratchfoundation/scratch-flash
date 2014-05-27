@@ -41,16 +41,16 @@ public class SpriteThumbnail extends Sprite {
 
 	public var targetObj:ScratchObj;
 
-	private var app:Scratch;
-	private var thumbnail:Bitmap;
+	protected var app:Scratch;
+	protected var thumbnail:Bitmap;
 	private var label:TextField;
 	private var sceneInfo:TextField;
-	private var selectedFrame:Shape;
-	private var highlightFrame:Shape;
+	protected var selectedFrame:Shape;
+	protected var highlightFrame:Shape;
 	private var infoSprite:Sprite;
 	private var detailsButton:IconButton;
 
-	private var lastSrcImg:DisplayObject;
+	protected var lastSrcImg:DisplayObject;
 	private var lastName:String = '';
 	private var lastSceneCount:int = 0;
 
@@ -67,6 +67,16 @@ public class SpriteThumbnail extends Sprite {
 		thumbnail.filters = [grayOutlineFilter()];
 		addChild(thumbnail);
 
+		addLabels();
+		addDetailsButton();
+		updateThumbnail();
+	}
+
+	public static function strings():Array {
+		return ['backdrop', 'backdrops', 'hide', 'show', 'Stage'];
+	}
+
+	protected function addLabels():void {
 		label = Resources.makeLabel('', CSS.thumbnailFormat);
 		label.width = frameW;
 		addChild(label);
@@ -76,15 +86,9 @@ public class SpriteThumbnail extends Sprite {
 			sceneInfo.width = frameW;
 			addChild(sceneInfo);
 		}
-
-		addDetailsButton();
-		updateThumbnail();
 	}
 
-	public static function strings():Array {
-		return ['backdrop', 'backdrops', 'hide', 'show', 'Stage'] }
-
-	private function addDetailsButton():void {
+	protected function addDetailsButton():void {
 		detailsButton = new IconButton(showSpriteDetails, 'spriteInfo');
 		detailsButton.x = detailsButton.y = -2;
 		detailsButton.isMomentary = true;
@@ -92,7 +96,7 @@ public class SpriteThumbnail extends Sprite {
 		addChild(detailsButton);
 	}
 
-	private function addSelectedFrame():void {
+	protected function addSelectedFrame():void {
 		selectedFrame = new Shape();
 		var g:Graphics = selectedFrame.graphics;
 		var h:int = targetObj.isStage ? stageFrameH : frameH;
@@ -104,7 +108,7 @@ public class SpriteThumbnail extends Sprite {
 		addChild(selectedFrame);
 	}
 
-	private function addHighlightFrame():void {
+	protected function addHighlightFrame():void {
 		const highlightColor:int = 0xE0E000;
 		highlightFrame = new Shape();
 		var g:Graphics = highlightFrame.graphics;

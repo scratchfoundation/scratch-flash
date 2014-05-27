@@ -35,11 +35,11 @@ package uiwidgets {
 
 public class ScriptsPane extends ScrollFrameContents {
 
-	private const INSERT_NORMAL:int = 0;
-	private const INSERT_ABOVE:int = 1;
-	private const INSERT_SUB1:int = 2;
-	private const INSERT_SUB2:int = 3;
-	private const INSERT_WRAP:int = 4;
+	protected const INSERT_NORMAL:int = 0;
+	protected const INSERT_ABOVE:int = 1;
+	protected const INSERT_SUB1:int = 2;
+	protected const INSERT_SUB2:int = 3;
+	protected const INSERT_WRAP:int = 4;
 
 	public var app:Scratch;
 	public var padding:int = 10;
@@ -47,9 +47,9 @@ public class ScriptsPane extends ScrollFrameContents {
 	private var viewedObj:ScratchObj;
 	private var commentLines:Shape;
 
-	private var possibleTargets:Array = [];
-	private var nearestTarget:Array = [];
-	private var feedbackShape:BlockShape;
+	protected var possibleTargets:Array = [];
+	protected var nearestTarget:Array = [];
+	protected var feedbackShape:BlockShape;
 
 	public function ScriptsPane(app:Scratch) {
 		this.app = app;
@@ -59,7 +59,7 @@ public class ScriptsPane extends ScrollFrameContents {
 		addFeedbackShape();
 	}
 
-	private function createTexture():void {
+	protected function createTexture():void {
 		const alpha:int = 0x90 << 24;
 		const bgColor:int = alpha | 0xD7D7D7;
 		const c1:int = alpha | 0xCBCBCB;
@@ -124,7 +124,7 @@ public class ScriptsPane extends ScrollFrameContents {
 	public function prepareToDrag(b:Block):void {
 		findTargetsFor(b);
 		nearestTarget = null;
-		b.scaleX = b.scaleY = scaleX;
+		b.scaleX = b.scaleY = scaleX * app.scaleX;
 		addFeedbackShape();
 	}
 
@@ -229,7 +229,7 @@ public class ScriptsPane extends ScrollFrameContents {
 		app.runtime.blockDropped(b);
 	}
 
-	private function findTargetsFor(b:Block):void {
+	protected function findTargetsFor(b:Block):void {
 		possibleTargets = [];
 		var bEndWithTerminal:Boolean = b.bottomBlock().isTerminal;
 		var bCanWrap:Boolean = b.base.canHaveSubstack1() && !b.subStack1; // empty C or E block
@@ -259,7 +259,7 @@ public class ScriptsPane extends ScrollFrameContents {
 		}
 	}
 
-	private function reporterAllowedInStack(r:Block, stack:Block):Boolean {
+	protected function reporterAllowedInStack(r:Block, stack:Block):Boolean {
 		// True if the given reporter block can be inserted in the given stack.
 		// Procedure parameter reporters can only be added to a block definition
 		// that defines parameter.
@@ -269,7 +269,7 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 		return (top.op == Specs.PROCEDURE_DEF) && (top.parameterNames.indexOf(r.spec) > -1);
 	}
 
-	private function findCommandTargetsIn(stack:Block, endsWithTerminal:Boolean):void {
+	protected function findCommandTargetsIn(stack:Block, endsWithTerminal:Boolean):void {
 		var target:Block = stack;
 		while (target != null) {
 			var p:Point = target.localToGlobal(new Point(0, 0));
@@ -295,7 +295,7 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 		}
 	}
 
-	private function findReporterTargetsIn(stack:Block):void {
+	protected function findReporterTargetsIn(stack:Block):void {
 		var b:Block = stack, i:int;
 		while (b != null) {
 			for (i = 0; i < b.args.length; i++) {
@@ -313,10 +313,14 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 	}
 
 	private function addFeedbackShape():void {
-		if (feedbackShape == null) feedbackShape = new BlockShape();
+		if (feedbackShape == null) initFeedbackShape();
 		feedbackShape.setWidthAndTopHeight(10, 10);
 		hideFeedbackShape();
 		addChild(feedbackShape);
+	}
+
+	protected function initFeedbackShape():void {
+		feedbackShape = new BlockShape();
 	}
 
 	private function hideFeedbackShape():void {
@@ -324,7 +328,7 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 	}
 
 	private function nearestTargetForBlockIn(b:Block, targets:Array):Array {
-		var threshold:int = b.isReporter ? 15 : 30;
+		var threshold:int = (b.isReporter ? 15 : 30) * app.scaleY;
 		var i:int, minDist:int = 100000;
 		var nearest:Array;
 		var bTopLeft:Point = new Point(b.x, b.y);
@@ -492,7 +496,7 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 
 	/* Stack cleanup */
 
-	private function cleanUp():void {
+	protected function cleanUp():void {
 		// Clean up the layout of stacks and blocks in the scripts pane.
 		// Steps:
 		//	1. Collect stacks and sort by x

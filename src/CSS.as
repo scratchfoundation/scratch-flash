@@ -32,9 +32,9 @@ public class CSS {
 	public static const white:int = 0xFFFFFF;
 	public static const topBarColor:int = 0x9C9EA2;
 	public static const tabColor:int = 0xE6E8E8;
-	public static const panelColor:int = 0xF2F2F2;
+	public static var panelColor:int = 0xF2F2F2;
 	public static const itemSelectedColor:int = 0xD0D0D0;
-	public static const borderColor:int = 0xD0D1D2;
+	public static var borderColor:int = 0xD0D1D2;
 	public static const textColor:int = 0x5C5D5F; // 0x6C6D6F
 	public static const buttonLabelColor:int = textColor;
 	public static const buttonLabelOverColor:int = 0xFBA939;

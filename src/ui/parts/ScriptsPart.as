@@ -24,115 +24,21 @@
 
 package ui.parts {
 	import flash.display.*;
-	import flash.text.*;
-	import flash.utils.getTimer;
-	import scratch.*;
-	import ui.*;
-	import uiwidgets.*;
+	import ui.parts.base.BaseScriptsPart;
 
-public class ScriptsPart extends UIPart {
-
-	private var shape:Shape;
-	private var selector:PaletteSelector;
-	private var spriteWatermark:Bitmap;
-	private var paletteFrame:ScrollFrame;
-	private var scriptsFrame:ScrollFrame;
-	private var zoomWidget:ZoomWidget;
-
-	private const readoutLabelFormat:TextFormat = new TextFormat(CSS.font, 12, CSS.textColor, true);
-	private const readoutFormat:TextFormat = new TextFormat(CSS.font, 12, CSS.textColor);
-
-	private var xyDisplay:Sprite;
-	private var xLabel:TextField;
-	private var yLabel:TextField;
-	private var xReadout:TextField;
-	private var yReadout:TextField;
-	private var lastX:int = -10000000; // impossible value to force initial update
-	private var lastY:int = -10000000; // impossible value to force initial update
+public class ScriptsPart extends BaseScriptsPart {
 
 	public function ScriptsPart(app:Scratch) {
-		this.app = app;
-
-		addChild(shape = new Shape());
-		addChild(spriteWatermark = new Bitmap());
-		addXYDisplay();
-		addChild(selector = new PaletteSelector(app));
-
-		var palette:BlockPalette = new BlockPalette();
-		palette.color = CSS.tabColor;
-		paletteFrame = new ScrollFrame();
-		paletteFrame.allowHorizontalScrollbar = false;
-		paletteFrame.setContents(palette);
-		addChild(paletteFrame);
-
-		var scriptsPane:ScriptsPane = new ScriptsPane(app);
-		scriptsFrame = new ScrollFrame();
-		scriptsFrame.setContents(scriptsPane);
-		addChild(scriptsFrame);
-
-		app.palette = palette;
-		app.scriptsPane = scriptsPane;
-
-		addChild(zoomWidget = new ZoomWidget(scriptsPane));
+		super(app);
 	}
 
-	public function resetCategory():void { selector.select(Specs.motionCategory) }
-
-	public function updatePalette():void {
-		selector.updateTranslation();
-		selector.select(selector.selectedCategory);
-	}
-
-	public function updateSpriteWatermark():void {
-		var target:ScratchObj = app.viewedObj();
-		if (target && !target.isStage) {
-			spriteWatermark.bitmapData = target.currentCostume().thumbnail(40, 40, false);
-		} else {
-			spriteWatermark.bitmapData = null;
-		}
-	}
-
-	public function step():void {
-		// Update the mouse readouts. Do nothing if they are up-to-date (to minimize CPU load).
-		var target:ScratchObj = app.viewedObj();
-		if (target.isStage) {
-			if (xyDisplay.visible) xyDisplay.visible = false;
-		} else {
-			if (!xyDisplay.visible) xyDisplay.visible = true;
-
-			var spr:ScratchSprite = target as ScratchSprite;
-			if (!spr) return;
-			if (spr.scratchX != lastX) {
-				lastX = spr.scratchX;
-				xReadout.text = String(lastX);
-			}
-			if (spr.scratchY != lastY) {
-				lastY = spr.scratchY;
-				yReadout.text = String(lastY);
-			}
-		}
-		updateExtensionIndicators();
-	}
-
-	private var lastUpdateTime:uint;
-
-	private function updateExtensionIndicators():void {
-		if ((getTimer() - lastUpdateTime) < 500) return;
-		for (var i:int = 0; i < app.palette.numChildren; i++) {
-			var indicator:IndicatorLight = app.palette.getChildAt(i) as IndicatorLight;
-			if (indicator) app.extensionManager.updateIndicator(indicator, indicator.target);
-		}		
-		lastUpdateTime = getTimer();
-	}
-
-	public function setWidthHeight(w:int, h:int):void {
-		this.w = w;
-		this.h = h;
+	override public function setWidthHeight(w:int, h:int):void {
+		super.setWidthHeight(w, h);
 		fixlayout();
 		redraw();
 	}
 
-	private function fixlayout():void {
+	protected function fixlayout():void {
 		selector.x = 1;
 		selector.y = 5;
 		paletteFrame.x = selector.x;
@@ -149,7 +55,7 @@ public class ScriptsPart extends UIPart {
 		zoomWidget.y = h - zoomWidget.height - 15;
 	}
 
-	private function redraw():void {
+	protected function redraw():void {
 		var paletteW:int = paletteFrame.visibleW();
 		var paletteH:int = paletteFrame.visibleH();
 		var scriptsW:int = scriptsFrame.visibleW();
@@ -178,14 +84,4 @@ public class ScriptsPart extends UIPart {
 		g.moveTo(x, y);
 		g.lineTo(x + w, y);
 	}
-
-	private function addXYDisplay():void {
-		xyDisplay = new Sprite();
-		xyDisplay.addChild(xLabel = makeLabel('x:', readoutLabelFormat, 0, 0));
-		xyDisplay.addChild(xReadout = makeLabel('-888', readoutFormat, 15, 0));
-		xyDisplay.addChild(yLabel = makeLabel('y:', readoutLabelFormat, 0, 13));
-		xyDisplay.addChild(yReadout = makeLabel('-888', readoutFormat, 15, 13));
-		addChild(xyDisplay);
-	}
-
 }}

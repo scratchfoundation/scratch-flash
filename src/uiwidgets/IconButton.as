@@ -41,10 +41,10 @@ public class IconButton extends Sprite {
 	public var lastEvent:MouseEvent;
 	public var clientData:*;
 
-	private var buttonIsOn:Boolean;
-	private var mouseIsOver:Boolean;
-	private var onImage:DisplayObject;
-	private var offImage:DisplayObject;
+	protected var buttonIsOn:Boolean;
+	protected var mouseIsOver:Boolean;
+	protected var onImage:DisplayObject;
+	protected var offImage:DisplayObject;
 
 	public function IconButton(clickFunction:Function, onImageOrName:*, offImageObj:DisplayObject = null, isRadioButton:Boolean = false) {
 		this.clickFunction = clickFunction;
@@ -70,15 +70,18 @@ public class IconButton extends Sprite {
 	public function setImage(onImageObjOrName:*, offImageObj:DisplayObject = null):void {
 		if (onImageObjOrName is String) {
 			// specify on/off images by asset name
-			var assetName:String = onImageObjOrName;
-			onImage = Resources.createBmp(assetName + 'On');
-			offImage = Resources.createBmp(assetName + 'Off');
+			setImageName(onImageObjOrName);
 		} else if (onImageObjOrName is DisplayObject) {
 			// on/off images are supplied
 			onImage = onImageObjOrName as DisplayObject;
 			offImage = (offImageObj == null) ? onImage : offImageObj; // offImage is optional
 		}
 		redraw();
+	}
+
+	protected function setImageName(name:String):void {
+		onImage = Resources.createBmp(name + 'On');
+		offImage = Resources.createBmp(name + 'Off');
 	}
 
 	public function turnOff():void {
@@ -139,7 +142,7 @@ public class IconButton extends Sprite {
 		return arrow;
 	}
 
-	private function redraw():void {
+	protected function redraw():void {
 		var img:DisplayObject = buttonIsOn ? onImage : offImage;
 		if (mouseIsOver && !buttonIsOn) img = onImage;
 		while (numChildren > 0) removeChildAt(0);
@@ -151,7 +154,7 @@ public class IconButton extends Sprite {
 		graphics.endFill();
 	}
 
-	private function mouseDown(e:MouseEvent):void {
+	protected function mouseDown(e:MouseEvent):void {
 		if (isDisabled()) return;
 		if (CursorTool.tool == 'help') return; // ignore mouseDown events with help tool (this doesn't apply to 'actOnMouseUp' buttons)
 		if (isRadioButton) {
@@ -170,8 +173,8 @@ public class IconButton extends Sprite {
 		redraw();
 	}
 
-	private function mouseOver(evt:MouseEvent):void { if (!isDisabled()) { mouseIsOver = true; redraw() }}
-	private function mouseOut(evt:MouseEvent):void  { if (!isDisabled()) { mouseIsOver = false; redraw() }}
+	protected function mouseOver(evt:MouseEvent):void { if (!isDisabled()) { mouseIsOver = true; redraw() }}
+	protected function mouseOut(evt:MouseEvent):void  { if (!isDisabled()) { mouseIsOver = false; redraw() }}
 
 	private function turnOffOtherRadioButtons():void {
 		if (parent == null) return;

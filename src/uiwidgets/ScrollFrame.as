@@ -51,6 +51,7 @@ public class ScrollFrame extends Sprite implements DragClient {
 	private var scrollbarThickness:int = 9;
 
 	private var shadowFrame:Shape;
+	private var scrollbarStyle:int;
 	private var hScrollbar:Scrollbar;
 	private var vScrollbar:Scrollbar;
 
@@ -62,9 +63,10 @@ public class ScrollFrame extends Sprite implements DragClient {
 	private var xVelocity:Number = 0;
 	private var yVelocity:Number = 0;
 
-	public function ScrollFrame(dragScrolling:Boolean = false) {
+	public function ScrollFrame(dragScrolling:Boolean = false, scrollbarStyle:int = 0) {
+		this.scrollbarStyle = scrollbarStyle || Scrollbar.STYLE_DEFAULT;
 		this.dragScrolling = dragScrolling;
-		if (dragScrolling) scrollbarThickness = 3;
+		if (dragScrolling) scrollbarThickness = Scrollbar.STYLE_DEFAULT ? 3 : 5;
 		mask = new Shape();
 		addChild(mask);
 		if (useFrame) addShadowFrame(); // adds a shadow to top and left
@@ -137,7 +139,7 @@ public class ScrollFrame extends Sprite implements DragClient {
 			hScrollbar = null;
 		}
 		if (show) {
-			hScrollbar = new Scrollbar(50, scrollbarThickness, setHScroll);
+			hScrollbar = new Scrollbar(50, scrollbarThickness, setHScroll, scrollbarStyle);
 			addChild(hScrollbar);
 		}
 		addChildAt(contents, 1);
@@ -150,7 +152,7 @@ public class ScrollFrame extends Sprite implements DragClient {
 			vScrollbar = null;
 		}
 		if (show) {
-			vScrollbar = new Scrollbar(scrollbarThickness, 50, setVScroll);
+			vScrollbar = new Scrollbar(scrollbarThickness, 50, setVScroll, scrollbarStyle);
 			addChild(vScrollbar);
 		}
 		addChildAt(contents, 1);
@@ -219,10 +221,28 @@ public class ScrollFrame extends Sprite implements DragClient {
 
 	private function mouseDown(evt:MouseEvent):void {
 		if (evt.shiftKey || !dragScrolling) return;
-		if (evt.target == contents) {
-			Object(root).gh.setDragClient(this, evt);
-			contents.mouseChildren = false; // disable mouse events while scrolling
+		if (xVelocity || yVelocity) {
+			initDrag(evt);
+		} else {
+			stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
+			stage.addEventListener(MouseEvent.MOUSE_UP, mouseUp);
 		}
+	}
+
+	private function mouseMove(evt:MouseEvent):void {
+		initDrag(evt);
+		stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
+		stage.removeEventListener(MouseEvent.MOUSE_UP, mouseUp);
+	}
+
+	private function mouseUp(evt:MouseEvent):void {
+		stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
+		stage.removeEventListener(MouseEvent.MOUSE_UP, mouseUp);
+	}
+
+	private function initDrag(evt:MouseEvent):void {
+		Object(root).gh.setDragClient(this, evt);
+		contents.mouseChildren = false; // disable mouse events while scrolling
 	}
 
 	public function dragBegin(evt:MouseEvent):void {
@@ -231,7 +251,7 @@ public class ScrollFrame extends Sprite implements DragClient {
 		xOffset = mouseX - contents.x;
 		yOffset = mouseY - contents.y;
 
-		if (visibleW() < contents.width) showHScrollbar(true);
+		if (visibleW() < contents.width) showHScrollbar(allowHorizontalScrollbar);
 		if (visibleH() < contents.height) showVScrollbar(true);
 		if (hScrollbar) hScrollbar.allowDragging(false);
 		if (vScrollbar) vScrollbar.allowDragging(false);
@@ -245,7 +265,7 @@ public class ScrollFrame extends Sprite implements DragClient {
 		yHistory.push(mouseY);
 		xHistory.shift();
 		yHistory.shift();
-		contents.x = mouseX - xOffset;
+		if (allowHorizontalScrollbar) contents.x = mouseX - xOffset;
 		contents.y = mouseY - yOffset;
 		constrainScroll();
 		updateScrollbars();
@@ -266,7 +286,7 @@ public class ScrollFrame extends Sprite implements DragClient {
 		yVelocity = decayFactor * yVelocity;
 		if (Math.abs(xVelocity) < stopThreshold) xVelocity = 0;
 		if (Math.abs(yVelocity) < stopThreshold) yVelocity = 0;
-		contents.x += xVelocity;
+		if (allowHorizontalScrollbar) contents.x += xVelocity;
 		contents.y += yVelocity;
 
 		contents.x = Math.max(-maxScrollH(), Math.min(contents.x, 0));

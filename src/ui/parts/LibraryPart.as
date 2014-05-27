@@ -24,32 +24,31 @@
 
 package ui.parts {
 	import flash.display.*;
-	import flash.geom.*;
 	import flash.text.*;
 	import flash.utils.*;
 	import scratch.*;
 	import translation.Translator;
 	import ui.media.*;
 	import ui.SpriteThumbnail;
+	import ui.parts.base.ILibraryPart;
 	import uiwidgets.*;
-	import util.ProjectIO;
 
-public class LibraryPart extends UIPart {
+public class LibraryPart extends UIPart implements ILibraryPart{
 
 	private const smallTextFormat:TextFormat = new TextFormat(CSS.font, 10, CSS.textColor);
 
 	private const bgColor:int = 0xFFFFFF;
 	private const stageAreaWidth:int = 77;
-	private const updateInterval:int = 200; // msecs between thumbnail updates
+	protected const updateInterval:int = 200; // msecs between thumbnail updates
 
-	private var lastUpdate:uint; // time of last thumbnail update
+	protected var lastUpdate:uint; // time of last thumbnail update
 
-	private var shape:Shape;
+	protected var shape:Shape;
 
-	private var stageThumbnail:SpriteThumbnail;
-	private var spritesFrame:ScrollFrame;
+	protected var stageThumbnail:SpriteThumbnail;
+	protected var spritesFrame:ScrollFrame;
 	protected var spritesPane:ScrollFrameContents;
-	private var spriteDetails:SpriteInfoPart;
+	protected var spriteDetails:SpriteInfoPart;
 
 	private var spritesTitle:TextField;
 	private var newSpriteLabel:TextField;
@@ -72,15 +71,8 @@ public class LibraryPart extends UIPart {
 		shape = new Shape();
 		addChild(shape);
 
-		spritesTitle = makeLabel(Translator.map('Sprites'), CSS.titleFormat, stageAreaWidth + 10, 5);
-		addChild(spritesTitle);
-
-		addChild(newSpriteLabel = makeLabel(Translator.map('New sprite:'), CSS.titleFormat, 10, 5));
-		addChild(libraryButton = makeButton(spriteFromLibrary, 'library'));
-		addChild(paintButton = makeButton(paintSprite, 'paintbrush'));
-		addChild(importButton = makeButton(spriteFromComputer, 'import'));
-		addChild(photoButton = makeButton(spriteFromCamera, 'camera'));
-
+		addSpritesTitle();
+		addNewSpriteButtons();
 		addStageArea();
 		addNewBackdropButtons();
 		addVideoControl();
@@ -99,6 +91,11 @@ public class LibraryPart extends UIPart {
 			'Choose sprite from library', 'Paint new sprite', 'Upload sprite from file', 'New sprite from camera',
 			'Choose backdrop from library', 'Paint new backdrop', 'Upload backdrop from file', 'New backdrop from camera',
 		];
+	}
+
+	public function setXY(x:Number, y:Number):void {
+		this.x = x;
+		this.y = y;
 	}
 
 	public function updateTranslation():void {
@@ -141,7 +138,7 @@ public class LibraryPart extends UIPart {
 		if (app.viewedObj()) refresh(); // refresh, but not during initialization
 	}
 
-	private function fixLayout():void {
+	protected function fixLayout():void {
 		var buttonY:int = 4;
 
 		libraryButton.x = 380;
@@ -184,7 +181,7 @@ public class LibraryPart extends UIPart {
 		// after loading project, or adding or deleting a sprite.
 		newSpriteLabel.visible = !app.stageIsContracted;
 		spritesTitle.visible = !app.stageIsContracted;
-		if (app.viewedObj().isStage) showSpriteDetails(false);
+		if (app.viewedObj() && app.viewedObj().isStage) showSpriteDetails(false);
 		if (spriteDetails.visible) spriteDetails.refresh();
 		stageThumbnail.setTarget(app.stageObj());
 		spritesPane.clear(false);
@@ -214,7 +211,7 @@ public class LibraryPart extends UIPart {
 		step();
 	}
 
-	private function scrollToSelectedSprite():void {
+	protected function scrollToSelectedSprite():void {
 		var viewedObj:ScratchObj = app.viewedObj();
 		var sel:SpriteThumbnail;
 		for (var i:int = 0; i < spritesPane.numChildren; i++) {
@@ -248,12 +245,25 @@ public class LibraryPart extends UIPart {
 		if (videoButton.visible) updateVideoButton();
 	}
 
-	private function addStageArea():void {
+	protected function addSpritesTitle():void {
+		spritesTitle = makeLabel(Translator.map('Sprites'), CSS.titleFormat, stageAreaWidth + 10, 5);
+		addChild(spritesTitle);
+	}
+
+	protected function addNewSpriteButtons():void {
+		addChild(newSpriteLabel = makeLabel(Translator.map('New sprite:'), CSS.titleFormat, 10, 5));
+		addChild(libraryButton = makeButton(spriteFromLibrary, 'library'));
+		addChild(paintButton = makeButton(paintSprite, 'paintbrush'));
+		addChild(importButton = makeButton(spriteFromComputer, 'import'));
+		addChild(photoButton = makeButton(spriteFromCamera, 'camera'));
+	}
+
+	protected function addStageArea():void {
 		stageThumbnail = new SpriteThumbnail(app.stagePane, app);
 		addChild(stageThumbnail);
 	}
 
-	private function addNewBackdropButtons():void {
+	protected function addNewBackdropButtons():void {
 		addChild(newBackdropLabel = makeLabel(
 			Translator.map('New backdrop:'), smallTextFormat, 3, 126));
 
@@ -274,7 +284,7 @@ public class LibraryPart extends UIPart {
 		backdropCameraButton.y = buttonY + 3;
 	}
 
-	private function addSpritesArea():void {
+	protected function addSpritesArea():void {
 		spritesPane = new ScrollFrameContents();
 		spritesPane.color = bgColor;
 		spritesPane.hExtra = spritesPane.vExtra = 0;
@@ -308,7 +318,7 @@ public class LibraryPart extends UIPart {
 		if (videoButton.isOn() != isOn) videoButton.setOn(isOn);
 	}
 
-	private function addVideoControl():void {
+	protected function addVideoControl():void {
 		function turnVideoOn(b:IconButton):void {
 			app.stagePane.setVideoState(b.isOn() ? 'on' : 'off');
 			app.setSaveNeeded();
@@ -348,7 +358,7 @@ public class LibraryPart extends UIPart {
 	}
 
 	private function spriteFromComputer(b:IconButton):void { importSprite(true) }
-	private function spriteFromLibrary(b:IconButton):void { importSprite(false) }
+	protected function spriteFromLibrary(b:IconButton):void { importSprite(false) }
 
 	private function importSprite(fromComputer:Boolean):void {
 		function addSprite(costumeOrSprite:*):void {
@@ -468,7 +478,7 @@ public class LibraryPart extends UIPart {
 	// Misc
 	//------------------------------
 
-	private function allThumbnails():Array {
+	protected function allThumbnails():Array {
 		// Return a list containing all thumbnails.
 		var result:Array = [stageThumbnail];
 		for (var i:int = 0; i < spritesPane.numChildren; i++) {

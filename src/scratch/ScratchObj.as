@@ -276,8 +276,8 @@ public class ScratchObj extends Sprite {
 	}
 
 	protected function shapeChangedByFilter():Boolean {
-		var filters:Object = filterPack.getAllSettings();
-		return (filters['fisheye'] !== 0 || filters['whirl'] !== 0 || filters['mosaic'] !== 0);
+		var f:Object = filterPack.getAllSettings();
+		return (f['fisheye'] !== 0 || f['whirl'] !== 0 || f['mosaic'] !== 0);
 	}
 
 	static public const clearColorTrans:ColorTransform = new ColorTransform();

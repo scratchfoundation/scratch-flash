@@ -61,13 +61,13 @@ public class BlockShape extends Shape {
 	public var color:uint;
 	public var hasLoopArrow:Boolean;
 
-	private var shape:int;
-	private var w:int;
-	private var topH:int;
-	private var substack1H:int = EmptySubstackH;
-	private var substack2H:int = EmptySubstackH;
-	private var drawFunction:Function = drawRectShape;
-	private var redrawNeeded:Boolean = true;
+	protected var shape:int;
+	protected var w:int;
+	protected var topH:int;
+	protected var substack1H:int = EmptySubstackH;
+	protected var substack2H:int = EmptySubstackH;
+	protected var drawFunction:Function = drawRectShape;
+	protected var redrawNeeded:Boolean = true;
 
 	public function BlockShape(shape:int = 1, color:int = 0xFFFFFF) {
 		this.color = color;
@@ -151,7 +151,7 @@ public class BlockShape extends Shape {
 		redrawNeeded = false;
 	}
 
-	private function blockShapeFilters():Array {
+	protected function blockShapeFilters():Array {
 		// filters for command and reporter Block outlines
 		var f:BevelFilter = new BevelFilter(1);
 		f.blurX = f.blurY = 3;
@@ -160,7 +160,7 @@ public class BlockShape extends Shape {
 		return [f];
 	}
 
-	private function dropFeedbackFilters(forReporter:Boolean):Array {
+	protected function dropFeedbackFilters(forReporter:Boolean):Array {
 		// filters for command/reporter block drop feedback
 		var f:GlowFilter;
 		if (forReporter) {
@@ -178,7 +178,7 @@ public class BlockShape extends Shape {
 		return [f];
 	}
 
-	private function setShape(shape:int):void {
+	protected function setShape(shape:int):void {
 		this.shape = shape;
 		switch(shape) {
 		case RectShape:			drawFunction = drawRectShape; break;
@@ -195,9 +195,9 @@ public class BlockShape extends Shape {
 		}
 	}
 
-	private function drawRectShape(g:Graphics):void { g.drawRect(0, 0, w, topH) }
+	protected function drawRectShape(g:Graphics):void { g.drawRect(0, 0, w, topH) }
 
-	private function drawBooleanShape(g:Graphics):void {
+	protected function drawBooleanShape(g:Graphics):void {
 		var centerY:int = topH / 2;
 		g.moveTo(centerY, topH);
 		g.lineTo(0, centerY);
@@ -207,7 +207,7 @@ public class BlockShape extends Shape {
 		g.lineTo(w - centerY, topH);
 	}
 
-	private function drawNumberShape(g:Graphics):void {
+	protected function drawNumberShape(g:Graphics):void {
 		var centerY:int = topH / 2;
 		g.moveTo(centerY, topH);
 		curve(centerY, topH, 0, centerY);
@@ -217,12 +217,12 @@ public class BlockShape extends Shape {
 		curve(w, centerY, w - centerY, topH);
 	}
 
-	private function drawCmdShape(g:Graphics):void {
+	protected function drawCmdShape(g:Graphics):void {
 		drawTop(g);
 		drawRightAndBottom(g, topH, (shape != FinalCmdShape));
 	}
 
-	private function drawCmdOutlineShape(g:Graphics):void {
+	protected function drawCmdOutlineShape(g:Graphics):void {
 		g.endFill(); // do not fill
 		g.lineStyle(2, 0xFFFFFF, 0.2);
 		drawTop(g);
@@ -230,7 +230,7 @@ public class BlockShape extends Shape {
 		g.lineTo(0, CornerInset);
 	}
 
-	private function drawTop(g:Graphics):void {
+	protected function drawTop(g:Graphics):void {
 		g.moveTo(0, CornerInset);
 		g.lineTo(CornerInset, 0);
 		g.lineTo(NotchL1, 0);
@@ -241,7 +241,7 @@ public class BlockShape extends Shape {
 		g.lineTo(w, CornerInset);
 	}
 
-	private function drawRightAndBottom(g:Graphics, bottomY:int, hasNotch:Boolean, inset:int = 0):void {
+	protected function drawRightAndBottom(g:Graphics, bottomY:int, hasNotch:Boolean, inset:int = 0):void {
 		g.lineTo(w, bottomY - CornerInset);
 		g.lineTo(w - CornerInset, bottomY);
 		if (hasNotch) {
@@ -259,7 +259,7 @@ public class BlockShape extends Shape {
 		}
 	}
 
-	private function drawHatShape(g:Graphics):void {
+	protected function drawHatShape(g:Graphics):void {
 		g.moveTo(0, 12);
 		curve(0, 12, 40, 0, 0.15);
 		curve(40, 0, 80, 10, 0.12);
@@ -268,7 +268,7 @@ public class BlockShape extends Shape {
 		drawRightAndBottom(g, topH, true);
 	}
 
-	private function drawProcHatShape(g:Graphics):void {
+	protected function drawProcHatShape(g:Graphics):void {
 		const trimColor:int = 0x8E2EC2; // 0xcf4ad9;
 		const archRoundness:Number = Math.min(0.2, 35 / w);
 		g.beginFill(Specs.procedureColor);
@@ -284,7 +284,7 @@ public class BlockShape extends Shape {
 		curve(0, 16, -1, 13, 0.6);
 	}
 
-	private function drawLoopShape(g:Graphics):void {
+	protected function drawLoopShape(g:Graphics):void {
 		var h1:int = topH + substack1H - NotchDepth;
 		drawTop(g);
 		drawRightAndBottom(g, topH, true, SubstackInset);
@@ -293,7 +293,7 @@ public class BlockShape extends Shape {
 		if (hasLoopArrow) drawLoopArrow(g, h1 + BottomBarH);
 	}
 
-	private function drawLoopArrow(g:Graphics, h:int):void {
+	protected function drawLoopArrow(g:Graphics, h:int):void {
 		// Draw the arrow on loop blocks.
 		var arrow:Array = [
 			[8, 0], [2, -2], [0, -3],
@@ -306,7 +306,7 @@ public class BlockShape extends Shape {
 		g.endFill();
 	}
 
-	private function drawPath(g:Graphics, startX:Number, startY:Number, deltas:Array):void {
+	protected function drawPath(g:Graphics, startX:Number, startY:Number, deltas:Array):void {
 		// Starting at startX, startY, draw a sequence of lines following the given position deltas.
 		var nextX:Number = startX;
 		var nextY:Number = startY;
@@ -316,7 +316,7 @@ public class BlockShape extends Shape {
 		}
 	}
 
-	private function drawIfElseShape(g:Graphics):void {
+	protected function drawIfElseShape(g:Graphics):void {
 		var h1:int = topH + substack1H - NotchDepth;
 		var h2:int = h1 + DividerH + substack2H - NotchDepth;
 		drawTop(g);
@@ -327,14 +327,14 @@ public class BlockShape extends Shape {
 		drawRightAndBottom(g, h2 + BottomBarH, true);
 	}
 
-	private function drawArm(g:Graphics, armTop:int):void {
+	protected function drawArm(g:Graphics, armTop:int):void {
 		g.lineTo(SubstackInset, armTop - InnerCornerInset);
 		g.lineTo(SubstackInset + InnerCornerInset, armTop);
 		g.lineTo(w - CornerInset, armTop);
 		g.lineTo(w, armTop + CornerInset);
 	}
 
-	private function curve(p1x:int, p1y:int, p2x:int, p2y:int, roundness:Number = 0.42):void {
+	protected function curve(p1x:int, p1y:int, p2x:int, p2y:int, roundness:Number = 0.42):void {
 		// Compute the Bezier control point by following an orthogonal vector from the midpoint
 		// of the line between p1 and p2 scaled by roundness * dist(p1, p2). The default roundness
 		// approximates a circular arc. Negative roundness gives a concave curve.

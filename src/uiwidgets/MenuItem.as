@@ -34,21 +34,21 @@ public class MenuItem extends Sprite {
 
 	private const leftMargin:int = 22;
 	private const rightMargin:int = 10;
-	private const checkmarkColor:int = 0xF0F0F0;
+	protected const checkmarkColor:int = 0xF0F0F0;
 
-	private var menu:Menu;
-	private var label:TextField; // if label is null, this item is a divider line
-	private var checkmark:Shape;
-	private var selection:*;
+	protected var menu:Menu;
+	protected var label:TextField; // if label is null, this item is a divider line
+	protected var checkmark:Shape;
+	protected var selection:*;
 
-	private var base:Shape;
-	private var w:int, h:int;
+	protected var base:Shape;
+	protected var w:int, h:int;
 
 	public function MenuItem(menu:Menu, labelText:*, selection:*, enabled:Boolean) {
 		this.menu = menu;
 		this.selection = (selection == null) ? labelText : selection;
 		addChild(base = new Shape());
-		if (labelText == Menu.line) return;
+		if (labelText === Menu.line) return;
 		addCheckmark();
 		addLabel(String(labelText), enabled);
 		setBaseColor(menu.color);
@@ -102,7 +102,7 @@ public class MenuItem extends Sprite {
 		g.endFill();
 	}
 
-	private function addLabel(s:String, enabled:Boolean):void {
+	protected function addLabel(s:String, enabled:Boolean):void {
 		label = new TextField();
 		label.autoSize = TextFieldAutoSize.LEFT;
 		label.selectable = false;
@@ -117,13 +117,13 @@ public class MenuItem extends Sprite {
 		setBaseColor(menu.color);
 	}
 
-	private function setHighlight(highlight:Boolean):void {
+	protected function setHighlight(highlight:Boolean):void {
 		setBaseColor(highlight ? selectedColorFrom(menu.color) : menu.color);
 		label.textColor = highlight ? colorWithBrightness(menu.color, 0.3) : CSS.white;
 		if (checkmark.visible) drawCheckmark(highlight ? colorWithBrightness(menu.color, 0.5) : checkmarkColor);
 	}
 
-	private function setBaseColor(c:int):void {
+	protected function setBaseColor(c:int):void {
 		var g:Graphics = base.graphics;
 		g.clear();
 		if (label) {
@@ -137,7 +137,7 @@ public class MenuItem extends Sprite {
 		}
 	}
 
-	private function selectedColorFrom(rgb:Number):int {
+	protected function selectedColorFrom(rgb:Number):int {
 		var hsv:Array = Color.rgb2hsv(rgb);
 		var sat:Number = hsv[1];
 		var bri:Number = 0.9;
@@ -153,8 +153,8 @@ public class MenuItem extends Sprite {
 		return Color.fromHSV(hsv[0], hsv[1], brightness);
 	}
 
-	private function mouseOver(evt:MouseEvent):void { setHighlight(true) }
-	private function mouseOut(evt:MouseEvent):void { setHighlight(false) }
-	private function mouseUp(evt:MouseEvent):void { menu.selected(selection) }
+	protected function mouseOver(evt:MouseEvent):void { setHighlight(true) }
+	protected function mouseOut(evt:MouseEvent):void { setHighlight(false) }
+	protected function mouseUp(evt:MouseEvent):void { menu.selected(selection) }
 
 }}

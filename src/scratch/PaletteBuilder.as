@@ -24,18 +24,18 @@
 // category, including the blocks, buttons, and watcher toggle boxes.
 
 package scratch {
-	import flash.display.*;
-	import flash.events.MouseEvent;
-	import flash.events.Event;
-	import flash.net.*;
-	import flash.text.*;
-	import blocks.*;
-	import extensions.*;
-	import ui.media.MediaLibrary;
-	import ui.ProcedureSpecEditor;
-	import ui.parts.UIPart;
-	import uiwidgets.*;
-	import translation.Translator;
+import flash.display.*;
+import flash.events.MouseEvent;
+import flash.events.Event;
+import flash.net.*;
+import flash.text.*;
+import blocks.*;
+import extensions.*;
+import ui.media.MediaLibrary;
+import ui.ProcedureSpecEditor;
+import ui.parts.UIPart;
+import uiwidgets.*;
+import translation.Translator;
 
 public class PaletteBuilder {
 
@@ -326,13 +326,13 @@ public class PaletteBuilder {
 		var data:Object = b.clientData;
 		if (data.block) {
 			switch (data.block.op) {
-			case 'senseVideoMotion':
-				data.targetObj = getBlockArg(data.block, 1) == 'Stage' ? app.stagePane : app.viewedObj();
-			case 'sensor:':
-			case 'sensorPressed:':
-			case 'timeAndDate':
-				data.param = getBlockArg(data.block, 0);
-				break;
+				case 'senseVideoMotion':
+					data.targetObj = getBlockArg(data.block, 1) == 'Stage' ? app.stagePane : app.viewedObj();
+				case 'sensor:':
+				case 'sensorPressed:':
+				case 'timeAndDate':
+					data.param = getBlockArg(data.block, 0);
+					break;
 			}
 		}
 		var showFlag:Boolean = !app.runtime.watcherShowing(data);

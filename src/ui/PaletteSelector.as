@@ -31,12 +31,12 @@ package ui {
 
 public class PaletteSelector extends Sprite {
 
-	private static const categories:Array = [
+	protected static const categories:Array = [
 		'Motion', 'Looks', 'Sound', 'Pen', 'Data', // column 1
 		'Events', 'Control', 'Sensing', 'Operators', 'More Blocks']; // column 2
 
 	public var selectedCategory:int = 0;
-	private var app:Scratch;
+	protected var app:Scratch;
 
 	public function PaletteSelector(app:Scratch) {
 		this.app = app;
@@ -53,13 +53,14 @@ public class PaletteSelector extends Sprite {
 		}
 		var oldID:int = selectedCategory;
 		selectedCategory = id;
-		app.getPaletteBuilder().showBlocksForCategory(selectedCategory, (id != oldID), shiftKey);
+		if(app.palette) app.palette.clear(id != oldID);
+		app.palBuilder.showBlocksForCategory(selectedCategory, app.palette, shiftKey);
 	}
 
-	private function initCategories():void {
-		const numberOfRows:int = 5;
-		const w:int = 208;
+	protected function initCategories():void {
 		const startY:int = 3;
+		const w:int = 208;
+		const numberOfRows:int = 5;
 		var itemH:int;
 		var x:int, i:int;
 		var y:int = startY;
@@ -81,7 +82,7 @@ public class PaletteSelector extends Sprite {
 		setWidthHeightColor(w, startY + (numberOfRows * itemH) + 5);
 	}
 
-	private function setWidthHeightColor(w:int, h:int):void {
+	protected function setWidthHeightColor(w:int, h:int):void {
 		var g:Graphics = graphics;
 		g.clear();
 		g.beginFill(0xFFFF00, 0); // invisible (alpha = 0) rectangle used to set size
