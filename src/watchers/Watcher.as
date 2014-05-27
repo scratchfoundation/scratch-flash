@@ -40,8 +40,16 @@ import flash.display.*;
 
 public class Watcher extends Sprite implements DragClient {
 
+	private static const precision:Number = 1000;
+	public static function formatValue(value:*):String {
+		if (value is Number && Math.abs(value) > 0.001) {
+			// show at most N digits after the decimal point
+			value = Math.round(value * precision) / precision;
+		}
+		return '' + value;
+	}
+
 	private const format:TextFormat = new TextFormat(CSS.font, 11, 0, true);
-	private const precision:Number = 1000;
 
 	private const NORMAL_MODE:int = 1;
 	private const LARGE_MODE:int = 2;
@@ -188,11 +196,7 @@ public class Watcher extends Sprite implements DragClient {
 	}
 
 	private function showValue(value:*):void {
-		if ((value is Number) && (Math.abs(value) > 0.001)) {
-			// show at most N digits after the decimal point
-			value = Math.round(value * precision) / precision;
-		}
-		readout.setContents(value.toString());
+		readout.setContents(formatValue(value));
 		fixLayout();
 	}
 

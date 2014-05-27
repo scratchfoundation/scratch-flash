@@ -417,7 +417,7 @@ public class ListWatcher extends Sprite {
 		var cellW:int = cellPane.width - cellX - 1;
 		var nextY:int = 0;
 		for (var i:int = firstVisibleIndex; i < contents.length; i++) {
-			var s:String = contents[i];
+			var s:String = Watcher.formatValue(contents[i]);
 			if (limitedView && (s.length > 8)) s = s.slice(0, 8) + '...';
 			var cell:ListCell = allocateCell(s, cellW);
 			cell.x = cellX;
