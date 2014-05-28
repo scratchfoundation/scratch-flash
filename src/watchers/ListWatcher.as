@@ -551,7 +551,6 @@ public class ListWatcher extends Sprite {
 		for (var i:int = 0; i < visibleCells.length; i++) {
 			var cell:ListCell = visibleCells[i];
 			if (cell.tf == cellContents) {
-				e.preventDefault();
 				selectCell((firstVisibleIndex + i + direction + contents.length) % contents.length);
 				return;
 			}
