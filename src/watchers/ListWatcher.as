@@ -437,6 +437,13 @@ public class ListWatcher extends Sprite {
 			nextY += cell.height - 1;
 			if (nextY > visibleHeight) break;
 		}
+
+		if(!contents.length) {
+			var tf:TextField = createTextField(Translator.map('(empty)'), cellNumFont);
+			tf.x = (frame.w - SCROLLBAR_W - tf.textWidth) / 2;
+			tf.y = (visibleHeight - tf.textHeight) / 2;
+			cellPane.addChild(tf);
+		}
 	}
 
 	private function cellNumWidth():int {
