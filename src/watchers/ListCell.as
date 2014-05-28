@@ -21,13 +21,15 @@ package watchers {
 import flash.display.Sprite;
 import flash.events.*;
 import flash.utils.*;
-import flash.geom.ColorTransform;
 import flash.text.*;
 import uiwidgets.*;
+import util.Color;
 
 public class ListCell extends Sprite {
 
 	private const format:TextFormat = new TextFormat(CSS.font, 11, 0xFFFFFF, true);
+	private static var normalColor:int = Specs.listColor;
+	private static var focusedColor:int = Color.mixRGB(Color.scaleBrightness(Specs.listColor, 2), 0xEEEEEE, 0.6);
 
 	public var tf:TextField;
 	private var frame:ResizeableFrame;
@@ -35,7 +37,7 @@ public class ListCell extends Sprite {
 	private var deleteItem:Function;
 
 	public function ListCell(s:String, width:int, whenChanged:Function, keyPress:Function, deleteItem:Function) {
-		frame = new ResizeableFrame(0xFFFFFF, Specs.listColor, 6, true);
+		frame = new ResizeableFrame(0xFFFFFF, normalColor, 6, true);
 		addChild(frame);
 		addTextField(whenChanged, keyPress);
 		tf.text = s;
@@ -82,11 +84,9 @@ public class ListCell extends Sprite {
 		tf.setSelection(0, tf.text.length);
 	}
 
-	private static var focused:ColorTransform = new ColorTransform(1, 1, 1, 1, 128, 128, 128, 0);
-	private static var normal:ColorTransform = new ColorTransform(1, 1, 1, 1, 0, 0, 0, 0);
 	private function focusChange(e:FocusEvent):void {
 		var hasFocus:Boolean = (e.type == FocusEvent.FOCUS_IN);
-		frame.transform.colorTransform = (hasFocus ? focused : normal);
+		frame.setColor(hasFocus ? focusedColor : normalColor);
 		tf.textColor = (hasFocus ? 0 : 0xFFFFFF);
 		setTimeout(hasFocus ? addDeleteButton : removeDeleteButton, 1);
 	}
