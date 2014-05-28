@@ -27,12 +27,13 @@
 package filters {
 	import flash.display.*;
 	import flash.filters.*;
-import flash.geom.ColorTransform;
-import flash.system.Capabilities;
+	import flash.geom.ColorTransform;
+	import flash.system.Capabilities;
 	import scratch.*;
 	import util.*;
 
 public class FilterPack {
+
 	public static var filterNames:Array = [
 		"color", "fisheye", "whirl", "pixelate", "mosaic", "brightness", "ghost"];
 
@@ -104,7 +105,7 @@ public class FilterPack {
 
 	public function buildFilters(force:Boolean = false):Array {
 		// disable filters not running on x86 because PixelBender is really slow
-		if((Scratch.app.isIn3D || Capabilities.cpuArchitecture != 'x86') && !force) return [];
+		if ((Scratch.app.isIn3D || Capabilities.cpuArchitecture != 'x86') && !force) return [];
 
 		var scale:Number = targetObj.isStage ? 1 : Scratch.app.stagePane.scaleX;
 		var srcWidth:Number = targetObj.width * scale;
@@ -165,4 +166,5 @@ public class FilterPack {
 		}
 		return newFilters;
 	}
+
 }}

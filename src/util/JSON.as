@@ -71,7 +71,7 @@ public class JSON {
 		var ch:String = src.peek();
 		if (("0" <= ch) && (ch <= "9")) return readNumber(); // common case
 
-		switch(ch) {
+		switch (ch) {
 		case '"': return readString();
 		case "[": return readArray();
 		case "{": return readObject();
@@ -214,7 +214,7 @@ public class JSON {
 
 	private function readEscapedChar():String {
 		var ch:String = src.next();
-		switch(ch) {
+		switch (ch) {
 		case "b": return "\b";
 		case "f": return "\f";
 		case "n": return "\n";

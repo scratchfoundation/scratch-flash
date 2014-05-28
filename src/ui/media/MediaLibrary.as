@@ -344,7 +344,7 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 			ScratchExtension.WeDo()];
 		allItems = [];
 		for each (var ext:ScratchExtension in extList) {
-			allItems.push(new MediaLibraryItem({ 
+			allItems.push(new MediaLibraryItem({
 				extension: ext,
 				name: ext.name,
 				md5: ext.thumbnailMD5,
@@ -352,7 +352,7 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 			}));
 		}
 		showFilteredItems();
-		startLoadingThumbnails();		
+		startLoadingThumbnails();
 	}
 
 	private function stripComments(s:String):String {
@@ -624,7 +624,7 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 	}
 
 	protected function startSoundUpload(sndToUpload:ScratchSound, origName:String, whenDone:Function):void {
-		if(!sndToUpload) {
+		if (!sndToUpload) {
 			DialogBox.notify(
 					'Sorry!',
 					'The sound file '+origName+' is not recognized by Scratch.  Please use MP3 or WAV sound files.',

@@ -80,7 +80,7 @@ public class SensingPrims {
 		if (s == null) return false;
 		var arg:* = interp.arg(b, 0);
 		if ('_edge_' == arg) {
-			if(stageRect.containsRect(s.getBounds(s.parent))) return false;
+			if (stageRect.containsRect(s.getBounds(s.parent))) return false;
 
 			var r:Rectangle = s.bounds();
 			return  (r.left < 0) || (r.right > ScratchObj.STAGEW) ||
@@ -92,18 +92,17 @@ public class SensingPrims {
 		if (!s.visible) return false;
 
 		var s2:ScratchSprite;
-		if(true || !app.isIn3D) {
+		if (true || !app.isIn3D) {
 			var sBM:BitmapData = s.bitmap();
 			for each (s2 in app.stagePane.spritesAndClonesNamed(arg))
 				if (s2.visible && sBM.hitTest(s.bounds().topLeft, 1, s2.bitmap(), s2.bounds().topLeft, 1))
 					return true;
-		}
-		else {
+		} else {
 			// TODO: Re-implement something like the method above for rotated bitmaps.
 //			var sBM:BitmapData = s.bitmap();
 //            var oBM:BitmapData = new BitmapData(sBM.width, sBM.height, true, 0);
 //			for each (s2 in app.stagePane.spritesAndClonesNamed(arg)) {
-//				if(s2.visible) {
+//				if (s2.visible) {
 //					oBM.fillRect(oBM.rect, 0);
 //					// now draw s2 into oBM
 //					oBM.draw(s2.bitmap());
@@ -121,7 +120,7 @@ public class SensingPrims {
 		// of whether the sprite is hidden or 100% ghosted.
 		// Note: p and r are in the coordinate system of the sprite's parent (i.e. the ScratchStage).
 		if (!s.parent) return false;
-		if(!s.getBounds(s).contains(s.mouseX, s.mouseY)) return false;
+		if (!s.getBounds(s).contains(s.mouseX, s.mouseY)) return false;
 		var r:Rectangle = s.bounds();
 		if (!r.contains(s.parent.mouseX, s.parent.mouseY)) return false;
 		return s.bitmap().hitTest(r.topLeft, 1, new Point(s.parent.mouseX, s.parent.mouseY));
@@ -138,8 +137,8 @@ public class SensingPrims {
 		var c:int = interp.arg(b, 0) | 0xFF000000;
 		var myBM:BitmapData = s.bitmap(true);
 		var stageBM:BitmapData = stageBitmapWithoutSpriteFilteredByColor(s, c);
-//		if(s.objName == 'sensor') {
-//			if(!testSpr) {
+//		if (s.objName == 'sensor') {
+//			if (!testSpr) {
 //				testSpr = new Sprite();
 //				app.stage.addChild(testSpr);
 //				myBMTest = new Bitmap();
@@ -167,7 +166,7 @@ public class SensingPrims {
 		var c2:int = interp.arg(b, 1) | 0xFF000000;
 		var myBM:BitmapData = bitmapFilteredByColor(s.bitmap(true), c1);
 		var stageBM:BitmapData = stageBitmapWithoutSpriteFilteredByColor(s, c2);
-//		if(!testSpr) {
+//		if (!testSpr) {
 //			testSpr = new Sprite();
 //			testSpr.y = 300;
 //			app.stage.addChild(testSpr);
@@ -199,7 +198,7 @@ public class SensingPrims {
 
 //	private var testBM:Bitmap = new Bitmap();
 	private function bitmapFilteredByColor(srcBM:BitmapData, c:int):BitmapData {
-//		if(!testBM.parent) {
+//		if (!testBM.parent) {
 //			testBM.y = 360; testBM.x = 15;
 //			app.stage.addChild(testBM);
 //		}

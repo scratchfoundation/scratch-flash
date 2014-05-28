@@ -24,131 +24,125 @@ package {
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import org.villekoskela.utils.RectanglePacker;
-	
-	public class ScratchTextureBitmap extends BitmapData
-	{
-		private static var indexOfIDs:Array;
 
-		private var rectPacker:RectanglePacker;
-		private var texture:Texture;
-		private var rectangles:Object;
-		private var dirty:Boolean;
-		public function ScratchTextureBitmap(width:int, height:int, transparent:Boolean=true, fillColor:uint=4.294967295E9)
-		{
-			super(width, height, transparent, fillColor);
-			rectPacker = new RectanglePacker(width, height);
-			rectangles = {};
-			dirty = false;
-		}
+public class ScratchTextureBitmap extends BitmapData {
 
-		public function getTexture(context:Context3D):Texture {
-			if(!texture) {
-				texture = context.createTexture(width, height, Context3DTextureFormat.BGRA, true);
-				dirty = true;
-			}
+	private static var indexOfIDs:Array;
 
-			if(dirty)
-				texture.uploadFromBitmapData(this);
+	private var rectPacker:RectanglePacker;
+	private var texture:Texture;
+	private var rectangles:Object;
+	private var dirty:Boolean;
+	public function ScratchTextureBitmap(width:int, height:int, transparent:Boolean=true, fillColor:uint=4.294967295E9) {
+		super(width, height, transparent, fillColor);
+		rectPacker = new RectanglePacker(width, height);
+		rectangles = {};
+		dirty = false;
+	}
 
-			dirty = false;
-			return texture;
-		}
-
-		public function disposeTexture():void {
-			if(texture) {
-				texture.dispose();
-				texture = null;
-			}
-		}
-
-		// Returns an array of bitmap ids packed and rendered
-		private var tmpPt:Point = new Point();
-		public function packBitmaps(bitmapsByID:Object):Array {
-			fillRect(this.rect, 0x00000000);  // Removing this speeds up texture repacking but creates edge rendering artifacts
-			rectPacker.reset(width, height);
-			indexOfIDs = [];
-
-			var i:uint=0;
-			for (var k:Object in bitmapsByID) {
-				var bmd:BitmapData = bitmapsByID[k];
-				// Add a small margin around the bitmaps
-				rectPacker.insertRectangle(bmd.width+1, bmd.height+1, i);
-				
-				indexOfIDs.push(k);
-				++i;
-			}
-			
-			rectPacker.packRectangles();
-
-			// Render the packed bitmaps
-			var rect:Rectangle;
-			rectangles = {};
-			var packedIDs:Array = [];
-			for (i=0; i<rectPacker.rectangleCount; ++i) {
-				var bmID:String = indexOfIDs[rectPacker.getRectangleId(i)];
-				rectangles[bmID] = rectPacker.getRectangle(i, null);
-				// Remove the small margin around the bitmaps
-				rect = rectangles[bmID];
-				rect.width = rect.width - 1;
-				rect.height = rect.height - 1;
-				rect = rect.clone();
-				//trace('Made rectangle for '+bmID+' to '+rect);
-				tmpPt.x = rect.x; tmpPt.y = rect.y;
-				rect.x = rect.y = 0;
-				bmd = bitmapsByID[bmID];
-				//trace('Copying pixels from bitmap with id: '+bmID+' @ '+bmd.width+'x'+bmd.height+'  -  '+tmpPt);
-				copyPixels(bmd, rect, tmpPt, null, null, false);
-
-				if(bmd is ChildRender) {
-					rectangles[bmID].width = (bmd as ChildRender).renderWidth;
-					rectangles[bmID].height = (bmd as ChildRender).renderHeight;
-				}
-
-				delete bitmapsByID[bmID];
-				packedIDs.push(bmID);
-			}
-
+	public function getTexture(context:Context3D):Texture {
+		if (!texture) {
+			texture = context.createTexture(width, height, Context3DTextureFormat.BGRA, true);
 			dirty = true;
-
-			return packedIDs;
 		}
 
-		public function getRect(id:String):Rectangle {
-			return rectangles[id];
-		}
+		if (dirty)
+			texture.uploadFromBitmapData(this);
 
-		public function updateBitmap(id:String, bmd:BitmapData):void {
-			var rect:Rectangle = rectangles[id];
-			if(!rect) throw new Error("bitmap id not found");
-			if(Math.ceil(rect.width) != bmd.width || Math.ceil(rect.height) != bmd.height) throw new Error("bitmap dimensions don't match existing rectangle");
-			
-			rect = rect.clone();
-			tmpPt.x = rect.x; tmpPt.y = rect.y;
-			rect.x = rect.y = 0;
-//trace('Copying pixels from '+Dbg.printObj(bmd)+' with id: '+id+' @ '+bmd.width+'x'+bmd.height+'  -  '+pt);
-			copyPixels(bmd, rect, tmpPt, null, null, false);
-			dirty = true;
+		dirty = false;
+		return texture;
+	}
+
+	public function disposeTexture():void {
+		if (texture) {
+			texture.dispose();
+			texture = null;
 		}
 	}
-}
 
+	// Returns an array of bitmap ids packed and rendered
+	private var tmpPt:Point = new Point();
+	public function packBitmaps(bitmapsByID:Object):Array {
+		fillRect(this.rect, 0x00000000);  // Removing this speeds up texture repacking but creates edge rendering artifacts
+		rectPacker.reset(width, height);
+		indexOfIDs = [];
 
-internal final class Dbg
-{
-	import flash.utils.getQualifiedClassName;
-	public static function printObj(obj:*):String
-	{
-		var memoryHash:String;
-		
-		try
-		{
-			FakeClass(obj);
+		var i:uint=0;
+		for (var k:Object in bitmapsByID) {
+			var bmd:BitmapData = bitmapsByID[k];
+			// Add a small margin around the bitmaps
+			rectPacker.insertRectangle(bmd.width+1, bmd.height+1, i);
+
+			indexOfIDs.push(k);
+			++i;
 		}
-		catch (e:Error)
-		{
+
+		rectPacker.packRectangles();
+
+		// Render the packed bitmaps
+		var rect:Rectangle;
+		rectangles = {};
+		var packedIDs:Array = [];
+		for (i=0; i<rectPacker.rectangleCount; ++i) {
+			var bmID:String = indexOfIDs[rectPacker.getRectangleId(i)];
+			rectangles[bmID] = rectPacker.getRectangle(i, null);
+			// Remove the small margin around the bitmaps
+			rect = rectangles[bmID];
+			rect.width = rect.width - 1;
+			rect.height = rect.height - 1;
+			rect = rect.clone();
+// trace('Made rectangle for '+bmID+' to '+rect);
+			tmpPt.x = rect.x; tmpPt.y = rect.y;
+			rect.x = rect.y = 0;
+			bmd = bitmapsByID[bmID];
+// trace('Copying pixels from bitmap with id: '+bmID+' @ '+bmd.width+'x'+bmd.height+'  -  '+tmpPt);
+			copyPixels(bmd, rect, tmpPt, null, null, false);
+
+			if (bmd is ChildRender) {
+				rectangles[bmID].width = (bmd as ChildRender).renderWidth;
+				rectangles[bmID].height = (bmd as ChildRender).renderHeight;
+			}
+
+			delete bitmapsByID[bmID];
+			packedIDs.push(bmID);
+		}
+
+		dirty = true;
+
+		return packedIDs;
+	}
+
+	public function getRect(id:String):Rectangle {
+		return rectangles[id];
+	}
+
+	public function updateBitmap(id:String, bmd:BitmapData):void {
+		var rect:Rectangle = rectangles[id];
+		if (!rect) throw new Error("bitmap id not found");
+		if (Math.ceil(rect.width) != bmd.width || Math.ceil(rect.height) != bmd.height) throw new Error("bitmap dimensions don't match existing rectangle");
+
+		rect = rect.clone();
+		tmpPt.x = rect.x; tmpPt.y = rect.y;
+		rect.x = rect.y = 0;
+// trace('Copying pixels from '+Dbg.printObj(bmd)+' with id: '+id+' @ '+bmd.width+'x'+bmd.height+'  -  '+pt);
+		copyPixels(bmd, rect, tmpPt, null, null, false);
+		dirty = true;
+	}
+
+}}
+
+
+internal final class Dbg {
+	import flash.utils.getQualifiedClassName;
+	public static function printObj(obj:*):String {
+		var memoryHash:String;
+
+		try {
+			FakeClass(obj);
+		} catch (e:Error) {
 			memoryHash = String(e).replace(/.*([@|\$].*?) to .*$/gi, '$1');
 		}
-		
+
 		return flash.utils.getQualifiedClassName(obj) + memoryHash;
 	}
 }

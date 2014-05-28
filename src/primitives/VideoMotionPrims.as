@@ -134,7 +134,7 @@ public class VideoMotionPrims {
 			var A2:Number, A1B2:Number, B1:Number, C1:Number, C2:Number;
 			var u:Number, v:Number, uu:Number, vv:Number;
 
-			var boundingRect:Rectangle = s.bounds();		//bounding rectangle for sprite
+			var boundingRect:Rectangle = s.bounds();		// bounding rectangle for sprite
 			var xmin:Number = boundingRect.left;
 			var xmax:Number = boundingRect.right;
 			var ymin:Number = boundingRect.top;
@@ -150,8 +150,7 @@ public class VideoMotionPrims {
 			for (i = ymin; i < ymax; i++) { // y
 				for (j = xmin; j < xmax; j++) { // x
 					if (j>0 && (j< WIDTH-1) && i>0 && (i< HEIGHT-1)
-						&& ((s.bitmap().getPixel32(j-xmin,i-ymin) >> 24 & 0xff) == 0xff))
-					{
+						&& ((s.bitmap().getPixel32(j-xmin,i-ymin) >> 24 & 0xff) == 0xff)) {
 						address = i * WIDTH + j;
 						A2 += gradA2Array[address];
 						A1B2 += gradA1B2Array[address];
@@ -184,7 +183,7 @@ public class VideoMotionPrims {
 			}
 
 			if (scaleFactor != 0){
-				activePixelNum = scaleFactor; //store the area of the sprite in pixels
+				activePixelNum = scaleFactor; // store the area of the sprite in pixels
 				scaleFactor /= (2*WINSIZE*2*WINSIZE);
 
 				u= u/scaleFactor;
@@ -192,7 +191,7 @@ public class VideoMotionPrims {
 			}
 
 			s.localMotionAmount = Math.round(AMOUNT_SCALE * 2e-4 *activePixelNum * Math.sqrt((u * u) + (v * v))); // note 2e-4 *activePixelNum is an experimentally tuned threshold for my logitech Pro 9000 webcam - TTH
-			if (s.localMotionAmount > 100) //clip all magnitudes greater than 100
+			if (s.localMotionAmount > 100) // clip all magnitudes greater than 100
 				s.localMotionAmount = 100;
 			if (s.localMotionAmount > (THRESHOLD/3)) {
 				s.localMotionDirection = ((Math.atan2(v, u) * toDegree + 270) % 360) - 180; // Scratch direction

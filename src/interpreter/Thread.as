@@ -138,8 +138,8 @@ public class Thread {
 
 }}
 
-import blocks.*;
-import interpreter.*;
+	import blocks.*;
+	import interpreter.*;
 
 class StackFrame {
 	internal var block:Block;

@@ -67,7 +67,7 @@ public class BlockPalette extends ScrollFrameContents {
 		var callCount:int;
 		for each (var stack:Block in app.viewedObj().scripts) {
 			// for each block in stack
-			stack.allBlocksDo(function (b:Block):void {
+			stack.allBlocksDo(function(b:Block):void {
 				if ((b.op == Specs.CALL) && (b.spec == def.spec)) callCount++;
 			});
 		}

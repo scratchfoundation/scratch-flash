@@ -52,6 +52,7 @@ package {
 	import util.*;
 
 public class Scratch extends Sprite {
+
 	// Version
 	public static const versionString:String = 'v418';
 	public static var app:Scratch; // static reference to the app, used for debugging
@@ -146,9 +147,9 @@ public class Scratch extends Sprite {
 		else runtime.installEmptyProject();
 
 		fixLayout();
-//Analyze.collectAssets(0, 119110);
-//Analyze.checkProjects(56086, 64220);
-//Analyze.countMissingAssets();
+// Analyze.collectAssets(0, 119110);
+// Analyze.checkProjects(56086, 64220);
+// Analyze.countMissingAssets();
 	}
 
 	protected function initTopBarPart():void {
@@ -191,15 +192,11 @@ public class Scratch extends Sprite {
 		return new PaletteBuilder(this);
 	}
 
-	private function uncaughtErrorHandler(event:UncaughtErrorEvent):void
-	{
-		if (event.error is Error)
-		{
+	private function uncaughtErrorHandler(event:UncaughtErrorEvent):void {
+		if (event.error is Error) {
 			var error:Error = event.error as Error;
 			logException(error);
-		}
-		else if (event.error is ErrorEvent)
-		{
+		} else if (event.error is ErrorEvent) {
 			var errorEvent:ErrorEvent = event.error as ErrorEvent;
 			logMessage(errorEvent.toString());
 		}
@@ -216,13 +213,13 @@ public class Scratch extends Sprite {
 	[Embed(source='../libs/RenderIn3D.swf', mimeType='application/octet-stream')]
 	public static const MySwfData:Class;
 	protected function checkFlashVersion():void {
-		if(Capabilities.playerType != "Desktop" || Capabilities.version.indexOf('IOS') === 0) {
+		if (Capabilities.playerType != "Desktop" || Capabilities.version.indexOf('IOS') === 0) {
 			var isArmCPU:Boolean = (jsEnabled && ExternalInterface.call("window.navigator.userAgent.toString").indexOf('CrOS arm') > -1);
 			var versionString:String = Capabilities.version.substr(Capabilities.version.indexOf(' ')+1);
 			var versionParts:Array = versionString.split(',');
 			var majorVersion:int = parseInt(versionParts[0]);
 			var minorVersion:int = parseInt(versionParts[1]);
-			if((majorVersion > 11 || (majorVersion == 11 && minorVersion >=1)) && !isArmCPU && Capabilities.cpuArchitecture == 'x86') {
+			if ((majorVersion > 11 || (majorVersion == 11 && minorVersion >=1)) && !isArmCPU && Capabilities.cpuArchitecture == 'x86') {
 				loadRenderLibrary();
 				return;
 			}
@@ -232,8 +229,7 @@ public class Scratch extends Sprite {
 	}
 
 	protected var loading3DLib:Boolean = false;
-	protected function loadRenderLibrary():void
-	{
+	protected function loadRenderLibrary():void {
 		var loader:Loader = new Loader();
 		loader.contentLoaderInfo.addEventListener(Event.COMPLETE, onSwfLoaded);
 		// we need the loaded code to be in the same (main) application domain
@@ -247,14 +243,13 @@ public class Scratch extends Sprite {
 	protected function handleRenderCallback(enabled:Boolean):void {
 		loading3DLib = false;
 
-		if(!enabled) {
+		if (!enabled) {
 			go2D();
 			render3D = null;
-		}
-		else {
-			for(var i:int=0; i<stagePane.numChildren; ++i) {
+		} else {
+			for (var i:int=0; i<stagePane.numChildren; ++i) {
 				var spr:ScratchSprite = (stagePane.getChildAt(i) as ScratchSprite);
-				if(spr) {
+				if (spr) {
 					spr.clearCachedBitmap();
 					spr.updateCostume();
 					spr.applyFilters();
@@ -274,9 +269,9 @@ public class Scratch extends Sprite {
 	}
 
 	public function clearCachedBitmaps():void {
-		for(var i:int=0; i<stagePane.numChildren; ++i) {
+		for (var i:int=0; i<stagePane.numChildren; ++i) {
 			var spr:ScratchSprite = (stagePane.getChildAt(i) as ScratchSprite);
-			if(spr) spr.clearCachedBitmap();
+			if (spr) spr.clearCachedBitmap();
 		}
 		stagePane.clearCachedBitmap();
 
@@ -288,7 +283,7 @@ public class Scratch extends Sprite {
 	}
 
 	public function go3D():void {
-		if(!render3D || isIn3D) return;
+		if (!render3D || isIn3D) return;
 
 		var i:int = stagePart.getChildIndex(stagePane);
 		stagePart.removeChild(stagePane);
@@ -298,16 +293,16 @@ public class Scratch extends Sprite {
 	}
 
 	public function go2D():void {
-		if(!render3D || !isIn3D) return;
+		if (!render3D || !isIn3D) return;
 
 		var i:int = stagePart.getChildIndex(stagePane);
 		stagePart.removeChild(stagePane);
 		render3D.setStage(null, null);
 		stagePart.addChildAt(stagePane, i);
 		isIn3D = false;
-		for(i=0; i<stagePane.numChildren; ++i) {
+		for (i=0; i<stagePane.numChildren; ++i) {
 			var spr:ScratchSprite = (stagePane.getChildAt(i) as ScratchSprite);
-			if(spr) {
+			if (spr) {
 				spr.clearCachedBitmap();
 				spr.updateCostume();
 				spr.applyFilters();
@@ -382,12 +377,12 @@ public class Scratch extends Sprite {
 			wasEditing = editMode;
 			if (wasEditing) {
 				setEditMode(false);
-				if(jsEnabled) ExternalInterface.call('tip_bar_api.hide');
+				if (jsEnabled) ExternalInterface.call('tip_bar_api.hide');
 			}
 		} else {
 			if (wasEditing) {
 				setEditMode(true);
-				if(jsEnabled) ExternalInterface.call('tip_bar_api.show');
+				if (jsEnabled) ExternalInterface.call('tip_bar_api.show');
 			}
 		}
 		if (isOffline) {
@@ -397,7 +392,7 @@ public class Scratch extends Sprite {
 
 		if (lp) fixLoadProgressLayout();
 		stagePane.updateCostume();
-		if(isIn3D) render3D.onStageResize();
+		if (isIn3D) render3D.onStageResize();
 	}
 
 	private function keyDown(evt:KeyboardEvent):void {
@@ -407,13 +402,13 @@ public class Scratch extends Sprite {
 			stagePart.exitPresentationMode();
 		}
 		// Handle enter key
-//		else if(evt.keyCode == 13 && !stage.focus) {
+//		else if (evt.keyCode == 13 && !stage.focus) {
 //			stagePart.playButtonPressed(null);
 //			evt.preventDefault();
 //			evt.stopImmediatePropagation();
 //		}
 		// Handle ctrl-m and toggle 2d/3d mode
-		else if(evt.ctrlKey && evt.charCode == 109) {
+		else if (evt.ctrlKey && evt.charCode == 109) {
 			isIn3D ? go2D() : go3D();
 			evt.preventDefault();
 			evt.stopImmediatePropagation();
@@ -643,7 +638,7 @@ public class Scratch extends Sprite {
 			addChild(frameRateGraph); // put in front
 		}
 
-		if(isIn3D) render3D.onStageResize();
+		if (isIn3D) render3D.onStageResize();
 	}
 
 	private function drawBG():void {
@@ -1106,4 +1101,5 @@ public class Scratch extends Sprite {
 	public function createMediaInfo(obj:*, owningObj:ScratchObj = null):MediaInfo {
 		return new MediaInfo(obj, owningObj);
 	}
+
 }}

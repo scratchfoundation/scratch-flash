@@ -27,22 +27,22 @@
 // of separate elements.
 
 package util {
-import flash.display.*;
-import flash.events.*;
-import flash.net.URLLoader;
-import flash.net.URLLoaderDataFormat;
-import flash.net.URLRequest;
-import flash.utils.*;
-import scratch.*;
+	import flash.display.*;
+	import flash.events.*;
+	import flash.net.URLLoader;
+	import flash.net.URLLoaderDataFormat;
+	import flash.net.URLRequest;
+	import flash.utils.*;
+	import scratch.*;
 
-import sound.WAVFile;
-import sound.mp3.MP3Loader;
+	import sound.WAVFile;
+	import sound.mp3.MP3Loader;
 
-import svgutils.*;
+	import svgutils.*;
 
-import translation.Translator;
+	import translation.Translator;
 
-import uiwidgets.DialogBox;
+	import uiwidgets.DialogBox;
 
 public class ProjectIO {
 
@@ -508,4 +508,5 @@ public class ProjectIO {
 		recordedAssets[md5] = id;
 		return id;
 	}
+
 }}

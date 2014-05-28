@@ -121,7 +121,7 @@ public class ScriptsPart extends UIPart {
 		for (var i:int = 0; i < app.palette.numChildren; i++) {
 			var indicator:IndicatorLight = app.palette.getChildAt(i) as IndicatorLight;
 			if (indicator) app.extensionManager.updateIndicator(indicator, indicator.target);
-		}		
+		}
 		lastUpdateTime = getTimer();
 	}
 

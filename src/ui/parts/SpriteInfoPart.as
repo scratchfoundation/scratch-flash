@@ -332,7 +332,7 @@ public class SpriteInfoPart extends UIPart implements DragClient {
 		g.drawCircle (0, 0, r - 3);
 
 		// direction pointer
-	 	g.lineStyle(3, 0x006080, 1, true);
+		g.lineStyle(3, 0x006080, 1, true);
 		g.moveTo(0, 0);
 		var dx:Number = r * Math.sin(DegreesToRadians * (180 - dir));
 		var dy:Number = r * Math.cos(DegreesToRadians * (180 - dir));

@@ -124,23 +124,23 @@ public class DialogBox extends Sprite {
 		booleanLabelsAndFields.push([l, f]);
 	}
 
-private function getCheckMark(b:Boolean):Sprite{
-	var spr:Sprite = new Sprite();
-	var g:Graphics = spr.graphics;
-	g.clear();
-	g.beginFill(0xFFFFFF);
-	g.lineStyle(1, 0x929497, 1, true);
-	g.drawRoundRect(0, 0, 17, 17, 3, 3);
-	g.endFill();
-	if (b) {
-		g.lineStyle(2, 0x4c4d4f, 1, true);
-		g.moveTo(3,7);
-		g.lineTo(5,7);
-		g.lineTo(8,13);
-		g.lineTo(14,3);
+	private function getCheckMark(b:Boolean):Sprite{
+		var spr:Sprite = new Sprite();
+		var g:Graphics = spr.graphics;
+		g.clear();
+		g.beginFill(0xFFFFFF);
+		g.lineStyle(1, 0x929497, 1, true);
+		g.drawRoundRect(0, 0, 17, 17, 3, 3);
+		g.endFill();
+		if (b) {
+			g.lineStyle(2, 0x4c4d4f, 1, true);
+			g.moveTo(3,7);
+			g.lineTo(5,7);
+			g.lineTo(8,13);
+			g.lineTo(14,3);
+		}
+		return spr;
 	}
-	return spr;
-}
 
 	public function addAcceptCancelButtons(acceptLabel:String = null):void {
 		// Add a cancel button and an optional accept button with the given label.

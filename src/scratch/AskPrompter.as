@@ -49,7 +49,7 @@ public class AskPrompter extends Sprite {
 	}
 
 	public function grabKeyboardFocus():void {
-		if(stage) stage.focus = input;
+		if (stage) stage.focus = input;
 	}
 
 	public function answer():String { return input.text; }

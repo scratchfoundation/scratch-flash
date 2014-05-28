@@ -25,8 +25,8 @@
 package scratch {
 	import flash.display.*;
 	import flash.external.ExternalInterface;
-import flash.filters.GlowFilter;
-import flash.geom.*;
+	import flash.filters.GlowFilter;
+	import flash.geom.*;
 	import flash.media.*;
 	import flash.system.Capabilities;
 	import flash.utils.ByteArray;
@@ -248,13 +248,13 @@ public class ScratchStage extends ScratchObj {
 	public function scrollUp(n:Number):void { yScroll += n; updateImage() }
 
 	public function getUILayer():Sprite {
-		if(Scratch.app.isIn3D) return Scratch.app.render3D.getUIContainer();
+		if (Scratch.app.isIn3D) return Scratch.app.render3D.getUIContainer();
 		return this;
 	}
 
 	override protected function updateImage():void {
 		super.updateImage();
-		if(Scratch.app.isIn3D)
+		if (Scratch.app.isIn3D)
 			Scratch.app.render3D.getUIContainer().transform.matrix = transform.matrix.clone();
 
 		return; // scrolling backround support is disabled; see note below
@@ -328,7 +328,7 @@ public class ScratchStage extends ScratchObj {
 			} else {
 				videoImage.bitmapData.draw(video);
 			}
-			if(Scratch.app.isIn3D) Scratch.app.render3D.updateRender(videoImage);
+			if (Scratch.app.isIn3D) Scratch.app.render3D.updateRender(videoImage);
 		}
 		cachedBitmapIsCurrent = false;
 
@@ -346,18 +346,18 @@ public class ScratchStage extends ScratchObj {
 //	private var testBM:Bitmap = new Bitmap();
 	private var stampBounds:Rectangle = new Rectangle();
 	public function stampSprite(s:ScratchSprite, stampAlpha:Number):void {
-		if(s == null) return;
-//		if(!testBM.parent) {
-//		    testBM.filters = [new GlowFilter(0xFF00FF, 0.8)];
-//		    testBM.y = 360; testBM.x = 15;
+		if (s == null) return;
+//		if (!testBM.parent) {
+//			testBM.filters = [new GlowFilter(0xFF00FF, 0.8)];
+//			testBM.y = 360; testBM.x = 15;
 //			stage.addChild(testBM);
 //		}
 
 		var penBM:BitmapData = penLayer.bitmapData;
 		var m:Matrix = new Matrix();
-		if(Scratch.app.isIn3D) {
+		if (Scratch.app.isIn3D) {
 			var bmd:BitmapData = getBitmapOfSprite(s, stampBounds);
-			if(!bmd) return;
+			if (!bmd) return;
 
 			// TODO: Optimize for garbage collection
 			var childCenter:Point = stampBounds.topLeft;
@@ -368,8 +368,7 @@ public class ScratchStage extends ScratchObj {
 			penBM.draw(bmd, m, new ColorTransform(1, 1, 1, stampAlpha), null, null, (s.rotation % 90 != 0));
 			Scratch.app.render3D.updateRender(penLayer);
 //			testBM.bitmapData = bmd;
-		}
-		else {
+		} else {
 			var wasVisible:Boolean = s.visible;
 			s.visible = true;  // if this is done after commitPenStrokes, it doesn't work...
 			commitPenStrokes();
@@ -389,7 +388,7 @@ public class ScratchStage extends ScratchObj {
 	public function getBitmapOfSprite(s:ScratchSprite, bounds:Rectangle, for_carry:Boolean = false):BitmapData {
 		var b:Rectangle = s.currentCostume().bitmap ? s.img.getChildAt(0).getBounds(s) : s.getVisibleBounds(s);
 		bounds.width = b.width; bounds.height = b.height; bounds.x = b.x; bounds.y = b.y;
-		if(!Scratch.app.render3D || s.width < 1 || s.height < 1) return null;
+		if (!Scratch.app.render3D || s.width < 1 || s.height < 1) return null;
 
 		var ghost:Number = s.filterPack.getFilterSetting('ghost');
 		var oldBright:Number = s.filterPack.getFilterSetting('brightness');
@@ -441,7 +440,7 @@ public class ScratchStage extends ScratchObj {
 		bm.fillRect(bm.rect, 0);
 		newPenStrokes.graphics.clear();
 		penActivity = false;
-		if(Scratch.app.isIn3D) Scratch.app.render3D.updateRender(penLayer);
+		if (Scratch.app.isIn3D) Scratch.app.render3D.updateRender(penLayer);
 	}
 
 	public function commitPenStrokes():void {
@@ -449,7 +448,7 @@ public class ScratchStage extends ScratchObj {
 		penLayer.bitmapData.draw(newPenStrokes);
 		newPenStrokes.graphics.clear();
 		penActivity = false;
-		if(Scratch.app.isIn3D) Scratch.app.render3D.updateRender(penLayer);
+		if (Scratch.app.isIn3D) Scratch.app.render3D.updateRender(penLayer);
 	}
 
 	private var cachedBM:BitmapData;
@@ -497,45 +496,44 @@ public class ScratchStage extends ScratchObj {
 	}
 
 	public function updateSpriteEffects(spr:DisplayObject, effects:Object):void {
-		if(Scratch.app.isIn3D) Scratch.app.render3D.updateFilters(spr, effects);
+		if (Scratch.app.isIn3D) Scratch.app.render3D.updateFilters(spr, effects);
 	}
 
 	public function getBitmapWithoutSpriteFilteredByColor(s:ScratchSprite, c:int):BitmapData {
 		commitPenStrokes(); // force any pen strokes to be rendered so they can be sensed
 
 		var bm1:BitmapData;
-		var mask:uint = 0x00F8F8F0; //0xF0F8F8F0;
-		if(Scratch.app.isIn3D) {
+		var mask:uint = 0x00F8F8F0; // 0xF0F8F8F0;
+		if (Scratch.app.isIn3D) {
 			var b:Rectangle = s.currentCostume().bitmap ? s.img.getChildAt(0).getBounds(s) : s.getVisibleBounds(s);
 			bm1 = Scratch.app.render3D.getOtherRenderedChildren(s, 1);
-			//mask = 0x80F8F8F0;
-		}
-		else {
+			// mask = 0x80F8F8F0;
+		} else {
 			// OLD code here
 			bm1 = bitmapWithoutSprite(s);
 		}
 
 		var bm2:BitmapData = new BitmapData(bm1.width, bm1.height, true, 0);
 		bm2.threshold(bm1, bm1.rect, bm1.rect.topLeft, '==', c, 0xFF000000, mask); // match only top five bits of each component
-//		if(!testBM.parent) {
-//			testBM.filters = [new GlowFilter(0xFF00FF, 0.8)];
-//			stage.addChild(testBM);
-//		}
-//		testBM.x = bm1.width;
-//		testBM.y = 300;
-//		testBM.bitmapData = bm1;
-//		if(dumpPixels) {
-//			var arr:Vector.<uint> = bm1.getVector(bm1.rect);
-//			var pxs:String = '';
-//			for(var i:int=0; i<arr.length; ++i)
-//				pxs += getNumberAsHexString(arr[i], 8) + ', ';
-//			trace('Looking for '+getNumberAsHexString(c, 8)+'   bitmap pixels: '+pxs);
-//			dumpPixels = false;
-//		}
+		// if (!testBM.parent) {
+		// 	testBM.filters = [new GlowFilter(0xFF00FF, 0.8)];
+		// 	stage.addChild(testBM);
+		// }
+		// testBM.x = bm1.width;
+		// testBM.y = 300;
+		// testBM.bitmapData = bm1;
+		// if (dumpPixels) {
+		// 	var arr:Vector.<uint> = bm1.getVector(bm1.rect);
+		// 	var pxs:String = '';
+		// 	for (var i:int=0; i<arr.length; ++i)
+		// 		pxs += getNumberAsHexString(arr[i], 8) + ', ';
+		// 	trace('Looking for '+getNumberAsHexString(c, 8)+'   bitmap pixels: '+pxs);
+		// 	dumpPixels = false;
+		// }
 
 		return bm2;
 	}
-//	private var dumpPixels:Boolean = false;
+	// private var dumpPixels:Boolean = false;
 
 	private function getNumberAsHexString(number:uint, minimumLength:uint = 1, showHexDenotation:Boolean = true):String {
 		// The string that will be output at the end of the function.
@@ -553,7 +551,7 @@ public class ScratchStage extends ScratchObj {
 	}
 
 	public function updateRender(dispObj:DisplayObject, renderID:String = null, renderOpts:Object = null):void {
-		if(Scratch.app.isIn3D) Scratch.app.render3D.updateRender(dispObj, renderID, renderOpts);
+		if (Scratch.app.isIn3D) Scratch.app.render3D.updateRender(dispObj, renderID, renderOpts);
 	}
 
 	public function projectThumbnailPNG():ByteArray {
@@ -563,7 +561,7 @@ public class ScratchStage extends ScratchObj {
 		if (videoImage) videoImage.visible = false;
 
 		// Get a screenshot of the stage
-		if(Scratch.app.isIn3D) Scratch.app.render3D.getRender(bm);
+		if (Scratch.app.isIn3D) Scratch.app.render3D.getRender(bm);
 		else bm.draw(this);
 
 		if (videoImage) videoImage.visible = true;
@@ -716,7 +714,7 @@ public class ScratchStage extends ScratchObj {
 
 		// If UI elements are on another layer (during 3d rendering), process them from there
 		var uiLayer:Sprite = getUILayer();
-		if(uiLayer != this) {
+		if (uiLayer != this) {
 			for (i = 0; i < uiLayer.numChildren; i++) {
 				c = uiLayer.getChildAt(i);
 				if (((c is ScratchSprite) && !ScratchSprite(c).isClone)

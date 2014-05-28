@@ -180,7 +180,7 @@ public class BlockShape extends Shape {
 
 	private function setShape(shape:int):void {
 		this.shape = shape;
-		switch(shape) {
+		switch (shape) {
 		case RectShape:			drawFunction = drawRectShape; break;
 		case BooleanShape:		drawFunction = drawBooleanShape; break;
 		case NumberShape:		drawFunction = drawNumberShape; break;

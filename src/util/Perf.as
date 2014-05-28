@@ -18,7 +18,7 @@
  */
 
 package util {
-import flash.utils.getTimer;
+	import flash.utils.getTimer;
 
 public class Perf {
 
@@ -52,4 +52,5 @@ public class Perf {
 		Scratch.app.log('Total: ' + totalMSecs + ' msecs; unaccounted for: ' + unaccountedFor + ' msecs (' + int((100 * unaccountedFor) / totalMSecs) + '%)');
 		totalStart = lapStart = lapTotal = 0;
 	}
+
 }}

@@ -37,7 +37,7 @@
 //	'%b' - boolean argument slot
 
 package extensions {
-import flash.utils.Dictionary;
+	import flash.utils.Dictionary;
 
 public class ScratchExtension {
 

@@ -17,21 +17,19 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package svgeditor.objs
-{
+package svgeditor.objs {
 	import svgutils.SVGElement;
-	public interface ISVGEditable
-	{
-		// Returns the SVGElement for this object
-		function getElement():SVGElement;
 
-		// Redraws the element
-		function redraw(forHitTest:Boolean = false):void;
+public interface ISVGEditable {
+	// Returns the SVGElement for this object
+	function getElement():SVGElement;
 
-		// Returns a copy of the current element
-		function clone():ISVGEditable;
+	// Redraws the element
+	function redraw(forHitTest:Boolean = false):void;
 
-		// Fixes up the transform and element specific position data
-		//function normalize():void;
-	}
-}
+	// Returns a copy of the current element
+	function clone():ISVGEditable;
+
+	// Fixes up the transform and element specific position data
+	// function normalize():void;
+}}

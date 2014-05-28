@@ -125,7 +125,7 @@ public class TalkBubble extends Sprite {
 		if (pointsLeft) {
 			ellipse(16, h +  2, 12, 7, 2);
 			ellipse(12, h + 10,  8, 5, 2);
-			ellipse( 6, h + 15,  6, 4, 1);
+			ellipse(6, h + 15,  6, 4, 1);
 		} else {
 			ellipse(w - 29, h +  2, 12, 7, 2);
 			ellipse(w - 20, h + 10,  8, 5, 2);

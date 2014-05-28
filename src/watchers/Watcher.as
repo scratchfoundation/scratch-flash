@@ -24,9 +24,9 @@
 // Represents a variable display.
 
 package watchers {
-import blocks.BlockIO;
+	import blocks.BlockIO;
 
-import flash.display.*;
+	import flash.display.*;
 	import flash.filters.BevelFilter;
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
@@ -184,9 +184,9 @@ public class Watcher extends Sprite implements DragClient {
 
 	private function specForCmd():String {
 		var i:int = cmd.indexOf('.');
-		if(i > -1) {
+		if (i > -1) {
 			var spec:Array = Scratch.app.extensionManager.specForCmd(cmd);
-			if(spec) return cmd.substr(0, i) + ': '+spec[0];
+			if (spec) return cmd.substr(0, i) + ': '+spec[0];
 		}
 
 		for each (var entry:Array in Specs.commands) {
@@ -214,7 +214,7 @@ public class Watcher extends Sprite implements DragClient {
 			return prim(block);
 		}
 		if (target is ScratchSprite) {
-			switch(cmd) {
+			switch (cmd) {
 				case "costumeIndex": return ScratchSprite(target).costumeNumber();
 				case "xpos": return ScratchSprite(target).scratchX;
 				case "ypos": return ScratchSprite(target).scratchY;
@@ -222,7 +222,7 @@ public class Watcher extends Sprite implements DragClient {
 				case "scale": return Math.round(ScratchSprite(target).getSize());
 			}
 		}
-		switch(cmd) {
+		switch (cmd) {
 			case "backgroundIndex": return app.stagePane.costumeNumber();
 			case "sceneName": return app.stagePane.currentCostume().costumeName;
 			case "tempo": return app.stagePane.tempoBPM;
@@ -238,9 +238,9 @@ public class Watcher extends Sprite implements DragClient {
 			case "yScroll": return app.stagePane.yScroll;
 		}
 
-		if(cmd.indexOf('.') > -1) {
+		if (cmd.indexOf('.') > -1) {
 			var spec:Array = Scratch.app.extensionManager.specForCmd(cmd);
-			if(spec) {
+			if (spec) {
 				block = new Block(spec[0], spec[1], Specs.blockColor(spec[2]), spec[3]);
 				return Scratch.app.interp.evalCmd(block);
 			}

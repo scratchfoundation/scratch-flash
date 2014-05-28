@@ -29,9 +29,9 @@ package sound {
 	import flash.events.*;
 	import flash.media.*;
 	import flash.utils.*;
-import flash.utils.ByteArray;
+	import flash.utils.ByteArray;
 
-import scratch.ScratchSound;
+	import scratch.ScratchSound;
 
 public class ScratchSoundPlayer {
 
@@ -212,7 +212,7 @@ public class ScratchSoundPlayer {
 
 	private function getSampleADPCM():int {
 		// Decompress sample data using the IMA ADPCM algorithm.
-		// Note: Handles only one channel, 4-bits/sample. 
+		// Note: Handles only one channel, 4-bits/sample.
 		var step:int, code:int, delta:int;
 
 		if ((((bytePosition - startOffset) % adpcmBlockSize) == 0) && (lastByte < 0)) { // read block header

@@ -31,7 +31,7 @@ package svgutils {
 	import flash.display.*;
 	import flash.geom.*;
 	import flash.text.*;
-	
+
 	import svgeditor.DrawProperties;
 
 public class SVGElement {
@@ -75,9 +75,9 @@ public class SVGElement {
 			copy.attributes[attr] = v;
 		}
 		copy.bitmap = bitmap;
-		if(path) copy.path = path.clone();
+		if (path) copy.path = path.clone();
 		copy.text = text;
-		if(transform) copy.transform = transform.clone();
+		if (transform) copy.transform = transform.clone();
 		return copy;
 	}
 
@@ -97,7 +97,7 @@ public class SVGElement {
 	}
 
 	public function setShapeStroke(props:DrawProperties):void {
-		if(props.alpha > 0 && tag != 'text') {
+		if (props.alpha > 0 && tag != 'text') {
 			setAttribute('stroke', colorToHex(props.color & 0xFFFFFF));
 			setAttribute('stroke-width', props.strokeWidth);
 		} else {
@@ -144,12 +144,12 @@ public class SVGElement {
 	public function getAttribute(key:String, defaultIfMissing:* = undefined):* {
 		// Return the value of the given attribute or the given default
 		// value if the attribute is missing.
-		if(attributes.hasOwnProperty(key)) {
+		if (attributes.hasOwnProperty(key)) {
 			var rawValue:* = attributes[key];
-			if(rawValue is String && rawValue.indexOf('%') == rawValue.length - 1)
+			if (rawValue is String && rawValue.indexOf('%') == rawValue.length - 1)
 				return parseFloat(rawValue) / 100;
 			// This fixes corrupted gradients created
-			else if(defaultIfMissing is Number && rawValue === 'undefined')
+			else if (defaultIfMissing is Number && rawValue === 'undefined')
 				return defaultIfMissing;
 
 			return rawValue;
@@ -227,8 +227,8 @@ public class SVGElement {
 
 	public function renderPathOn(s:Shape, forHitTest:Boolean = false):void {
 		SVGPath.render(this, s.graphics, forHitTest);
-		//s.alpha = alpha();
-		//if (transform) s.transform.matrix = transform;
+		// s.alpha = alpha();
+		// if (transform) s.transform.matrix = transform;
 	}
 
 	public function renderTextOn(tf:TextField):void {

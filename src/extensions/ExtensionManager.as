@@ -24,18 +24,18 @@
 // socket-based communications with local and server-based extension helper applications.
 
 package extensions {
-import blocks.BlockArg;
+	import blocks.BlockArg;
 
-import flash.events.*;
+	import flash.events.*;
 	import flash.external.ExternalInterface;
 	import flash.net.*;
 	import flash.utils.getTimer;
 	import blocks.Block;
 	import interpreter.*;
 
-import uiwidgets.DialogBox;
+	import uiwidgets.DialogBox;
 
-import uiwidgets.IndicatorLight;
+	import uiwidgets.IndicatorLight;
 	import util.*;
 
 public class ExtensionManager {
@@ -90,12 +90,11 @@ public class ExtensionManager {
 		var ext:ScratchExtension = extensionDict[extName];
 		if (ext && ext.showBlocks != flag) {
 			ext.showBlocks = flag;
-			if(app.jsEnabled) {
-				if(flag && ext.javascriptURL) {
+			if (app.jsEnabled) {
+				if (flag && ext.javascriptURL) {
 					ExternalInterface.call('ScratchExtensions.loadExternalJS', ext.javascriptURL);
 					ext.showBlocks = false; // Wait for it to load
-				}
-				else if(!flag) {
+				} else if (!flag) {
 					ExternalInterface.call('ScratchExtensions.unregister', extName);
 				}
 			}
@@ -157,14 +156,14 @@ public class ExtensionManager {
 		// Answer an array of extension descriptor objects for imported extensions to be saved with the project.
 		var result:Array = [];
 		for each (var ext:ScratchExtension in extensionDict) {
-			if(!ext.showBlocks) continue;
+			if (!ext.showBlocks) continue;
 
 			var descriptor:Object = {};
 			descriptor.extensionName = ext.name;
 			descriptor.blockSpecs = ext.blockSpecs;
 			descriptor.menus = ext.menus;
-			if(ext.port) descriptor.extensionPort = ext.port;
-			else if(ext.javascriptURL) descriptor.javascriptURL = ext.javascriptURL;
+			if (ext.port) descriptor.extensionPort = ext.port;
+			else if (ext.javascriptURL) descriptor.javascriptURL = ext.javascriptURL;
 			result.push(descriptor);
 		}
 		return result;
@@ -175,7 +174,7 @@ public class ExtensionManager {
 		if (ext == null) return; // unknown extension
 
 		var index:int = ext.busy.indexOf(id);
-		if(index > -1) ext.busy.splice(index, 1);
+		if (index > -1) ext.busy.splice(index, 1);
 	}
 
 	public function reporterCompleted(extensionName:String, id:Number, retval:*):void {
@@ -183,10 +182,10 @@ public class ExtensionManager {
 		if (ext == null) return; // unknown extension
 
 		var index:int = ext.busy.indexOf(id);
-		if(index > -1) {
+		if (index > -1) {
 			ext.busy.splice(index, 1);
-			for(var b:Object in ext.waiting) {
-				if(ext.waiting[b] == id) {
+			for (var b:Object in ext.waiting) {
+				if (ext.waiting[b] == id) {
 					delete ext.waiting[b];
 					(b as Block).response = retval;
 					(b as Block).requestState = 2;
@@ -197,10 +196,10 @@ public class ExtensionManager {
 
 	public function loadRawExtension(extObj:Object):void {
 		var ext:ScratchExtension = extensionDict[extObj.extensionName];
-		if(!ext || (ext.blockSpecs && ext.blockSpecs.length))
+		if (!ext || (ext.blockSpecs && ext.blockSpecs.length))
 				ext = new ScratchExtension(extObj.extensionName, extObj.extensionPort);
 		ext.blockSpecs = extObj.blockSpecs;
-		if(extObj.url) ext.url = extObj.url;
+		if (extObj.url) ext.url = extObj.url;
 		ext.showBlocks = true;
 		ext.menus = extObj.menus;
 		ext.javascriptURL = extObj.javascriptURL;
@@ -238,7 +237,7 @@ public class ExtensionManager {
 			ext.blockSpecs = extObj.blockSpecs;
 			ext.showBlocks = true;
 			ext.menus = extObj.menus;
-			if(extObj.javascriptURL) ext.javascriptURL = extObj.javascriptURL;
+			if (extObj.javascriptURL) ext.javascriptURL = extObj.javascriptURL;
 			extensionDict[extObj.extensionName] = ext;
 		}
 		Scratch.app.updatePalette();
@@ -262,22 +261,21 @@ public class ExtensionManager {
 	//------------------------------
 
 	public function updateIndicator(indicator:IndicatorLight, ext:ScratchExtension, firstTime:Boolean = false):void {
-		if(ext.port > 0) {
+		if (ext.port > 0) {
 			var msecsSinceLastResponse:uint = getTimer() - ext.lastPollResponseTime;
 			if (msecsSinceLastResponse > 500) indicator.setColorAndMsg(0xE00000, 'Cannot find helper app');
 			else if (ext.problem != '') indicator.setColorAndMsg(0xE0E000, ext.problem);
 			else indicator.setColorAndMsg(0x00C000, 'Okay');
-		}
-		else if(app.jsEnabled) {
+		} else if (app.jsEnabled) {
 			var retval:Object = ExternalInterface.call('ScratchExtensions.getStatus', ext.name);
-			if(!retval) retval = {status: 0, msg: 'Cannot communicate with extension.'};
+			if (!retval) retval = {status: 0, msg: 'Cannot communicate with extension.'};
 
 			var color:uint;
-			if(retval.status == 2) color = 0x00C000;
-			else if(retval.status == 1) color = 0xE0E000;
+			if (retval.status == 2) color = 0x00C000;
+			else if (retval.status == 1) color = 0xE0E000;
 			else {
 				color = 0xE00000;
-				if(firstTime) {
+				if (firstTime) {
 					Scratch.app.showTip('extensions');
 //					DialogBox.notify('Extension Problem', 'It looks like the '+ext.name+' is not working properly.' +
 //							'Please read the extensions help in the tips window.', Scratch.app.stage);
@@ -306,25 +304,22 @@ public class ExtensionManager {
 
 		var value:*;
 		if (b.isReporter) {
-			if(b.isRequester) {
-				if(b.requestState == 2) {
+			if (b.isRequester) {
+				if (b.requestState == 2) {
 					b.requestState = 0;
 					return b.response;
-				}
-				else if(b.requestState == 0) {
+				} else if (b.requestState == 0) {
 					request(extName, primOrVarName, args, b);
 				}
 
 				// Returns null if we just made a request or we're still waiting
 				return null;
-			}
-			else {
+			} else {
 				var sensorName:String = primOrVarName;
-				if(ext.port > 0) {  // we were checking ext.isInternal before, should we?
+				if (ext.port > 0) {  // we were checking ext.isInternal before, should we?
 					for each (var a:* in args) sensorName += '/' + a; // append menu args
 					value = ext.stateVars[sensorName];
-				}
-				else if(Scratch.app.jsEnabled) {
+				} else if (Scratch.app.jsEnabled) {
 					// Javascript
 					value = ExternalInterface.call('ScratchExtensions.getReporter', ext.name, sensorName, args);
 				}
@@ -343,8 +338,8 @@ public class ExtensionManager {
 					app.interp.doYield();
 					justStartedWait = true;
 
-					if(ext.port == 0) {
-						if(app.jsEnabled)
+					if (ext.port == 0) {
+						if (app.jsEnabled)
 							ExternalInterface.call('ScratchExtensions.runAsync', ext.name, primOrVarName, args, id);
 						else
 							ext.busy.pop();
@@ -372,23 +367,22 @@ public class ExtensionManager {
 		if (ext == null) return; // unknown extension
 		if (ext.port > 0) {
 			var activeThread:Thread = app.interp.activeThread;
-			if(activeThread && op != 'reset_all') {
-				if(activeThread.firstTime) {
+			if (activeThread && op != 'reset_all') {
+				if (activeThread.firstTime) {
 					httpCall(ext, op, args);
 					activeThread.firstTime = false;
 					app.interp.doYield();
-				}
-				else {
+				} else {
 					activeThread.firstTime = true;
 				}
-			}
-			else
+			} else {
 				httpCall(ext, op, args);
+			}
 		} else {
-			if(op == 'reset_all') op = 'resetAll';
+			if (op == 'reset_all') op = 'resetAll';
 
 			// call a JavaScript extension function with the given arguments
-			if(Scratch.app.jsEnabled) ExternalInterface.call('ScratchExtensions.runCommand', ext.name, op, args);
+			if (Scratch.app.jsEnabled) ExternalInterface.call('ScratchExtensions.runCommand', ext.name, op, args);
 			app.interp.redraw(); // make sure interpreter doesn't do too many extension calls in one cycle
 		}
 	}
@@ -403,7 +397,7 @@ public class ExtensionManager {
 
 		if (ext.port > 0) {
 			httpRequest(ext, op, args, b);
-		} else if(Scratch.app.jsEnabled) {
+		} else if (Scratch.app.jsEnabled) {
 			// call a JavaScript extension function with the given arguments
 			b.requestState = 1;
 			++ext.nextID;
@@ -415,7 +409,7 @@ public class ExtensionManager {
 
 	private function httpRequest(ext:ScratchExtension, op:String, args:Array, b:Block):void {
 		function responseHandler(e:Event):void {
-			if(e.type == Event.COMPLETE)
+			if (e.type == Event.COMPLETE)
 				b.response = loader.data;
 			else
 				b.response = '';

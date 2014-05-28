@@ -108,4 +108,5 @@ public class VariableSettings extends Sprite {
 		g.drawRect(0, lineY + 1, w, 1);
 		g.endFill();
 	}
+
 }}

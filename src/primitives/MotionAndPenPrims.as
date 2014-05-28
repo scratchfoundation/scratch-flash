@@ -24,13 +24,13 @@
 
 package primitives {
 	import blocks.*;
-	
+
 	import flash.display.*;
 	import flash.geom.*;
 	import flash.utils.Dictionary;
-	
+
 	import interpreter.*;
-	
+
 	import scratch.*;
 
 public class MotionAndPenPrims {
@@ -297,7 +297,7 @@ public class MotionAndPenPrims {
 		g.lineStyle(s.penWidth, s.penColorCache);
 		g.moveTo(240 + oldX, 180 - oldY);
 		g.lineTo(240 + newX, 180 - newY);
-//trace('pen line('+oldX+', '+oldY+', '+newX+', '+newY+')');
+		// trace('pen line('+oldX+', '+oldY+', '+newX+', '+newY+')');
 		app.stagePane.penActivity = true;
 	}
 

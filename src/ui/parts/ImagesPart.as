@@ -121,7 +121,7 @@ public class ImagesPart extends UIPart {
 			SimpleTooltips.add(importButton, {text: 'Upload costume from file', direction: 'bottom'});
 			SimpleTooltips.add(cameraButton, {text: 'New costume from camera', direction: 'bottom'});
 		}
-}
+	}
 
 	private function isStage():Boolean { return app.viewedObj() && app.viewedObj().isStage }
 
@@ -187,7 +187,7 @@ public class ImagesPart extends UIPart {
 		var c:ScratchCostume = obj.currentCostume();
 		useBitmapEditor(c.isBitmap() && !c.text);
 		editor.editCostume(c, obj.isStage);
-		if(changed) app.setSaveNeeded();
+		if (changed) app.setSaveNeeded();
 	}
 
 	private function addListFrame():void {
@@ -200,12 +200,12 @@ public class ImagesPart extends UIPart {
 
 	private function nameChanged():void {
 		var obj:ScratchObj = app.viewedObj();
-		if(!obj.isCostumeNameUsed(nameField.contents())) {
+		if (!obj.isCostumeNameUsed(nameField.contents())) {
 			obj.currentCostume().costumeName = nameField.contents();
 			(listFrame.contents as MediaPane).refresh();
-		}
-		else
+		} else {
 			nameField.setContents(obj.currentCostume().costumeName);
+		}
 	}
 
 	private function addNewCostumeButtons():void {

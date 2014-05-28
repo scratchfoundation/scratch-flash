@@ -18,18 +18,18 @@
  */
 
 package uiwidgets {
-import blocks.*;
+	import blocks.*;
 
-import flash.display.*;
-import flash.events.*;
-import flash.geom.*;
-import flash.net.*;
-import flash.text.*;
-import flash.utils.ByteArray;
+	import flash.display.*;
+	import flash.events.*;
+	import flash.geom.*;
+	import flash.net.*;
+	import flash.text.*;
+	import flash.utils.ByteArray;
 
-import ui.parts.UIPart;
-import util.Color;
-import util.JSON;
+	import ui.parts.UIPart;
+	import util.Color;
+	import util.JSON;
 
 public class BlockColorEditor extends Sprite {
 
@@ -114,11 +114,11 @@ public class BlockColorEditor extends Sprite {
 		var data:ByteArray = FileReference(event.target).data;
 			var colors:Object = util.JSON.parse(data.toString());
 			for (var k:String in colors) {
- 				setCategoryColor(k, colors[k]);
+				setCategoryColor(k, colors[k]);
 			}
 			selectCategory(categoryName.text);
- 			Scratch.app.translationChanged();
- 		}
+			Scratch.app.translationChanged();
+		}
 		var fileList:FileReferenceList = new FileReferenceList();
 		fileList.addEventListener(Event.SELECT, fileSelected);
 		try {

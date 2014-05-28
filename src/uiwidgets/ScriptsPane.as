@@ -169,7 +169,7 @@ public class ScriptsPane extends ScrollFrameContents {
 		if (nearestTarget == null) {
 			b.cacheAsBitmap = true;
 		} else {
-			if(app.editMode) b.hideRunFeedback();
+			if (app.editMode) b.hideRunFeedback();
 			b.cacheAsBitmap = false;
 			if (b.isReporter) {
 				Block(nearestTarget[1].parent).replaceArgWithBlock(nearestTarget[1], b, this);
@@ -493,7 +493,7 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 			var o:* = getChildAt(i);
 			if (o is Block) stacks.push(o);
 		}
-		stacks.sort(function (b1:Block, b2:Block):int {return b1.x - b2.x }); // sort by increasing x
+		stacks.sort(function(b1:Block, b2:Block):int {return b1.x - b2.x }); // sort by increasing x
 		return stacks;
 	}
 
@@ -528,7 +528,7 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 	private function computeColumnWidths(columns:Array):Array {
 		var widths:Array = [];
 		for each (var c:Array in columns) {
-			c.sort(function (b1:Block, b2:Block):int {return b1.y - b2.y }); // sort by increasing y
+			c.sort(function(b1:Block, b2:Block):int {return b1.y - b2.y }); // sort by increasing y
 			var w:int = 0;
 			for each (var b:Block in c) w = Math.max(w, b.width);
 			widths.push(w);

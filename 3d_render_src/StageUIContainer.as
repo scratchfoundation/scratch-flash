@@ -20,16 +20,16 @@
 package {
 	import flash.display.Sprite;
 
-	public class StageUIContainer extends Sprite
-	{
-		public function step(runtime:Object):void {
-			for (var i:int = 0; i < numChildren; i++) {
-				var c:Object = getChildAt(i);
-				if (c.visible == true && c.hasOwnProperty('step')) {
-					if ('listName' in c) c.step();
-					else c.step(runtime);
-				}
+public class StageUIContainer extends Sprite {
+
+	public function step(runtime:Object):void {
+		for (var i:int = 0; i < numChildren; i++) {
+			var c:Object = getChildAt(i);
+			if (c.visible == true && c.hasOwnProperty('step')) {
+				if ('listName' in c) c.step();
+				else c.step(runtime);
 			}
 		}
 	}
-}
+
+}}

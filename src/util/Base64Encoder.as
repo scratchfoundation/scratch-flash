@@ -46,13 +46,13 @@ public class Base64Encoder {
 			result += alphabet.charAt((n >> 18) & 0x3F);
 			result += alphabet.charAt((n >> 12) & 0x3F);
 			result += alphabet.charAt((n >>  6) & 0x3F);
-			result += "=";			
+			result += "=";
 		}
 		if (data.bytesAvailable == 1) { // leftover 8 bits -> 2 characters + 2 padding characters
 			n = data.readUnsignedByte() << 16;
 			result += alphabet.charAt((n >> 18) & 0x3F);
 			result += alphabet.charAt((n >> 12) & 0x3F);
-			result += "==";			
+			result += "==";
 		}
 		return result;
 	}

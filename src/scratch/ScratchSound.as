@@ -29,9 +29,9 @@
 // Note: 'mp3' format was removed during alpha test to avoid the need to support MP3 in the future.
 
 package scratch {
-import by.blooddy.crypto.MD5;
+	import by.blooddy.crypto.MD5;
 
-import flash.utils.*;
+	import flash.utils.*;
 	import sound.*;
 	import sound.mp3.MP3Loader;
 	import util.*;

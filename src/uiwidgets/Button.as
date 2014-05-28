@@ -22,14 +22,14 @@ package uiwidgets {
 	import flash.events.MouseEvent;
 	import flash.geom.Matrix;
 	import flash.text.*;
-	
+
 public class Button extends Sprite {
 
 	private var labelOrIcon:DisplayObject;
 	private var color:* = CSS.titleBarColors;
 	private var minWidth:int = 50;
 	private var compact:Boolean;
-	
+
 	private var action:Function;
 	private var tipName:String;
 
@@ -54,7 +54,7 @@ public class Button extends Sprite {
 			if ((labelOrIcon != null) && (labelOrIcon.parent != null)) labelOrIcon.parent.removeChild(labelOrIcon);
 			addLabel(s);
 		}
-	 }
+	}
 
 	public function setIcon(icon:DisplayObject):void {
 		if ((labelOrIcon != null) && (labelOrIcon.parent != null)) {
@@ -81,13 +81,14 @@ public class Button extends Sprite {
 		graphics.clear();
 		graphics.lineStyle(0.5, CSS.borderColor, 1, true);
 		if (color is Array) {
-	 		var matr:Matrix = new Matrix();
- 			matr.createGradientBox(minW, minH, Math.PI / 2, 0, 0);
- 			graphics.beginGradientFill(GradientType.LINEAR, CSS.titleBarColors , [100, 100], [0x00, 0xFF], matr);  
-  		}
-		else graphics.beginFill(color);
+			var matr:Matrix = new Matrix();
+			matr.createGradientBox(minW, minH, Math.PI / 2, 0, 0);
+			graphics.beginGradientFill(GradientType.LINEAR, CSS.titleBarColors , [100, 100], [0x00, 0xFF], matr);
+		} else {
+			graphics.beginFill(color);
+		}
 		graphics.drawRoundRect(0, 0, minW, minH, 12);
- 		graphics.endFill();
+		graphics.endFill();
 	}
 
 	private function mouseOver(evt:MouseEvent):void { setColor(CSS.overColor) }

@@ -60,7 +60,7 @@ public class Slider extends Sprite implements DragClient {
 
 	public function get max():Number { return maxValue; }
 	public function set max(n:Number):void { maxValue = n; }
-	
+
 	public function get value():Number { return positionFraction * (maxValue - minValue) + minValue; }
 	public function set value(n:Number):void {
 		// Update the slider value (0-1).
@@ -89,7 +89,7 @@ public class Slider extends Sprite implements DragClient {
 			g.beginFill(slotColor);
 		}
 		g.drawRoundRect(0, 0, w, h, slotRadius, slotRadius);
-		g.endFill();		
+		g.endFill();
 	}
 
 	private function drawKnob(w:int, h:int):void {

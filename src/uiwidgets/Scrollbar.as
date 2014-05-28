@@ -159,4 +159,5 @@ public class Scrollbar extends Sprite implements DragClient {
 	public function dragEnd(evt:MouseEvent):void {
 		dispatchEvent(new Event(Event.COMPLETE));
 	}
+
 }}

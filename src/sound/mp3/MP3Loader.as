@@ -20,8 +20,8 @@
 package sound.mp3 {
 	import flash.display.*;
 	import flash.events.Event;
-import flash.events.IOErrorEvent;
-import flash.media.Sound;
+	import flash.events.IOErrorEvent;
+	import flash.media.Sound;
 	import flash.system.*;
 	import flash.utils.*;
 	import scratch.ScratchSound;
@@ -122,7 +122,7 @@ public class MP3Loader {
 		//
 		appendBytes(swfBytes, soundClassSwfBytes1);
 		var swfSizePosition:uint = swfBytes.position;
-		swfBytes.writeInt(0); //swf size will go here
+		swfBytes.writeInt(0); // swf size will go here
 		appendBytes(swfBytes, soundClassSwfBytes2);
 		var audioSizePosition:uint = swfBytes.position;
 		swfBytes.writeInt(0); // audio data size + 9 will go here

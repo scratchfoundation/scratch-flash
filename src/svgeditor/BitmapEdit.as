@@ -19,14 +19,14 @@
 
 /*
 John:
-  [x] cursors for select and stamp mode
-  [x] deactivate when media library showing (so cursor doesn't disappear)
-  [ ] snap costume center to grid
-  [ ] allow larger pens (make size slider be non-linear)
-  [ ] when converting stage from bm to vector, trim white area (?)
-  [ ] minor: small shift when baking in after moving selection
-  [ ] add readout for pen size
-  [ ] add readout for zoom
+	[x] cursors for select and stamp mode
+	[x] deactivate when media library showing (so cursor doesn't disappear)
+	[ ] snap costume center to grid
+	[ ] allow larger pens (make size slider be non-linear)
+	[ ] when converting stage from bm to vector, trim white area (?)
+	[ ] minor: small shift when baking in after moving selection
+	[ ] add readout for pen size
+	[ ] add readout for zoom
 */
 
 package svgeditor {
@@ -246,8 +246,7 @@ public class BitmapEdit extends ImageEdit {
 		if (obj) {
 			if (currentTool is TextTool && prevToolMode == 'bitmapSelect') {
 				(currentTool as TextTool).setObject(obj);
-			}
-			else if (!(currentTool is ObjectTransformer)) {
+			} else if (!(currentTool is ObjectTransformer)) {
 				// User was editing an object and switched tools, bake the object
 				bakeIntoBitmap();
 				saveToCostume();

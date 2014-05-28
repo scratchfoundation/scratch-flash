@@ -17,20 +17,20 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package svgeditor.objs
-{
+package svgeditor.objs {
 	import flash.geom.Point;
-	
-	public class PathDrawContext
-	{
-		public var cmds:Array;
-		public var acurve:Boolean;
-		public var lastcxy:Point;
-		public var adjust:Boolean;
-		function PathDrawContext() {
-			cmds = new Array();
-			acurve = false;
-			adjust = false;
-		}
+
+public class PathDrawContext {
+
+	public var cmds:Array;
+	public var acurve:Boolean;
+	public var lastcxy:Point;
+	public var adjust:Boolean;
+
+	function PathDrawContext() {
+		cmds = new Array();
+		acurve = false;
+		adjust = false;
 	}
-}
+
+}}

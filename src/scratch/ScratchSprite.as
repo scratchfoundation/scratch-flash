@@ -26,10 +26,10 @@
 package scratch {
 	import flash.display.*;
 	import flash.events.*;
-import flash.filters.GlowFilter;
-import flash.geom.*;
-import flash.geom.ColorTransform;
-import flash.utils.*;
+	import flash.filters.GlowFilter;
+	import flash.geom.*;
+	import flash.geom.ColorTransform;
+	import flash.utils.*;
 	import flash.net.FileReference;
 	import filters.FilterPack;
 	import interpreter.Variable;
@@ -166,9 +166,9 @@ public class ScratchSprite extends ScratchObj {
 
 	override protected function updateImage():void {
 		// Make sure to update the shape
-		if(geomShape.parent) img.removeChild(geomShape);
+		if (geomShape.parent) img.removeChild(geomShape);
 		super.updateImage();
-		if(bubble) updateBubble();
+		if (bubble) updateBubble();
 	}
 
 	public function setScratchXY(newX:Number, newY:Number):void {
@@ -184,21 +184,20 @@ public class ScratchSprite extends ScratchObj {
 	static private var edgeBox:Rectangle = new Rectangle(0, 0, 480, 360);
 	public function keepOnStage():void {
 		var myBox:Rectangle;
-		if(width == 0 && height == 0) {
+		if (width == 0 && height == 0) {
 			emptyRect.x = x;
 			emptyRect.y = y;
 			myBox = emptyRect;
-		}
-		else {
+		} else {
 			myBox = geomShape.getRect(parent);
-			if(myBox.width == 0 || myBox.height == 0) {
+			if (myBox.width == 0 || myBox.height == 0) {
 				myBox.x = x;
 				myBox.y = y;
 			}
 			myBox.inflate(3, 3);
 		}
 
-		if(stageRect.containsRect(myBox)) return;
+		if (stageRect.containsRect(myBox)) return;
 
 		var inset:int = Math.min(18, Math.min(myBox.width, myBox.height) / 2);
 		edgeBox.x = edgeBox.y = inset;
@@ -233,7 +232,7 @@ public class ScratchSprite extends ScratchObj {
 
 //		updateImage();
 		adjustForRotationCenter();
-		if(wasFlipped != isCostumeFlipped())
+		if (wasFlipped != isCostumeFlipped())
 			updateRenderDetails(1);
 	}
 
@@ -296,7 +295,7 @@ public class ScratchSprite extends ScratchObj {
 		cachedBitmap = null;
 		cachedBounds = null;
 
-		if(!geomShape.parent) {
+		if (!geomShape.parent) {
 			geomShape.graphics.copyFrom(currentCostume().getShape().graphics);
 			var currDO:DisplayObject = img.getChildAt(0);
 			geomShape.scaleX = currDO.scaleX;
@@ -317,9 +316,9 @@ public class ScratchSprite extends ScratchObj {
 	}
 
 	public override function getBounds(space:DisplayObject):Rectangle {
-		//if(space == this && geomShape.parent) img.removeChild(geomShape);
+		// if (space == this && geomShape.parent) img.removeChild(geomShape);
 		var b:Rectangle = getChildAt(0).getBounds(space);
-		//img.addChild(geomShape);
+		// img.addChild(geomShape);
 		return b;
 	}
 
@@ -347,15 +346,15 @@ public class ScratchSprite extends ScratchObj {
 		m.scale(scaleX, scaleY);
 		var b:Rectangle = (!Scratch.app.render3D || currentCostume().bitmap) ? img.getChildAt(0).getBounds(this) : getVisibleBounds(this);
 		var r:Rectangle = transformedBounds(b, m);
-		if(Scratch.app.isIn3D) {
+		if (Scratch.app.isIn3D) {
 			var oldGhost:Number = filterPack.getFilterSetting('ghost');
 			filterPack.setFilter('ghost', 0);
 			updateEffects();
 			var bm:BitmapData = Scratch.app.render3D.getRenderedChild(this, b.width*scaleX, b.height*scaleY);
 			filterPack.setFilter('ghost', oldGhost);
 			updateEffects();
-//			if(objName == 'Tank 2 down bumper ') {
-//				if(!testSpr.parent) {
+//			if (objName == 'Tank 2 down bumper ') {
+//				if (!testSpr.parent) {
 //					testBM.filters = [new GlowFilter(0xFF00FF, 0.8)];
 //					testBM.y = 360; testBM.x = 15;
 //					testSpr.addChild(testBM);
@@ -369,21 +368,19 @@ public class ScratchSprite extends ScratchObj {
 //				testBM.bitmapData = bm;
 //			}
 
-			if(forColorTest) return bm;
+			if (forColorTest) return bm;
 
-			if(rotation != 0) {
+			if (rotation != 0) {
 				m = new Matrix();
 				m.rotate((Math.PI * rotation) / 180);
 				b = transformedBounds(bm.rect, m);
 				cachedBitmap = new BitmapData(Math.max(b.width, 1), Math.max(b.height, 1), true, 0);
 				m.translate(-b.left, -b.top);
 				cachedBitmap.draw(bm, m);
-			}
-			else {
+			} else {
 				cachedBitmap = bm;
 			}
-		}
-		else {
+		} else {
 			if ((r.width == 0) || (r.height == 0)) { // empty costume: use an invisible 1x1 bitmap
 				cachedBitmap = new BitmapData(1, 1, true, 0);
 				cachedBounds = cachedBitmap.rect;
@@ -507,7 +504,7 @@ public class ScratchSprite extends ScratchObj {
 			hideBubble();
 
 			// Force redisplay (workaround for flash display update bug)
-			if(!Scratch.app.isIn3D) {
+			if (!Scratch.app.isIn3D) {
 				parent.visible = false;
 				parent.visible = true;
 			}
@@ -661,12 +658,12 @@ public class ScratchSprite extends ScratchObj {
 	}
 
 	public function getVisibleBounds(space:DisplayObject):Rectangle {
-		if(space == this) {
+		if (space == this) {
 			var rot:Number = rotation;
 			rotation = 0;
 		}
 
-		if(!geomShape.parent) {
+		if (!geomShape.parent) {
 			img.addChild(geomShape);
 			geomShape.x = img.getChildAt(0).x;
 			geomShape.scaleX = img.getChildAt(0).scaleX;
@@ -674,7 +671,7 @@ public class ScratchSprite extends ScratchObj {
 
 		var b:Rectangle = geomShape.getRect(space);
 
-		if(space == this) {
+		if (space == this) {
 			rotation = rot;
 			b.inflate(2, 2);
 			b.offset(-1, -1);
@@ -692,4 +689,5 @@ public class ScratchSprite extends ScratchObj {
 		super.stopDrag();
 		applyFilters();
 	}
+
 }}

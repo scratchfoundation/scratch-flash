@@ -23,7 +23,7 @@
 * @author Kevin Weiner (original Java version - kweiner@fmsware.com)
 * @author Thibault Imbert (AS3 version - bytearray.org)
 * @version 0.1 AS3 implementation
-* 
+*
 * Modified for Scratch by John Maloney.
 * Licensed under the MIT Open Source License.
 */
@@ -32,8 +32,9 @@ package util {
 	import flash.display.BitmapData;
 	import flash.geom.Rectangle;
 	import flash.utils.ByteArray;
-	
+
 public class GIFDecoder {
+
 		/**
 		 * File read status: No errors.
 		 */
@@ -48,7 +49,7 @@ public class GIFDecoder {
 		 * File read status: Unable to open source.
 		 */
 		private static var STATUS_OPEN_ERROR:int = 2;
-		
+
 		private static var frameRect:Rectangle = new Rectangle;
 
 		private var inStream:ByteArray;
@@ -108,11 +109,11 @@ public class GIFDecoder {
 		private var dispose:int= 0;
 		// 0=no action; 1=leave in place; 2=restore to bg; 3=restore to prev
 		private var lastDispose:int = 0;
-		 // use transparent color
+		// use transparent color
 		private var transparency:Boolean = false;
-		 // delay in milliseconds
+		// delay in milliseconds
 		private var delay:int = 0;
-		 // transparent color index
+		// transparent color index
 		private var transIndex:int;
 
 		// max decoder pixel stack size
@@ -134,23 +135,18 @@ public class GIFDecoder {
 		 * @param BufferedInputStream containing GIF file.
 		 * @return read status code (0 = no errors)
 		 */
-		public function read( inStream:ByteArray ):int
-		{
+		public function read(inStream:ByteArray):int {
 			init();
-			if ( inStream != null) 
-			{
+			if (inStream != null) {
 				this.inStream = inStream;
 				readHeader();
-				
-				if (!hasError()) 
-				{
+
+				if (!hasError()) {
 					readContents();
-					
+
 					if (frameCount < 0) status = STATUS_FORMAT_ERROR;
 				}
-			} 
-			else 
-			{
+			} else {
 				status = STATUS_OPEN_ERROR;
 			}
 			return status;
@@ -160,18 +156,15 @@ public class GIFDecoder {
 		 * Creates new frame image from current data (and previous
 		 * frames as specified by their disposition codes).
 		 */
-		private function getPixels( bitmap:BitmapData ):Array
-		{	
-			var pixels:Array = new Array ( 4 * image.width * image.height );
+		private function getPixels(bitmap:BitmapData):Array {
+			var pixels:Array = new Array (4 * image.width * image.height);
 			var count:int = 0;
 			var lngWidth:int = image.width;
 			var lngHeight:int = image.height;
 			var color:int;
-			
-			for (var th:int = 0; th < lngHeight; th++)
-			{
-				for (var tw:int = 0; tw < lngWidth; tw++)
-				{
+
+			for (var th:int = 0; th < lngHeight; th++) {
+				for (var tw:int = 0; tw < lngWidth; tw++) {
 					color = bitmap.getPixel (th, tw);
 
 					pixels[count++] = (color & 0xFF0000) >> 16;
@@ -181,56 +174,48 @@ public class GIFDecoder {
 			}
 			return pixels;
 		}
-		
-		private function setPixels( pixels:Array ):void
-		{
+
+		private function setPixels(pixels:Array):void {
 			var count:int = 0;
 			var color:int;
 			pixels.position = 0;
-			
+
 			var lngWidth:int = image.width;
 			var lngHeight:int = image.height;
 			bitmap.lock();
-			
-			for (var th:int = 0; th < lngHeight; th++)
-			{
-				for (var tw:int = 0; tw < lngWidth; tw++)
-				{
+
+			for (var th:int = 0; th < lngHeight; th++) {
+				for (var tw:int = 0; tw < lngWidth; tw++) {
 					color = pixels[int(count++)];
-					bitmap.setPixel32 ( tw, th, color );
+					bitmap.setPixel32 (tw, th, color);
 				}
 			}
 			bitmap.unlock();
 		}
 
-		private function transferPixels():void
-		{
+		private function transferPixels():void {
 			// expose destination image's pixels as int array
-			var dest:Array = getPixels( bitmap );
+			var dest:Array = getPixels(bitmap);
 			// fill in starting image contents based on last image's dispose code
-			if (lastDispose > 0)
-			{
-				if (lastDispose == 3) 
-				{
+			if (lastDispose > 0) {
+				if (lastDispose == 3) {
 					// use image before last
 					var n:int = frameCount - 2;
 					lastImage = n > 0 ? frames[n - 1] : null;
-					
+
 				}
 
-				if (lastImage != null) 
-				{
-					var prev:Array = getPixels( lastImage );	
+				if (lastImage != null) {
+					var prev:Array = getPixels(lastImage);
 					dest = prev.slice();
 					// copy pixels
-					if (lastDispose == 2) 
-					{
+					if (lastDispose == 2) {
 						// fill last image rect area with background color
 						var c:Number;
-						 // assume background is transparent
+						// assume background is transparent
 						c = transparency ? 0x00000000 : lastBgColor;
 						// use given background color
-						image.fillRect( lastRect, c );
+						image.fillRect(lastRect, c);
 					}
 				}
 			}
@@ -239,16 +224,12 @@ public class GIFDecoder {
 			var pass:int = 1;
 			var inc:int = 8;
 			var iline:int = 0;
-			for (var i:int = 0; i < ih; i++) 
-			{
+			for (var i:int = 0; i < ih; i++) {
 				var line:int = i;
-				if (interlace) 
-				{
-					if (iline >= ih) 
-					{
+				if (interlace) {
+					if (iline >= ih) {
 						pass++;
-						switch (pass) 
-						{
+						switch (pass) {
 							case 2 :
 								iline = 4;
 								break;
@@ -266,40 +247,35 @@ public class GIFDecoder {
 					iline += inc;
 				}
 				line += iy;
-				if (line < height) 
-				{
+				if (line < height) {
 					var k:int = line * width;
 					var dx:int = k + ix; // start of line in dest
 					var dlim:int = dx + iw; // end of dest line
-					if ((k + width) < dlim) 
-					{
+					if ((k + width) < dlim) {
 						dlim = k + width; // past dest edge
 					}
 					var sx:int = i * iw; // start of line in source
 					var index:int;
 					var tmp:int;
-					while (dx < dlim) 
-					{
+					while (dx < dlim) {
 						// map color and insert in destination
 						index = (pixels[sx++]) & 0xff;
 						tmp = act[index];
-						if (tmp != 0) 
-						{
+						if (tmp != 0) {
 							dest[dx] = tmp;
 						}
 						dx++;
 					}
 				}
 			}
-			setPixels( dest );
+			setPixels(dest);
 		}
 
 		/**
 		 * Decodes LZW image data into pixel array.
 		 * Adapted from John Cristy's ImageMagick.
 		 */
-		private function decodeImageData():void
-		{
+		private function decodeImageData():void {
 			var NullCode:int = -1;
 			var npix:int = iw * ih;
 			var available:int;
@@ -320,13 +296,12 @@ public class GIFDecoder {
 			var bi:int;
 			var pi:int;
 
-			if ((pixels == null) || (pixels.length < npix)) 
-			{
-				pixels = new Array ( npix ); // allocate new pixel array
+			if ((pixels == null) || (pixels.length < npix)) {
+				pixels = new Array (npix); // allocate new pixel array
 			}
-			if (prefix == null) prefix = new Array ( MaxStackSize );
-			if (suffix == null) suffix = new Array ( MaxStackSize );
-			if (pixelStack == null) pixelStack = new Array ( MaxStackSize + 1 );
+			if (prefix == null) prefix = new Array (MaxStackSize);
+			if (suffix == null) suffix = new Array (MaxStackSize);
+			if (pixelStack == null) pixelStack = new Array (MaxStackSize + 1);
 
 			//  Initialize GIF data stream decoder.
 
@@ -337,8 +312,7 @@ public class GIFDecoder {
 			old_code = NullCode;
 			code_size = data_size + 1;
 			code_mask = (1 << code_size) - 1;
-			for (code = 0; code < clear; code++) 
-			{
+			for (code = 0; code < clear; code++) {
 				prefix[int(code)] = 0;
 				suffix[int(code)] = code;
 			}
@@ -346,15 +320,11 @@ public class GIFDecoder {
 			//  Decode GIF pixel stream.
 			datum = bits = count = first = top = pi = bi = 0;
 
-			for (i = 0; i < npix;) 
-			{
-				if (top == 0) 
-				{
-					if (bits < code_size) 
-					{
+			for (i = 0; i < npix;) {
+				if (top == 0) {
+					if (bits < code_size) {
 						//  Load bytes until there are enough bits for a code.
-						if (count == 0) 
-						{
+						if (count == 0) {
 							// Read a new data block.
 							count = readBlock();
 							if (count <= 0)
@@ -375,8 +345,7 @@ public class GIFDecoder {
 					//  Interpret the code
 					if ((code > available) || (code == end_of_information))
 						break;
-					if (code == clear) 
-					{
+					if (code == clear) {
 						//  Reset decoder.
 						code_size = data_size + 1;
 						code_mask = (1 << code_size) - 1;
@@ -384,36 +353,32 @@ public class GIFDecoder {
 						old_code = NullCode;
 						continue;
 					}
-					if (old_code == NullCode) 
-					{
+					if (old_code == NullCode) {
 						pixelStack[int(top++)] = suffix[int(code)];
 						old_code = code;
 						first = code;
 						continue;
 					}
 					in_code = code;
-					if (code == available) 
-					{
+					if (code == available) {
 						pixelStack[int(top++)] = first;
 						code = old_code;
 					}
-					while (code > clear) 
-					{
+					while (code > clear) {
 						pixelStack[int(top++)] = suffix[int(code)];
 						code = prefix[int(code)];
 					}
 					first = (suffix[int(code)]) & 0xff;
 
 					//  Add a new string to the string table,
-			
+
 					if (available >= MaxStackSize) break;
 					pixelStack[int(top++)] = first;
 					prefix[int(available)] = old_code;
 					suffix[int(available)] = first;
 					available++;
 					if (((available & code_mask) == 0)
-						&& (available < MaxStackSize)) 
-					{
+						&& (available < MaxStackSize)) {
 						code_size++;
 						code_mask += available;
 					}
@@ -427,8 +392,7 @@ public class GIFDecoder {
 				i++;
 			}
 
-			for (i = pi; i < npix; i++) 
-			{
+			for (i = pi; i < npix; i++) {
 				pixels[int(i)] = 0; // clear missing pixels
 			}
 
@@ -437,16 +401,14 @@ public class GIFDecoder {
 		/**
 		 * Returns true if an error was encountered during reading/decoding
 		 */
-		private function hasError():Boolean 
-		{
+		private function hasError():Boolean {
 			return status != STATUS_OK;
 		}
 
 		/**
 		 * Initializes or re-initializes reader
 		*/
-		private function init():void 
-		{
+		private function init():void {
 			status = STATUS_OK;
 			frameCount = 0;
 			frames = new Array;
@@ -457,15 +419,11 @@ public class GIFDecoder {
 		/**
 		 * Reads a single byte from the input stream.
 		*/
-		private function readSingleByte():int
-		{
+		private function readSingleByte():int {
 			var curByte:int = 0;
-			try 
-			{
+			try {
 				curByte = inStream.readUnsignedByte();
-			} 
-			catch (e:Error) 
-			{
+			} catch (e:Error) {
 				status = STATUS_FORMAT_ERROR;
 			}
 			return curByte;
@@ -476,30 +434,23 @@ public class GIFDecoder {
 		 *
 		 * @return number of bytes stored in "buffer"
 		 */
-		private function readBlock():int
-		{
+		private function readBlock():int {
 			blockSize = readSingleByte();
 			var n:int = 0;
-			if (blockSize > 0) 
-			{
-				try 
-				{
+			if (blockSize > 0) {
+				try {
 					var count:int = 0;
-					while (n < blockSize) 
-					{
+					while (n < blockSize) {
 
 						inStream.readBytes(block, n, blockSize - n);
-						if ( (blockSize - n) == -1) 
+						if ((blockSize - n) == -1)
 							break;
 						n += (blockSize - n);
 					}
-				} 
-				catch (e:Error) 
-				{
+				} catch (e:Error) {
 				}
 
-				if (n < blockSize) 
-				{
+				if (n < blockSize) {
 					status = STATUS_FORMAT_ERROR;
 				}
 			}
@@ -512,35 +463,27 @@ public class GIFDecoder {
 		 * @param ncolors int number of colors to read
 		 * @return int array containing 256 colors (packed ARGB with full alpha)
 		 */
-		private function readColorTable(ncolors:int):Array 
-		{
+		private function readColorTable(ncolors:int):Array {
 			var nbytes:int = 3 * ncolors;
 			var tab:Array = null;
 			var c:ByteArray = new ByteArray;
 			var n:int = 0;
-			try 
-			{
-				inStream.readBytes(c, 0, nbytes );
+			try {
+				inStream.readBytes(c, 0, nbytes);
 				n = nbytes;
-			} 
-			catch (e:Error) 
-			{
+			} catch (e:Error) {
 			}
-			if (n < nbytes) 
-			{
+			if (n < nbytes) {
 				status = STATUS_FORMAT_ERROR;
-			} 
-			else 
-			{
+			} else {
 				tab = new Array(256); // max size to avoid bounds checks
 				var i:int = 0;
 				var j:int = 0;
-				while (i < ncolors) 
-				{
+				while (i < ncolors) {
 					var r:int = (c[j++]) & 0xff;
 					var g:int = (c[j++]) & 0xff;
 					var b:int = (c[j++]) & 0xff;
-					tab[i++] = ( 0xff000000 | (r << 16) | (g << 8) | b );
+					tab[i++] = (0xff000000 | (r << 16) | (g << 8) | b);
 				}
 			}
 			return tab;
@@ -549,18 +492,15 @@ public class GIFDecoder {
 		/**
 		 * Main file parser.  Reads GIF content blocks.
 		 */
-		private function readContents():void
-		{
+		private function readContents():void {
 			// read GIF file content blocks
 			var done:Boolean = false;
-			
-			while (!(done || hasError())) 
-			{
-				
+
+			while (!(done || hasError())) {
+
 				var code:int = readSingleByte();
-				
-				switch (code) 
-				{
+
+				switch (code) {
 
 					case 0x2C : // image separator
 						readImage();
@@ -568,8 +508,7 @@ public class GIFDecoder {
 
 					case 0x21 : // extension
 						code = readSingleByte();
-					switch (code) 
-					{
+					switch (code) {
 						case 0xf9 : // graphics control extension
 							readGraphicControlExt();
 							break;
@@ -577,15 +516,12 @@ public class GIFDecoder {
 						case 0xff : // application extension
 							readBlock();
 							var app:String = "";
-							for (var i:int = 0; i < 11; i++) 
-							{
+							for (var i:int = 0; i < 11; i++) {
 								app += block[int(i)];
 							}
-							if (app == "NETSCAPE2.0") 
-							{
+							if (app == "NETSCAPE2.0") {
 								readNetscapeExt();
-							}
-							else
+							} else
 								skip(); // don't care
 							break;
 
@@ -612,13 +548,11 @@ public class GIFDecoder {
 		/**
 		 * Reads Graphics Control Extension values
 		 */
-		private function readGraphicControlExt():void
-		{
+		private function readGraphicControlExt():void {
 			readSingleByte(); // block size
 			var packed:int = readSingleByte(); // packed fields
 			dispose = (packed & 0x1c) >> 2; // disposal method
-			if (dispose == 0) 
-			{
+			if (dispose == 0) {
 				dispose = 1; // elect to keep old image if discretionary
 			}
 			transparency = (packed & 1) != 0;
@@ -630,23 +564,19 @@ public class GIFDecoder {
 		/**
 		 * Reads GIF file header information.
 		 */
-		private function readHeader():void
-		{
+		private function readHeader():void {
 			var id:String = "";
-			for (var i:int = 0; i < 6; i++) 
-			{
+			for (var i:int = 0; i < 6; i++) {
 				id += String.fromCharCode (readSingleByte());
 
 			}
-			if (!( id.indexOf("GIF") == 0 ) ) 
-			{
+			if (!(id.indexOf("GIF") == 0)) {
 				status = STATUS_FORMAT_ERROR;
-				throw new Error ( "Invalid file type" );
+				throw new Error ("Invalid file type");
 				return;
 			}
 			readLSD();
-			if (gctFlag && !hasError()) 
-			{
+			if (gctFlag && !hasError()) {
 				gct = readColorTable(gctSize);
 				bgColor = gct[bgIndex];
 			}
@@ -655,8 +585,7 @@ public class GIFDecoder {
 		/**
 		 * Reads next frame image
 		 */
-		private function readImage():void 
-		{
+		private function readImage():void {
 			ix = readShort(); // (sub)image position & size
 			iy = readShort();
 			iw = readShort();
@@ -669,26 +598,21 @@ public class GIFDecoder {
 			// 4-5 - reserved
 			lctSize = 2 << (packed & 7); // 6-8 - local color table size
 
-			if (lctFlag) 
-			{
+			if (lctFlag) {
 				lct = readColorTable(lctSize); // read table
 				act = lct; // make local table active
-			} 
-			else 
-			{
+			} else {
 				act = gct; // make global table active
 				if (bgIndex == transIndex)
 					bgColor = 0;
 			}
 			var save:int = 0;
-			if (transparency) 
-			{
+			if (transparency) {
 				save = act[transIndex];
 				act[transIndex] = 0; // set transparent color if specified
 			}
 
-			if (act == null) 
-			{
+			if (act == null) {
 				status = STATUS_FORMAT_ERROR; // no color table defined
 			}
 
@@ -701,16 +625,16 @@ public class GIFDecoder {
 			frameCount++;
 			// create new image to receive frame data
 
-			bitmap = new BitmapData ( width, height );
-			
+			bitmap = new BitmapData (width, height);
+
 			image = bitmap;
-			
+
 			transferPixels(); // transfer pixel data to image
 
 			frames.push (bitmap); // add image to frame list
 
 			if (transparency) act[transIndex] = save;
-			
+
 			resetFrame();
 
 		}
@@ -718,8 +642,7 @@ public class GIFDecoder {
 		/**
 		 * Reads Logical Screen Descriptor
 		 */
-		private function readLSD():void
-		{
+		private function readLSD():void {
 
 			// logical screen size
 			width = readShort();
@@ -740,13 +663,10 @@ public class GIFDecoder {
 		/**
 		 * Reads Netscape extenstion to obtain iteration count
 		 */
-		private function readNetscapeExt():void
-		{
-			do 
-			{
+		private function readNetscapeExt():void {
+			do {
 				readBlock();
-				if (block[0] == 1) 
-				{
+				if (block[0] == 1) {
 					// loop count sub-block
 					var b1:int = (block[1]) & 0xff;
 					var b2:int = (block[2]) & 0xff;
@@ -758,8 +678,7 @@ public class GIFDecoder {
 		/**
 		 * Reads next 16-bit value, LSB first
 		 */
-		private function readShort():int
-		{
+		private function readShort():int {
 			// read 16-bit value, LSB first
 			return readSingleByte() | (readSingleByte() << 8);
 		}
@@ -767,8 +686,7 @@ public class GIFDecoder {
 		/**
 		 * Resets frame state for reading next image.
 		 */
-		private function resetFrame():void 
-		{
+		private function resetFrame():void {
 			lastDispose = dispose;
 			lastRect = new Rectangle(ix, iy, iw, ih);
 			lastImage = image;
@@ -783,12 +701,10 @@ public class GIFDecoder {
 		 * Skips variable length blocks up to and including
 		 * next zero length block.
 		 */
-		private function skip():void
-		{
-			do 
-			{
+		private function skip():void {
+			do {
 				readBlock();
-				
+
 			} while ((blockSize > 0) && !hasError());
 		}
 
