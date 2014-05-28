@@ -569,7 +569,7 @@ public class ScratchSprite extends ScratchObj {
 		}
 		if (!(s is String)) s = s.toString();
 		if (s.length == 0) return;
-		bubble = new TalkBubble(s, type, isAsk);
+		bubble = new TalkBubble(s, type, isAsk ? 'ask' : 'say');
 		parent.addChild(bubble);
 		updateBubble();
 	}
