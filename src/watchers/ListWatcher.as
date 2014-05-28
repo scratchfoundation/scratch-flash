@@ -340,6 +340,32 @@ public class ListWatcher extends Sprite {
 	}
 
 	// -----------------------------
+	// Delete Item Button Support
+	//------------------------------
+
+	private function deleteItem(b:IconButton):void {
+		var cell:ListCell = b.lastEvent.target.parent as ListCell;
+		if (cell == null) return;
+		for (var i:int = 0; i < visibleCells.length; i++) {
+			var c:ListCell = visibleCells[i];
+			if (c == cell) {
+				var j:int = firstVisibleIndex + i;
+				contents.splice(j, 1);
+				if (j == contents.length && visibleCells.length == 1) {
+					scrollToIndex(j - 1);
+				} else {
+					updateContents();
+					updateScrollbar();
+				}
+				if (visibleCells.length) {
+					selectCell(Math.min(j, contents.length - 1));
+				}
+				return;
+			}
+		}
+	}
+
+	// -----------------------------
 	// Layout
 	//------------------------------
 
@@ -470,7 +496,7 @@ public class ListWatcher extends Sprite {
 	private function allocateCell(s:String, width:int):ListCell {
 		// Allocate a ListCell with the given contents and width.
 		// Recycle one from the cell pool if possible.
-		if (cellPool.length == 0) return new ListCell(s, width, textChanged, keyPress);
+		if (cellPool.length == 0) return new ListCell(s, width, textChanged, keyPress, deleteItem);
 		var result:ListCell = cellPool.pop();
 		result.setText(s, width);
 		return result;
