@@ -18,10 +18,11 @@
  */
 
 package watchers {
-	import flash.display.Sprite;
-	import flash.events.*;
-	import flash.text.*;
-	import uiwidgets.ResizeableFrame;
+import flash.display.Sprite;
+import flash.events.*;
+import flash.geom.ColorTransform;
+import flash.text.*;
+import uiwidgets.ResizeableFrame;
 
 public class ListCell extends Sprite {
 
@@ -65,6 +66,8 @@ public class ListCell extends Sprite {
 		tf.addEventListener(Event.CHANGE, whenChanged);
 		tf.addEventListener(KeyboardEvent.KEY_DOWN, keyPress);
 		addChild(tf);
+		tf.addEventListener(FocusEvent.FOCUS_IN, focusChange);
+		tf.addEventListener(FocusEvent.FOCUS_OUT, focusChange);
 	}
 
 	public function select():void {
@@ -72,4 +75,11 @@ public class ListCell extends Sprite {
 		tf.setSelection(0, tf.text.length);
 	}
 
+	private static var focused:ColorTransform = new ColorTransform(1, 1, 1, 1, 128, 128, 128, 0);
+	private static var normal:ColorTransform = new ColorTransform(1, 1, 1, 1, 0, 0, 0, 0);
+	private function focusChange(e:FocusEvent):void {
+		var hasFocus:Boolean = (e.type == FocusEvent.FOCUS_IN);
+		frame.transform.colorTransform = (hasFocus ? focused : normal);
+		tf.textColor = (hasFocus ? 0 : 0xFFFFFF);
+	}
 }}
