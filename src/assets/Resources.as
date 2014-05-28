@@ -104,6 +104,8 @@ public class Resources {
 	[Embed(source='UI/buttons/checkboxOn.gif')] private static const checkboxOn:Class;
 	[Embed(source='UI/buttons/closeOff.gif')] private static const closeOff:Class;
 	[Embed(source='UI/buttons/closeOn.gif')] private static const closeOn:Class;
+	[Embed(source='UI/buttons/deleteItemOff.png')] private static const deleteItemOff:Class;
+	[Embed(source='UI/buttons/deleteItemOn.png')] private static const deleteItemOn:Class;
 	[Embed(source='UI/buttons/extensionHelpOff.png')] private static const extensionHelpOff:Class;
 	[Embed(source='UI/buttons/extensionHelpOn.png')] private static const extensionHelpOn:Class;
 	[Embed(source='UI/buttons/flipOff.png')] private static const flipOff:Class;

@@ -20,9 +20,10 @@
 package watchers {
 import flash.display.Sprite;
 import flash.events.*;
+import flash.utils.*;
 import flash.geom.ColorTransform;
 import flash.text.*;
-import uiwidgets.ResizeableFrame;
+import uiwidgets.*;
 
 public class ListCell extends Sprite {
 
@@ -30,12 +31,15 @@ public class ListCell extends Sprite {
 
 	public var tf:TextField;
 	private var frame:ResizeableFrame;
+	private var deleteButton:IconButton;
+	private var deleteItem:Function;
 
-	public function ListCell(s:String, width:int, whenChanged:Function, keyPress:Function) {
+	public function ListCell(s:String, width:int, whenChanged:Function, keyPress:Function, deleteItem:Function) {
 		frame = new ResizeableFrame(0xFFFFFF, Specs.listColor, 6, true);
 		addChild(frame);
 		addTextField(whenChanged, keyPress);
 		tf.text = s;
+		deleteButton = new IconButton(deleteItem, 'deleteItem');
 		setWidth(width);
 	}
 
@@ -43,6 +47,7 @@ public class ListCell extends Sprite {
 		// Set the text and, optionally, the width.
 		tf.text = s;
 		setWidth((w > 0) ? w : frame.w);
+		removeDeleteButton();
 	}
 
 	public function setEditable(isEditable:Boolean):void {
@@ -53,6 +58,8 @@ public class ListCell extends Sprite {
 		tf.width = Math.max(w, 15); // forces line wrapping, possibly changing tf.height
 		var frameH:int = Math.max(tf.textHeight + 7, 20);
 		frame.setWidthHeight(tf.width, frameH);
+		deleteButton.x = tf.width - deleteButton.width - 3;
+		deleteButton.y = (frameH - deleteButton.height) / 2;
 	}
 
 	private function addTextField(whenChanged:Function, keyPress:Function):void {
@@ -81,5 +88,15 @@ public class ListCell extends Sprite {
 		var hasFocus:Boolean = (e.type == FocusEvent.FOCUS_IN);
 		frame.transform.colorTransform = (hasFocus ? focused : normal);
 		tf.textColor = (hasFocus ? 0 : 0xFFFFFF);
+		setTimeout(hasFocus ? addDeleteButton : removeDeleteButton, 1);
+	}
+
+	private function removeDeleteButton():void {
+		if (deleteButton.parent) removeChild(deleteButton);
+	}
+
+	private function addDeleteButton():void {
+		addChild(deleteButton);
+		deleteButton.turnOff();
 	}
 }}
