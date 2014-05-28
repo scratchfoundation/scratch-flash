@@ -25,14 +25,17 @@
 package scratch {
 	import flash.display.*;
 	import flash.external.ExternalInterface;
-import flash.filters.GlowFilter;
-import flash.geom.*;
+	import flash.filters.GlowFilter;
+	import flash.geom.*;
 	import flash.media.*;
+	import flash.events.*;
 	import flash.system.Capabilities;
 	import flash.utils.ByteArray;
+	import flash.net.FileReference;
 	import blocks.Block;
 	import filters.FilterPack;
 	import translation.Translator;
+	import uiwidgets.Menu;
 	import ui.media.MediaInfo;
 	import util.*;
 	import watchers.*;
@@ -208,6 +211,22 @@ public class ScratchStage extends ScratchObj {
 			if (lw && !lw.target.isStage && (lw.target.parent != this)) toDelete.push(lw);
 		}
 		for each (var c:DisplayObject in toDelete) uiLayer.removeChild(c);
+	}
+
+	/* Menu */
+
+	public function menu(evt:MouseEvent):Menu {
+		var m:Menu = new Menu();
+		m.addItem('save picture of stage', saveScreenshot);
+		return m;
+	}
+
+	private function saveScreenshot():void {
+		var bitmapData:BitmapData = new BitmapData(480, 360, true, 0x0);
+		bitmapData.draw(this);
+		var pngData:ByteArray = PNG24Encoder.encode(bitmapData, PNGFilter.PAETH);
+		var file:FileReference = new FileReference();
+		file.save(pngData, 'stage.png');
 	}
 
 	/* Scrolling support */
