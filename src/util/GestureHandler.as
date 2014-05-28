@@ -228,8 +228,8 @@ public class GestureHandler {
 			spr.updateBubble();
 		}
 		if (bubble) {
-			var dx:Number = bubbleStartX - app.mouseX;
-			var dy:Number = bubbleStartY - app.mouseY;
+			var dx:Number = bubbleStartX - stage.mouseX;
+			var dy:Number = bubbleStartY - stage.mouseY;
 			if (dx * dx + dy * dy > bubbleRange * bubbleRange) {
 				hideBubble();
 			}
@@ -507,8 +507,8 @@ public class GestureHandler {
 	public function showBubble(text:String, x:Number, y:Number, width:Number = 0):void {
 		hideBubble();
 		bubble = new TalkBubble(text || ' ', 'say', 'result');
-		bubbleStartX = app.mouseX;
-		bubbleStartY = app.mouseY;
+		bubbleStartX = stage.mouseX;
+		bubbleStartY = stage.mouseY;
 		var bx:Number = x + width;
 		var by:Number = y - bubble.height;
 		if (bx + bubble.width > stage.stageWidth - bubbleMargin && x - bubble.width > bubbleMargin) {
