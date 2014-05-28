@@ -65,9 +65,10 @@ public class ListCell extends Sprite {
 		tf.defaultTextFormat = format;
 		tf.x = 3;
 		tf.y = 1;
+		tf.tabEnabled = false;
+		tf.tabIndex = 1;
 		tf.addEventListener(Event.CHANGE, whenChanged);
 		tf.addEventListener(KeyboardEvent.KEY_DOWN, keyPress);
-		tf.addEventListener(FocusEvent.KEY_FOCUS_CHANGE, stopKeyFocus);
 		tf.addEventListener(FocusEvent.FOCUS_IN, focusChange);
 		tf.addEventListener(FocusEvent.FOCUS_OUT, focusChange);
 		addChild(tf);
@@ -76,10 +77,6 @@ public class ListCell extends Sprite {
 	public function select():void {
 		stage.focus = tf;
 		tf.setSelection(0, tf.text.length);
-	}
-
-	private function stopKeyFocus(e:FocusEvent):void {
-		e.preventDefault();
 	}
 
 	private function focusChange(e:FocusEvent):void {
