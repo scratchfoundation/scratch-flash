@@ -160,7 +160,10 @@ public class ListWatcher extends Sprite {
 		file.save(s, listName + '.txt');
 	}
 
-	private function hide():void { visible = false }
+	private function hide():void {
+		visible = false;
+		Scratch.app.updatePalette(false);
+	}
 
 	// -----------------------------
 	// Visual feedback for list changes
