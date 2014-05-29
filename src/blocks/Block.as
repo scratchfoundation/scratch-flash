@@ -308,6 +308,16 @@ public class Block extends Sprite {
 		if (filters && (filters.length > 0)) filters = [];
 	}
 
+	public function getScaledWidth():Number {
+		var x:DisplayObject = this;
+		var w:Number = width;
+		do {
+			w *= x.scaleX;
+			x = x.parent;
+		} while (x != stage);
+		return w;
+	}
+
 	private function runFeedbackFilters():Array {
 		// filters for showing that a stack is running
 		var f:GlowFilter = new GlowFilter(0xfeffa0);
