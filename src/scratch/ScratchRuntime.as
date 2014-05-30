@@ -151,6 +151,8 @@ public class ScratchRuntime {
 		clearAskPrompts();
 		app.removeLoadProgressBox();
 		motionDetector = null;
+		// TLF: seems like the simplest place to set all inited, even if not most obvious...
+		app.stagePane.setSkipNoChange();
 	}
 
 	// -----------------------------
