@@ -84,12 +84,13 @@ public class ListCell extends Sprite {
 	public function select():void {
 		stage.focus = tf;
 		tf.setSelection(0, tf.text.length);
+		if (tf.type == 'input') addDeleteButton();
 	}
 
 	private function focusChange(e:FocusEvent):void {
-		var hasFocus:Boolean = (e.type == FocusEvent.FOCUS_IN);
+		var hasFocus:Boolean = e.type == FocusEvent.FOCUS_IN;
 		frame.setColor(hasFocus ? focusedColor : normalColor);
-		tf.textColor = (hasFocus ? 0 : 0xFFFFFF);
+		tf.textColor = hasFocus ? 0 : 0xFFFFFF;
 		setTimeout(hasFocus && tf.type == 'input' ? addDeleteButton : removeDeleteButton, 1);
 	}
 
