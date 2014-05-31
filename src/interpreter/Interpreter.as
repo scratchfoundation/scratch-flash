@@ -655,8 +655,7 @@ public class Interpreter {
 
 	// Variable Primitives
 	// Optimization: to avoid the cost of looking up the variable every time,
-	// a reference to the Variable object is cached in the block.
-	// Note: Procedures can only reference global variables.
+	// a reference to the Variable object is cached in the target object.
 
 	private function primVarGet(b:Block):* {
 		var v:Variable = activeThread.target.varCache[b.spec];
