@@ -653,7 +653,12 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 			startSoundUpload(snd, origName, uploadComplete);
 		} else { // try to read data as an MP3 file
 			if (app.lp) app.lp.setTitle('Converting mp3...');
-			setTimeout(function():void { MP3Loader.convertToScratchSound(sndName, data, function(s:ScratchSound):void { startSoundUpload(s, origName, uploadComplete); }) }, 1);
+			setTimeout(function():void {
+				MP3Loader.convertToScratchSound(sndName, data, function(s:ScratchSound):void {
+					snd = s;
+					startSoundUpload(s, origName, uploadComplete);
+				});
+			}, 1);
 		}
 	}
 
