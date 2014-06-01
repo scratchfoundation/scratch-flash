@@ -545,7 +545,10 @@ public class ListWatcher extends Sprite {
 		var cellContents:TextField = e.target as TextField;
 		for (var i:int = 0; i < visibleCells.length; i++) {
 			var cell:ListCell = visibleCells[i];
-			if (cell.tf == cellContents) contents[firstVisibleIndex + i] = cellContents.text;
+			if (cell.tf == cellContents) {
+				contents[firstVisibleIndex + i] = cellContents.text;
+				return;
+			}
 		}
 	}
 
