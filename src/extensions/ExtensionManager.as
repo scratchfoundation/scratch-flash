@@ -339,11 +339,11 @@ public class ExtensionManager {
 					var id:int = ++ext.nextID; // assign a unique ID for this call
 					ext.busy.push(id);
 					activeThread.tmp = id;
-					activeThread.firstTime = false;
 					app.interp.doYield();
 					justStartedWait = true;
 
 					if(ext.port == 0) {
+						activeThread.firstTime = false;
 						if(app.jsEnabled)
 							ExternalInterface.call('ScratchExtensions.runAsync', ext.name, primOrVarName, args, id);
 						else
