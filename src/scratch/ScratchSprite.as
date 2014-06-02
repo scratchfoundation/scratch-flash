@@ -231,7 +231,7 @@ public class ScratchSprite extends ScratchObj {
 			if (('leftRight' == rotationStyle) && (isCostumeFlipped() == wasFlipped)) return;
 		}
 
-//		updateImage();
+		if(!Scratch.app.isIn3D) updateImage();
 		adjustForRotationCenter();
 		if(wasFlipped != isCostumeFlipped())
 			updateRenderDetails(1);
