@@ -266,7 +266,7 @@ public class ExtensionManager {
 			var msecsSinceLastResponse:uint = getTimer() - ext.lastPollResponseTime;
 			if (msecsSinceLastResponse > 500) indicator.setColorAndMsg(0xE00000, 'Cannot find helper app');
 			else if (ext.problem != '') indicator.setColorAndMsg(0xE0E000, ext.problem);
-			else indicator.setColorAndMsg(0x00C000, 'Okay');
+			else indicator.setColorAndMsg(0x00C000, ext.success);
 		}
 		else if(app.jsEnabled) {
 			var retval:Object = ExternalInterface.call('ScratchExtensions.getStatus', ext.name);
@@ -339,11 +339,11 @@ public class ExtensionManager {
 					var id:int = ++ext.nextID; // assign a unique ID for this call
 					ext.busy.push(id);
 					activeThread.tmp = id;
-					activeThread.firstTime = false;
 					app.interp.doYield();
 					justStartedWait = true;
 
 					if(ext.port == 0) {
+						activeThread.firstTime = false;
 						if(app.jsEnabled)
 							ExternalInterface.call('ScratchExtensions.runAsync', ext.name, primOrVarName, args, id);
 						else
@@ -531,6 +531,7 @@ public class ExtensionManager {
 						}
 					}
 					if ('_problem' == key) ext.problem = line.slice(9);
+					if ('_success' == key) ext.success = line.slice(9);
 				} else { // sensor value
 					var val:String = tokens[1];
 					var n:Number = Number(val);

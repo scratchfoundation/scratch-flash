@@ -58,6 +58,7 @@ public class ScratchExtension {
 	public var stateVars:Object = {};
 	public var lastPollResponseTime:int;
 	public var problem:String = '';
+	public var success:String = 'Okay';
 	public var nextID:int;
 	public var busy:Array = [];
 	public var waiting:Dictionary = new Dictionary(true);
