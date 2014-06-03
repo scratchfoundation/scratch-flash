@@ -44,13 +44,13 @@ public class MenuItem extends Sprite {
 	private var base:Shape;
 	private var w:int, h:int;
 
-	public function MenuItem(menu:Menu, labelText:String, selection:*, enabled:Boolean) {
+	public function MenuItem(menu:Menu, labelText:*, selection:*, enabled:Boolean) {
 		this.menu = menu;
 		this.selection = (selection == null) ? labelText : selection;
 		addChild(base = new Shape());
-		if (labelText == '---') return;
+		if (labelText == Menu.line) return;
 		addCheckmark();
-		addLabel(labelText, enabled);
+		addLabel(String(labelText), enabled);
 		setBaseColor(menu.color);
 		if (enabled) {
 			addEventListener(MouseEvent.MOUSE_OVER, mouseOver);

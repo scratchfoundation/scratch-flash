@@ -44,6 +44,7 @@ public class Menu extends Sprite {
 	public var minWidth:int;
 	public var itemHeight:int;
 
+	public static var line:Object = new Object;
 	private static var menuJustCreated:Boolean;
 
 	private var menuName:String = '';
@@ -61,7 +62,7 @@ public class Menu extends Sprite {
 		this.itemHeight = itemHeight;
 	}
 
-	public function addItem(label:String, value:* = null, enabled:Boolean = true, checkmark:Boolean = false):void {
+	public function addItem(label:*, value:* = null, enabled:Boolean = true, checkmark:Boolean = false):void {
 		var last:MenuItem = allItems.length ? allItems[allItems.length-1] : null;
 		var newItem:MenuItem = new MenuItem(this, label, value, enabled);
 		if ((!last || last.isLine()) && newItem.isLine()) return;
@@ -70,7 +71,7 @@ public class Menu extends Sprite {
 	}
 
 	public function addLine():void {
-		addItem('---');
+		addItem(line);
 	}
 
 	public function showOnStage(stage:Stage, x:int = -1, y:int = -1):void {
