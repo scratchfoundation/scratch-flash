@@ -26,7 +26,9 @@
 
 package ui {
 	import blocks.Block;
+	import interpreter.Interpreter;
 	import uiwidgets.*;
+	import scratch.ScratchObj;
 	import scratch.ScratchComment;
 
 public class BlockPalette extends ScrollFrameContents {
@@ -36,6 +38,17 @@ public class BlockPalette extends ScrollFrameContents {
 	public function BlockPalette():void {
 		super();
 		this.color = 0xE0E0E0;
+	}
+
+	override public function clear(scrollToOrigin:Boolean = true):void {
+		var interp:Interpreter = Scratch.app.interp;
+		var targetObj:ScratchObj = Scratch.app.viewedObj();
+		while (numChildren > 0) {
+			var b:Block = getChildAt(0) as Block;
+			if (interp.isRunning(b, targetObj)) interp.toggleThread(b, targetObj);
+			removeChildAt(0);
+		}
+		if (scrollToOrigin) x = y = 0;
 	}
 
 	public function handleDrop(obj:*):Boolean {
