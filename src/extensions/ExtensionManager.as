@@ -321,7 +321,8 @@ public class ExtensionManager {
 			else {
 				var sensorName:String = primOrVarName;
 				if(ext.port > 0) {  // we were checking ext.isInternal before, should we?
-					for each (var a:* in args) sensorName += '/' + a; // append menu args
+					sensorName = encodeURIComponent(sensorName);
+					for each (var a:* in args) sensorName += '/' + encodeURIComponent(a); // append menu args
 					value = ext.stateVars[sensorName];
 				}
 				else if(Scratch.app.jsEnabled) {
@@ -432,18 +433,18 @@ public class ExtensionManager {
 		b.requestState = 1;
 		b.requestLoader = loader;
 
-		var url:String = 'http://' + ext.host + ':' + ext.port + '/' + op;
+		var url:String = 'http://' + ext.host + ':' + ext.port + '/' + encodeURIComponent(op);
 		for each (var arg:* in args) {
-			url += '/' + ((arg is String) ? escape(arg) : arg);
+			url += '/' + ((arg is String) ? encodeURIComponent(arg) : arg);
 		}
 		loader.load(new URLRequest(url));
 	}
 
 	private function httpCall(ext:ScratchExtension, op:String, args:Array):void {
 		function errorHandler(e:Event):void { } // ignore errors
-		var url:String = 'http://' + ext.host + ':' + ext.port + '/' + op;
+		var url:String = 'http://' + ext.host + ':' + ext.port + '/' + encodeURIComponent(op);
 		for each (var arg:* in args) {
-			url += '/' + ((arg is String) ? escape(arg) : arg);
+			url += '/' + ((arg is String) ? encodeURIComponent(arg) : arg);
 		}
 		var loader:URLLoader = new URLLoader();
 		loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, errorHandler);
@@ -454,7 +455,7 @@ public class ExtensionManager {
 	public function getStateVar(extensionName:String, varName:String, defaultValue:*):* {
 		var ext:ScratchExtension = extensionDict[extensionName];
 		if (ext == null) return defaultValue; // unknown extension
-		var value:* = ext.stateVars[varName];
+		var value:* = ext.stateVars[encodeURIComponent(varName)];
 		return (value == undefined) ? defaultValue : value;
 	}
 
@@ -520,7 +521,7 @@ public class ExtensionManager {
 
 		var lines:Array = response.split('\n');
 		for each (var line:String in lines) {
-			var tokens:Array = ReadStream.tokenize(line);
+			var tokens:Array = line.split(/\s+/);
 			if (tokens.length > 1) {
 				var key:String = tokens[0];
 				if (key.indexOf('_') == 0) { // internal status update or response
@@ -535,7 +536,12 @@ public class ExtensionManager {
 				} else { // sensor value
 					var val:String = tokens[1];
 					var n:Number = Number(val);
-					ext.stateVars[key] = isNaN(n) ? val : n;
+					var path:Array = key.split('/');
+					for (var i:int = 0; i < path.length; i++) {
+						 // normalize URL encoding for each path segment
+						path[i] = encodeURIComponent(decodeURIComponent(path[i]));
+					}
+					ext.stateVars[path.join('/')] = isNaN(n) ? val : n;
 				}
 			}
 		}
