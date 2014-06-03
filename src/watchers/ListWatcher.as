@@ -71,7 +71,8 @@ public class ListWatcher extends Sprite {
 		frame = new ResizeableFrame(0x949191, 0xC1C4C7, 14, false, 2);
 		frame.setWidthHeight(50, 100);
 		frame.showResizer();
-		frame.minWidth = frame.minHeight = 60;
+		frame.minWidth = 80;
+		frame.minHeight = 62;
 		addChild(frame);
 
 		title = createTextField(listName, titleFont);
