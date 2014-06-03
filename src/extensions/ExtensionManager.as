@@ -519,6 +519,7 @@ public class ExtensionManager {
 		if (justStartedWait) justStartedWait = false;
 		else ext.busy = [];
 
+		var i:int;
 		var lines:Array = response.split('\n');
 		for each (var line:String in lines) {
 			var tokens:Array = line.split(/\s+/);
@@ -526,7 +527,7 @@ public class ExtensionManager {
 				var key:String = tokens[0];
 				if (key.indexOf('_') == 0) { // internal status update or response
 					if ('_busy' == key) {
-						for (var i:int = 1; i < tokens.length; i++) {
+						for (i = 1; i < tokens.length; i++) {
 							var id:int = parseInt(tokens[i]);
 							if (ext.busy.indexOf(id) == -1) ext.busy.push(id);
 						}
@@ -537,7 +538,7 @@ public class ExtensionManager {
 					var val:String = tokens[1];
 					var n:Number = Number(val);
 					var path:Array = key.split('/');
-					for (var i:int = 0; i < path.length; i++) {
+					for (i = 0; i < path.length; i++) {
 						 // normalize URL encoding for each path segment
 						path[i] = encodeURIComponent(decodeURIComponent(path[i]));
 					}
