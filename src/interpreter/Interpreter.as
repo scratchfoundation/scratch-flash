@@ -447,6 +447,7 @@ public class Interpreter {
 		primTable["whenSensorConnected"]	= primNoop;
 		primTable["whenSensorGreaterThan"]	= primNoop;
 		primTable["whenTiltIs"]				= primNoop;
+		primTable["whenHttpHat"]			= primNoop;
 
 		addOtherPrims(primTable);
 	}

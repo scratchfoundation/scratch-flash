@@ -58,6 +58,10 @@ public class ExtensionManager {
 		return (extensionDict.hasOwnProperty(extName) && extensionDict[extName].isInternal);
 	}
 
+	public function isHttp(extName:String):Boolean {
+		return (extensionDict.hasOwnProperty(extName) &&  (extensionDict[extName].Port > 0));
+	}
+	
 	public function clearImportedExtensions():void {
 		// Clear imported extensions before loading a new project.
 		extensionDict = {};
