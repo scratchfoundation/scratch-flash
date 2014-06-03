@@ -59,7 +59,7 @@ public class ExtensionManager {
 	}
 
 	public function isHttp(extName:String):Boolean {
-		return (extensionDict.hasOwnProperty(extName) &&  (extensionDict[extName].Port > 0));
+		return (extensionDict.hasOwnProperty(extName) &&  (extensionDict[extName].port > 0));
 	}
 	
 	public function clearImportedExtensions():void {
