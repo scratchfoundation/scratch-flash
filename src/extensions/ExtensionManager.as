@@ -24,18 +24,14 @@
 // socket-based communications with local and server-based extension helper applications.
 
 package extensions {
-import blocks.BlockArg;
-
-import flash.events.*;
-	import flash.external.ExternalInterface;
+	import flash.errors.IllegalOperationError;
+	import flash.events.*;
 	import flash.net.*;
 	import flash.utils.getTimer;
 	import blocks.Block;
 	import interpreter.*;
-
-import uiwidgets.DialogBox;
-
-import uiwidgets.IndicatorLight;
+	import uiwidgets.DialogBox;
+	import uiwidgets.IndicatorLight;
 	import util.*;
 
 public class ExtensionManager {
@@ -92,11 +88,11 @@ public class ExtensionManager {
 			ext.showBlocks = flag;
 			if(app.jsEnabled) {
 				if(flag && ext.javascriptURL) {
-					ExternalInterface.call('ScratchExtensions.loadExternalJS', ext.javascriptURL);
+					app.externalCall('ScratchExtensions.loadExternalJS', null, ext.javascriptURL);
 					ext.showBlocks = false; // Wait for it to load
 				}
 				else if(!flag) {
-					ExternalInterface.call('ScratchExtensions.unregister', extName);
+					app.externalCall('ScratchExtensions.unregister', null, extName);
 				}
 			}
 		}
@@ -269,23 +265,26 @@ public class ExtensionManager {
 			else indicator.setColorAndMsg(0x00C000, ext.success);
 		}
 		else if(app.jsEnabled) {
-			var retval:Object = ExternalInterface.call('ScratchExtensions.getStatus', ext.name);
-			if(!retval) retval = {status: 0, msg: 'Cannot communicate with extension.'};
+			function statusCallback(retval:Object):void {
+				if(!retval) retval = {status: 0, msg: 'Cannot communicate with extension.'};
 
-			var color:uint;
-			if(retval.status == 2) color = 0x00C000;
-			else if(retval.status == 1) color = 0xE0E000;
-			else {
-				color = 0xE00000;
-				if(firstTime) {
-					Scratch.app.showTip('extensions');
+				var color:uint;
+				if(retval.status == 2) color = 0x00C000;
+				else if(retval.status == 1) color = 0xE0E000;
+				else {
+					color = 0xE00000;
+					if(firstTime) {
+						Scratch.app.showTip('extensions');
 //					DialogBox.notify('Extension Problem', 'It looks like the '+ext.name+' is not working properly.' +
 //							'Please read the extensions help in the tips window.', Scratch.app.stage);
-					DialogBox.notify('Extension Problem', 'See the Tips window (on the right) to install the plug-in and get the extension working.', Scratch.app.stage);
+						DialogBox.notify('Extension Problem', 'See the Tips window (on the right) to install the plug-in and get the extension working.', Scratch.app.stage);
+					}
 				}
+
+				indicator.setColorAndMsg(color, retval.msg);
 			}
 
-			indicator.setColorAndMsg(color, retval.msg);
+			app.externalCall('ScratchExtensions.getStatus', statusCallback, ext.name);
 		}
 	}
 
@@ -306,6 +305,13 @@ public class ExtensionManager {
 
 		var value:*;
 		if (b.isReporter) {
+			if(Scratch.app.isOffline && (ext.port == 0)) {
+				// If we're offline, and the AS-JS bridge can't return values directly, then treat every reporter as
+				// an async requester. By setting the isRequester flag here we ensure that the interpreter will treat
+				// the block properly by yielding its thread while we wait for the callback.
+				b.isRequester = true;
+			}
+
 			if(b.isRequester) {
 				if(b.requestState == 2) {
 					b.requestState = 0;
@@ -326,7 +332,10 @@ public class ExtensionManager {
 				}
 				else if(Scratch.app.jsEnabled) {
 					// Javascript
-					value = ExternalInterface.call('ScratchExtensions.getReporter', ext.name, sensorName, args);
+					if (Scratch.app.isOffline) {
+						throw new IllegalOperationError("JS reporters must be requesters in Offline.");
+					}
+					value = app.externalCall('ScratchExtensions.getReporter', null, ext.name, sensorName, args);
 				}
 				if (value == undefined) value = 0; // default to zero if missing
 				if ('b' == b.type) value = (ext.port>0 ? 'true' == value : true == value); // coerce value to a boolean
@@ -345,7 +354,7 @@ public class ExtensionManager {
 					if(ext.port == 0) {
 						activeThread.firstTime = false;
 						if(app.jsEnabled)
-							ExternalInterface.call('ScratchExtensions.runAsync', ext.name, primOrVarName, args, id);
+							app.externalCall('ScratchExtensions.runAsync', null, ext.name, primOrVarName, args, id);
 						else
 							ext.busy.pop();
 
@@ -388,7 +397,7 @@ public class ExtensionManager {
 			if(op == 'reset_all') op = 'resetAll';
 
 			// call a JavaScript extension function with the given arguments
-			if(Scratch.app.jsEnabled) ExternalInterface.call('ScratchExtensions.runCommand', ext.name, op, args);
+			if(Scratch.app.jsEnabled) app.externalCall('ScratchExtensions.runCommand', null, ext.name, op, args);
 			app.interp.redraw(); // make sure interpreter doesn't do too many extension calls in one cycle
 		}
 	}
@@ -409,7 +418,7 @@ public class ExtensionManager {
 			++ext.nextID;
 			ext.busy.push(ext.nextID);
 			ext.waiting[b] = ext.nextID;
-			ExternalInterface.call('ScratchExtensions.getReporterAsync', ext.name, op, args, ext.nextID);
+			app.externalCall('ScratchExtensions.getReporterAsync', null, ext.name, op, args, ext.nextID);
 		}
 	}
 

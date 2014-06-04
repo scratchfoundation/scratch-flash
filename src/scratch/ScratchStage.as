@@ -24,8 +24,6 @@
 
 package scratch {
 	import flash.display.*;
-	import flash.external.ExternalInterface;
-	import flash.filters.GlowFilter;
 	import flash.geom.*;
 	import flash.media.*;
 	import flash.events.*;
@@ -648,9 +646,11 @@ public class ScratchStage extends ScratchObj {
 		}
 
 		delete info.userAgent;
-		var userAgent:String;
-		if (Scratch.app.jsEnabled) userAgent = ExternalInterface.call('window.navigator.userAgent.toString');
-		if (userAgent) info.userAgent = userAgent;
+		if (Scratch.app.jsEnabled) {
+			Scratch.app.externalCall('window.navigator.userAgent.toString', function(userAgent:String):void {
+				if (userAgent) info.userAgent = userAgent;
+			});
+		}
 	}
 
 	public function scriptCount():int {
