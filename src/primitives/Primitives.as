@@ -169,7 +169,11 @@ public class Primitives {
 		if (!proto) return;
 		if (app.runtime.cloneCount > MaxCloneCount) return;
 		var clone:ScratchSprite = new ScratchSprite();
-		app.stagePane.addChildAt(clone, app.stagePane.getChildIndex(proto));
+		if (proto.parent == app.stagePane)
+			app.stagePane.addChildAt(clone, app.stagePane.getChildIndex(proto));
+		else
+			app.stagePane.addChild(clone);
+
 		clone.initFrom(proto, true);
 		clone.objName = proto.objName;
 		clone.isClone = true;
