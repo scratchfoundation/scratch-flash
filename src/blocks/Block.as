@@ -454,6 +454,13 @@ public class Block extends Sprite {
 		}
 	}
 
+	public function previewSubstack1Height(h:int):void {
+		base.setSubstack1Height(h);
+		base.redraw();
+		fixElseLabel();
+		if (nextBlock) nextBlock.y = base.nextBlockY();
+	}
+
 	public function duplicate(forClone:Boolean, forStage:Boolean = false):Block {
 		var newSpec:String = spec;
 		if (forStage && op == 'whenClicked') newSpec = 'when Stage clicked';
@@ -627,9 +634,13 @@ public class Block extends Sprite {
 	}
 
 	private function appendBlock(b:Block):void {
-		var bottom:Block = bottomBlock();
-		bottom.addChild(b);
-		bottom.nextBlock = b;
+		if (base.canHaveSubstack1() && !subStack1) {
+			insertBlockSub1(b);
+		} else {
+			var bottom:Block = bottomBlock();
+			bottom.addChild(b);
+			bottom.nextBlock = b;
+		}
 	}
 
 	private function owningBlock():Block {
