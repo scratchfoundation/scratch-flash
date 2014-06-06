@@ -242,7 +242,7 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 		var target:Block = stack;
 		while (target != null) {
 			var p:Point = target.localToGlobal(new Point(0, 0));
-			if (!target.isTerminal && (!endsWithTerminal || (target.nextBlock == null))) {
+			if (!target.isTerminal && (!endsWithTerminal || target.nextBlock == null)) {
 				// insert stack after target block:
 				// target block must not be a terminal
 				// if stack does not end with a terminal, it can be inserted between blocks
@@ -250,11 +250,11 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 				p = target.localToGlobal(new Point(0, target.base.nextBlockY() - 3));
 				possibleTargets.push([p, target, INSERT_NORMAL]);
 			}
-			if (target.base.canHaveSubstack1()) {
+			if (target.base.canHaveSubstack1() && (!endsWithTerminal || target.subStack1 == null)) {
 				p = target.localToGlobal(new Point(15, target.base.substack1y()));
 				possibleTargets.push([p, target, INSERT_SUB1]);
 			}
-			if (target.base.canHaveSubstack2()) {
+			if (target.base.canHaveSubstack2() && (!endsWithTerminal || target.subStack2 == null)) {
 				p = target.localToGlobal(new Point(15, target.base.substack2y()));
 				possibleTargets.push([p, target, INSERT_SUB2]);
 			}
