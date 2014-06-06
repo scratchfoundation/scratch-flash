@@ -139,7 +139,9 @@ public class SoundEditor extends Sprite {
 	}
 
 	private function addMicVolumeSlider():void {
-		function setMicLevel(level:Number):void { microphone.gain = level }
+		function setMicLevel(level:Number):void {
+			if(microphone) microphone.gain = level;
+		}
 
 		addChild(micVolumeLabel = Resources.makeLabel('Microphone volume:', CSS.normalTextFormat, 22, 240));
 
