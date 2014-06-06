@@ -367,7 +367,7 @@ public class ScratchStage extends ScratchObj {
 	public function stampSprite(s:ScratchSprite, stampAlpha:Number):void {
 		if(s == null) return;
 //		if(!testBM.parent) {
-//		    testBM.filters = [new GlowFilter(0xFF00FF, 0.8)];
+//		    //testBM.filters = [new GlowFilter(0xFF00FF, 0.8)];
 //		    testBM.y = 360; testBM.x = 15;
 //			stage.addChild(testBM);
 //		}
