@@ -402,6 +402,13 @@ public class BlockMenus implements DragClient {
 			else if (s == 'myself') blockArg.setArgValue('_myself_', Translator.map('myself'));
 			else if (s == 'Stage') blockArg.setArgValue('_stage_', Translator.map('Stage'));
 			else blockArg.setArgValue(s);
+			if (block.op == 'getAttribute:of:') {
+				var obj:ScratchObj = app.stagePane.objNamed(s);
+				var attr:String = block.args[0].argValue;
+				var allowedAttrs:Array = obj.isStage ? ['backdrop #', 'background #', 'backdrop name', 'volume'] :
+				['x position', 'y position', 'direction', 'costume #', 'costume name', 'size', 'volume'];
+				if ((allowedAttrs.indexOf(attr) == -1) && (obj.varNames().indexOf(attr) == -1)) block.args[0].setArgValue(obj.isStage ? 'backdrop #' : 'x position');
+			}
 			Scratch.app.setSaveNeeded();
 		}
 		var spriteNames:Array = [];
