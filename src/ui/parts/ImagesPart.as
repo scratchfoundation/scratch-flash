@@ -52,6 +52,7 @@ public class ImagesPart extends UIPart {
 	private var undoButton:IconButton;
 	private var redoButton:IconButton;
 	private var clearButton:Button;
+	private var libraryButton:Button;
 	private var editorImportButton:Button;
 	private var flipHButton:IconButton;
 	private var flipVButton:IconButton;
@@ -252,7 +253,9 @@ public class ImagesPart extends UIPart {
 		}
 
 		// import button
-		editorImportButton.x = clearButton.x + clearButton.width + smallSpace;
+		libraryButton.x = clearButton.x + clearButton.width + smallSpace;
+		libraryButton.y = clearButton.y;
+		editorImportButton.x = libraryButton.x + libraryButton.width + smallSpace;
 		editorImportButton.y = clearButton.y;
 
 		// flip and costume center buttons
@@ -333,6 +336,7 @@ public class ImagesPart extends UIPart {
 		addChild(undoButton = makeTopButton(undo, 'undo'));
 		addChild(redoButton = makeTopButton(redo, 'redo'));
 		addChild(clearButton = new Button(Translator.map('Clear'), clear, true));
+		addChild(libraryButton = new Button(Translator.map('Add'), importFromLibrary, true));
 		addChild(editorImportButton = new Button(Translator.map('Import'), importIntoEditor, true));
 		undoButton.isMomentary = true;
 		redoButton.isMomentary = true;
@@ -345,13 +349,20 @@ public class ImagesPart extends UIPart {
 	private function redo(b:*):void { editor.redo(b) }
 	private function clear():void { editor.clearCanvas() }
 
+	private function importFromLibrary():void {
+		var type:String = isStage() ? 'backdrop' : 'costume';
+		var lib:MediaLibrary = new MediaLibrary(app, type, addCostume);
+		lib.open();
+	}
+
 	private function importIntoEditor():void {
-		function addCostume(c:ScratchCostume):void {
-			var p:Point = new Point(240 - (c.width() / 2), 180 - (c.height() / 2));
-			editor.addCostume(c, p);
-		}
 		var lib:MediaLibrary = new MediaLibrary(app, '', addCostume);
 		lib.importFromDisk();
+	}
+
+	private function addCostume(c:ScratchCostume):void {
+		var p:Point = new Point(240 - (c.width() / 2), 180 - (c.height() / 2));
+		editor.addCostume(c, p);
 	}
 
 	public function refreshUndoButtons():void {

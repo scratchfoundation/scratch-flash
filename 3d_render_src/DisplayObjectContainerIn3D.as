@@ -85,6 +85,7 @@ package {
 		private var vertexBufferUploaded:Boolean;
 		private var uiContainer:StageUIContainer;
 		private var scratchStage:Sprite;
+		private var globalScale:Number;
 		private var stagePenLayer:DisplayObject;
 		private var stage3D:Stage3D;
 		private var pixelateAll:Boolean;
@@ -109,6 +110,7 @@ package {
 			textures = [];
 			cachedOtherRenderBitmaps = new Dictionary();
 			penPacked = false;
+			globalScale = 1.0;
 			testBMs = [];
 			textureCount = 0;
 			childrenChanged = false;
@@ -173,6 +175,8 @@ package {
 
 		private function addedToStage(e:Event = null):void {
 			if(e && e.target != scratchStage) return;
+			globalScale = ('contentsScaleFactor' in scratchStage.stage ? scratchStage.stage['contentsScaleFactor'] : 1.0);
+
 			scratchStage.parent.addChildAt(uiContainer, scratchStage.parent.getChildIndex(scratchStage)+1);
 			for(var i:uint=0; i<scratchStage.numChildren; ++i) {
 				var dispObj:DisplayObject = scratchStage.getChildAt(i);
@@ -253,7 +257,7 @@ package {
 				scissorRect = rect;
 				projMatrix = createOrthographicProjectionMatrix(480, 360, 0, 0);
 				stage3D.context3D.setScissorRectangle(scissorRect);
-				stage3D.context3D.configureBackBuffer(width, height, 0, false);
+				stage3D.context3D.configureBackBuffer(width, height, 0, false, true);
 //trace('Setting backbuffer and scissor rectangle');
 				// Re-render stuff that may have changed size
 				childrenChanged = true;
@@ -763,7 +767,7 @@ package {
 
 			var effects:Object = null, s:Number = 0, srcWidth:Number = 0, srcHeight:Number = 0;
 			var mosaic:uint;
-			var scale:Number = 1;
+			var scale:Number = globalScale;
 			var isNew:Boolean = false;
 			if(renderOpts) {
 				effects = renderOpts.effects;
@@ -774,12 +778,12 @@ package {
 					return (isNew || unrenderedChildren[dispObj]);
 				}
 				else if(effects && 'mosaic' in effects) {
-					s = renderOpts.isStage ? 1 : scratchStage.scaleX;
+					s = scale * (renderOpts.isStage ? 1 : scratchStage.scaleX);
 					srcWidth = dw * s;
 					srcHeight =  dh * s;
 					mosaic = Math.round((Math.abs(effects["mosaic"]) + 10) / 10);
 					mosaic = Math.max(1, Math.min(mosaic, Math.min(srcWidth, srcHeight)));
-					scale = 1 / mosaic;
+					scale = scale / mosaic;
 				}
 			}
 			else if(dispObj is Bitmap) { // Remove else to allow graphics effects on video layer
@@ -952,9 +956,9 @@ package {
 							testBMs.push(new Bitmap(newTex));
 						var testBM:Bitmap = testBMs[i];
 						//testBM.scaleX = testBM.scaleY = 0.5;
-						testBM.x = 380 + offset;
+						testBM.x = offset;
 //						trace('Debugging '+Dbg.printObj(newTex));
-						//testBM.y = -900;
+						testBM.y = -900;
 						testBM.bitmapData = newTex;
 						scratchStage.stage.addChild(testBM);
 						for (k in bitmapsByID) {
@@ -1085,15 +1089,17 @@ package {
 			var oldScaleX:Number = dispObj.scaleX;
 			var oldScaleY:Number = dispObj.scaleY;
 			var bounds:Rectangle = boundsDict[dispObj];
-			dispObj.scaleX *= width / Math.floor(bounds.width * dispObj.scaleX * scratchStage.scaleX);
-			dispObj.scaleY *= height / Math.floor(bounds.height * dispObj.scaleY * scratchStage.scaleY);
+			dispObj.scaleX *= width / Math.floor(bounds.width * dispObj.scaleX * scratchStage.scaleX * globalScale);
+			dispObj.scaleY *= height / Math.floor(bounds.height * dispObj.scaleY * scratchStage.scaleY * globalScale);
 
 			var oldX:Number = dispObj.x;
 			var oldY:Number = dispObj.y;
 			dispObj.x = -bounds.x * dispObj.scaleX;
 			dispObj.y = -bounds.y * dispObj.scaleY;
 			vertexData.position = 0;
+			//pixelateAll = true;
 			drawChild(dispObj);
+			//pixelateAll = false;
 			dispObj.x = oldX;
 			dispObj.y = oldY;
 			dispObj.scaleX = oldScaleX;
@@ -1602,8 +1608,11 @@ package {
 				(e.currentTarget as Stage3D).context3D.dispose();
 				return;
 			}
-			else
+			else {
 				scratchStage.visible = false;
+				if(scratchStage.stage)
+					globalScale = ('contentsScaleFactor' in scratchStage.stage ? scratchStage.stage['contentsScaleFactor'] : 1.0);
+			}
 
 			__context = (e.currentTarget as Stage3D).context3D;
 			if(__context.driverInfo.toLowerCase().indexOf('software') > -1) {

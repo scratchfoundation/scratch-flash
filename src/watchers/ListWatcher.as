@@ -71,7 +71,8 @@ public class ListWatcher extends Sprite {
 		frame = new ResizeableFrame(0x949191, 0xC1C4C7, 14, false, 2);
 		frame.setWidthHeight(50, 100);
 		frame.showResizer();
-		frame.minWidth = frame.minHeight = 60;
+		frame.minWidth = 80;
+		frame.minHeight = 62;
 		addChild(frame);
 
 		title = createTextField(listName, titleFont);
@@ -139,9 +140,7 @@ public class ListWatcher extends Sprite {
 		}
 		function fileLoadHandler(event:Event):void {
 			var s:String = file.data.readUTFBytes(file.data.length);
-			var delimiter:String = '\n';
-			if (s.indexOf(delimiter) < 0) delimiter = '\r';
-			importLines(removeTrailingEmptyLines(s.split(delimiter)));
+			importLines(removeTrailingEmptyLines(s.split(/\r\n|[\r\n]/)));
 		}
 		var fileList:FileReferenceList = new FileReferenceList();
 		var file:FileReference;
@@ -154,22 +153,22 @@ public class ListWatcher extends Sprite {
 
 	private function exportList():void {
 		var file:FileReference = new FileReference();
-		var s:String = '';
-		for each (var el:* in contents) s += el + '\n';
-		if (s.length > 0) s = s.slice(0, s.length - 1); // remove final '\n'
+		var s:String = contents.join('\n') + '\n';
 		file.save(s, listName + '.txt');
 	}
 
-	private function hide():void { visible = false }
+	private function hide():void {
+		visible = false;
+		Scratch.app.updatePalette(false);
+	}
 
 	// -----------------------------
 	// Visual feedback for list changes
 	//------------------------------
 
 	private function removeTrailingEmptyLines(lines:Array):Array {
-		var i:int = lines.length - 1;
-		while ((i > 0) && (lines[i].length == 0)) i--;
-		return lines.slice(0, i + 1);
+		while (lines.length && !lines[lines.length - 1]) lines.pop();
+		return lines;
 	}
 
 	private function importLines(lines:Array):void {

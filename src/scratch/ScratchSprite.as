@@ -375,7 +375,7 @@ public class ScratchSprite extends ScratchObj {
 				m = new Matrix();
 				m.rotate((Math.PI * rotation) / 180);
 				b = transformedBounds(bm.rect, m);
-				cachedBitmap = new BitmapData(Math.max(b.width, 1), Math.max(b.height, 1), true, 0);
+				cachedBitmap = new BitmapData(Math.max(int(b.width), 1), Math.max(int(b.height), 1), true, 0);
 				m.translate(-b.left, -b.top);
 				cachedBitmap.draw(bm, m);
 			}
@@ -392,7 +392,7 @@ public class ScratchSprite extends ScratchObj {
 
 			var oldTrans:ColorTransform = img.transform.colorTransform;
 			img.transform.colorTransform = new ColorTransform(1, 1, 1, 1, oldTrans.redOffset, oldTrans.greenOffset, oldTrans.blueOffset, 0);
-			cachedBitmap = new BitmapData(Math.max(r.width, 1), Math.max(r.height, 1), true, 0);
+			cachedBitmap = new BitmapData(Math.max(int(r.width), 1), Math.max(int(r.height), 1), true, 0);
 			m.translate(-r.left, -r.top);
 			cachedBitmap.draw(this, m);
 			img.transform.colorTransform = oldTrans;
@@ -404,7 +404,7 @@ public class ScratchSprite extends ScratchObj {
 		// Note: handles the case where cropR is empty
 		var cropR:Rectangle = cachedBitmap.getColorBoundsRect(0xFF000000, 0, false);
 		if ((cropR.width > 0) && (cropR.height > 0)) {
-			var cropped:BitmapData = new BitmapData(Math.max(cropR.width, 1), Math.max(cropR.height, 1), true, 0);
+			var cropped:BitmapData = new BitmapData(Math.max(int(cropR.width), 1), Math.max(int(cropR.height), 1), true, 0);
 			cropped.copyPixels(cachedBitmap, cropR, new Point(0, 0));
 			cachedBitmap = cropped;
 			cachedBounds = cropR;
