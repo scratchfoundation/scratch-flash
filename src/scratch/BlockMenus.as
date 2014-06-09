@@ -386,12 +386,23 @@ public class BlockMenus implements DragClient {
 	}
 
 	private function soundMenu(evt:MouseEvent):void {
-		var m:Menu = new Menu(setBlockArg, 'sound');
+		function setSoundArg(s:*):void {
+			if (s is Function) s()
+			else setBlockArg(s);
+		}
+		var m:Menu = new Menu(setSoundArg, 'sound');
 		if (app.viewedObj() == null) return;
 		for (var i:int = 0; i < app.viewedObj().sounds.length; i++) {
 			m.addItem(app.viewedObj().sounds[i].soundName);
 		}
+		m.addLine();
+		m.addItem('record...', recordSound);
 		showMenu(m);
+	}
+	
+	private function recordSound():void {
+		app.setTab('sounds');
+		app.soundsPart.recordSound();
 	}
 
 	private function spriteMenu(evt:MouseEvent, includeMouse:Boolean, includeEdge:Boolean, includeStage:Boolean, includeSelf:Boolean):void {
