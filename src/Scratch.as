@@ -102,7 +102,7 @@ public class Scratch extends Sprite {
 	private var tabsPart:TabsPart;
 	protected var scriptsPart:ScriptsPart;
 	public var imagesPart:ImagesPart;
-	protected var soundsPart:SoundsPart;
+	public var soundsPart:SoundsPart;
 
 	public function Scratch() {
 		loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, uncaughtErrorHandler);
