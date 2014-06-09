@@ -407,7 +407,7 @@ public class BlockMenus implements DragClient {
 				var attr:String = block.args[0].argValue;
 				var validAttrs:Array = obj.isStage ? ['backdrop #', 'background #', 'backdrop name', 'volume'] :
 				['x position', 'y position', 'direction', 'costume #', 'costume name', 'size', 'volume'];
-				if ((validAttrs.indexOf(attr) == -1) && !obj.ownsVar(attr)) block.args[0].setArgValue(obj.isStage ? 'backdrop #' : 'x position');
+				if ((validAttrs.indexOf(attr) == -1) && !obj.ownsVar(attr)) block.args[0].setArgValue(obj.isStage ? Translator.map('backdrop #') : Translator.map('x position'));
 			}
 			Scratch.app.setSaveNeeded();
 		}
