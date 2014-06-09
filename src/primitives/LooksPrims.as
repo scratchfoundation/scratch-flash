@@ -157,13 +157,12 @@ public class LooksPrims {
 		if (interp.activeThread.firstTime) {
 			text = interp.arg(b, 0);
 			secs = interp.numarg(b, 1);
-			s.showBubble(text, type);
+			s.showBubble(text, type, b);
 			if (s.visible) interp.redraw();
 			interp.startTimer(secs);
 		} else {
-			if (interp.checkTimer()) {
-				text = interp.arg(b, 0);
-				if (s.bubble && (s.bubble.getText() == text)) s.hideBubble();
+			if (interp.checkTimer() && s.bubble && (s.bubble.getSource() == b)) {
+				s.hideBubble();
 			}
 		}
 	}
@@ -178,7 +177,7 @@ public class LooksPrims {
 		} else { // talk or think command
 			text = interp.arg(b, 0);
 		}
-		s.showBubble(text, type);
+		s.showBubble(text, type, b);
 		if (s.visible) interp.redraw();
 	}
 

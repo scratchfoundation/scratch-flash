@@ -504,9 +504,9 @@ public class GestureHandler {
 		o.filters = newFilters;
 	}
 
-	public function showBubble(text:String, x:Number, y:Number, width:Number = 0):void {
+	public function showBubble(text:String, source:Object, x:Number, y:Number, width:Number = 0):void {
 		hideBubble();
-		bubble = new TalkBubble(text || ' ', 'say', 'result');
+		bubble = new TalkBubble(text || ' ', 'say', 'result', source);
 		bubbleStartX = stage.mouseX;
 		bubbleStartY = stage.mouseY;
 		var bx:Number = x + width;

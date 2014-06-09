@@ -818,10 +818,10 @@ public class Scratch extends Sprite {
 
 	public function handleTool(tool:String, evt:MouseEvent):void { }
 
-	public function showBubble(text:String, x:* = null, y:* = null, width:Number = 0):void {
+	public function showBubble(text:String, source:Object, x:* = null, y:* = null, width:Number = 0):void {
 		if (x == null) x = stage.mouseX;
 		if (y == null) y = stage.mouseY;
-		gh.showBubble(text, Number(x), Number(y), width);
+		gh.showBubble(text, source, Number(x), Number(y), width);
 	}
 
 	// -----------------------------
