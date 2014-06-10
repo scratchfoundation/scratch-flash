@@ -384,6 +384,12 @@ public class PaletteBuilder {
 				var op:String = opPrefix + spec[2];
 				var defaultArgs:Array = spec.slice(3);
 				var block:Block = new Block(spec[1], spec[0], blockColor, op, defaultArgs);
+				if (app.isOffline && block.isReporter && !block.isRequester) {
+					// If we're offline and the AS-JS bridge can't return values directly, then treat every reporter as
+					// an async requester.
+					block.isRequester = true;
+					block.forcedRequester = true;
+				}
 				var showCheckbox:Boolean = (spec[0] == 'r' && defaultArgs.length == 0);
 				if (showCheckbox) addReporterCheckbox(block);
 				addItem(block, showCheckbox);

@@ -305,13 +305,6 @@ public class ExtensionManager {
 
 		var value:*;
 		if (b.isReporter) {
-			if(Scratch.app.isOffline && (ext.port == 0)) {
-				// If we're offline, and the AS-JS bridge can't return values directly, then treat every reporter as
-				// an async requester. By setting the isRequester flag here we ensure that the interpreter will treat
-				// the block properly by yielding its thread while we wait for the callback.
-				b.isRequester = true;
-			}
-
 			if(b.isRequester) {
 				if(b.requestState == 2) {
 					b.requestState = 0;
@@ -419,7 +412,16 @@ public class ExtensionManager {
 			++ext.nextID;
 			ext.busy.push(ext.nextID);
 			ext.waiting[b] = ext.nextID;
-			app.externalCall('ScratchExtensions.getReporterAsync', null, ext.name, op, args, ext.nextID);
+
+			if (b.forcedRequester) {
+				// We're forcing a non-requester to be treated as a requester
+				trace('Calling getReporterForceAsync');
+				app.externalCall('ScratchExtensions.getReporterForceAsync', null, ext.name, op, args, ext.nextID);
+			} else {
+				// Normal request
+				trace('Calling getReporterAsync');
+				app.externalCall('ScratchExtensions.getReporterAsync', null, ext.name, op, args, ext.nextID);
+			}
 		}
 	}
 
