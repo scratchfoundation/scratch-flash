@@ -296,7 +296,7 @@ public class GestureHandler {
 			o = o.parent;
 		}
 		var rect:Rectangle = app.stageObj().getRect(app.stage);
-		if(!mouseTarget && rect.contains(app.stage.mouseX, app.stage.mouseY))  return findMouseTargetOnStage(app.stage.mouseX / app.scaleX, app.stage.mouseY / app.scaleY);
+		if(!mouseTarget && rect.contains(app.stage.mouseX, app.stage.mouseY)) return findMouseTargetOnStage(app.stage.mouseX / app.scaleX, app.stage.mouseY / app.scaleY);
 		if (o == null) return null;
 		if ((o is Block) && Block(o).isEmbeddedInProcHat()) return o.parent;
 		if (o is ScratchObj) return findMouseTargetOnStage(app.stage.mouseX / app.scaleX, app.stage.mouseY / app.scaleY);

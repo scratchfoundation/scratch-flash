@@ -303,7 +303,7 @@ public class StagePart extends BaseStagePart {
 			hidePlayButton();
 	}
 
-	override public function hidePlayButton():void {
+	public function hidePlayButton():void {
 		if (playButton) removeChild(playButton);
 		playButton = null;
 	}

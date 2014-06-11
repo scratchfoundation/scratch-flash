@@ -303,7 +303,7 @@ public class LibraryPart extends UIPart implements ILibraryPart{
 	// Video Button
 	//------------------------------
 
-	public	function showVideoButton():void {
+	public function showVideoButton():void {
 		// Show the video button. Turn on the camera the first time this is called.
 		if (videoButton.visible) return; // already showing
 		videoButton.visible = true;

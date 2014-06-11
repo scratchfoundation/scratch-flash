@@ -24,7 +24,7 @@ package {
 	import flash.geom.Rectangle;
 
 	public class ChildRender extends BitmapData {
-		private const allowPartial:Boolean = true;
+		private const allowPartial:Boolean = false;
 		private const maxSize:uint = 1022;
 		private const halfSize:uint = maxSize >> 1;
 		private var orig_width:Number;
@@ -101,10 +101,10 @@ package {
 		}
 
 		public function needsResize(w:Number, h:Number):Boolean {
-			if(width > orig_width && Math.ceil(w) > width) {
+			if(w > orig_width && Math.ceil(w) > width) {
 				return true;
 			}
-			if(height > orig_height && Math.ceil(h) > height) {
+			if(h > orig_height && Math.ceil(h) > height) {
 				return true;
 			}
 

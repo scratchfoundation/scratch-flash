@@ -353,6 +353,7 @@ public class ScratchCostume {
 			H[i++] = R[j]; //right part;
 
 		R.length = L.length = 0;
+		image.dispose();
 
 //trace('found bounds: '+new Rectangle(minX, minY, maxX - minX, maxY - minY));
 		return H;

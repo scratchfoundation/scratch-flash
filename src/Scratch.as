@@ -793,10 +793,10 @@ public class Scratch extends Sprite {
 
 	private function showAboutDialog():void {
 		DialogBox.notify(
-			'Scratch 2.0 ' + versionString,
-			'\n\nCopyright © 2012 MIT Media Laboratory' +
-			'\nAll rights reserved.' +
-			'\n\nPlease do not distribute!', stage);
+						'Scratch 2.0 ' + versionString,
+						'\n\nCopyright © 2012 MIT Media Laboratory' +
+						'\nAll rights reserved.' +
+						'\n\nPlease do not distribute!', stage);
 	}
 
 	protected function createNewProject(ignore:* = null):void {
@@ -1030,10 +1030,10 @@ public class Scratch extends Sprite {
 		if (assetByteCount > assetByteLimit) {
 			var overBy:int = Math.max(1, (assetByteCount - assetByteLimit) / 1024);
 			DialogBox.notify(
-				'Sorry!',
-				'Adding that media asset would put this project over the size limit by ' + overBy + ' KB\n' +
-				'Please remove some costumes, backdrops, or sounds before adding additional media.',
-				stage);
+					'Sorry!',
+							'Adding that media asset would put this project over the size limit by ' + overBy + ' KB\n' +
+							'Please remove some costumes, backdrops, or sounds before adding additional media.',
+					stage);
 			return false;
 		}
 		return true;

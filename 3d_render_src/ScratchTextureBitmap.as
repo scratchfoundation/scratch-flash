@@ -21,9 +21,9 @@ package {
 import flash.display.BitmapData;
 import flash.display3D.*;
 import flash.display3D.textures.Texture;
-import flash.geom.Rectangle;
 import flash.geom.Matrix;
 import flash.geom.Point;
+import flash.geom.Rectangle;
 import org.villekoskela.utils.RectanglePacker;
 
 public class ScratchTextureBitmap extends BitmapData
@@ -63,9 +63,8 @@ public class ScratchTextureBitmap extends BitmapData
 	}
 
 	// Returns an array of bitmap ids packed and rendered
-	private var tmpPt:Point = new Point();
+	private var drawMatrix:Matrix = new Matrix();
 	public function packBitmaps(bitmapsByID:Object):Array {
-		fillRect(this.rect, 0x00000000);  // Removing this speeds up texture repacking but creates edge rendering artifacts
 		rectPacker.reset(width, height);
 		indexOfIDs = [];
 
@@ -83,8 +82,10 @@ public class ScratchTextureBitmap extends BitmapData
 
 		// Render the packed bitmaps
 		var rect:Rectangle;
-		var m:Matrix = new Matrix();
 		rectangles = {};
+		lock();
+		fillRect(this.rect, 0x00000000);
+		//fillRect(this.rect, 0xffff00ff);
 		var packedIDs:Array = [];
 		for (i=0; i<rectPacker.rectangleCount; ++i) {
 			var bmID:String = indexOfIDs[rectPacker.getRectangleId(i)];
@@ -95,13 +96,12 @@ public class ScratchTextureBitmap extends BitmapData
 			rect.height = rect.height - 1;
 			rect = rect.clone();
 			//trace('Made rectangle for '+bmID+' to '+rect);
-			tmpPt.x = rect.x; tmpPt.y = rect.y;
+			drawMatrix.tx = rect.x;
+			drawMatrix.ty = rect.y;
 			rect.x = rect.y = 0;
 			bmd = bitmapsByID[bmID];
-			//trace('Copying pixels from bitmap with id: '+bmID+' @ '+bmd.width+'x'+bmd.height+'  -  '+tmpPt);
-			m.tx = tmpPt.x;
-			m.ty = tmpPt.y;
-			draw(bmd, m);
+//trace('Copying pixels from bitmap with id: '+bmID+' @ '+bmd.width+'x'+bmd.height+'  -  '+tmpPt);
+			draw(bmd, drawMatrix);
 
 			if(bmd is ChildRender) {
 				rectangles[bmID].width = (bmd as ChildRender).renderWidth;
@@ -112,6 +112,7 @@ public class ScratchTextureBitmap extends BitmapData
 			packedIDs.push(bmID);
 		}
 
+		unlock();
 		dirty = true;
 
 		return packedIDs;
@@ -127,10 +128,14 @@ public class ScratchTextureBitmap extends BitmapData
 		if(Math.ceil(rect.width) != bmd.width || Math.ceil(rect.height) != bmd.height) throw new Error("bitmap dimensions don't match existing rectangle");
 
 		rect = rect.clone();
-		tmpPt.x = rect.x; tmpPt.y = rect.y;
+		drawMatrix.tx = rect.x;
+		drawMatrix.ty = rect.y;
 		rect.x = rect.y = 0;
 //trace('Copying pixels from '+Dbg.printObj(bmd)+' with id: '+id+' @ '+bmd.width+'x'+bmd.height+'  -  '+pt);
-		copyPixels(bmd, rect, tmpPt, null, null, false);
+		lock();
+		fillRect(rect, 0x00000000);
+		draw(bmd, drawMatrix);
+		unlock();
 		dirty = true;
 	}
 }
@@ -153,7 +158,7 @@ internal final class Dbg
 			memoryHash = String(e).replace(/.*([@|\$].*?) to .*$/gi, '$1');
 		}
 
-		return flash.utils.getQualifiedClassName(obj) + memoryHash;
+		return getQualifiedClassName(obj) + memoryHash;
 	}
 }
 
