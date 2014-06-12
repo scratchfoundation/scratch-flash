@@ -135,6 +135,32 @@ public class ScriptsPane extends ScrollFrameContents {
 
 	public function updateFeedbackFor(b:Block):void {
 		nearestTarget = nearestTargetForBlockIn(b, possibleTargets);
+		if (b.base.canHaveSubstack1() && !b.subStack1) {
+			var o:Block = null;
+			if (nearestTarget) {
+				t = nearestTarget[1];
+				switch (nearestTarget[2]) {
+					case INSERT_NORMAL:
+						o = t.nextBlock;
+						break;
+					case INSERT_WRAP:
+						o = t;
+						break;
+					case INSERT_SUB1:
+						o = t.subStack1;
+						break;
+					case INSERT_SUB2:
+						o = t.subStack2;
+						break;
+				}
+			}
+			var h:int = BlockShape.EmptySubstackH;
+			if (o) {
+				h = o.height;
+				if (!o.bottomBlock().isTerminal) h -= BlockShape.NotchDepth;
+			}
+			b.previewSubstack1Height(h);
+		}
 		if (nearestTarget != null) {
 			var localP:Point = globalToLocal(nearestTarget[0]);
 			var t:* = nearestTarget[1];
@@ -221,7 +247,7 @@ public class ScriptsPane extends ScrollFrameContents {
 							p = target.localToGlobal(new Point(-BlockShape.SubstackInset, -(b.base.substack1y() - BlockShape.NotchDepth)));
 							possibleTargets.push([p, target, INSERT_WRAP]);
 						}
-						if (!b.isHat) findCommandTargetsIn(target, bEndWithTerminal);
+						if (!b.isHat) findCommandTargetsIn(target, bEndWithTerminal && !bCanWrap);
 					}
 				}
 			}
