@@ -151,7 +151,7 @@ public class ImagesPart extends UIPart {
 	}
 
 	private function fixlayout():void {
-		var extraSpace:int = Math.max(0, (w - 537) / 3);
+		var extraSpace:int = Math.max(0, (w - 590) / 3);
 		bigSpace = smallSpace + extraSpace;
 
 		newCostumeLabel.x = 7;
