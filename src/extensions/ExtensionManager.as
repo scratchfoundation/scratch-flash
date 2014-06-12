@@ -415,11 +415,9 @@ public class ExtensionManager {
 
 			if (b.forcedRequester) {
 				// We're forcing a non-requester to be treated as a requester
-				trace('Calling getReporterForceAsync');
 				app.externalCall('ScratchExtensions.getReporterForceAsync', null, ext.name, op, args, ext.nextID);
 			} else {
 				// Normal request
-				trace('Calling getReporterAsync');
 				app.externalCall('ScratchExtensions.getReporterAsync', null, ext.name, op, args, ext.nextID);
 			}
 		}
