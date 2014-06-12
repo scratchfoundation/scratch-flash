@@ -124,11 +124,12 @@ public class Block extends Sprite {
 			isReporter = true;
 			indentLeft = 9;
 			indentRight = 7;
-		} else if (type == "r" || type == "R") {
+		} else if (type == "r" || type == "R" || type == "rR") {
 			this.type = 'r';
 			base = new BlockShape(BlockShape.NumberShape, color);
 			isReporter = true;
-			isRequester = (type == 'R');
+			isRequester = ((type == 'R') || (type == 'rR'));
+			forcedRequester = (type == 'rR');
 			indentTop = 2;
 			indentBottom = 2;
 			indentLeft = 6;
