@@ -39,7 +39,7 @@ public class MediaLibrary extends Sprite {
 	private static const backdropCategories:Array = [
 		'All', 'Indoors', 'Outdoors', 'Other'];
 	private static const costumeCategories:Array = [
-		'All', 'Animals', 'Fantasy', 'People', 'Things', 'Transportation'];
+		'All', 'Animals', 'Fantasy', 'Letters', 'People', 'Things', 'Transportation'];
 	private static const extensionCategories:Array = [
 		'All', 'Hardware'];
 	private static const soundCategories:Array = [
@@ -344,7 +344,7 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 			ScratchExtension.WeDo()];
 		allItems = [];
 		for each (var ext:ScratchExtension in extList) {
-			allItems.push(new MediaLibraryItem({ 
+			allItems.push(new MediaLibraryItem({
 				extension: ext,
 				name: ext.name,
 				md5: ext.thumbnailMD5,
@@ -352,7 +352,7 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 			}));
 		}
 		showFilteredItems();
-		startLoadingThumbnails();		
+		startLoadingThumbnails();
 	}
 
 	private function stripComments(s:String):String {
