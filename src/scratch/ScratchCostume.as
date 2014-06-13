@@ -549,7 +549,7 @@ public class ScratchCostume {
 		if (oldComposite) computeTextLayer();
 		if (baseLayerID == WasEdited) baseLayerMD5 = null; // costume was edited; recompute hash
 		baseLayerID = textLayerID = -1;
-		if (baseLayerData == null) baseLayerData = PNG24Encoder.encode(baseLayerBitmap, PNGFilter.PAETH);
+		if (baseLayerData == null) baseLayerData = new PNGMaker().encode(baseLayerBitmap, 72 * bitmapResolution);;
 		if (baseLayerMD5 == null) baseLayerMD5 = by.blooddy.crypto.MD5.hashBytes(baseLayerData) + fileExtension(baseLayerData);
 		if (textLayerBitmap != null) {
 			if (textLayerData == null) textLayerData = PNG24Encoder.encode(textLayerBitmap, PNGFilter.PAETH);

@@ -444,6 +444,7 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 				} else {
 					io.fetchImage(md5AndExt, item.dbObj.name, whenDone);
 				}
+				break;
 			}
 		}
 	}
