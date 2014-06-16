@@ -62,29 +62,10 @@ public class BlockPalette extends ScrollFrameContents {
 		}
 		var b:Block = obj as Block;
 		if (b) {
-			if ((b.op == Specs.PROCEDURE_DEF) && hasCallers(b, app)) {
-				DialogBox.notify('Cannot Delete', 'To delete a block definition, first remove all uses of the block.', stage);
-				return false;
-			}
-			if (b.parent) b.parent.removeChild(b);
 			b.restoreOriginalPosition(); // restore position in case block is undeleted
-			Scratch.app.runtime.recordForUndelete(b, b.x, b.y, 0, Scratch.app.viewedObj());
-			app.scriptsPane.saveScripts();
-			app.updatePalette();
-			return true;
+			return b.deleteStack();
 		}
 		return false;
-	}
-
-	private function hasCallers(def:Block, app:Scratch):Boolean {
-		var callCount:int;
-		for each (var stack:Block in app.viewedObj().scripts) {
-			// for each block in stack
-			stack.allBlocksDo(function (b:Block):void {
-				if ((b.op == Specs.CALL) && (b.spec == def.spec)) callCount++;
-			});
-		}
-		return callCount > 0;
 	}
 
 	public static function strings():Array {
