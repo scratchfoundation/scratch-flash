@@ -81,7 +81,7 @@ package svgeditor.tools
 			if(previewShape.parent) previewShape.parent.removeChild(previewShape);
 			super.shutdown();
 		}
-		
+
 		private function onKeyPress(e:KeyboardEvent):void {
 			shiftDown = e.shiftKey;
 		}
@@ -89,12 +89,6 @@ package svgeditor.tools
 		private function onKeyRelease(e:KeyboardEvent):void {
 			shiftDown = e.shiftKey;
 			if(currentEvent) currentEvent.shiftKey = e.shiftKey;
-			
-			// Store start straight line segment
-			if(newElement) {
-				newElement.path.push(['L', mouseX, mouseY]);
-				lastSavePt = new Point(mouseX, mouseY);
-			}
 		}
 
 		override protected function mouseDown(p:Point):void {
@@ -280,7 +274,7 @@ previewShape.graphics.lineTo(proj.x, proj.y);
 				var cPts:Array = SVGPath.getControlPointsAdjacentAnchor(before, here, after);
 				var c1:Point = cPts[0];
 				var c2:Point = cPts[1];
-				
+
 				SVGPath.drawCubicBezier(gfx, before, lastSaveC2, c1, here, null, null);
 				newElement.path.push(['C', lastSaveC2.x, lastSaveC2.y, c1.x, c1.y, here.x, here.y]);
 				lastSaveC2 = c2;
@@ -371,7 +365,7 @@ previewShape.graphics.lineTo(proj.x, proj.y);
 						newElement.path[lastIdx][6] = p.y;
 					}
 				}
-				
+
 				processPath();
 			}
 			else if(newElement.path.length) {
@@ -624,7 +618,7 @@ previewShape.graphics.lineTo(proj.x, proj.y);
 						var tmp:SVGPath = path;
 						path = pathReversed;
 						pathReversed = tmp;
-						
+
 						var tmpPt:Point = firstPt;
 						firstPt = secondPt;
 						secondPt = tmpPt;
@@ -709,7 +703,7 @@ previewShape.graphics.lineTo(proj.x, proj.y);
 			svgShape.visible = false;
 			svgShape.redraw();
 			svgShape.visible = true;
-			
+
 			return wasUsed;
 		}
 	}
