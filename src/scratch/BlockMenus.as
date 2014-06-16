@@ -190,8 +190,8 @@ public class BlockMenus implements DragClient {
 		m.color = block.base.color;
 		m.itemHeight = 22;
 		if (blockArg) {
-			var p:Point = blockArg.localToGlobal(new Point(0, 0));
-			m.showOnStage(app.stage, p.x - 9, p.y + blockArg.height);
+			var p:Point = blockArg.localToGlobal(new Point(0, blockArg.height));
+			m.showOnStage(app.stage, p.x - 9, p.y);
 		} else {
 			m.showOnStage(app.stage);
 		}
@@ -399,7 +399,7 @@ public class BlockMenus implements DragClient {
 		m.addItem('record...', recordSound);
 		showMenu(m);
 	}
-	
+
 	private function recordSound():void {
 		app.setTab('sounds');
 		app.soundsPart.recordSound();
