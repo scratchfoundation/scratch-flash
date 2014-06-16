@@ -661,6 +661,20 @@ public class ScratchRuntime {
 	// Script utilities
 	//------------------------------
 
+	public function renameSprite(newName:String):void {
+		var obj:ScratchObj = app.viewedObj();
+		var oldName:String = obj.objName
+		obj.objName = newName;
+		for each (var lw:ListWatcher in app.viewedObj().lists) {
+			lw.updateTitle();
+		}
+		for each (var a:BlockArg in allUsesOfSprite(oldName)) {
+			trace((a.parent as Block).spec, a.menuName, a.argValue);
+			a.setArgValue(newName);
+		}
+		app.setSaveNeeded();
+	}
+
 	public function clearRunFeedback():void {
 		if(app.editMode) {
 			for each (var stack:Block in allStacks()) {
@@ -715,6 +729,21 @@ public class ScratchRuntime {
 			if (found) return true;
 		}
 		return false;
+	}
+
+	public function allUsesOfSprite(spriteName:String):Array {
+		var spriteMenus:Array = ["spriteOnly", "spriteOrMouse", "spriteOrStage", "touching"];
+		var result:Array = [];
+		for each (var stack:Block in allStacks()) {
+			// for each block in stack
+			stack.allBlocksDo(function (b:Block):void {
+				for each (var a:BlockArg in b.args) {
+					trace(a.menuName, spriteMenus.indexOf(a.menuName), a.argValue, spriteName)
+					if (spriteMenus.indexOf(a.menuName) != -1 && a.argValue == spriteName) result.push(a);
+				}
+			});
+		}
+		return result;
 	}
 
 	public function allUsesOfVariable(varName:String, owner:ScratchObj):Array {
