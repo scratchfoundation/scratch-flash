@@ -227,10 +227,7 @@ public class BitmapEdit extends ImageEdit {
 		super.setToolMode(newMode, bForce, fromButton);
 
 		if (obj) {
-			if (currentTool is TextTool && prevToolMode == 'bitmapSelect') {
-				(currentTool as TextTool).setObject(obj);
-			}
-			else if (!(currentTool is ObjectTransformer)) {
+			if (!(currentTool is ObjectTransformer)) {
 				// User was editing an object and switched tools, bake the object
 				bakeIntoBitmap();
 				saveToCostume();

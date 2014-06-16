@@ -540,7 +540,7 @@ package svgeditor {
 			}
 		}
 
-		public static const repeatedTools:Array = ['rect', 'ellipse', 'vectorRect', 'vectorEllipse'];
+		public static const repeatedTools:Array = ['rect', 'ellipse', 'vectorRect', 'vectorEllipse', 'text'];
 		public static const selectionTools:Array = ['select', 'bitmapSelect'];
 
 		public function setToolMode(newMode:String, bForce:Boolean = false, fromButton:Boolean = false):void {
@@ -682,6 +682,7 @@ package svgeditor {
 				if (currentTool is SVGCreateTool) {
 					(currentTool as SVGCreateTool).eventHandler(e);
 				} else if (currentTool is SVGEditTool) {
+					(currentTool as SVGEditTool).setObject(null);
 					(currentTool as SVGEditTool).mouseDown(e);
 				}
 				return true;

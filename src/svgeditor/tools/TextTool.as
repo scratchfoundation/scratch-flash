@@ -34,11 +34,11 @@ package svgeditor.tools
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFieldType;
 	import flash.utils.Timer;
-	
+
 	import svgeditor.*;
 	import svgeditor.objs.ISVGEditable;
 	import svgeditor.objs.SVGTextField;
-	
+
 	import svgutils.SVGElement;
 
 	// TODO: Make it non-sticky when the editor is a BitmapEdit instance
@@ -140,11 +140,11 @@ package svgeditor.tools
 			// TODO: Fix redraw, it's currently moving the text field (due to the matrix?)
 			//tf.redraw();
 			if(editor is SVGEdit) tf.filters = [];
-			
+
 			if(tf.text == '' || tf.text == ' ') {// || tf.text.match(new RegExp('/^\s+$/'))) {
 				tf.parent.removeChild(tf);
 			}
-			
+
 			setObject(null);
 		}
 
@@ -158,7 +158,7 @@ package svgeditor.tools
 			dispatchEvent(new Event(Event.CHANGE));
 		}
 
-		override protected function mouseDown(e:MouseEvent):void {
+		override public function mouseDown(e:MouseEvent):void {
 			var wasEditing:Boolean = !!object;
 			var obj:ISVGEditable = getEditableUnderMouse(false);
 			var origObj:ISVGEditable = object;
@@ -186,17 +186,17 @@ package svgeditor.tools
 				}
 				else {
 					var contentLayer:Sprite = editor.getContentLayer();
-	
+
 					var el:SVGElement = new SVGElement('text', '');
 					el.setAttribute('text-anchor', 'start');
 					el.text = '';
 					el.setShapeFill(editor.getShapeProps());
 					el.setFont(editor.getShapeProps().fontName, 22);
-	
+
 					var tf:SVGTextField = new SVGTextField(el);
 					contentLayer.addChild(tf);
 					tf.redraw();
-	
+
 					var p:Point = new Point(contentLayer.mouseX, contentLayer.mouseY);
 					var ascent:Number = tf.getLineMetrics(0).ascent;
 					tf.x = p.x;
