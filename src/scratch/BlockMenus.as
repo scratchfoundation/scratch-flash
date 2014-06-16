@@ -399,7 +399,7 @@ public class BlockMenus implements DragClient {
 		m.addItem('record...', recordSound);
 		showMenu(m);
 	}
-	
+
 	private function recordSound():void {
 		app.setTab('sounds');
 		app.soundsPart.recordSound();
@@ -694,7 +694,6 @@ public class BlockMenus implements DragClient {
 			if (block.op == Specs.GET_VAR) block.setSpec(newName);
 		}
 		Scratch.app.setSaveNeeded();
-		app.updatePalette();
 	}
 
 	// ***** Color picker support *****
