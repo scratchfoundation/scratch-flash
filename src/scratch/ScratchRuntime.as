@@ -663,7 +663,7 @@ public class ScratchRuntime {
 
 	public function renameSprite(newName:String):void {
 		var obj:ScratchObj = app.viewedObj();
-		var oldName:String = obj.objName
+		var oldName:String = obj.objName;
 		obj.objName = newName;
 		for each (var lw:ListWatcher in app.viewedObj().lists) {
 			lw.updateTitle();
