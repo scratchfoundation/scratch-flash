@@ -669,7 +669,6 @@ public class ScratchRuntime {
 			lw.updateTitle();
 		}
 		for each (var a:BlockArg in allUsesOfSprite(oldName)) {
-			trace((a.parent as Block).spec, a.menuName, a.argValue);
 			a.setArgValue(newName);
 		}
 		app.setSaveNeeded();
