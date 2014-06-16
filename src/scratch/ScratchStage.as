@@ -133,6 +133,15 @@ public class ScratchStage extends ScratchObj {
 		return withoutTrailingDigits(baseName) + i;
 	}
 
+	override public function anyChildOwnsVar(varName:String):Boolean {
+		// Return true if this object owns a variable of the given name.
+		if (ownsVar(varName)) return true;
+		for each (var s:ScratchSprite in sprites()) {
+			if (s.ownsVar(varName)) return true;
+		}
+		return false;
+	}
+
 	private function initMedia():void {
 		costumes.push(ScratchCostume.emptyBitmapCostume(Translator.map('backdrop1'), true));
 		sounds.push(new ScratchSound(Translator.map('pop'), new Pop()));
