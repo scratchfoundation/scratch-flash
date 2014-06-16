@@ -155,6 +155,7 @@ package svgeditor.tools  {
 				}
 			}
 			else {
+				if (editor.revertToCreateTool(event)) return;
 				if(targetObj && event && (event.shiftKey || event.ctrlKey)) {
 					targetObj.getObjs().push(obj);
 					select(targetObj);
@@ -285,7 +286,7 @@ package svgeditor.tools  {
 			// Dispatch the 'select' event if we aren't refreshing
 			if(!isRefreshing && !isShuttingDown) dispatchEvent(e);
 
-			if(!targetObj && currentEvent is MouseEvent && currentEvent.type == MouseEvent.MOUSE_DOWN) {
+			if(!isShuttingDown && !targetObj && currentEvent is MouseEvent && currentEvent.type == MouseEvent.MOUSE_DOWN) {
 				selectionBoxHandler(currentEvent);
 			}
 		}
@@ -773,10 +774,8 @@ package svgeditor.tools  {
 
 			switch(e.type) {
 				case MouseEvent.MOUSE_DOWN:
-					// The Bitmap Editor will want to return to the rectangle or ellipse tool if the user
-					// clicks outside of the selection and the selection is holding a just-drawn rectangle or ellipse.
-					if(editor is BitmapEdit && (editor as BitmapEdit).revertToCreateTool(e))
-						return;
+					// The editor will want to return to the rectangle or ellipse tool if the user clicks outside of the selection and the selection is holding a just-drawn rectangle or ellipse.
+					if (editor.revertToCreateTool(e)) return;
 
 					stage.addEventListener(MouseEvent.MOUSE_MOVE, arguments.callee, false, 0, true);
 					stage.addEventListener(MouseEvent.MOUSE_UP, arguments.callee, false, 0, true);
