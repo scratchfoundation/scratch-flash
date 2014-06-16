@@ -25,23 +25,23 @@
 
 package scratch {
 	import blocks.*;
-	
+
 	import filters.FilterPack;
-	
+
 	import flash.display.*;
 	import flash.events.MouseEvent;
 import flash.geom.ColorTransform;
 import flash.utils.*;
-	
+
 	import interpreter.*;
-	
+
 	import scratch.ScratchComment;
 import scratch.ScratchSprite;
 
 import translation.Translator;
-	
+
 	import util.*;
-	
+
 	import watchers.*;
 
 public class ScratchObj extends Sprite {
@@ -547,7 +547,7 @@ public class ScratchObj extends Sprite {
 		var now:uint = getTimer();
 		app.runtime.startClickedHats(this);
 		if ((now - lastClickTime) < DOUBLE_CLICK_MSECS) {
-			if (!isStage && ScratchSprite(this).isClone) return;
+			if (isStage || ScratchSprite(this).isClone) return;
 			app.selectSprite(this);
 			lastClickTime = 0;
 		} else {
