@@ -361,7 +361,7 @@ public class ImagesPart extends UIPart {
 	}
 
 	private function addCostume(c:ScratchCostume):void {
-		var p:Point = new Point(240 - (c.width() / 2), 180 - (c.height() / 2));
+		var p:Point = new Point(240, 180);
 		editor.addCostume(c, p);
 	}
 
