@@ -434,6 +434,8 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 	}
 
 	public function setScale(newScale:Number):void {
+		x *= newScale / scaleX;
+		y *= newScale / scaleY;
 		newScale = Math.max(1/6, Math.min(newScale, 6.0));
 		scaleX = scaleY = newScale;
 		updateSize();
