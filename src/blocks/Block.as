@@ -95,8 +95,14 @@ public class Block extends Sprite {
 	private var indentTop:int = 2, indentBottom:int = 3;
 	private var indentLeft:int = 4, indentRight:int = 3;
 
-	public var wasInScriptsPane:Boolean;
-	private var originalX:int, originalY:int;
+	private static var ROLE_NONE:int = 0;
+	private static var ROLE_ABSOLUTE:int = 1;
+	private static var ROLE_EMBEDDED:int = 2;
+	private static var ROLE_NEXT:int = 3;
+	private static var ROLE_SUBSTACK1:int = 4;
+	private static var ROLE_SUBSTACK2:int = 5;
+
+	private var originalParent:DisplayObjectContainer, originalRole:int, originalIndex:int, originalPosition:Point;
 
 	public function Block(spec:String, type:String = " ", color:int = 0xD00000, op:* = 0, defaultArgs:Array = null) {
 		this.spec = Translator.map(spec);
@@ -317,15 +323,58 @@ public class Block extends Sprite {
 		return [f];
 	}
 
-	public function saveOriginalPosition():void {
-		wasInScriptsPane = topBlock().parent is ScriptsPane;
-		originalX = x;
-		originalY = y;
+	public function saveOriginalState():void {
+		originalParent = parent;
+		if (parent) {
+			var b:Block = parent as Block;
+			if (b == null) {
+				originalRole = ROLE_ABSOLUTE;
+			} else if (isReporter) {
+				originalRole = ROLE_EMBEDDED;
+				originalIndex = b.args.indexOf(this);
+			} else if (b.nextBlock == this) {
+				originalRole = ROLE_NEXT;
+			} else if (b.subStack1 == this) {
+				originalRole = ROLE_SUBSTACK1;
+			} else if (b.subStack2 == this) {
+				originalRole = ROLE_SUBSTACK2;
+			}
+			originalPosition = localToGlobal(new Point(0, 0));
+		} else {
+			originalRole = ROLE_NONE;
+			originalPosition = null;
+		}
 	}
 
-	public function restoreOriginalPosition():void {
-		x = originalX;
-		y = originalY;
+	public function restoreOriginalState():void {
+		var b:Block = originalParent as Block;
+		switch (originalRole) {
+		case ROLE_NONE:
+			if (parent) parent.removeChild(this);
+			break;
+		case ROLE_ABSOLUTE:
+			originalParent.addChild(this);
+			var p:Point = originalParent.globalToLocal(originalPosition);
+			x = p.x;
+			y = p.y;
+			break;
+		case ROLE_EMBEDDED:
+			b.replaceArgWithBlock(b.args[originalIndex], this, Scratch.app.scriptsPane);
+			break;
+		case ROLE_NEXT:
+			b.insertBlock(this);
+			break;
+		case ROLE_SUBSTACK1:
+			b.insertBlockSub1(this);
+			break;
+		case ROLE_SUBSTACK2:
+			b.insertBlockSub2(this);
+			break;
+		}
+	}
+
+	public function originalPositionIn(p:DisplayObject):Point {
+		return originalPosition && p.globalToLocal(originalPosition);
 	}
 
 	private function setDefaultArgs(defaults:Array):void {
@@ -742,9 +791,9 @@ public class Block extends Sprite {
 		if (isProcDef()) return; // don't duplicate procedure definition
 		var forStage:Boolean = Scratch.app.viewedObj() && Scratch.app.viewedObj().isStage;
 		var newStack:Block = BlockIO.stringToStack(BlockIO.stackToString(this), forStage);
-		newStack.x = x + deltaX;
-		newStack.y = y + deltaY;
-		parent.addChild(newStack);
+		var p:Point = localToGlobal(new Point(0, 0));
+		newStack.x = p.x + deltaX;
+		newStack.y = p.y + deltaY;
 		Scratch.app.gh.grabOnMouseUp(newStack);
 	}
 

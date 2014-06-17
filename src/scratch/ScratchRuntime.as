@@ -969,8 +969,8 @@ public class ScratchRuntime {
 		} else if ((obj is Block) || (obj is ScratchComment)) {
 			app.selectSprite(prevOwner);
 			app.setTab('scripts');
-			obj.x = x;
-			obj.y = y;
+			obj.x = app.scriptsPane.padding;
+			obj.y = app.scriptsPane.padding;
 			if (obj is Block) obj.cacheAsBitmap = true;
 			app.scriptsPane.addChild(obj);
 		}
