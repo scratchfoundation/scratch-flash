@@ -43,7 +43,7 @@ import flash.display.*;
 	import translation.Translator;
 	import util.*;
 	import uiwidgets.*;
-	import scratch.ScratchStage;
+	import scratch.*;
 
 public class Block extends Sprite {
 
@@ -763,6 +763,22 @@ public class Block extends Sprite {
 		Scratch.app.runtime.recordForUndelete(this, x, y, 0, Scratch.app.viewedObj());
 		Scratch.app.scriptsPane.saveScripts();
 		Scratch.app.runtime.checkForGraphicEffects();
+	}
+
+	public function attachedCommentsIn(scriptsPane:ScriptsPane):Array {
+		var allBlocks:Array = [];
+		allBlocksDo(function (b:Block):void {
+			allBlocks.push(b);
+		});
+		var result:Array = []
+		if (!scriptsPane) return result;
+		for (var i:int = 0; i < scriptsPane.numChildren; i++) {
+			var c:ScratchComment = scriptsPane.getChildAt(i) as ScratchComment;
+			if (c && c.blockRef && allBlocks.indexOf(c.blockRef) != -1) {
+				result.push(c);
+			}
+		}
+		return result;
 	}
 
 	public function addComment():void {

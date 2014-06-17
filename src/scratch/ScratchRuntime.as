@@ -941,6 +941,16 @@ public class ScratchRuntime {
 	public function clearLastDelete():void { lastDelete = null }
 
 	public function recordForUndelete(obj:*, x:int, y:int, index:int, owner:* = null):void {
+		if (obj is Block) {
+			var comments:Array = (obj as Block).attachedCommentsIn(app.scriptsPane);
+			if (comments.length) {
+				for each (var c:ScratchComment in comments) {
+					c.parent.removeChild(c);
+				}
+				app.scriptsPane.fixCommentLayout();
+				obj = [obj, comments];
+			}
+		}
 		lastDelete = [obj, x, y, index, owner];
 	}
 
@@ -966,13 +976,20 @@ public class ScratchRuntime {
 			app.addNewSprite(obj);
 			obj.setScratchXY(x, y);
 			app.selectSprite(obj);
-		} else if ((obj is Block) || (obj is ScratchComment)) {
+		} else if ((obj is Array) || (obj is Block) || (obj is ScratchComment)) {
 			app.selectSprite(prevOwner);
 			app.setTab('scripts');
-			obj.x = x;
-			obj.y = y;
-			if (obj is Block) obj.cacheAsBitmap = true;
-			app.scriptsPane.addChild(obj);
+			var b:DisplayObject = obj is Array ? obj[0] : obj;
+			b.x = x;
+			b.y = y;
+			if (b is Block) b.cacheAsBitmap = true;
+			app.scriptsPane.addChild(b);
+			if (obj is Array) {
+				for each (var c:ScratchComment in obj[1]) {
+					app.scriptsPane.addChild(c);
+				}
+				app.scriptsPane.fixCommentLayout();
+			}
 		}
 	}
 
