@@ -739,7 +739,6 @@ public class ScratchRuntime {
 			// for each block in stack
 			stack.allBlocksDo(function (b:Block):void {
 				for each (var a:BlockArg in b.args) {
-					trace(a.menuName, spriteMenus.indexOf(a.menuName), a.argValue, spriteName)
 					if (spriteMenus.indexOf(a.menuName) != -1 && a.argValue == spriteName) result.push(a);
 				}
 			});
