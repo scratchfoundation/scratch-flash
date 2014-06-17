@@ -399,7 +399,7 @@ public class BlockMenus implements DragClient {
 		m.addItem('record...', recordSound);
 		showMenu(m);
 	}
-	
+
 	private function recordSound():void {
 		app.setTab('sounds');
 		app.soundsPart.recordSound();
@@ -447,8 +447,10 @@ public class BlockMenus implements DragClient {
 			Scratch.app.setSaveNeeded();
 		}
 		var m:Menu = new Menu(setStopType, 'stop');
-		m.addItem('all');
-		m.addItem('this script');
+		if (!block.nextBlock) {
+			m.addItem('all');
+			m.addItem('this script');
+		}
 		m.addItem(app.viewedObj().isStage ? 'other scripts in stage' : 'other scripts in sprite');
 		showMenu(m);
 	}
