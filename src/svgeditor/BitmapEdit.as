@@ -103,7 +103,7 @@ public class BitmapEdit extends ImageEdit {
 		var toolsLayer:Sprite = getToolsLayer();
 		var contentLayer:Sprite = workArea.getContentLayer();
 		var p:Point = contentLayer.globalToLocal(toolsLayer.localToGlobal(toolsP));
-		var roundedP:Point = new Point(2 * Math.round(p.x / 2), 2 * Math.round(p.y / 2)); // round to nearest half pixel
+		var roundedP:Point = workArea.getScale() == 1 ? new Point(Math.round(p.x), Math.round(p.y)) : new Point(Math.round(p.x * 2) / 2, Math.round(p.y * 2) / 2);
 		return toolsLayer.globalToLocal(contentLayer.localToGlobal(roundedP));
 	}
 
@@ -112,7 +112,7 @@ public class BitmapEdit extends ImageEdit {
 		r = r.intersection(bm.rect); // constrain selection to bitmap content
 		if ((r.width < 1) || (r.height < 1)) return null; // empty rectangle
 
-		var selectionBM:BitmapData = new BitmapData(r.width, r.height, true, 0);;
+		var selectionBM:BitmapData = new BitmapData(r.width, r.height, true, 0);
 		selectionBM.copyPixels(bm, r, new Point(0, 0));
 		if (stampMode) {
 			highlightTool('bitmapSelect');

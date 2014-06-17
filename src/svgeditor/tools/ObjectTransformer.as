@@ -615,11 +615,11 @@ package svgeditor.tools  {
 					if(moveOffset) {
 						x = parent.mouseX - moveOffset.x;
 						y = parent.mouseY - moveOffset.y;
-						if(editor is BitmapEdit) {
-							var toolsP:Point = editor.snapToGrid(toolsLayer.globalToLocal(parent.localToGlobal(new Point(x, y))));
-							var parentP:Point = parent.globalToLocal(toolsLayer.localToGlobal(toolsP));
-							x = parentP.x;
-							y = parentP.y;
+						if (editor is BitmapEdit) {
+							var p:Point = toolsLayer.globalToLocal(localToGlobal(new Point(topLeftHandle.x, topLeftHandle.y)));
+							var snapped:Point = editor.snapToGrid(p);
+							x += snapped.x - p.x;
+							y += snapped.y - p.y;
 						}
 						updateTarget();
 					} else {
@@ -805,9 +805,10 @@ package svgeditor.tools  {
 						// Compute the selection rectangle relative to the bitmap content.
 						var contentP:Point = contentLayer.globalToLocal(toolsLayer.localToGlobal(rect.topLeft));
 						var scale:Number = editor.getWorkArea().getScale();
+						// trace(contentP.x, contentP.y, rect.width, rect.height, scale);
 						var r:Rectangle = new Rectangle(
-							2 * Math.floor(contentP.x), 2 * Math.floor(contentP.y),
-							2 * Math.ceil(rect.width / scale), 2 * Math.ceil(rect.height / scale));
+							Math.floor(contentP.x * 2), Math.floor(contentP.y * 2),
+							Math.ceil(rect.width / scale * 2), Math.ceil(rect.height / scale * 2));
 						var selectedBM:SVGBitmap = (editor as BitmapEdit).getSelection(r);
 						if (selectedBM) select(new Selection([selectedBM]));
 					} else {
