@@ -799,7 +799,7 @@ public class Block extends Sprite {
 		return false;
 	}
 
-	private function focusChange(evt:Event):void {
+	private function focusChange(evt:FocusEvent):void {
 		evt.preventDefault();
 		if (evt.target.parent.parent != this) return; // make sure the target TextField is in this block, not a child block
 		if (args.length == 0) return;
@@ -807,16 +807,18 @@ public class Block extends Sprite {
 		for (i = 0; i < args.length; i++) {
 			if (stage.focus == args[i].field) focusIndex = i;
 		}
-		i = focusIndex + 1;
+		var delta:int = evt.shiftKey ? -1 : 1;
+		i = focusIndex + delta;
 		while (true) {
 			if (i >= args.length) i = 0;
-			var f:TextField = args[i].field;
-			if ((f != null) && f.selectable) {
-				stage.focus = args[i].field;
-				args[i].field.setSelection(0, 10000000);
+			if (i < 0) i = args.length - 1;
+			var a:BlockArg = args[i];
+			if (a.field && a.isEditable) {
+				stage.focus = a.field;
+				a.field.setSelection(0, 10000000);
 				return;
 			}
-			i++
+			i += delta;
 			if (i == (focusIndex + 1)) return;
 		}
 	}
