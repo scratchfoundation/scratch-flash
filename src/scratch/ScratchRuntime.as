@@ -661,6 +661,17 @@ public class ScratchRuntime {
 	// Script utilities
 	//------------------------------
 
+    public function renameSound(s:ScratchSound, newName:String):void {
+        var obj:ScratchObj = app.viewedObj();
+        var oldName:String = s.soundName;
+        if (obj.isCostumeNameUsed(newName)) return;
+        s.soundName = newName;
+        allUsesOfSoundDo(oldName, function (a:BlockArg):void {
+            a.setArgValue(newName);
+        });
+        app.setSaveNeeded();
+    }
+
 	public function clearRunFeedback():void {
 		if(app.editMode) {
 			for each (var stack:Block in allStacks()) {
@@ -730,6 +741,16 @@ public class ScratchRuntime {
 		}
 		return result;
 	}
+
+    public function allUsesOfSoundDo(soundName:String, f:Function):void {
+        for each (var stack:Block in app.viewedObj().scripts) {
+            stack.allBlocksDo(function (b:Block):void {
+                for each (var a:BlockArg in b.args) {
+                    if (a.menuName == 'sound' && a.argValue == soundName) f(a);
+                }
+            });
+        }
+    }
 
 	public function allCallsOf(callee:String, owner:ScratchObj):Array {
 		var result:Array = [];
