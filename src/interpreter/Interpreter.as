@@ -134,10 +134,10 @@ public class Interpreter {
 		}
 		threads = newThreads;
 		if (wasRunning) {
-			if(app.editMode) b.hideRunFeedback();
+			if (app.editMode) b.hideRunFeedback();
 			clearWarpBlock();
 		} else {
-			b.showRunFeedback();
+			if (app.editMode) b.showRunFeedback();
 			threads.push(new Thread(b, targetObj, startupDelay));
 			app.threadStarted();
 		}
@@ -181,7 +181,7 @@ public class Interpreter {
 		}
 		if (!wasRunning) {
 			threads.push(newThread);
-			if(app.editMode) b.showRunFeedback();
+			if (app.editMode) b.showRunFeedback();
 			app.threadStarted();
 		}
 		return newThread;
