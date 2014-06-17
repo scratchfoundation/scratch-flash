@@ -189,11 +189,11 @@ public class ScrollFrame extends Sprite implements DragClient {
 		xVelocity = yVelocity = 0;
 	}
 
-	private function maxScrollH():int {
+	public function maxScrollH():int {
 		return Math.max(0, contents.width - visibleW());
 	}
 
-	private function maxScrollV():int {
+	public function maxScrollV():int {
 		return Math.max(0, contents.height - visibleH());
 	}
 
