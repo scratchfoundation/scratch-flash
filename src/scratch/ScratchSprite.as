@@ -172,8 +172,8 @@ public class ScratchSprite extends ScratchObj {
 	}
 
 	public function setScratchXY(newX:Number, newY:Number):void {
-		scratchX = newX;
-		scratchY = newY;
+		scratchX = isFinite(newX) ? newX : newX > 0 ? 1e6 : -1e6;
+		scratchY = isFinite(newY) ? newY : newY > 0 ? 1e6 : -1e6;
 		x = 240 + Math.round(scratchX);
 		y = 180 - Math.round(scratchY);
 		updateBubble();
