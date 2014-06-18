@@ -298,7 +298,7 @@ public class Block extends Sprite {
 	}
 
 	public function showRunFeedback():void {
-		if (filters.length > 0) {
+		if (filters && filters.length > 0) {
 			for each (var f:* in filters) {
 				if (f is GlowFilter) return;
 			}
