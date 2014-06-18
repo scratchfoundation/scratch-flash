@@ -699,7 +699,6 @@ public class BlockMenus implements DragClient {
 			}
 		}
 		Scratch.app.setSaveNeeded();
-		app.updatePalette();
 	}
 
 	// ***** Color picker support *****
