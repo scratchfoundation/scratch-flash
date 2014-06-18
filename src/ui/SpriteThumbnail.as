@@ -18,17 +18,17 @@
  */
 
 package ui {
-	import flash.display.*;
-	import flash.events.*;
-	import flash.filters.GlowFilter;
-	import flash.text.*;
-	import assets.Resources;
-	import blocks.Block;
-	import scratch.*;
-	import translation.Translator;
-	import ui.media.MediaInfo;
-	import ui.parts.LibraryPart;
-	import uiwidgets.*;
+import flash.display.*;
+import flash.events.*;
+import flash.filters.GlowFilter;
+import flash.text.*;
+import assets.Resources;
+import blocks.Block;
+import scratch.*;
+import translation.Translator;
+import ui.media.MediaInfo;
+import ui.parts.LibraryPart;
+import uiwidgets.*;
 
 public class SpriteThumbnail extends Sprite {
 
@@ -73,8 +73,7 @@ public class SpriteThumbnail extends Sprite {
 	}
 
 	public static function strings():Array {
-		return ['backdrop', 'backdrops', 'hide', 'show', 'Stage'];
-	}
+		return ['backdrop', 'backdrops', 'hide', 'show', 'Stage'] }
 
 	protected function addLabels():void {
 		label = Resources.makeLabel('', CSS.thumbnailFormat);
