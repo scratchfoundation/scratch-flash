@@ -665,6 +665,19 @@ public class ScratchRuntime {
 	// Script utilities
 	//------------------------------
 
+	public function renameCostume(newName:String):void {
+		var obj:ScratchObj = app.viewedObj();
+		var costume:ScratchCostume = obj.currentCostume();
+		var oldName:String = costume.costumeName;
+		if (obj.isCostumeNameUsed(newName)) return;
+		costume.costumeName = newName;
+		var uses:Array = obj.isStage ? allUsesOfBackdrop(oldName) : allUsesOfCostume(oldName);
+		for each (var a:BlockArg in uses) {
+			a.setArgValue(newName);
+		}
+		app.setSaveNeeded();
+	}
+
 	public function clearRunFeedback():void {
 		if(app.editMode) {
 			for each (var stack:Block in allStacks()) {
@@ -719,6 +732,30 @@ public class ScratchRuntime {
 			if (found) return true;
 		}
 		return false;
+	}
+
+	public function allUsesOfBackdrop(backdropName:String):Array {
+		var result:Array = [];
+		allStacksAndOwnersDo(function (stack:Block, target:ScratchObj):void {
+			stack.allBlocksDo(function (b:Block):void {
+				for each (var a:BlockArg in b.args) {
+					if (a.menuName == 'backdrop' && a.argValue == backdropName) result.push(a);
+				}
+			});
+		});
+		return result;
+	}
+
+	public function allUsesOfCostume(costumeName:String):Array {
+		var result:Array = [];
+		for each (var stack:Block in app.viewedObj().scripts) {
+			stack.allBlocksDo(function (b:Block):void {
+				for each (var a:BlockArg in b.args) {
+					if (a.menuName == 'costume' && a.argValue == costumeName) result.push(a);
+				}
+			});
+		}
+		return result;
 	}
 
 	public function allUsesOfVariable(varName:String, owner:ScratchObj):Array {
