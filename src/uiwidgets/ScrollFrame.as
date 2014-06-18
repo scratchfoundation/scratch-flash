@@ -33,10 +33,10 @@
 // Note: The client should call updateSize() after adding or removing contents.
 
 package uiwidgets {
-	import flash.display.*;
-	import flash.events.*;
-	import flash.filters.GlowFilter;
-	import util.DragClient;
+import flash.display.*;
+import flash.events.*;
+import flash.filters.GlowFilter;
+import util.DragClient;
 
 public class ScrollFrame extends Sprite implements DragClient {
 
@@ -125,7 +125,7 @@ public class ScrollFrame extends Sprite implements DragClient {
 
 	private function handleScrollWheel(evt:MouseEvent):void {
 		var delta:int = 10 * evt.delta;
-		if (scrollWheelHorizontal != evt.shiftKey) {
+		if (scrollWheelHorizontal) {
 			contents.x = Math.min(0, Math.max(contents.x + delta, -maxScrollH()));
 		} else {
 			contents.y = Math.min(0, Math.max(contents.y + delta, -maxScrollV()));
