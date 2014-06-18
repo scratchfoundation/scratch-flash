@@ -612,8 +612,12 @@ public class ScratchRuntime {
 	private function updateVarRefs(oldName:String, newName:String, owner:ScratchObj):void {
 		// Change the variable name in all blocks that use it.
 		for each (var b:Block in allUsesOfVariable(oldName, owner)) {
-			if (b.op == Specs.GET_VAR) b.setSpec(newName);
-			else b.args[0].setArgValue(newName);
+			if (b.op == Specs.GET_VAR) {
+				b.setSpec(newName);
+				b.fixExpressionLayout();
+			} else {
+				b.args[0].setArgValue(newName);
+			}
 		}
 	}
 
