@@ -45,7 +45,7 @@ public class ScrollFrameContents extends Sprite {
 		if (scrollToOrigin) x = y = 0;
 	}
 
-	public function setWidthHeight(w:int, h:int):void {
+	public function setWidthHeight(w:Number, h:Number):void {
 		// Draw myself using the texture bitmap, if available, or a solid gray color if not.
 		graphics.clear();
 		if (texture) graphics.beginBitmapFill(texture)
@@ -57,7 +57,7 @@ public class ScrollFrameContents extends Sprite {
 	public function updateSize():void {
 		// Make my size a little bigger necessary to subsume all my children.
 		// Also ensure that the x and y positions of all children are positive.
-		var minX:int, maxX:int, minY:int, maxY:int
+		var minX:Number = 0, maxX:Number = 0, minY:Number = 0, maxY:Number = 0;
 		var child:DisplayObject, i:int;
 		for (i = 0; i < numChildren; i++) {
 			child = getChildAt(i);
@@ -81,8 +81,8 @@ public class ScrollFrameContents extends Sprite {
 		maxX += hExtra;
 		maxY += vExtra;
 		if (parent is ScrollFrame) {
-			maxX = Math.max(maxX, ((ScrollFrame(parent).visibleW() - x) / scaleX));
-			maxY = Math.max(maxY, ((ScrollFrame(parent).visibleH() - y) / scaleY));
+			maxX = Math.max(maxX, ScrollFrame(parent).visibleW() / scaleX - x);
+			maxY = Math.max(maxY, ScrollFrame(parent).visibleH() / scaleY - y);
 		}
 		setWidthHeight(maxX, maxY);
 		if (parent is ScrollFrame) (parent as ScrollFrame).updateScrollbarVisibility();
