@@ -143,6 +143,12 @@ public class Interpreter {
 		}
 	}
 
+	public function showAllRunFeedback():void {
+		for each (var t:Thread in threads) {
+			t.topBlock.showRunFeedback();
+		}
+	}
+
 	public function isRunning(b:Block, targetObj:ScratchObj):Boolean {
 		for each (var t:Thread in threads) {
 			if ((t.topBlock == b) && (t.target == targetObj)) return true;
