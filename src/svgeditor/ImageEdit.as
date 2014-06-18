@@ -657,7 +657,7 @@ package svgeditor {
 			setToolMode((this is SVGEdit) ? 'select' : 'bitmapSelect');
 
 			// If the tool wasn't canceled and an object was created then select it
-			if(nextObject) {
+			if (nextObject && nextObject.parent) {
 				var s:Selection = (nextObject is Selection ? nextObject: new Selection([nextObject]));
 				(currentTool as ObjectTransformer).select(s);
 			}
