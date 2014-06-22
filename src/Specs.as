@@ -270,6 +270,7 @@ public class Specs {
 		["-"],
 		["ask %s and wait",						" ", 7, "doAsk", 				"What's your name?"],
 		["answer",								"r", 7, "answer"],
+		["clear answer",						" ", 7, "clearAnswer"],
 		["-"],
 		["key %m.key pressed?",					"b", 7, "keyPressed:",			"space"],
 		["mouse down?",							"b", 7, "mousePressed"],
@@ -294,6 +295,7 @@ public class Specs {
 		// stage sensing
 		["ask %s and wait",						" ", 107, "doAsk", 				"What's your name?"],
 		["answer",								"r", 107, "answer"],
+		["clear answer",						" ", 107, "clearAnswer"],
 		["-"],
 		["key %m.key pressed?",					"b", 107, "keyPressed:",		"space"],
 		["mouse down?",							"b", 107, "mousePressed"],
