@@ -46,19 +46,20 @@ public class SensingPrims {
 		primTable['touchingColor:']		= primTouchingColor;
 		primTable['color:sees:']		= primColorSees;
 
-		primTable['doAsk']				= primAsk;
-		primTable['answer']				= function(b:*):* { return app.runtime.lastAnswer };
+		primTable['doAsk']			= primAsk;
+		primTable['answer']			= function(b:*):* { return app.runtime.lastAnswer };
+		primTable['clearAnswer']		= function clearAnswer():String { return app.runtime.lastAnswer = '' };
 
 		primTable['mousePressed']		= function(b:*):* { return app.gh.mouseIsDown };
-		primTable['mouseX']				= function(b:*):* { return app.stagePane.scratchMouseX() };
-		primTable['mouseY']				= function(b:*):* { return app.stagePane.scratchMouseY() };
-		primTable['timer']				= function(b:*):* { return app.runtime.timer() };
+		primTable['mouseX']			= function(b:*):* { return app.stagePane.scratchMouseX() };
+		primTable['mouseY']			= function(b:*):* { return app.stagePane.scratchMouseY() };
+		primTable['timer']			= function(b:*):* { return app.runtime.timer() };
 		primTable['timerReset']			= function(b:*):* { app.runtime.timerReset() };
 		primTable['keyPressed:']		= primKeyPressed;
 		primTable['distanceTo:']		= primDistanceTo;
-		primTable['getAttribute:of:']	= primGetAttribute;
+		primTable['getAttribute:of:']		= primGetAttribute;
 		primTable['soundLevel']			= function(b:*):* { return app.runtime.soundLevel() };
-		primTable['isLoud']				= function(b:*):* { return app.runtime.isLoud() };
+		primTable['isLoud']			= function(b:*):* { return app.runtime.isLoud() };
 		primTable['timestamp']			= primTimestamp;
 		primTable['timeAndDate']		= function(b:*):* { return app.runtime.getTimeString(interp.arg(b, 0)) };
 
