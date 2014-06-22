@@ -48,6 +48,7 @@ public class SensingPrims {
 
 		primTable['doAsk']				= primAsk;
 		primTable['answer']				= function(b:*):* { return app.runtime.lastAnswer };
+		primTable['clearAnswer']		= function clearAnswer():String { return app.runtime.lastAnswer = '' };
 
 		primTable['mousePressed']		= function(b:*):* { return app.gh.mouseIsDown };
 		primTable['mouseX']				= function(b:*):* { return app.stagePane.scratchMouseX() };

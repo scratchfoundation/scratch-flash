@@ -39,7 +39,7 @@ public class BlockMenus implements DragClient {
 	private var blockArg:BlockArg; // null if menu is invoked on a block
 
 	private static const basicMathOps:Array = ['+', '-', '*', '/'];
-	private static const comparisonOps:Array = ['<', '=', '>'];
+	private static const comparisonOps:Array = ['<', '=', '>', '<=', '>='];
 
 	public static function BlockMenuHandler(evt:MouseEvent, block:Block, blockArg:BlockArg = null, menuName:String = null):void {
 		var menuHandler:BlockMenus = new BlockMenus(block, blockArg);
