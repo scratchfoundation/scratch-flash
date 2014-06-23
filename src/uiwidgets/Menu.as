@@ -27,12 +27,12 @@
 // elements are actions.
 
 package uiwidgets {
-	import flash.display.*;
-	import flash.events.*;
-	import flash.filters.DropShadowFilter;
-	import flash.geom.Point;
-	import flash.utils.getTimer;
-	import translation.TranslatableStrings;
+import flash.display.*;
+import flash.events.*;
+import flash.filters.DropShadowFilter;
+import flash.geom.Point;
+import flash.utils.getTimer;
+import translation.TranslatableStrings;
 
 public class Menu extends Sprite {
 
