@@ -25,13 +25,13 @@
 // decides what to do when the block is dropped.
 
 package uiwidgets {
-	import flash.display.*;
-	import flash.events.MouseEvent;
-	import flash.geom.Point;
-	import blocks.*;
-	import scratch.*;
-	import flash.geom.Rectangle;
-	import ui.media.MediaInfo;
+import flash.display.*;
+import flash.events.MouseEvent;
+import flash.geom.Point;
+import blocks.*;
+import scratch.*;
+import flash.geom.Rectangle;
+import ui.media.MediaInfo;
 
 public class ScriptsPane extends ScrollFrameContents {
 
@@ -207,21 +207,21 @@ public class ScriptsPane extends ScrollFrameContents {
 			} else {
 				var targetCmd:Block = nearestTarget[1];
 				switch (nearestTarget[2]) {
-				case INSERT_NORMAL:
-					targetCmd.insertBlock(b);
-					break;
-				case INSERT_ABOVE:
-					targetCmd.insertBlockAbove(b);
-					break;
-				case INSERT_SUB1:
-					targetCmd.insertBlockSub1(b);
-					break;
-				case INSERT_SUB2:
-					targetCmd.insertBlockSub2(b);
-					break;
-				case INSERT_WRAP:
-					targetCmd.insertBlockAround(b);
-					break;
+					case INSERT_NORMAL:
+						targetCmd.insertBlock(b);
+						break;
+					case INSERT_ABOVE:
+						targetCmd.insertBlockAbove(b);
+						break;
+					case INSERT_SUB1:
+						targetCmd.insertBlockSub1(b);
+						break;
+					case INSERT_SUB2:
+						targetCmd.insertBlockSub2(b);
+						break;
+					case INSERT_WRAP:
+						targetCmd.insertBlockAround(b);
+						break;
 				}
 			}
 		}
@@ -263,7 +263,7 @@ public class ScriptsPane extends ScrollFrameContents {
 		// True if the given reporter block can be inserted in the given stack.
 		// Procedure parameter reporters can only be added to a block definition
 		// that defines parameter.
-return true; // xxx disable this check for now; it was causing confusion at Scratch@MIT conference
+		return true; // xxx disable this check for now; it was causing confusion at Scratch@MIT conference
 		if (r.op != Specs.GET_PARAM) return true;
 		var top:Block = stack.topBlock();
 		return (top.op == Specs.PROCEDURE_DEF) && (top.parameterNames.indexOf(r.spec) > -1);
@@ -403,9 +403,9 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 		for each (var a:Array in info.scripts) {
 			if (a.length < 1) continue;
 			var blockOrComment:* =
-				(a[0] is Array) ?
-					BlockIO.arrayToStack(a, forStage) :
-					ScratchComment.fromArray(a);
+					(a[0] is Array) ?
+							BlockIO.arrayToStack(a, forStage) :
+							ScratchComment.fromArray(a);
 			blockOrComment.x = dropP.x;
 			blockOrComment.y = dropP.y;
 			addChild(blockOrComment);
@@ -483,8 +483,8 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 		var top:Block = c.blockRef.topBlock();
 		var topP:Point = globalToLocal(top.localToGlobal(new Point(0, 0)));
 		c.x = c.isExpanded() ?
-			topP.x + top.width + 15 :
-			blockP.x + c.blockRef.base.width + 10;
+				topP.x + top.width + 15 :
+				blockP.x + c.blockRef.base.width + 10;
 		c.y = blockP.y + (c.blockRef.base.substack1y() - 20) / 2;
 		if (c.blockRef.isHat) c.y = blockP.y + c.blockRef.base.substack1y() - 25;
 
