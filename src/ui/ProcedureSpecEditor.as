@@ -258,7 +258,7 @@ public class ProcedureSpecEditor extends Sprite {
 		if (parent is DialogBox) DialogBox(parent).fixLayout();
 	}
 
-	private function makeBooleanArg():BlockArg { 
+	private function makeBooleanArg():BlockArg {
 		var result:BlockArg = new BlockArg('b', 0xFFFFFF, true);
 		result.setArgValue(unusedArgName('boolean'));
 		return result;
@@ -350,12 +350,18 @@ public class ProcedureSpecEditor extends Sprite {
 		moreLabel.x = 10;
 		moreLabel.y = moreButton.y - 4;
 
+		var labelX:int = blockShape.x + 45;
+		var buttonX:int = 240;
+		for each (var l:TextField in buttonLabels) {
+			buttonX = Math.max(buttonX, labelX + l.textWidth + 10);
+		}
+
 		var rowY:int = blockShape.y + blockShape.height + 30;
 		for (var i:int = 0; i < buttons.length; i++) {
 			var label:TextField = buttonLabels[i];
-			buttonLabels[i].x = blockShape.x + 45;
+			buttonLabels[i].x = labelX;
 			buttonLabels[i].y = rowY;
-			buttons[i].x = 240;
+			buttons[i].x = buttonX;
 			buttons[i].y = rowY - 4;
 			rowY += 30;
 		}
