@@ -340,11 +340,8 @@ public class SpriteInfoPart extends UIPart implements DragClient {
 	}
 
 	private function nameChanged():void {
-		app.viewedObj().objName = spriteName.contents();
-		for each (var lw:ListWatcher in app.viewedObj().lists) {
-			lw.updateTitle();
-		}
-		app.setSaveNeeded();
+		app.runtime.renameSprite(spriteName.contents());
+		spriteName.setContents(app.viewedObj().objName);
 	}
 
 	public function updateThumbnail():void {

@@ -685,6 +685,21 @@ public class ScratchRuntime {
 		app.setSaveNeeded();
 	}
 
+	public function renameSprite(newName:String):void {
+		var obj:ScratchObj = app.viewedObj();
+		var oldName:String = obj.objName;
+		obj.objName = '';
+		newName = app.stagePane.unusedSpriteName(newName || 'Sprite1');
+		obj.objName = newName;
+		for each (var lw:ListWatcher in app.viewedObj().lists) {
+			lw.updateTitle();
+		}
+		for each (var a:BlockArg in allUsesOfSprite(oldName)) {
+			a.setArgValue(newName);
+		}
+		app.setSaveNeeded();
+	}
+
 	public function clearRunFeedback():void {
 		if(app.editMode) {
 			for each (var stack:Block in allStacks()) {
@@ -759,6 +774,20 @@ public class ScratchRuntime {
 			stack.allBlocksDo(function (b:Block):void {
 				for each (var a:BlockArg in b.args) {
 					if (a.menuName == 'costume' && a.argValue == costumeName) result.push(a);
+				}
+			});
+		}
+		return result;
+	}
+
+	public function allUsesOfSprite(spriteName:String):Array {
+		var spriteMenus:Array = ["spriteOnly", "spriteOrMouse", "spriteOrStage", "touching"];
+		var result:Array = [];
+		for each (var stack:Block in allStacks()) {
+			// for each block in stack
+			stack.allBlocksDo(function (b:Block):void {
+				for each (var a:BlockArg in b.args) {
+					if (spriteMenus.indexOf(a.menuName) != -1 && a.argValue == spriteName) result.push(a);
 				}
 			});
 		}
