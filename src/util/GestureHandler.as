@@ -452,9 +452,13 @@ public class GestureHandler {
 				possibleTargets.push(app.stagePane);
 		}
 		possibleTargets.reverse();
+		var tried:Array = [];
 		for each (var o:* in possibleTargets) {
 			while (o) { // see if some parent can handle the drop
-				if (('handleDrop' in o) && o.handleDrop(droppedObj)) return true;
+				if (tried.indexOf(o) == -1) {
+					if (('handleDrop' in o) && o.handleDrop(droppedObj)) return true;
+					tried.push(o);
+				}
 				o = o.parent;
 			}
 		}
