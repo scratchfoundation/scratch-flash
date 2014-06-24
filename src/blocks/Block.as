@@ -453,6 +453,7 @@ public class Block extends Sprite {
 		if ([' ', '', 'o'].indexOf(type) >= 0) x = Math.max(x, minCommandWidth); // minimum width for command blocks
 		if (['c', 'cf', 'e'].indexOf(type) >= 0) x = Math.max(x, minLoopWidth); // minimum width for C and E blocks
 		if (['h'].indexOf(type) >= 0) x = Math.max(x, minHatWidth); // minimum width for hat blocks
+		if (elseLabel) x = Math.max(x, indentLeft + elseLabel.width + 2);
 
 		base.setWidthAndTopHeight(x + indentRight, indentTop + maxH + indentBottom);
 		if ((type == "c") || (type == "e")) fixStackLayout();
