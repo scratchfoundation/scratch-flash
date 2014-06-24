@@ -95,7 +95,7 @@ public class SpriteThumbnail extends Sprite {
 	private function addSelectedFrame():void {
 		selectedFrame = new Shape();
 		var g:Graphics = selectedFrame.graphics;
-		var h:int = targetObj.isStage ? stageFrameH : frameH
+		var h:int = targetObj.isStage ? stageFrameH : frameH;
 		g.lineStyle(3, CSS.overColor, 1, true);
 		g.beginFill(CSS.itemSelectedColor);
 		g.drawRoundRect(0, 0, frameW, h, 12, 12);
@@ -108,7 +108,7 @@ public class SpriteThumbnail extends Sprite {
 		const highlightColor:int = 0xE0E000;
 		highlightFrame = new Shape();
 		var g:Graphics = highlightFrame.graphics;
-		var h:int = targetObj.isStage ? stageFrameH : frameH
+		var h:int = targetObj.isStage ? stageFrameH : frameH;
 		g.lineStyle(2, highlightColor, 1, true);
 		g.drawRoundRect(1, 1, frameW - 1, h - 1, 12, 12);
 		highlightFrame.visible = false;
