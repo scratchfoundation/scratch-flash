@@ -664,7 +664,7 @@ public class ScratchRuntime {
     public function renameSound(s:ScratchSound, newName:String):void {
         var obj:ScratchObj = app.viewedObj();
         var oldName:String = s.soundName;
-        if (obj.isCostumeNameUsed(newName)) return;
+        if (obj.isSoundNameUsed(newName)) return;
         s.soundName = newName;
         allUsesOfSoundDo(oldName, function (a:BlockArg):void {
             a.setArgValue(newName);
