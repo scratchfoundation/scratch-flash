@@ -814,8 +814,7 @@ public class Block extends Sprite {
 			if (i < 0) i = args.length - 1;
 			var a:BlockArg = args[i];
 			if (a.field && a.isEditable) {
-				stage.focus = a.field;
-				a.field.setSelection(0, 10000000);
+				a.startEditing();
 				return;
 			}
 			i += delta;
