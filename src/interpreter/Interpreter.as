@@ -668,9 +668,10 @@ public class Interpreter {
 	}
 
 	protected function primVarSet(b:Block):Variable {
-		var v:Variable = activeThread.target.varCache[arg(b, 0)];
+		var name:String = arg(b, 0);
+		var v:Variable = activeThread.target.varCache[name];
 		if (!v) {
-			v = activeThread.target.varCache[b.spec] = activeThread.target.lookupOrCreateVar(arg(b, 0));
+			v = activeThread.target.varCache[name] = activeThread.target.lookupOrCreateVar(name);
 			if (!v) return null;
 		}
 		var oldvalue:* = v.value;
@@ -679,9 +680,10 @@ public class Interpreter {
 	}
 
 	protected function primVarChange(b:Block):Variable {
-		var v:Variable = activeThread.target.varCache[arg(b, 0)];
+		var name:String = arg(b, 0);
+		var v:Variable = activeThread.target.varCache[name];
 		if (!v) {
-			v = activeThread.target.varCache[b.spec] = activeThread.target.lookupOrCreateVar(arg(b, 0));
+			v = activeThread.target.varCache[name] = activeThread.target.lookupOrCreateVar(name);
 			if (!v) return null;
 		}
 		v.value = Number(v.value) + numarg(b, 1);
