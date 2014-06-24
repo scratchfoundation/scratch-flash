@@ -41,6 +41,9 @@ public class BlockMenus implements DragClient {
 	private static const basicMathOps:Array = ['+', '-', '*', '/'];
 	private static const comparisonOps:Array = ['<', '=', '>'];
 
+	private static const spriteAttributes:Array = ['x position', 'y position', 'direction', 'costume #', 'costume name', 'size', 'volume'];
+	private static const stageAttributes:Array = ['backdrop #', 'backdrop name', 'volume'];
+
 	public static function BlockMenuHandler(evt:MouseEvent, block:Block, blockArg:BlockArg = null, menuName:String = null):void {
 		var menuHandler:BlockMenus = new BlockMenus(block, blockArg);
 		var op:String = block.op;
@@ -159,10 +162,7 @@ public class BlockMenus implements DragClient {
 		}
 		switch (menuName) {
 		case 'attribute':
-			var attributes:Array = [
-				'x position', 'y position', 'direction', 'costume #', 'costume name', 'size', 'volume',
-				'backdrop #', 'backdrop name', 'volume'];
-			return attributes.indexOf(item) > -1;
+			return spriteAttributes.indexOf(item) > -1 || stageAttributes.indexOf(item) > -1;
 		case 'backdrop':
 			return ['next backdrop', 'previous backdrop'].indexOf(item) > -1;
 		case 'broadcast':
@@ -208,8 +208,7 @@ public class BlockMenus implements DragClient {
 		if (block && block.args[1]) {
 			obj = app.stagePane.objNamed(block.args[1].argValue);
 		}
-		var attributes:Array = ['x position', 'y position', 'direction', 'costume #', 'costume name', 'size', 'volume'];
-		if (obj is ScratchStage) attributes = ['backdrop #', 'backdrop name', 'volume'];
+		var attributes:Array = obj is ScratchStage ? stageAttributes : spriteAttributes;
 		var m:Menu = new Menu(setBlockArg, 'attribute');
 		for each (var s:String in attributes) m.addItem(s);
 		if (obj is ScratchObj) {
@@ -416,9 +415,10 @@ public class BlockMenus implements DragClient {
 			if (block.op == 'getAttribute:of:') {
 				var obj:ScratchObj = app.stagePane.objNamed(s);
 				var attr:String = block.args[0].argValue;
-				var validAttrs:Array = obj.isStage ? ['backdrop #', 'background #', 'backdrop name', 'volume'] :
-				['x position', 'y position', 'direction', 'costume #', 'costume name', 'size', 'volume'];
-				if ((validAttrs.indexOf(attr) == -1) && !obj.ownsVar(attr)) block.args[0].setArgValue(obj.isStage ? 'backdrop #' : 'x position');
+				var validAttrs:Array = obj && obj.isStage ? stageAttributes : spriteAttributes;
+				if (validAttrs.indexOf(attr) == -1 && !obj.ownsVar(attr)) {
+					block.args[0].setArgValue(validAttrs[0]);
+				}
 			}
 			Scratch.app.setSaveNeeded();
 		}
