@@ -132,22 +132,6 @@ public class ScratchObj extends Sprite {
 		return currentCostumeIndex + 1;
 	}
 
-	public function isCostumeNameUsed(name:String):Boolean {
-		name = name.toLowerCase();
-		for each (var c:ScratchCostume in costumes) {
-			if (c.costumeName.toLowerCase() == name) return true;
-		}
-		return false;
-	}
-
-	public function isSoundNameUsed(name:String):Boolean {
-		name = name.toLowerCase();
-		for each (var s:ScratchSound in sounds) {
-			if (s.soundName.toLowerCase() == name) return true;
-		}
-		return false;
-	}
-
 	public function unusedCostumeName(baseName:String = ''):String {
 		// Create a unique costume name by appending a number if necessary.
 		if (baseName == '') baseName = Translator.map(isStage ? 'backdrop1' : 'costume1');

@@ -676,7 +676,7 @@ public class ScratchRuntime {
 		var obj:ScratchObj = app.viewedObj();
 		var costume:ScratchCostume = obj.currentCostume();
 		var oldName:String = costume.costumeName;
-		if (obj.isCostumeNameUsed(newName)) return;
+		newName = obj.unusedCostumeName(newName || 'costume1');
 		costume.costumeName = newName;
 		updateArgs(obj.isStage ? allUsesOfBackdrop(oldName) : allUsesOfCostume(oldName), newName);
 	}
@@ -703,7 +703,7 @@ public class ScratchRuntime {
     public function renameSound(s:ScratchSound, newName:String):void {
         var obj:ScratchObj = app.viewedObj();
         var oldName:String = s.soundName;
-        if (obj.isSoundNameUsed(newName)) return;
+        newName = obj.unusedSoundName(newName || 'sound1');
         s.soundName = newName;
         allUsesOfSoundDo(oldName, function (a:BlockArg):void {
             a.setArgValue(newName);
