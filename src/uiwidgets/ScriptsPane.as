@@ -128,6 +128,10 @@ public class ScriptsPane extends ScrollFrameContents {
 		addFeedbackShape();
 	}
 
+	public function prepareToDragComment(c:ScratchComment):void {
+		c.scaleX = c.scaleY = scaleX;
+	}
+
 	public function draggingDone():void {
 		hideFeedbackShape();
 		possibleTargets = [];
