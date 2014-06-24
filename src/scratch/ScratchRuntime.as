@@ -678,11 +678,7 @@ public class ScratchRuntime {
 		var oldName:String = costume.costumeName;
 		if (obj.isCostumeNameUsed(newName)) return;
 		costume.costumeName = newName;
-		var uses:Array = obj.isStage ? allUsesOfBackdrop(oldName) : allUsesOfCostume(oldName);
-		for each (var a:BlockArg in uses) {
-			a.setArgValue(newName);
-		}
-		app.setSaveNeeded();
+		updateArgs(obj.isStage ? allUsesOfBackdrop(oldName) : allUsesOfCostume(oldName), newName);
 	}
 
 	public function renameSprite(newName:String):void {
@@ -694,8 +690,12 @@ public class ScratchRuntime {
 		for each (var lw:ListWatcher in app.viewedObj().lists) {
 			lw.updateTitle();
 		}
-		for each (var a:BlockArg in allUsesOfSprite(oldName)) {
-			a.setArgValue(newName);
+		updateArgs(allUsesOfSprite(oldName), newName);
+	}
+
+	private function updateArgs(args:Array, newValue:*):void {
+		for each (var a:BlockArg in args) {
+			a.setArgValue(newValue);
 		}
 		app.setSaveNeeded();
 	}
