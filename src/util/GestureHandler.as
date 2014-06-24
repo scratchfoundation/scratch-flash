@@ -412,7 +412,7 @@ public class GestureHandler {
 
 		if (obj is Block) {
 			var b:Block = Block(obj);
-			b.saveOriginalPosition();
+			b.saveOriginalState();
 			if (b.parent is Block) Block(b.parent).removeBlock(b);
 			if (b.parent != null) b.parent.removeChild(b);
 			app.scriptsPane.prepareToDrag(b);
@@ -474,7 +474,9 @@ public class GestureHandler {
 		carriedObj.parent.removeChild(carriedObj);
 
 		if (!dropHandled(carriedObj, evt)) {
-			if (originalParent) { // put carriedObj back where it came from
+			if (carriedObj is Block) {
+				Block(carriedObj).restoreOriginalState();
+			} else if (originalParent) { // put carriedObj back where it came from
 				carriedObj.x = originalPosition.x;
 				carriedObj.y = originalPosition.y;
 				carriedObj.scaleX = carriedObj.scaleY = originalScale;

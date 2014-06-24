@@ -25,6 +25,7 @@
 // creates a copy of that block when it is dragged out of the palette.
 
 package ui {
+	import flash.geom.*;
 	import blocks.Block;
 	import interpreter.Interpreter;
 	import uiwidgets.*;
@@ -67,7 +68,6 @@ public class BlockPalette extends ScrollFrameContents {
 				return false;
 			}
 			if (b.parent) b.parent.removeChild(b);
-			b.restoreOriginalPosition(); // restore position in case block is undeleted
 			Scratch.app.runtime.recordForUndelete(b, b.x, b.y, 0, Scratch.app.viewedObj());
 			app.scriptsPane.saveScripts();
 			app.updatePalette();

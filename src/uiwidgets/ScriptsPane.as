@@ -42,6 +42,7 @@ public class ScriptsPane extends ScrollFrameContents {
 	private const INSERT_WRAP:int = 4;
 
 	public var app:Scratch;
+	public var padding:int = 10;
 
 	private var viewedObj:ScratchObj;
 	private var commentLines:Shape;
@@ -495,21 +496,20 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 		//	3. Compute the column widths
 		//	4. Move stacks into place
 
-		var pad:int = 10;
 		var stacks:Array = stacksSortedByX();
 		var columns:Array = assignStacksToColumns(stacks);
 		var columnWidths:Array = computeColumnWidths(columns);
 
-		var nextX:int = pad;
+		var nextX:int = padding;
 		for (var i:int = 0; i < columns.length; i++) {
 			var col:Array = columns[i];
-			var nextY:int = pad;
+			var nextY:int = padding;
 			for each (var b:Block in col) {
 				b.x = nextX;
 				b.y = nextY;
-				nextY += b.height + pad;
+				nextY += b.height + padding;
 			}
-			nextX += columnWidths[i] + pad;
+			nextX += columnWidths[i] + padding;
 		}
 		saveScripts();
 	}
