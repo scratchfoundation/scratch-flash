@@ -77,7 +77,7 @@ public class Block extends Sprite {
 
 	// Blocking operations
 	public var isRequester:Boolean = false;
-	public var requestState:int = 0;        // 0 - no request made, 1 - awaiting response, 2 - data ready
+	public var requestState:int = 0;		// 0 - no request made, 1 - awaiting response, 2 - data ready
 	public var response:* = null;
 	public var requestLoader:URLLoader = null;
 
