@@ -807,21 +807,32 @@ public class Block extends Sprite {
 		Scratch.app.gh.grabOnMouseUp(newStack);
 	}
 
-	public function deleteStack():void {
-		if (isProcDef() || isEmbeddedInProcHat()) return; // don't delete procedure definition this way for now
-		if (parent == null) return;
+	public function deleteStack():Boolean {
+		if (op == 'proc_declaration') {
+			return (parent as Block).deleteStack();
+		}
+		var app:Scratch = Scratch.app;
 		var top:Block = topBlock();
+		if (op == Specs.PROCEDURE_DEF && app.runtime.allCallsOf(spec, app.viewedObj()).length) {
+			DialogBox.notify('Cannot Delete', 'To delete a block definition, first remove all uses of the block.', stage);
+			return false;
+		}
+		if (top == this && app.interp.isRunning(top, app.viewedObj())) {
+			app.interp.toggleThread(top, app.viewedObj());
+		}
 		// TODO: Remove any waiting reporter data in the Scratch.app.extensionManager
 		if (parent is Block) Block(parent).removeBlock(this);
-		else parent.removeChild(this);
+		else if (parent) parent.removeChild(this);
 		this.cacheAsBitmap = false;
 		// set position for undelete
 		x = top.x;
 		y = top.y;
 		if (top != this) x += top.width + 5;
-		Scratch.app.runtime.recordForUndelete(this, x, y, 0, Scratch.app.viewedObj());
-		Scratch.app.scriptsPane.saveScripts();
-		Scratch.app.runtime.checkForGraphicEffects();
+		app.runtime.recordForUndelete(this, x, y, 0, app.viewedObj());
+		app.scriptsPane.saveScripts();
+		app.runtime.checkForGraphicEffects();
+		app.updatePalette();
+		return true;
 	}
 
 	public function attachedCommentsIn(scriptsPane:ScriptsPane):Array {

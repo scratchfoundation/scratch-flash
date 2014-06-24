@@ -523,9 +523,9 @@ public class BlockMenus implements DragClient {
 		if (!isInPalette(block)) {
 			if (!block.isProcDef()) {
 				m.addItem('duplicate', duplicateStack);
-				m.addItem('delete', block.deleteStack);
-				m.addLine();
 			}
+			m.addItem('delete', block.deleteStack);
+			m.addLine();
 			m.addItem('add comment', block.addComment);
 		}
 		m.addItem('help', block.showHelp);
