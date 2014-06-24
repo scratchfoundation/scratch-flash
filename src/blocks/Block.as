@@ -809,7 +809,7 @@ public class Block extends Sprite {
 		}
 		var delta:int = evt.shiftKey ? -1 : 1;
 		i = focusIndex + delta;
-		while (true) {
+		do {
 			if (i >= args.length) i = 0;
 			if (i < 0) i = args.length - 1;
 			var a:BlockArg = args[i] as BlockArg;
@@ -818,8 +818,7 @@ public class Block extends Sprite {
 				return;
 			}
 			i += delta;
-			if (i == focusIndex + delta) return;
-		}
+		} while (i != focusIndex + delta);
 	}
 
 }}
