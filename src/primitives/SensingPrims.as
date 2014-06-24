@@ -101,7 +101,7 @@ public class SensingPrims {
 		else {
 			// TODO: Re-implement something like the method above for rotated bitmaps.
 //			var sBM:BitmapData = s.bitmap();
-//            var oBM:BitmapData = new BitmapData(sBM.width, sBM.height, true, 0);
+//			var oBM:BitmapData = new BitmapData(sBM.width, sBM.height, true, 0);
 //			for each (s2 in app.stagePane.spritesAndClonesNamed(arg)) {
 //				if(s2.visible) {
 //					oBM.fillRect(oBM.rect, 0);
