@@ -35,6 +35,7 @@ package scratch {
 	import interpreter.*;
 	import primitives.VideoMotionPrims;
 	import sound.ScratchSoundPlayer;
+	import translation.*;
 	import ui.media.MediaInfo;
 	import ui.BlockPalette;
 	import uiwidgets.DialogBox;
@@ -676,7 +677,7 @@ public class ScratchRuntime {
 		var obj:ScratchObj = app.viewedObj();
 		var costume:ScratchCostume = obj.currentCostume();
 		var oldName:String = costume.costumeName;
-		newName = obj.unusedCostumeName(newName || 'costume1');
+		newName = obj.unusedCostumeName(newName || Translator.map('costume1'));
 		costume.costumeName = newName;
 		updateArgs(obj.isStage ? allUsesOfBackdrop(oldName) : allUsesOfCostume(oldName), newName);
 	}
@@ -703,7 +704,7 @@ public class ScratchRuntime {
     public function renameSound(s:ScratchSound, newName:String):void {
         var obj:ScratchObj = app.viewedObj();
         var oldName:String = s.soundName;
-        newName = obj.unusedSoundName(newName || 'sound1');
+        newName = obj.unusedSoundName(newName || Translator.map('sound1'));
         s.soundName = newName;
         allUsesOfSoundDo(oldName, function (a:BlockArg):void {
             a.setArgValue(newName);
