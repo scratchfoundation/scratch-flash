@@ -335,6 +335,7 @@ public class Specs {
 		["letter %n of %s",						"r", 8, "letter:of:",			1, "world"],
 		["length of %s",						"r", 8, "stringLength:",		"world"],
 		["-"],
+		["%n raised to %n power",				"r", 8, "^",					"", ""],
 		["%n mod %n",							"r", 8, "%",					"", ""],
 		["round %n",							"r", 8, "rounded", 				""],
 		["-"],
