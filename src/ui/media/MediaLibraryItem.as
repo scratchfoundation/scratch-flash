@@ -123,7 +123,7 @@ public class MediaLibraryItem extends Sprite {
 		function setThumbnail(bm:BitmapData):void {
 			if (!bm) return;
 			thumbnailCache[md5] = bm;
-			if (spriteMD5) thumbnailCache[spriteMD5] = bm;			
+			if (spriteMD5) thumbnailCache[spriteMD5] = bm;
 			setThumbnailBM(bm);
 			done();
 		}
@@ -217,7 +217,7 @@ public class MediaLibraryItem extends Sprite {
 		info.y = frameHeight - 17;
 		addChild(info);
 	}
-	
+
 	private function addPlayButton():void {
 		playButton = new IconButton(toggleSoundPlay, 'play');
 		playButton.x = 75;

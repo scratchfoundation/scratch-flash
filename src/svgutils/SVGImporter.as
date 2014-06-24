@@ -51,7 +51,7 @@ import util.Base64Encoder;
 	import flash.display.Loader;
 	import flash.events.Event;
 	import flash.geom.*;
-	
+
 public class SVGImporter {
 
 	public var root:SVGElement; // root of the visible element tree
@@ -239,7 +239,7 @@ public class SVGImporter {
 		for each (var parentEl:SVGElement in parentList) {
 			alpha = alpha * parentEl.getAttribute('opacity', 1);
 		}
-		if (alpha != 1) el.attributes['opacity'] = alpha;		
+		if (alpha != 1) el.attributes['opacity'] = alpha;
 	}
 
 	private function inheritedValue(attrName:String, parentList:Array):* {
@@ -309,12 +309,12 @@ public class SVGImporter {
 				var stopsEl:SVGElement = elements[href];
 				for each (var el:SVGElement in stopsEl.subElements) {
 					// clone stops into gradEl
-					gradEl.subElements.push(el.clone()); 
+					gradEl.subElements.push(el.clone());
 				}
 			}
 		}
 	}
-	
+
 	// -----------------------------
 	// URL Reference Resolution
 	//------------------------------

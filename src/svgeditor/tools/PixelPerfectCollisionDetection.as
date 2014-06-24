@@ -67,7 +67,7 @@ import flash.geom.Rectangle;
 					scaleY = Math.floor(20 / limits.height);
 					limits.height *= scaleY;
 				}
-				
+
 				var image:BitmapData = new BitmapData(limits.width, limits.height, true);
 				image.fillRect(image.rect, 0x00000000);
 				var matrix:Matrix = object1.transform.concatenatedMatrix.clone();

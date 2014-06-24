@@ -22,7 +22,7 @@ package util {
 	import flash.utils.ByteArray;
 
 public class ZipIO {
-		
+
 	private const Version:int = 10;
 	private const FileEntryID:uint = 0x04034b50;	// Local File Header Record
 	private const DirEntryID:uint = 0x02014b50;		// Central Directory Record
@@ -229,12 +229,12 @@ public class ZipIO {
 		buf.position = 0;
 		return buf;
 	}
-	
+
 	private function writeFileHeader(e:Entry):void {
 		buf.writeUnsignedInt(FileEntryID);
 		buf.writeShort(Version);
 		buf.writeShort(0);				// flags
-		buf.writeShort(e.compressionMethod);				
+		buf.writeShort(e.compressionMethod);
 		buf.writeUnsignedInt(e.time);
 		buf.writeUnsignedInt(e.crc);
 		buf.writeUnsignedInt(e.compressedSize);
@@ -244,7 +244,7 @@ public class ZipIO {
 		buf.writeUTFBytes(e.name);
 		// optional extra info would go here
 	}
-	
+
 	private function writeDirectoryEntry(e:Entry):void {
 		buf.writeUnsignedInt(DirEntryID);
 		buf.writeShort(Version);		// version created by
@@ -266,7 +266,7 @@ public class ZipIO {
 		// optional extra info would go here
 		// optional comment would go here
 	}
-	
+
 	private function writeEndRecord(dirStart:uint, dirSize:uint):void {
 		buf.writeUnsignedInt(EndID);
 		buf.writeShort(0);					// number of this disk

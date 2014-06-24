@@ -433,7 +433,7 @@ public class DrawPropertyUI extends Sprite {
 			updateStrokeWidthDisplay();
 			sendChangeEvent();
 		}
-		
+
 		var ttBg:Sprite = new Sprite();
 		addChild(ttBg);
 

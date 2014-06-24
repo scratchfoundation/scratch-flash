@@ -24,7 +24,7 @@ package uiwidgets {
 	import flash.system.Capabilities;
 	import flash.ui.*;
 	import assets.Resources;
-	
+
 public class CursorTool {
 
 	public static var tool:String; // null or one of: copy, cut, grow, shrink, help

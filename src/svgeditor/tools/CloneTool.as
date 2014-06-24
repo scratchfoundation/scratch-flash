@@ -26,11 +26,11 @@ package svgeditor.tools
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
-	
+
 	import svgeditor.*;
 	import svgeditor.objs.ISVGEditable;
 	import svgeditor.objs.SVGShape;
-	
+
 	import svgutils.SVGElement;
 
 	public final class CloneTool extends SVGCreateTool
@@ -66,7 +66,7 @@ package svgeditor.tools
 			copiedObjects = s.cloneObjs(contentLayer);
 			previewObjects = s.cloneObjs(contentLayer);
 		}
-		
+
 		override protected function init():void {
 			super.init();
 			editor.getToolsLayer().mouseEnabled = false;
@@ -139,7 +139,7 @@ package svgeditor.tools
 			holder.scaleX = m.deltaTransformPoint(new Point(0,1)).length;
 			holder.scaleY = m.deltaTransformPoint(new Point(1,0)).length;
 
-			// 
+			//
 			for(var i:uint=0; i<copiedObjects.length; ++i) {
 				var dObj:DisplayObject = previewObjects[i] as DisplayObject;
 				holder.addChild(dObj);
@@ -159,7 +159,7 @@ package svgeditor.tools
 		private var highlightedObj:DisplayObject;
 		private function checkUnderMouse(clear:Boolean = false):void {
 			var obj:ISVGEditable = clear ? null : getEditableUnderMouse();
-			
+
 			if(obj != highlightedObj) {
 				if(highlightedObj) highlightedObj.filters = [];
 				highlightedObj = obj as DisplayObject;

@@ -86,11 +86,11 @@ public class SqueakSoundDecoder {
 			}
 			delta += step;
 			sample += ((code & signMask) != 0) ? -delta : delta;
-	
+
 			index += indexTable[code];
 			if (index < 0) index = 0;
 			if (index > 88) index = 88;
-	
+
 			if (sample > 32767) sample = 32767;
 			if (sample < -32768) sample = -32768;
 			result.writeShort(sample);

@@ -32,12 +32,12 @@ package svgeditor.tools
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
-	
+
 	import svgeditor.ImageEdit;
 	import svgeditor.objs.ISVGEditable;
 	import svgeditor.objs.PathDrawContext;
 	import svgeditor.objs.SVGShape;
-	
+
 	import svgutils.SVGElement;
 	import svgutils.SVGPath;
 
@@ -62,7 +62,7 @@ package svgeditor.tools
 			super.shutdown();
 			PathEndPointManager.removeEndPoints();
 		}
-		
+
 		private function reset():void {
 			pathElem = null;
 			controlPoints = null;
@@ -87,7 +87,7 @@ package svgeditor.tools
 				if(object) {
 					for(var i:uint = 0; i< controlPoints.length; ++i)
 						removeChild(controlPoints[i]);
-					
+
 					reset();
 				}
 
@@ -109,13 +109,13 @@ package svgeditor.tools
 			if(object) {
 				var indx:int = (object as SVGShape).getPathCmdIndexUnderMouse();
 				if(indx < 0) return;
-				
+
 				// Add the new point
 				var dObj:DisplayObject = (object as DisplayObject);
 				addPoint(indx, new Point(dObj.mouseX, dObj.mouseY));
 			}
 		}
-		
+
 		// SVG Element access
 		private function getAttribute(attr:String):* {
 			return pathElem.getAttribute(attr);
@@ -202,7 +202,7 @@ package svgeditor.tools
 						pathElem.path.getPos(index).subtract(pathElem.path.getPos(currentEndPoints[1])).length < w) ||
 						(currentEndPoints[1] == index &&
 							pathElem.path.getPos(index).subtract(pathElem.path.getPos(currentEndPoints[0])).length < w)) {
-						
+
 						// Close the path and refresh the anchor points
 						pathElem.path.splice(currentEndPoints[1] + 1, 0, ['Z']);
 						pathElem.path.adjustPathAroundAnchor(currentEndPoints[1], 1, 1);
@@ -226,7 +226,7 @@ package svgeditor.tools
 			}
 			else if(!movingPoint) {
 				currentEndPoints = pathElem.path.getSegmentEndPoints(index);
-				if(!currentEndPoints[2] && (index == currentEndPoints[0] || index == currentEndPoints[1])) 
+				if(!currentEndPoints[2] && (index == currentEndPoints[0] || index == currentEndPoints[1]))
 					PathEndPointManager.makeEndPoints(dObj);
 				movingPoint = true;
 			}
@@ -257,7 +257,7 @@ package svgeditor.tools
 			// If we want to prevent removing 2-point paths by removing a point,
 			// then uncomment this code:
 			//if(endPoints[1] - endPoints[0] < 2) return;
-			
+
 			// Cut the path here if the shift key was down and the point is not an end-point
 			var pos:Point;
 			if((index < endPoints[1] || (endPoints[2] && index == endPoints[1])) && index > endPoints[0] && event.shiftKey) {
@@ -274,12 +274,12 @@ package svgeditor.tools
 					var cmds:Array = pathElem.path.splice(indices[0], indices[1] + 1);
 					cmds.length--;
 					var stitchIndex:int = cmds.length - 1;
-					
+
 					// Re-insert the commands at the beginning
 					cmds.unshift(1);
 					cmds.unshift(0);
 					pathElem.path.splice.apply(pathElem.path, cmds);
-					
+
 					pathElem.path.adjustPathAroundAnchor(stitchIndex, 2);
 					pathElem.path.adjustPathAroundAnchor(0, 2);
 					endPoints = pathElem.path.getSegmentEndPoints(0);
@@ -294,12 +294,12 @@ package svgeditor.tools
 					// Make a copy to hold the path after the point
 					var newPath:SVGShape = (object as SVGShape).clone() as SVGShape;
 					(object as SVGShape).parent.addChildAt(newPath, (object as SVGShape).parent.getChildIndex(object as DisplayObject));
-					
+
 					// TODO: Make work with inner paths???
 					// TODO: Handle closed paths!
 					newPath.getElement().path.splice(0, index + 1);
 					newPath.redraw();
-	
+
 					// Now truncate the existing path
 					pathElem.path.length = index + 1;
 				}
@@ -358,7 +358,7 @@ package svgeditor.tools
 				}
 				++i;
 			}
-			
+
 			// Shift the indices of the control points after the inserted point
 			resetControlPointIndices();
 			redrawObj();

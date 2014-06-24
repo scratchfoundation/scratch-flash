@@ -22,13 +22,13 @@ package svgeditor.tools
 	import flash.display.DisplayObject;
 	import flash.display.Sprite;
 	import flash.geom.Point;
-	
+
 	import svgeditor.ImageEdit;
 	import svgeditor.objs.ISVGEditable;
 	import svgeditor.objs.SVGGroup;
 	import svgeditor.objs.SVGShape;
 	import svgeditor.tools.PathAnchorPoint;
-	
+
 	import svgutils.SVGPath;
 
 	public final class PathEndPointManager

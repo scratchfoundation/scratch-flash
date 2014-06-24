@@ -25,23 +25,23 @@
 
 package scratch {
 	import blocks.*;
-	
+
 	import filters.FilterPack;
-	
+
 	import flash.display.*;
 	import flash.events.MouseEvent;
 import flash.geom.ColorTransform;
 import flash.utils.*;
-	
+
 	import interpreter.*;
-	
+
 	import scratch.ScratchComment;
 import scratch.ScratchSprite;
 
 import translation.Translator;
-	
+
 	import util.*;
-	
+
 	import watchers.*;
 
 public class ScratchObj extends Sprite {

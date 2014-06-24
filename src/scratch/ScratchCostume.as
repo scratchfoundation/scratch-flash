@@ -62,7 +62,7 @@ public class ScratchCostume {
 	public var baseLayerData:ByteArray;
 
 	public static const WasEdited:int = -10; // special baseLayerID used to indicate costumes that have been edited
-	
+
 	public var svgRoot:SVGElement; // non-null for an SVG costume
 	public var svgLoading:Boolean; // true while loading bitmaps embedded in an SVG
 	private var svgSprite:Sprite;
@@ -521,7 +521,7 @@ public class ScratchCostume {
 			json.writeKeyValue('textLayerMD5', textLayerMD5);
 		}
 	}
- 
+
 	public function readJSON(jsonObj:Object):void {
 		costumeName = jsonObj.costumeName;
 		baseLayerID = jsonObj.baseLayerID;

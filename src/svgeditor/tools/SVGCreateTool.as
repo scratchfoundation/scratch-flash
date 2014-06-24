@@ -25,7 +25,7 @@ package svgeditor.tools
 	import flash.events.EventDispatcher;
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
-	
+
 	import svgeditor.ImageEdit;
 	import svgeditor.ImageCanvas;
 	import svgeditor.DrawProperties;
@@ -81,7 +81,7 @@ package svgeditor.tools
 				}
 				newObject = null;
 			}
-			
+
 			super.cancel();
 		}
 
@@ -91,7 +91,7 @@ package svgeditor.tools
 			p.x = Math.min(ImageCanvas.canvasWidth, Math.max(0, p.x));
 			p.y = Math.min(ImageCanvas.canvasHeight, Math.max(0, p.y));
 			currentEvent = e;
-			
+
 			if(e.type == MouseEvent.MOUSE_DOWN) {
 				//editor.toggleZoomUI(false);
 				mouseDown(p);
