@@ -53,7 +53,6 @@ public class BlockPalette extends ScrollFrameContents {
 
 	public function handleDrop(obj:*):Boolean {
 		// Delete blocks and stacks dropped onto the palette.
-		var app:Scratch = root as Scratch;
 		var c:ScratchComment = obj as ScratchComment;
 		if (c) {
 			c.x = c.y = 20; // postion for undelete
