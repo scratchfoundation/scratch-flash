@@ -96,8 +96,8 @@ package svgeditor.tools
 
 		private function mouseUp(e:MouseEvent):void {
 			var canvas:ImageCanvas = editor.getWorkArea();
-			var ox:int = Math.round(ImageCanvas.canvasWidth / 2 - canvas.getVisibleLayer().mouseX);
-			var oy:int = Math.round(ImageCanvas.canvasHeight / 2 - canvas.getVisibleLayer().mouseY);
+			var ox:Number = ImageCanvas.canvasWidth / 2 - canvas.getVisibleLayer().mouseX;
+			var oy:Number = ImageCanvas.canvasHeight / 2 - canvas.getVisibleLayer().mouseY;
 			editor.translateContents(ox, oy);
 			editor.endCurrentTool();
 		}

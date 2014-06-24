@@ -345,7 +345,7 @@ public class BitmapEdit extends ImageEdit {
 	public override function translateContents(x:Number, y:Number):void {
 		var bm:BitmapData = workArea.getBitmap().bitmapData;
 		var newBM:BitmapData = new BitmapData(bm.width, bm.height, true, 0);
-		newBM.copyPixels(bm, bm.rect, new Point(2 * x, 2 * y));
+		newBM.copyPixels(bm, bm.rect, new Point(Math.round(2 * x), Math.round(2 * y)));
 		workArea.getBitmap().bitmapData = newBM;
 	}
 
