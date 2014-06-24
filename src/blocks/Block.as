@@ -812,61 +812,59 @@ public class Block extends Sprite {
 		i = focusIndex + delta;
 		for (;;) {
 			if (i >= target.args.length) {
-				if (target.isReporter) {
-					var p:Block = target.parent as Block;
-					if (!p) return;
+				var p:Block = target.parent as Block;
+				if (p) {
 					i = p.args.indexOf(target);
-					i = i == -1 ? 0 : i + delta;
-					target = p;
-				} else {
-					if (target.subStack1) {
-						target = target.subStack1;
-					} else if (target.subStack2) {
-						target = target.subStack2;
-					} else {
-						var t:Block = target;
-						target = t.nextBlock;
-						while (!target) {
-							var tp:Block = t.parent as Block;
-							var b:Block = t;
-							while (tp && tp.nextBlock == b) {
-								b = tp;
-								tp = tp.parent as Block;
-							}
-							if (!tp) return;
-							target = tp.subStack1 == b && tp.subStack2 ? tp.subStack2 : tp.nextBlock;
-							t = tp;
-						}
+					if (i != -1) {
+						i += delta;
+						target = p;
+						continue;
 					}
-					i = 0;
 				}
+				if (target.subStack1) {
+					target = target.subStack1;
+				} else if (target.subStack2) {
+					target = target.subStack2;
+				} else {
+					var t:Block = target;
+					target = t.nextBlock;
+					while (!target) {
+						var tp:Block = t.parent as Block;
+						var b:Block = t;
+						while (tp && tp.nextBlock == b) {
+							b = tp;
+							tp = tp.parent as Block;
+						}
+						if (!tp) return;
+						target = tp.subStack1 == b && tp.subStack2 ? tp.subStack2 : tp.nextBlock;
+						t = tp;
+					}
+				}
+				i = 0;
 			} else if (i < 0) {
 				p = target.parent as Block;
-				if (p) {
-					if (target.isReporter) {
-						i = p.args.indexOf(target);
-						i = i == -1 ? 0 : i + delta;
-						target = p;
-					} else {
-						var nested:Block = p.nextBlock == target ? p.subStack2 || p.subStack1 : p.subStack2 == target ? p.subStack1 : null;
-						if (nested) {
-							for (;;) {
-								nested = nested.bottomBlock();
-								var n2:Block = nested.subStack1 || nested.subStack2;
-								if (!n2) break;
-								nested = n2;
-							}
-							target = nested;
-						} else {
-							target = p;
-						}
-						i = target.args.length - 1;
-					}
-				} else {
-					return;
+				if (!p) return;
+				i = p.args.indexOf(target);
+				if (i != -1) {
+					i += delta;
+					target = p;
+					continue;
 				}
+				var nested:Block = p.nextBlock == target ? p.subStack2 || p.subStack1 : p.subStack2 == target ? p.subStack1 : null;
+				if (nested) {
+					for (;;) {
+						nested = nested.bottomBlock();
+						var n2:Block = nested.subStack1 || nested.subStack2;
+						if (!n2) break;
+						nested = n2;
+					}
+					target = nested;
+				} else {
+					target = p;
+				}
+				i = target.args.length - 1;
 			} else {
-				if (target.args[i] is Block && target.args[i].op != 'proc_declaration') {
+				if (target.args[i] is Block) {
 					target = target.args[i];
 					i = evt.shiftKey ? target.args.length - 1 : 0;
 				} else {
