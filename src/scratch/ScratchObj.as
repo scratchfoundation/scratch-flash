@@ -133,11 +133,19 @@ public class ScratchObj extends Sprite {
 	}
 
 	public function isCostumeNameUsed(name:String):Boolean {
-		var existingNames:Array = [];
+		name = name.toLowerCase();
 		for each (var c:ScratchCostume in costumes) {
-			existingNames.push(c.costumeName.toLowerCase());
+			if (c.costumeName.toLowerCase() == name) return true;
 		}
-		return (existingNames.indexOf(name.toLowerCase()) > -1);
+		return false;
+	}
+
+	public function isSoundNameUsed(name:String):Boolean {
+		name = name.toLowerCase();
+		for each (var s:ScratchSound in sounds) {
+			if (s.soundName.toLowerCase() == name) return true;
+		}
+		return false;
 	}
 
 	public function unusedCostumeName(baseName:String = ''):String {

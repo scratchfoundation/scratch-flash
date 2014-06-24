@@ -201,7 +201,8 @@ public class SoundsPart extends UIPart {
 	private function nameChanged():void {
 		currentIndex = Math.min(currentIndex, app.viewedObj().sounds.length - 1);
 		var current:ScratchSound = app.viewedObj().sounds[currentIndex] as ScratchSound;
-		current.soundName = nameField.contents();
+		app.runtime.renameSound(current, nameField.contents());
+		nameField.setContents(current.soundName);
 		(listFrame.contents as MediaPane).refresh();
 	}
 
