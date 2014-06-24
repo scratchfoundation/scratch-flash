@@ -805,15 +805,15 @@ public class Block extends Sprite {
 		if (args.length == 0) return;
 		var i:int, focusIndex:int = -1;
 		for (i = 0; i < args.length; i++) {
-			if (stage.focus == args[i].field) focusIndex = i;
+			if (args[i] is BlockArg && stage.focus == args[i].field) focusIndex = i;
 		}
 		var delta:int = evt.shiftKey ? -1 : 1;
 		i = focusIndex + delta;
 		while (true) {
 			if (i >= args.length) i = 0;
 			if (i < 0) i = args.length - 1;
-			var a:BlockArg = args[i];
-			if (a.field && a.isEditable) {
+			var a:BlockArg = args[i] as BlockArg;
+			if (a && a.field && a.isEditable) {
 				a.startEditing();
 				return;
 			}
