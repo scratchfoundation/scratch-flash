@@ -818,7 +818,7 @@ public class Block extends Sprite {
 				return;
 			}
 			i += delta;
-			if (i == (focusIndex + 1)) return;
+			if (i == focusIndex + delta) return;
 		}
 	}
 
