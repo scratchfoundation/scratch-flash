@@ -844,4 +844,3 @@ package svgeditor.tools  {
 		}
 	}
 }
-
