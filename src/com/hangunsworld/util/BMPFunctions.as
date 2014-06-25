@@ -50,20 +50,20 @@ package com.hangunsworld.util{
 		
 		
 		/**
-		* Flood fills on an image starting at an (x, y) cordinate and filling with a specific color.
+		* Flood fills on an image starting at an (x, y) coordinate and filling with a specific color.
 		* The floodFill() method is similar to the paint bucket tool in various paint programs.
 		*
 		* @param bd The BitmapData to modify.
-		* @param x The x cordinate of the image. 
-		* @param y The y cordinate of the image.
+		* @param x The x coordinate of the image. 
+		* @param y The y coordinate of the image.
 		* @param color The color with which flood fills the image.
 		* @param tolerance The similarity of colors. Ranges from 0 to 255. [OPTIONAL]
-		* @param contiguous The continueity of the area to be filled. [OPTIONAL]
+		* @param contiguous The continuity of the area to be filled. [OPTIONAL]
 		*
 		* @return A modified BitmapData.
 		*/
 		public static function floodFill(bd:BitmapData, x:uint, y:uint, color:uint, tolerance:uint=0, contiguous:Boolean=false):BitmapData{
-			// Varlidates the (x, y) cordinates.
+			// Validates the (x, y) coordinates.
 			x = Math.min(bd.width-1, x);
 			y = Math.min(bd.height-1, y);
 			// Validates the tolerance.
@@ -95,7 +95,7 @@ package com.hangunsworld.util{
 				// Fills the connected area with white.
 				temp_bd.floodFill(x, y, 0xFFFFFF);
 				
-				// Uese threshold() to get the white pixels only.
+				// Use threshold() to get the white pixels only.
 				var rect:Rectangle = new Rectangle(0, 0, w, h);
 				var pnt:Point = new Point(0, 0);
 				temp_bd.threshold(temp_bd, rect, pnt, "<", 0xFF666666, 0xFF000000);
