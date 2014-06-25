@@ -503,7 +503,7 @@ public class ScratchSprite extends ScratchObj {
 	public function deleteSprite():void {
 		if (parent != null) {
 			var app:Scratch = Scratch.app;
-			app.runtime.recordForUndelete(this, scratchX, scratchY, 0, app.stagePane);
+			// app.runtime.recordForUndelete(this, scratchX, scratchY, 0, app.stagePane);
 			hideBubble();
 
 			// Force redisplay (workaround for flash display update bug)

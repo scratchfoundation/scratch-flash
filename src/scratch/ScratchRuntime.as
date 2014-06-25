@@ -1031,65 +1031,156 @@ public class ScratchRuntime {
 	}
 
 	// -----------------------------
-	// Undelete support
+	// Undo support
 	//------------------------------
 
-	private var lastDelete:Array; // object, x, y, owner (for blocks/stacks/costumes/sounds)
+	private var done:Array = [];
+	private var undone:Array = [];
 
-	public function canUndelete():Boolean { return lastDelete != null }
-	public function clearLastDelete():void { lastDelete = null }
-
-	public function recordForUndelete(obj:*, x:int, y:int, index:int, owner:* = null):void {
-		if (obj is Block) {
-			var comments:Array = (obj as Block).attachedCommentsIn(app.scriptsPane);
-			if (comments.length) {
-				for each (var c:ScratchComment in comments) {
-					c.parent.removeChild(c);
-				}
-				app.scriptsPane.fixCommentLayout();
-				obj = [obj, comments];
-			}
-		}
-		lastDelete = [obj, x, y, index, owner];
+	public function canUndo():Boolean {
+		return !!done.length && !app.gh.carriedObj;
+	}
+	public function canRedo():Boolean {
+		return !!undone.length && !app.gh.carriedObj;
 	}
 
-	public function undelete():void {
-		if (!lastDelete) return;
-		var obj:* = lastDelete[0];
-		var x:int = lastDelete[1];
-		var y:int = lastDelete[2];
-		var index:int = lastDelete[3];
-		var previousOwner:* = lastDelete[4];
-		doUndelete(obj, x, y, previousOwner);
-		lastDelete = null;
+	public function undo():Boolean {
+		if (!canUndo()) return false;
+		var a:Array = done.pop();
+		unperform(a);
+		undone.push(a);
+		return true;
 	}
 
-	protected function doUndelete(obj:*, x:int, y:int, prevOwner:*):void {
-		if (obj is MediaInfo) {
-			if (prevOwner is ScratchObj) {
-				app.selectSprite(prevOwner);
-				if (obj.mycostume) app.addCostume(obj.mycostume as ScratchCostume);
-				if (obj.mysound) app.addSound(obj.mysound as ScratchSound);
+	public function redo():Boolean {
+		if (!canRedo()) return false;
+		var a:Array = undone.pop();
+		perform(a);
+		done.push(a);
+		return true;
+	}
+
+	private static const DROP_BLOCK:int = 1;
+	private static const REPLACE_ARG:int = 2;
+	private static const INSERT_BLOCK:int = 3;
+	private static const INSERT_BLOCK_ABOVE:int = 4;
+	private static const INSERT_BLOCK_SUB1:int = 5;
+	private static const INSERT_BLOCK_SUB2:int = 6;
+	private static const INSERT_BLOCK_AROUND:int = 7;
+
+	public function recordDropBlock(b:Block):void {
+		recordAction([DROP_BLOCK, b.parent, b, b.originalState, b.saveState()]);
+	}
+
+	public function recordReplaceArg(a:DisplayObject, b:Block):void {
+		recordAction([REPLACE_ARG, a.parent, a, b, Block(a.parent).argIndex(a), b.originalState]);
+	}
+
+	public function recordInsertBlock(t:Block, b:Block):void {
+		recordAction([INSERT_BLOCK, t, b, t.nextBlock, b.originalState]);
+	}
+	public function recordInsertBlockAbove(t:Block, b:Block):void {
+		recordAction([INSERT_BLOCK_ABOVE, t, b, t.saveState(), b.originalState]);
+	}
+	public function recordInsertBlockSub1(t:Block, b:Block):void {
+		recordAction([INSERT_BLOCK_SUB1, t, b, t.subStack1, b.originalState]);
+	}
+	public function recordInsertBlockSub2(t:Block, b:Block):void {
+		recordAction([INSERT_BLOCK_SUB2, t, b, t.subStack2, b.originalState]);
+	}
+	public function recordInsertBlockAround(t:Block, b:Block):void {
+		recordAction([INSERT_BLOCK_AROUND, t, b, t.saveState(), b.originalState]);
+	}
+
+	private function recordAction(a:Array):void {
+		done.push(a);
+		undone.length = 0;
+	}
+
+	private function unperform(a:Array):void {
+		switch (a[0]) {
+		case DROP_BLOCK:
+			removeBlock(a[2]);
+			a[2].restoreState(a[3]);
+			break;
+		case REPLACE_ARG:
+			a[1].replaceArg(a[4], a[2]);
+			a[3].restoreState(a[5]);
+			break;
+		case INSERT_BLOCK:
+			removeBlock(a[2]);
+			if (a[3]) {
+				removeBlock(a[3]);
+				a[1].insertBlock(a[3]);
 			}
-		} else if (obj is ScratchSprite) {
-			app.addNewSprite(obj);
-			obj.setScratchXY(x, y);
-			app.selectSprite(obj);
-		} else if ((obj is Array) || (obj is Block) || (obj is ScratchComment)) {
-			app.selectSprite(prevOwner);
-			app.setTab('scripts');
-			var b:DisplayObject = obj is Array ? obj[0] : obj;
-			b.x = app.scriptsPane.padding;
-			b.y = app.scriptsPane.padding;
-			if (b is Block) b.cacheAsBitmap = true;
-			app.scriptsPane.addChild(b);
-			if (obj is Array) {
-				for each (var c:ScratchComment in obj[1]) {
-					app.scriptsPane.addChild(c);
-				}
-				app.scriptsPane.fixCommentLayout();
+			a[2].restoreState(a[4]);
+			break;
+		case INSERT_BLOCK_ABOVE:
+			removeBlock(a[1]);
+			removeBlock(a[2]);
+			a[1].restoreState(a[3]);
+			a[2].restoreState(a[4]);
+			break;
+		case INSERT_BLOCK_SUB1:
+			removeBlock(a[2]);
+			if (a[3]) {
+				removeBlock(a[3]);
+				a[1].insertBlockSub1(a[3]);
 			}
+			a[2].restoreState(a[4]);
+			break;
+		case INSERT_BLOCK_SUB2:
+			removeBlock(a[2]);
+			if (a[3]) {
+				removeBlock(a[3]);
+				a[1].insertBlockSub2(a[3]);
+			}
+			a[2].restoreState(a[4]);
+			break;
+		case INSERT_BLOCK_AROUND:
+			removeBlock(a[1]);
+			removeBlock(a[2]);
+			a[1].restoreState(a[3]);
+			a[2].restoreState(a[4]);
+			break;
 		}
+	}
+
+	private function perform(a:Array):void {
+		switch (a[0]) {
+		case DROP_BLOCK:
+			removeBlock(a[2]);
+			a[2].restoreState(a[4]);
+			break;
+		case REPLACE_ARG:
+			removeBlock(a[3]);
+			a[1].replaceArgWithBlock(a[2], a[3], app.scriptsPane);
+			break;
+		case INSERT_BLOCK:
+			removeBlock(a[2]);
+			a[1].insertBlock(a[2]);
+			break;
+		case INSERT_BLOCK_ABOVE:
+			removeBlock(a[2]);
+			a[1].insertBlockAbove(a[2]);
+			break;
+		case INSERT_BLOCK_SUB1:
+			removeBlock(a[2]);
+			a[1].insertBlockSub1(a[2]);
+			break;
+		case INSERT_BLOCK_SUB2:
+			removeBlock(a[2]);
+			a[1].insertBlockSub2(a[2]);
+			break;
+		case INSERT_BLOCK_AROUND:
+			removeBlock(a[2]);
+			a[1].insertBlockAround(a[2]);
+			break;
+		}
+	}
+
+	private function removeBlock(b:Block):void {
+		if (b.parent is Block) Block(b.parent).removeBlock(b);
 	}
 
 }}

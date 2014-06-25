@@ -199,27 +199,34 @@ public class ScriptsPane extends ScrollFrameContents {
 	private function blockDropped(b:Block):void {
 		if (nearestTarget == null) {
 			b.cacheAsBitmap = true;
+			app.runtime.recordDropBlock(b);
 		} else {
 			if(app.editMode) b.hideRunFeedback();
 			b.cacheAsBitmap = false;
 			if (b.isReporter) {
+				app.runtime.recordReplaceArg(nearestTarget[1], b);
 				Block(nearestTarget[1].parent).replaceArgWithBlock(nearestTarget[1], b, this);
 			} else {
 				var targetCmd:Block = nearestTarget[1];
 				switch (nearestTarget[2]) {
 				case INSERT_NORMAL:
+					app.runtime.recordInsertBlock(targetCmd, b);
 					targetCmd.insertBlock(b);
 					break;
 				case INSERT_ABOVE:
+					app.runtime.recordInsertBlockAbove(targetCmd, b);
 					targetCmd.insertBlockAbove(b);
 					break;
 				case INSERT_SUB1:
+					app.runtime.recordInsertBlockSub1(targetCmd, b);
 					targetCmd.insertBlockSub1(b);
 					break;
 				case INSERT_SUB2:
+					app.runtime.recordInsertBlockSub2(targetCmd, b);
 					targetCmd.insertBlockSub2(b);
 					break;
 				case INSERT_WRAP:
+					app.runtime.recordInsertBlockAround(targetCmd, b);
 					targetCmd.insertBlockAround(b);
 					break;
 				}

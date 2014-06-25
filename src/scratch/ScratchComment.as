@@ -194,7 +194,7 @@ public class ScratchComment extends Sprite {
 
 	public function deleteComment():void {
 		if (parent) parent.removeChild(this);
-		Scratch.app.runtime.recordForUndelete(this, x, y, 0, Scratch.app.viewedObj());
+		// Scratch.app.runtime.recordForUndelete(this, x, y, 0, Scratch.app.viewedObj());
 		Scratch.app.scriptsPane.saveScripts();
 	}
 

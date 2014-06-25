@@ -55,6 +55,7 @@ public class Scratch extends Sprite {
 	// Version
 	public static const versionString:String = 'v420';
 	public static var app:Scratch; // static reference to the app, used for debugging
+	public static var isOSX:Boolean = Capabilities.os.indexOf("Mac OS") != -1;
 
 	// Display modes
 	public var editMode:Boolean; // true when project editor showing, false when only the player is showing
@@ -403,21 +404,34 @@ public class Scratch extends Sprite {
 
 	private function keyDown(evt:KeyboardEvent):void {
 		// Escape exists presentation mode.
-		if ((evt.charCode == 27) && stagePart.isInPresentationMode()) {
+		if (evt.charCode == 27 && stagePart.isInPresentationMode()) {
 			setPresentationMode(false);
 			stagePart.exitPresentationMode();
-		}
 		// Handle enter key
-//		else if(evt.keyCode == 13 && !stage.focus) {
+//		} else if(evt.keyCode == 13 && !stage.focus) {
 //			stagePart.playButtonPressed(null);
 //			evt.preventDefault();
 //			evt.stopImmediatePropagation();
-//		}
-		// Handle ctrl-m and toggle 2d/3d mode
-		else if(evt.ctrlKey && evt.charCode == 109) {
-			isIn3D ? go2D() : go3D();
-			evt.preventDefault();
-			evt.stopImmediatePropagation();
+		} else if (isOSX ? evt.commandKey : evt.controlKey) {
+			var handled:Boolean = true;
+			if (evt.charCode == 122) {
+				runtime.undo();
+			} else if (evt.charCode == (isOSX ? 90 : 121)) {
+				runtime.redo();
+			} else if (evt.charCode == 109) {
+				// Handle ctrl-m and toggle 2d/3d mode
+				if (isIn3D) {
+					go2D()
+				} else {
+					go3D();
+				}
+			} else {
+				handled = false;
+			}
+			if (handled) {
+				evt.preventDefault();
+				evt.stopImmediatePropagation();
+			}
 		}
 	}
 
@@ -722,7 +736,8 @@ public class Scratch extends Sprite {
 
 	public function showEditMenu(b:*):void {
 		var m:Menu = new Menu(null, 'More', CSS.topBarColor, 28);
-		m.addItem('Undelete', runtime.undelete, runtime.canUndelete());
+		m.addItem('Undo', runtime.undo, runtime.canUndo());
+		m.addItem('Redo', runtime.redo, runtime.canRedo());
 		m.addLine();
 		m.addItem('Small stage layout', toggleSmallStage, true, stageIsContracted);
 		m.addItem('Turbo mode', toggleTurboMode, true, interp.turboMode);
