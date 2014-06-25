@@ -22,7 +22,7 @@
 //
 // A collection of instrument and drum resources to support the note and drum commands.
 //
-// Old (8-bit) nstruments and drums: 118k
+// Old (8-bit) instruments and drums: 118k
 // New Instruments and Drums: 1555k (Instruments: 1286k; drums: 269k)
 
 package sound {
@@ -355,7 +355,7 @@ public class SoundBank {
 		['Crash', -8],
 		['Tom', 10, 7260, 7483, 2.7], // 50
 		['HiHatOpen', -2], // ride cymbal 1
-		['Crash', -11], // chinese cymbal
+		['Crash', -11], // Chinese cymbal
 		['HiHatOpen', 2], // ride bell
 		['Tambourine', 0],
 		['Crash', 0, 3.5], // splash cymbal
