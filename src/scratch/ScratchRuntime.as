@@ -1135,7 +1135,14 @@ public class ScratchRuntime {
 	}
 	public function recordDeleteBlock(b:Block, state:BlockState):void {
 		if (state.role == Block.ROLE_NONE) return;
-		recordAction([DELETE_BLOCK, app.viewedObj(), b, state]);
+		var comments:Array = b.attachedCommentsIn(app.scriptsPane);
+		if (comments.length) {
+			for each (var c:ScratchComment in comments) {
+				c.parent.removeChild(c);
+			}
+			app.scriptsPane.fixCommentLayout();
+		}
+		recordAction([DELETE_BLOCK, app.viewedObj(), b, state, comments]);
 	}
 	public function recordCleanUp():void {
 		var obj:ScratchObj = app.viewedObj();
@@ -1243,6 +1250,9 @@ public class ScratchRuntime {
 			break;
 		case DELETE_BLOCK:
 			a[2].restoreState(a[3]);
+			for each (var c:ScratchComment in a[4]) {
+				app.scriptsPane.addChild(c);
+			}
 			break;
 		case CLEAN_UP:
 			for each (var s:Array in a[2]) {
@@ -1340,6 +1350,9 @@ public class ScratchRuntime {
 		case DELETE_BLOCK:
 			removeBlock(a[2]);
 			if (a[2].parent) a[2].parent.removeChild(a[2]);
+			for each (var c:ScratchComment in a[4]) {
+				app.scriptsPane.removeChild(c);
+			}
 			break;
 		case CLEAN_UP:
 			app.scriptsPane.cleanup();
