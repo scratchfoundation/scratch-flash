@@ -713,6 +713,12 @@ public class ScratchRuntime {
 	}
 
     public function renameSound(s:ScratchSound, newName:String):void {
+		if (newName == s.soundName) return;
+		recordRenameSound(s, newName);
+		setSoundName(s, newName);
+	}
+
+	private function setSoundName(s:ScratchSound, newName:String):void {
         var obj:ScratchObj = app.viewedObj();
         var oldName:String = s.soundName;
         newName = obj.unusedSoundName(newName || Translator.map('sound1'));
@@ -1097,6 +1103,7 @@ public class ScratchRuntime {
 	private static const CHANGE_INPUT:int = 13;
 	private static const RENAME_SPRITE:int = 14;
 	private static const RENAME_COSTUME:int = 15;
+	private static const RENAME_SOUND:int = 16;
 
 	public function recordDropBlock(b:Block):void {
 		recordAction([DROP_BLOCK, app.viewedObj(), b.parent, b, b.originalState, b.saveState()]);
@@ -1152,6 +1159,10 @@ public class ScratchRuntime {
 		var obj:ScratchObj = app.viewedObj();
 		var costume:ScratchCostume = obj.currentCostume();
 		recordAction([RENAME_COSTUME, obj, costume, costume.costumeName, name]);
+	}
+	public function recordRenameSound(s:ScratchSound, name:String):void {
+		var obj:ScratchObj = app.viewedObj();
+		recordAction([RENAME_SOUND, obj, s, s.soundName, name]);
 	}
 
 	private function recordAction(a:Array):void {
@@ -1243,6 +1254,12 @@ public class ScratchRuntime {
 			setCostumeName(a[3]);
 			app.imagesPart.refresh();
 			break;
+		case RENAME_SOUND:
+			selectSpriteIfNeeded(a[1]);
+			selectTabIfNeeded('sounds');
+			setSoundName(a[2], a[3]);
+			app.soundsPart.selectSound(a[2]);
+			break;
 		}
 	}
 
@@ -1312,6 +1329,12 @@ public class ScratchRuntime {
 			setCostumeName(a[4]);
 			app.imagesPart.refresh();
 			break;
+		case RENAME_SOUND:
+			selectSpriteIfNeeded(a[1]);
+			selectTabIfNeeded('sounds');
+			setSoundName(a[2], a[4]);
+			app.soundsPart.selectSound(a[2]);
+			break;
 		}
 	}
 
@@ -1332,6 +1355,7 @@ public class ScratchRuntime {
 		case CHANGE_INPUT: return Translator.map('change input');
 		case RENAME_SPRITE: return Translator.map('rename sprite');
 		case RENAME_COSTUME: return a[1].isStage ? Translator.map('rename backdrop') : Translator.map('rename costume');
+		case RENAME_SOUND: return Translator.map('rename sound');
 		}
 		return '';
 	}
