@@ -1197,6 +1197,7 @@ public class ScratchRuntime {
 			break;
 		case DROP_INTO_THUMBNAIL:
 			selectSpriteIfNeeded(a[1]);
+			selectTabIfNeeded('scripts');
 			if (a[2].parent) a[2].parent.removeChild(a[2]);
 			break;
 		case DELETE_BLOCK:
@@ -1259,6 +1260,7 @@ public class ScratchRuntime {
 			break;
 		case DROP_INTO_THUMBNAIL:
 			selectSpriteIfNeeded(a[1]);
+			selectTabIfNeeded('scripts');
 			a[2].x = app.scriptsPane.padding;
 			a[2].y = app.scriptsPane.padding;
 			app.scriptsPane.addChild(a[2]);
@@ -1310,12 +1312,19 @@ public class ScratchRuntime {
 	private function selectSpriteForAction(a:Array):void {
 		if (scriptActions.indexOf(a[0]) != -1) {
 			selectSpriteIfNeeded(a[1]);
+			selectTabIfNeeded('scripts');
 		}
 	}
 
 	private function selectSpriteIfNeeded(s:ScratchObj):void {
 		if (app.viewedObj() != s) {
 			app.selectSprite(s);
+		}
+	}
+
+	private function selectTabIfNeeded(t:String):void {
+		if (app.lastTab != t) {
+			app.setTab(t);
 		}
 	}
 

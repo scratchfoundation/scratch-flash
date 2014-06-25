@@ -82,7 +82,7 @@ public class Scratch extends Sprite {
 
 	protected var autostart:Boolean;
 	private var viewedObject:ScratchObj;
-	private var lastTab:String = 'scripts';
+	public var lastTab:String = 'scripts';
 	protected var wasEdited:Boolean; // true if the project was edited and autosaved
 	private var _usesUserNameBlock:Boolean = false;
 	protected var languageChanged:Boolean; // set when language changed
