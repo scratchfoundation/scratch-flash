@@ -21,7 +21,7 @@
 // John Maloney, April 2010
 //
 // A Scratch sprite object. State specific to sprites includes: position, direction,
-// rotation style, size, drag-ability, and pen state.
+// rotation style, size, draggability, and pen state.
 
 package scratch {
 	import flash.display.*;
