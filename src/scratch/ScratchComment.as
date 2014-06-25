@@ -19,7 +19,7 @@
 
 package scratch {
 	import flash.display.*;
-	import flash.events.MouseEvent;
+	import flash.events.*;
 	import flash.geom.Point;
 	import flash.text.*;
 	import blocks.Block;
@@ -248,6 +248,21 @@ public class ScratchComment extends Sprite {
 		contents.autoSize = TextFieldAutoSize.LEFT;
 		contents.defaultTextFormat = contentsFormat;
 		addChild(contents);
+		contents.addEventListener(FocusEvent.FOCUS_IN, focusIn);
+		contents.addEventListener(FocusEvent.FOCUS_OUT, focusOut);
+	}
+
+	private var oldContents:String;
+	private function focusIn(evt:FocusEvent):void {
+		oldContents = contents.text;
+	}
+
+	private function focusOut(evt:FocusEvent):void {
+		Scratch.app.runtime.recordChangeComment(this, oldContents, contents.text);
+	}
+
+	public function setContents(s:String):void {
+		contents.text = s;
 	}
 
 	private function addExpandButton():void {

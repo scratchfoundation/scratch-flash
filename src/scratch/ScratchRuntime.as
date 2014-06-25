@@ -1108,6 +1108,7 @@ public class ScratchRuntime {
 	private static const DELETE_COMMENT:int = 18;
 	private static const ADD_COMMENT:int = 19;
 	private static const DROP_COMMENT:int = 20;
+	private static const CHANGE_COMMENT:int = 21;
 
 	public function recordDropBlock(b:Block):void {
 		recordAction([DROP_BLOCK, app.viewedObj(), b.parent, b, b.originalState, b.saveState()]);
@@ -1189,13 +1190,17 @@ public class ScratchRuntime {
 	public function recordDropComment(c:ScratchComment):void {
 		recordAction([DROP_COMMENT, app.viewedObj(), c, c.originalState, c.saveState()]);
 	}
+	public function recordChangeComment(c:ScratchComment, old:String, text:String):void {
+		if (old == text) return;
+		recordAction([CHANGE_COMMENT, app.viewedObj(), c, old, text]);
+	}
 
 	private function recordAction(a:Array):void {
 		done.push(a);
 		undone.length = 0;
 	}
 
-	private static const scriptActions:Array = [DROP_BLOCK, REPLACE_ARG, INSERT_BLOCK, INSERT_BLOCK_ABOVE, INSERT_BLOCK_SUB1, INSERT_BLOCK_SUB2, INSERT_BLOCK_AROUND, DELETE_BLOCK, CLEAN_UP, CHANGE_INPUT, RENAME_SPRITE, DELETE_COMMENT, ADD_COMMENT, DROP_COMMENT];
+	private static const scriptActions:Array = [DROP_BLOCK, REPLACE_ARG, INSERT_BLOCK, INSERT_BLOCK_ABOVE, INSERT_BLOCK_SUB1, INSERT_BLOCK_SUB2, INSERT_BLOCK_AROUND, DELETE_BLOCK, CLEAN_UP, CHANGE_INPUT, RENAME_SPRITE, DELETE_COMMENT, ADD_COMMENT, DROP_COMMENT, CHANGE_COMMENT];
 	private function unperform(a:Array):void {
 		selectSpriteForAction(a);
 		switch (a[0]) {
@@ -1305,6 +1310,9 @@ public class ScratchRuntime {
 		case DROP_COMMENT:
 			a[2].restoreState(a[3]);
 			break;
+		case CHANGE_COMMENT:
+			a[2].setContents(a[3]);
+			break;
 		}
 		saveForAction(a);
 	}
@@ -1402,6 +1410,9 @@ public class ScratchRuntime {
 		case DROP_COMMENT:
 			a[2].restoreState(a[4]);
 			break;
+		case CHANGE_COMMENT:
+			a[2].setContents(a[4]);
+			break;
 		}
 		saveForAction(a);
 	}
@@ -1420,7 +1431,7 @@ public class ScratchRuntime {
 		case DELETE_SPRITE: return Translator.map('delete sprite');
 		case CLEAN_UP: return Translator.map('clean up');
 		case ADD_SPRITE: return Translator.map('add sprite');
-		case CHANGE_INPUT: return Translator.map('change input');
+		case CHANGE_INPUT: return Translator.map('edit input');
 		case RENAME_SPRITE: return Translator.map('rename sprite');
 		case RENAME_COSTUME: return a[1].isStage ? Translator.map('rename backdrop') : Translator.map('rename costume');
 		case RENAME_SOUND: return Translator.map('rename sound');
@@ -1428,6 +1439,7 @@ public class ScratchRuntime {
 		case DELETE_COMMENT: return Translator.map('delete comment');
 		case ADD_COMMENT: return Translator.map('add comment');
 		case DROP_COMMENT: return Translator.map('drop comment');
+		case CHANGE_COMMENT: return Translator.map('edit comment');
 		}
 		return '';
 	}
