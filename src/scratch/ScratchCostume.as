@@ -27,7 +27,7 @@
 // Internally, a costume consists of a base image and an optional text layer.
 // If a costume has a text layer, the text image is stored as a separate
 // bitmap and composited with the base image to create the costume bitmap.
-// Storing the text layer separately allows the text to be changed indpendent
+// Storing the text layer separately allows the text to be changed independent
 // of the base image. Saving the text image means that costumes with text
 // do not depend on the fonts available on the viewer's computer. (However,
 // editing the text *does* depend on the user's fonts.)
@@ -269,7 +269,7 @@ public class ScratchCostume {
 		return ((B.x-A.x)*(C.y-A.y)-(B.y-A.y)*(C.x-A.x));
 	}
 
-	/* make a convex hull of boundary of forground object in the binary
+	/* make a convex hull of boundary of foreground object in the binary
 	 image */
 	/* in some case L[0]=R[0], or L[ll]=R[rr] if first line or last line of
 	 object is composed of
@@ -526,7 +526,7 @@ public class ScratchCostume {
 		costumeName = jsonObj.costumeName;
 		baseLayerID = jsonObj.baseLayerID;
 		if (jsonObj.baseLayerID == undefined) {
-			if (jsonObj.imageID) baseLayerID = jsonObj.imageID; // slighly older .sb2 format
+			if (jsonObj.imageID) baseLayerID = jsonObj.imageID; // slightly older .sb2 format
 		}
 		baseLayerMD5 = jsonObj.baseLayerMD5;
 		if (jsonObj.bitmapResolution) bitmapResolution = jsonObj.bitmapResolution;
