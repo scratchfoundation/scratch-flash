@@ -673,6 +673,12 @@ public class ScratchRuntime {
 	//------------------------------
 
 	public function renameCostume(newName:String):void {
+		if (newName == app.viewedObj().currentCostume().costumeName) return;
+		recordRenameCostume(newName);
+		setCostumeName(newName);
+	}
+
+	private function setCostumeName(newName:String):void {
 		var obj:ScratchObj = app.viewedObj();
 		var costume:ScratchCostume = obj.currentCostume();
 		var oldName:String = costume.costumeName;
@@ -1090,6 +1096,7 @@ public class ScratchRuntime {
 	private static const ADD_SPRITE:int = 12;
 	private static const CHANGE_INPUT:int = 13;
 	private static const RENAME_SPRITE:int = 14;
+	private static const RENAME_COSTUME:int = 15;
 
 	public function recordDropBlock(b:Block):void {
 		recordAction([DROP_BLOCK, app.viewedObj(), b.parent, b, b.originalState, b.saveState()]);
@@ -1140,6 +1147,11 @@ public class ScratchRuntime {
 	public function recordRenameSprite(name:String):void {
 		var obj:ScratchObj = app.viewedObj();
 		recordAction([RENAME_SPRITE, obj, obj.objName, name]);
+	}
+	public function recordRenameCostume(name:String):void {
+		var obj:ScratchObj = app.viewedObj();
+		var costume:ScratchCostume = obj.currentCostume();
+		recordAction([RENAME_COSTUME, obj, costume, costume.costumeName, name]);
 	}
 
 	private function recordAction(a:Array):void {
@@ -1224,6 +1236,13 @@ public class ScratchRuntime {
 			setSpriteName(a[2]);
 			app.libraryPart.refresh();
 			break;
+		case RENAME_COSTUME:
+			selectSpriteIfNeeded(a[1]);
+			selectTabIfNeeded('images');
+			a[1].currentCostumeIndex = a[1].costumes.indexOf(a[2]);
+			setCostumeName(a[3]);
+			app.imagesPart.refresh();
+			break;
 		}
 	}
 
@@ -1286,6 +1305,13 @@ public class ScratchRuntime {
 			setSpriteName(a[3]);
 			app.libraryPart.refresh();
 			break;
+		case RENAME_COSTUME:
+			selectSpriteIfNeeded(a[1]);
+			selectTabIfNeeded('images');
+			a[1].currentCostumeIndex = a[1].costumes.indexOf(a[2]);
+			setCostumeName(a[4]);
+			app.imagesPart.refresh();
+			break;
 		}
 	}
 
@@ -1305,6 +1331,7 @@ public class ScratchRuntime {
 		case ADD_SPRITE: return Translator.map('add sprite');
 		case CHANGE_INPUT: return Translator.map('change input');
 		case RENAME_SPRITE: return Translator.map('rename sprite');
+		case RENAME_COSTUME: return a[1].isStage ? Translator.map('rename backdrop') : Translator.map('rename costume');
 		}
 		return '';
 	}
