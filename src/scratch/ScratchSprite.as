@@ -56,7 +56,7 @@ public class ScratchSprite extends ScratchObj {
 	public var penColorCache:Number = 0xFF;
 
 	private var cachedBitmap:BitmapData;	// current costume, rotated & scaled
-	private var cachedBounds:Rectangle;	// bounds of non-transparent cachedBitmap in stage coords
+	private var cachedBounds:Rectangle;		// bounds of non-transparent cachedBitmap in stage coords
 
 	public var localMotionAmount:int = -2;
 	public var localMotionDirection:int = -2;
