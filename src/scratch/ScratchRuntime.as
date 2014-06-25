@@ -1296,6 +1296,7 @@ public class ScratchRuntime {
 			a[2].restoreState(a[3]);
 			break;
 		}
+		saveForAction(a);
 	}
 
 	private function perform(a:Array):void {
@@ -1389,6 +1390,7 @@ public class ScratchRuntime {
 			a[2].restoreState(a[4]);
 			break;
 		}
+		saveForAction(a);
 	}
 
 	public function getActionName(a:Array):String {
@@ -1421,6 +1423,15 @@ public class ScratchRuntime {
 		if (scriptActions.indexOf(a[0]) != -1) {
 			selectSpriteIfNeeded(a[1]);
 			selectTabIfNeeded('scripts');
+		}
+	}
+
+	private function saveForAction(a:Array):void {
+		if (scriptActions.indexOf(a[0]) != -1) {
+			app.scriptsPane.saveScripts();
+			app.scriptsPane.updateSize();
+		} else {
+			app.setSaveNeeded();
 		}
 	}
 
