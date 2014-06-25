@@ -682,6 +682,12 @@ public class ScratchRuntime {
 	}
 
 	public function renameSprite(newName:String):void {
+		if (newName == app.viewedObj().objName) return;
+		recordRenameSprite(newName);
+		setSpriteName(newName);
+	}
+
+	private function setSpriteName(newName:String):void {
 		var obj:ScratchObj = app.viewedObj();
 		var oldName:String = obj.objName;
 		obj.objName = '';
@@ -1083,6 +1089,7 @@ public class ScratchRuntime {
 	private static const DELETE_SPRITE:int = 11;
 	private static const ADD_SPRITE:int = 12;
 	private static const CHANGE_INPUT:int = 13;
+	private static const RENAME_SPRITE:int = 14;
 
 	public function recordDropBlock(b:Block):void {
 		recordAction([DROP_BLOCK, app.viewedObj(), b.parent, b, b.originalState, b.saveState()]);
@@ -1130,13 +1137,17 @@ public class ScratchRuntime {
 		if (old == i.field.text) return;
 		recordAction([CHANGE_INPUT, app.viewedObj(), i, old, i.field.text]);
 	}
+	public function recordRenameSprite(name:String):void {
+		var obj:ScratchObj = app.viewedObj();
+		recordAction([RENAME_SPRITE, obj, obj.objName, name]);
+	}
 
 	private function recordAction(a:Array):void {
 		done.push(a);
 		undone.length = 0;
 	}
 
-	private static const scriptActions:Array = [DROP_BLOCK, REPLACE_ARG, INSERT_BLOCK, INSERT_BLOCK_ABOVE, INSERT_BLOCK_SUB1, INSERT_BLOCK_SUB2, INSERT_BLOCK_AROUND, DELETE_BLOCK, CLEAN_UP, CHANGE_INPUT];
+	private static const scriptActions:Array = [DROP_BLOCK, REPLACE_ARG, INSERT_BLOCK, INSERT_BLOCK_ABOVE, INSERT_BLOCK_SUB1, INSERT_BLOCK_SUB2, INSERT_BLOCK_AROUND, DELETE_BLOCK, CLEAN_UP, CHANGE_INPUT, RENAME_SPRITE];
 	private function unperform(a:Array):void {
 		selectSpriteForAction(a);
 		switch (a[0]) {
@@ -1207,6 +1218,11 @@ public class ScratchRuntime {
 		case CHANGE_INPUT:
 			a[2].setArgValue(a[3]);
 			break;
+		case RENAME_SPRITE:
+			selectSpriteIfNeeded(a[1]);
+			setSpriteName(a[2]);
+			app.libraryPart.refresh();
+			break;
 		}
 	}
 
@@ -1263,6 +1279,11 @@ public class ScratchRuntime {
 		case CHANGE_INPUT:
 			a[2].setArgValue(a[4]);
 			break;
+		case RENAME_SPRITE:
+			selectSpriteIfNeeded(a[1]);
+			setSpriteName(a[3]);
+			app.libraryPart.refresh();
+			break;
 		}
 	}
 
@@ -1281,6 +1302,7 @@ public class ScratchRuntime {
 		case CLEAN_UP: return Translator.map('clean up');
 		case ADD_SPRITE: return Translator.map('add sprite');
 		case CHANGE_INPUT: return Translator.map('change input');
+		case RENAME_SPRITE: return Translator.map('rename sprite');
 		}
 		return '';
 	}
