@@ -1069,27 +1069,27 @@ public class ScratchRuntime {
 	private static const INSERT_BLOCK_AROUND:int = 7;
 
 	public function recordDropBlock(b:Block):void {
-		recordAction([DROP_BLOCK, b.parent, b, b.originalState, b.saveState()]);
+		recordAction([DROP_BLOCK, app.viewedObj(), b.parent, b, b.originalState, b.saveState()]);
 	}
 
 	public function recordReplaceArg(a:DisplayObject, b:Block):void {
-		recordAction([REPLACE_ARG, a.parent, a, b, Block(a.parent).argIndex(a), b.originalState]);
+		recordAction([REPLACE_ARG, app.viewedObj(), a.parent, a, b, Block(a.parent).argIndex(a), b.originalState]);
 	}
 
 	public function recordInsertBlock(t:Block, b:Block):void {
-		recordAction([INSERT_BLOCK, t, b, t.nextBlock, b.originalState]);
+		recordAction([INSERT_BLOCK, app.viewedObj(), t, b, t.nextBlock, b.originalState]);
 	}
 	public function recordInsertBlockAbove(t:Block, b:Block):void {
-		recordAction([INSERT_BLOCK_ABOVE, t, b, t.saveState(), b.originalState]);
+		recordAction([INSERT_BLOCK_ABOVE, app.viewedObj(), t, b, t.saveState(), b.originalState]);
 	}
 	public function recordInsertBlockSub1(t:Block, b:Block):void {
-		recordAction([INSERT_BLOCK_SUB1, t, b, t.subStack1, b.originalState]);
+		recordAction([INSERT_BLOCK_SUB1, app.viewedObj(), t, b, t.subStack1, b.originalState]);
 	}
 	public function recordInsertBlockSub2(t:Block, b:Block):void {
-		recordAction([INSERT_BLOCK_SUB2, t, b, t.subStack2, b.originalState]);
+		recordAction([INSERT_BLOCK_SUB2, app.viewedObj(), t, b, t.subStack2, b.originalState]);
 	}
 	public function recordInsertBlockAround(t:Block, b:Block):void {
-		recordAction([INSERT_BLOCK_AROUND, t, b, t.saveState(), b.originalState]);
+		recordAction([INSERT_BLOCK_AROUND, app.viewedObj(), t, b, t.saveState(), b.originalState]);
 	}
 
 	private function recordAction(a:Array):void {
@@ -1097,85 +1097,96 @@ public class ScratchRuntime {
 		undone.length = 0;
 	}
 
+	private static const scriptActions:Array = [DROP_BLOCK, REPLACE_ARG, INSERT_BLOCK, INSERT_BLOCK_ABOVE, INSERT_BLOCK_SUB1, INSERT_BLOCK_SUB2, INSERT_BLOCK_AROUND];
 	private function unperform(a:Array):void {
+		selectSpriteForAction(a);
 		switch (a[0]) {
 		case DROP_BLOCK:
-			removeBlock(a[2]);
-			a[2].restoreState(a[3]);
+			removeBlock(a[3]);
+			a[3].restoreState(a[4]);
 			break;
 		case REPLACE_ARG:
-			a[1].replaceArg(a[4], a[2]);
-			a[3].restoreState(a[5]);
+			a[2].replaceArg(a[5], a[3]);
+			a[4].restoreState(a[6]);
 			break;
 		case INSERT_BLOCK:
-			removeBlock(a[2]);
-			if (a[3]) {
-				removeBlock(a[3]);
-				a[1].insertBlock(a[3]);
+			removeBlock(a[3]);
+			if (a[4]) {
+				removeBlock(a[4]);
+				a[2].insertBlock(a[4]);
 			}
-			a[2].restoreState(a[4]);
+			a[3].restoreState(a[5]);
 			break;
 		case INSERT_BLOCK_ABOVE:
-			removeBlock(a[1]);
 			removeBlock(a[2]);
-			a[1].restoreState(a[3]);
+			removeBlock(a[3]);
 			a[2].restoreState(a[4]);
+			a[3].restoreState(a[5]);
 			break;
 		case INSERT_BLOCK_SUB1:
-			removeBlock(a[2]);
-			if (a[3]) {
-				removeBlock(a[3]);
-				a[1].insertBlockSub1(a[3]);
+			removeBlock(a[3]);
+			if (a[4]) {
+				removeBlock(a[4]);
+				a[2].insertBlockSub1(a[4]);
 			}
-			a[2].restoreState(a[4]);
+			a[3].restoreState(a[5]);
 			break;
 		case INSERT_BLOCK_SUB2:
-			removeBlock(a[2]);
-			if (a[3]) {
-				removeBlock(a[3]);
-				a[1].insertBlockSub2(a[3]);
+			removeBlock(a[3]);
+			if (a[4]) {
+				removeBlock(a[4]);
+				a[2].insertBlockSub2(a[4]);
 			}
-			a[2].restoreState(a[4]);
+			a[3].restoreState(a[5]);
 			break;
 		case INSERT_BLOCK_AROUND:
-			removeBlock(a[1]);
 			removeBlock(a[2]);
-			a[1].restoreState(a[3]);
+			removeBlock(a[3]);
 			a[2].restoreState(a[4]);
+			a[3].restoreState(a[5]);
 			break;
 		}
 	}
 
 	private function perform(a:Array):void {
+		selectSpriteForAction(a);
 		switch (a[0]) {
 		case DROP_BLOCK:
-			removeBlock(a[2]);
-			a[2].restoreState(a[4]);
+			removeBlock(a[3]);
+			a[3].restoreState(a[5]);
 			break;
 		case REPLACE_ARG:
-			removeBlock(a[3]);
-			a[1].replaceArgWithBlock(a[2], a[3], app.scriptsPane);
+			removeBlock(a[4]);
+			a[2].replaceArgWithBlock(a[3], a[4], app.scriptsPane);
 			break;
 		case INSERT_BLOCK:
-			removeBlock(a[2]);
-			a[1].insertBlock(a[2]);
+			removeBlock(a[3]);
+			a[2].insertBlock(a[3]);
 			break;
 		case INSERT_BLOCK_ABOVE:
-			removeBlock(a[2]);
-			a[1].insertBlockAbove(a[2]);
+			removeBlock(a[3]);
+			a[2].insertBlockAbove(a[3]);
 			break;
 		case INSERT_BLOCK_SUB1:
-			removeBlock(a[2]);
-			a[1].insertBlockSub1(a[2]);
+			removeBlock(a[3]);
+			a[2].insertBlockSub1(a[3]);
 			break;
 		case INSERT_BLOCK_SUB2:
-			removeBlock(a[2]);
-			a[1].insertBlockSub2(a[2]);
+			removeBlock(a[3]);
+			a[2].insertBlockSub2(a[3]);
 			break;
 		case INSERT_BLOCK_AROUND:
-			removeBlock(a[2]);
-			a[1].insertBlockAround(a[2]);
+			removeBlock(a[3]);
+			a[2].insertBlockAround(a[3]);
 			break;
+		}
+	}
+
+	private function selectSpriteForAction(a:Array):void {
+		if (scriptActions.indexOf(a[0]) != -1) {
+			if (app.viewedObj() != a[1]) {
+				app.selectSprite(a[1]);
+			}
 		}
 	}
 
