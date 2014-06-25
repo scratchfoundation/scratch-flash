@@ -1067,15 +1067,14 @@ public class ScratchRuntime {
 	private static const INSERT_BLOCK_SUB1:int = 5;
 	private static const INSERT_BLOCK_SUB2:int = 6;
 	private static const INSERT_BLOCK_AROUND:int = 7;
+	private static const DROP_INTO_THUMBNAIL:int = 8;
 
 	public function recordDropBlock(b:Block):void {
 		recordAction([DROP_BLOCK, app.viewedObj(), b.parent, b, b.originalState, b.saveState()]);
 	}
-
 	public function recordReplaceArg(a:DisplayObject, b:Block):void {
 		recordAction([REPLACE_ARG, app.viewedObj(), a.parent, a, b, Block(a.parent).argIndex(a), b.originalState]);
 	}
-
 	public function recordInsertBlock(t:Block, b:Block):void {
 		recordAction([INSERT_BLOCK, app.viewedObj(), t, b, t.nextBlock, b.originalState]);
 	}
@@ -1090,6 +1089,9 @@ public class ScratchRuntime {
 	}
 	public function recordInsertBlockAround(t:Block, b:Block):void {
 		recordAction([INSERT_BLOCK_AROUND, app.viewedObj(), t, b, t.saveState(), b.originalState]);
+	}
+	public function recordDropIntoThumbnail(t:ScratchObj, b:Block):void {
+		recordAction([DROP_INTO_THUMBNAIL, t, b]);
 	}
 
 	private function recordAction(a:Array):void {
@@ -1145,6 +1147,10 @@ public class ScratchRuntime {
 			a[2].restoreState(a[4]);
 			a[3].restoreState(a[5]);
 			break;
+		case DROP_INTO_THUMBNAIL:
+			selectSpriteIfNeeded(a[1]);
+			if (a[2].parent) a[2].parent.removeChild(a[2]);
+			break;
 		}
 	}
 
@@ -1179,14 +1185,24 @@ public class ScratchRuntime {
 			removeBlock(a[3]);
 			a[2].insertBlockAround(a[3]);
 			break;
+		case DROP_INTO_THUMBNAIL:
+			selectSpriteIfNeeded(a[1]);
+			a[2].x = app.scriptsPane.padding;
+			a[2].y = app.scriptsPane.padding;
+			app.scriptsPane.addChild(a[2]);
+			break;
 		}
 	}
 
 	private function selectSpriteForAction(a:Array):void {
 		if (scriptActions.indexOf(a[0]) != -1) {
-			if (app.viewedObj() != a[1]) {
-				app.selectSprite(a[1]);
-			}
+			selectSpriteIfNeeded(a[1]);
+		}
+	}
+
+	private function selectSpriteIfNeeded(s:ScratchObj):void {
+		if (app.viewedObj() != s) {
+			app.selectSprite(s);
 		}
 	}
 
