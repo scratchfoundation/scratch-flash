@@ -412,7 +412,7 @@ public class Scratch extends Sprite {
 //			stagePart.playButtonPressed(null);
 //			evt.preventDefault();
 //			evt.stopImmediatePropagation();
-		} else if (isOSX ? evt.commandKey : evt.controlKey) {
+		} else if (evt.ctrlKey) {
 			var handled:Boolean = true;
 			if (evt.charCode == 122) {
 				runtime.undo();
