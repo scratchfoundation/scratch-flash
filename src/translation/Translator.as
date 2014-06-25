@@ -115,7 +115,7 @@ public class Translator {
 	}
 
 	private static function setFontsFor(lang:String):void {
-		// Set the rightToLeft flag and font sizes the given langauge.
+		// Set the rightToLeft flag and font sizes the given language.
 
 		currentLang = lang;
 		isEnglish = (lang == 'en');
