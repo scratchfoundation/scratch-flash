@@ -1068,6 +1068,7 @@ public class ScratchRuntime {
 	private static const INSERT_BLOCK_AROUND:int = 7;
 	private static const DROP_INTO_THUMBNAIL:int = 8;
 	private static const DELETE_BLOCK:int = 9;
+	private static const CLEAN_UP:int = 10;
 
 	public function recordDropBlock(b:Block):void {
 		recordAction([DROP_BLOCK, app.viewedObj(), b.parent, b, b.originalState, b.saveState()]);
@@ -1096,13 +1097,21 @@ public class ScratchRuntime {
 	public function recordDeleteBlock(b:Block, state:BlockState):void {
 		recordAction([DELETE_BLOCK, app.viewedObj(), b, state]);
 	}
+	public function recordCleanUp():void {
+		var obj:ScratchObj = app.viewedObj();
+		var positions:Array = [];
+		for each (var s:Block in obj.scripts) {
+			positions.push([s, s.x, s.y]);
+		}
+		recordAction([CLEAN_UP, obj, positions]);
+	}
 
 	private function recordAction(a:Array):void {
 		done.push(a);
 		undone.length = 0;
 	}
 
-	private static const scriptActions:Array = [DROP_BLOCK, REPLACE_ARG, INSERT_BLOCK, INSERT_BLOCK_ABOVE, INSERT_BLOCK_SUB1, INSERT_BLOCK_SUB2, INSERT_BLOCK_AROUND, DELETE_BLOCK];
+	private static const scriptActions:Array = [DROP_BLOCK, REPLACE_ARG, INSERT_BLOCK, INSERT_BLOCK_ABOVE, INSERT_BLOCK_SUB1, INSERT_BLOCK_SUB2, INSERT_BLOCK_AROUND, DELETE_BLOCK, CLEAN_UP];
 	private function unperform(a:Array):void {
 		selectSpriteForAction(a);
 		switch (a[0]) {
@@ -1157,6 +1166,12 @@ public class ScratchRuntime {
 		case DELETE_BLOCK:
 			a[2].restoreState(a[3]);
 			break;
+		case CLEAN_UP:
+			for each (var s:Array in a[2]) {
+				s[0].x = s[1];
+				s[0].y = s[2];
+			}
+			break;
 		}
 	}
 
@@ -1200,6 +1215,9 @@ public class ScratchRuntime {
 		case DELETE_BLOCK:
 			removeBlock(a[2]);
 			if (a[2].parent) a[2].parent.removeChild(a[2]);
+			break;
+		case CLEAN_UP:
+			app.scriptsPane.cleanup();
 			break;
 		}
 	}
