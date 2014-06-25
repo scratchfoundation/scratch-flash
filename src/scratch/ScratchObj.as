@@ -220,7 +220,7 @@ public class ScratchObj extends Sprite {
 
 	protected function adjustForRotationCenter():void {
 		// Adjust the offset of img relative to it's parent. If this object is a
-		// ScratchSprite, then img is adusted based on the costume's rotation center.
+		// ScratchSprite, then img is adjusted based on the costume's rotation center.
 		// If it is a ScratchStage, img is centered on the stage.
 		var costumeObj:DisplayObject = img.getChildAt(0);
 		if (isStage) {
