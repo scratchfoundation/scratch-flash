@@ -50,9 +50,9 @@
 // session would run that long, this code doesn't deal with clock wrapping.
 // Since Scratch only runs at discrete intervals, timed commands may be resumed a few
 // milliseconds late. These small errors accumulate, causing threads to slip out of
-// synchronization with each other, a problem especially noticable in music projects.
-// This problem is addressed by recording the amount of time slipage and shortening
-// subsequent timed commmands slightly to "catch up".
+// synchronization with each other, a problem especially noticeable in music projects.
+// This problem is addressed by recording the amount of time slippage and shortening
+// subsequent timed commands slightly to "catch up".
 // Delay times are rounded to milliseconds, and the minimum delay is a millisecond.
 
 package interpreter {
