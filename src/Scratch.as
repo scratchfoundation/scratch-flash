@@ -929,7 +929,8 @@ public class Scratch extends Sprite {
 	public function addSprite(spr:ScratchSprite, showImages:Boolean = false):void {
 		var c:ScratchCostume, byteCount:int;
 		for each (c in spr.costumes) {
-			if (c.baseLayerData) byteCount + c.baseLayerData.length;
+			if (!c.baseLayerData) c.prepareToSave();
+			byteCount + c.baseLayerData.length;
 		}
 		if (!okayToAdd(byteCount)) return; // not enough room
 		stagePane.addChild(spr);
