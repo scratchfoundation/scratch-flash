@@ -637,7 +637,7 @@ public dynamic class SVGPath extends Array {
 	}
 
 	//////////////////////////////////////////////////////
-	// From anchorpoints to Bezier
+	// From anchor points to Bezier
 	/////////////////////////////////////////////////////
 	public function fromAnchorPoints(points:Array):void {
 		var first:Point = points[0];
@@ -670,7 +670,7 @@ public dynamic class SVGPath extends Array {
 		var g:Graphics = s.graphics;
 		var lastCP:Point = new Point();
 
-		// Pre-render to get ther path bounds
+		// Pre-render to get their path bounds
 		g.lineStyle(0.5);
 		for each(var cmd:Array in this)
 			renderPathCmd(cmd, g, lastCP);
@@ -883,7 +883,7 @@ public dynamic class SVGPath extends Array {
 	}
 
 	// functions below were take from com.lorentz.SVG.utils.Bezier
-	// and addapted for our purposes
+	// and adapted for our purposes
 	private function getQuadraticBezierPoints(a:Point, b:Point, c:Point, d:Point, ctx:PathDrawContext):void {
 		// find intersection between bezier arms
 		var s:Point = intersect2Lines(a, b, c, d);
