@@ -20,7 +20,7 @@
 // SqueakSoundDecoder.as
 // John Maloney, November 2010
 //
-// Decode a Flash/Squeak ADPCM compressed sounds with 2, 3, 4, or 5 bits pers sample.
+// Decode a Flash/Squeak ADPCM compressed sounds with 2, 3, 4, or 5 bits per sample.
 
 package sound {
 	import flash.utils.*;
