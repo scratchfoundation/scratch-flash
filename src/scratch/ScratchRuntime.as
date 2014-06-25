@@ -1107,6 +1107,7 @@ public class ScratchRuntime {
 	private static const EDIT_SOUND:int = 17;
 	private static const DELETE_COMMENT:int = 18;
 	private static const ADD_COMMENT:int = 19;
+	private static const DROP_COMMENT:int = 20;
 
 	public function recordDropBlock(b:Block):void {
 		recordAction([DROP_BLOCK, app.viewedObj(), b.parent, b, b.originalState, b.saveState()]);
@@ -1178,13 +1179,16 @@ public class ScratchRuntime {
 	public function recordAddComment(c:ScratchComment):void {
 		recordAction([ADD_COMMENT, app.viewedObj(), c, c.x, c.y, c.blockRef]);
 	}
+	public function recordDropComment(c:ScratchComment):void {
+		recordAction([DROP_COMMENT, app.viewedObj(), c, c.originalState, c.saveState()]);
+	}
 
 	private function recordAction(a:Array):void {
 		done.push(a);
 		undone.length = 0;
 	}
 
-	private static const scriptActions:Array = [DROP_BLOCK, REPLACE_ARG, INSERT_BLOCK, INSERT_BLOCK_ABOVE, INSERT_BLOCK_SUB1, INSERT_BLOCK_SUB2, INSERT_BLOCK_AROUND, DELETE_BLOCK, CLEAN_UP, CHANGE_INPUT, RENAME_SPRITE, DELETE_COMMENT, ADD_COMMENT];
+	private static const scriptActions:Array = [DROP_BLOCK, REPLACE_ARG, INSERT_BLOCK, INSERT_BLOCK_ABOVE, INSERT_BLOCK_SUB1, INSERT_BLOCK_SUB2, INSERT_BLOCK_AROUND, DELETE_BLOCK, CLEAN_UP, CHANGE_INPUT, RENAME_SPRITE, DELETE_COMMENT, ADD_COMMENT, DROP_COMMENT];
 	private function unperform(a:Array):void {
 		selectSpriteForAction(a);
 		switch (a[0]) {
@@ -1288,6 +1292,9 @@ public class ScratchRuntime {
 		case ADD_COMMENT:
 			app.scriptsPane.removeChild(a[2]);
 			break;
+		case DROP_COMMENT:
+			a[2].restoreState(a[3]);
+			break;
 		}
 	}
 
@@ -1378,6 +1385,9 @@ public class ScratchRuntime {
 			a[2].y = a[4];
 			a[2].blockRef = a[5];
 			break;
+		case DROP_COMMENT:
+			a[2].restoreState(a[4]);
+			break;
 		}
 	}
 
@@ -1402,6 +1412,7 @@ public class ScratchRuntime {
 		case EDIT_SOUND: return Translator.map(a[3]);
 		case DELETE_COMMENT: return Translator.map('delete comment');
 		case ADD_COMMENT: return Translator.map('add comment');
+		case DROP_COMMENT: return Translator.map('drop comment');
 		}
 		return '';
 	}

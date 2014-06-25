@@ -393,6 +393,7 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 		if (b) blockDropped(b);
 		if (c) {
 			c.blockRef = blockAtPoint(localP); // link to the block under comment top-left corner, or unlink if none
+			app.runtime.recordDropComment(c);
 		}
 		saveScripts();
 		updateSize();

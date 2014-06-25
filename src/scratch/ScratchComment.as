@@ -45,6 +45,8 @@ public class ScratchComment extends Sprite {
 	private var isOpen:Boolean;
 	private var expandedSize:Point;
 
+	public var originalState:Array;
+
 	public function ScratchComment(s:String = 'add comment here...', isOpen:Boolean = true, width:int = 150, blockID:int = -1) {
 		this.isOpen = isOpen;
 		this.blockID = blockID;
@@ -194,7 +196,7 @@ public class ScratchComment extends Sprite {
 
 	public function deleteComment(original:Boolean = false):void {
 		var app:Scratch = Scratch.app;
-		app.runtime.recordDeleteComment(this, original ? app.gh.originalPosition.x : x, original ? app.gh.originalPosition.y : y);
+		app.runtime.recordDeleteComment(this, original ? originalState[1] : x, original ? originalState[2] : y);
 		if (parent) parent.removeChild(this);
 		app.scriptsPane.saveScripts();
 	}
@@ -275,6 +277,29 @@ public class ScratchComment extends Sprite {
 		}
 		g.endFill();
 		return icon;
+	}
+
+	public function saveOriginalState():void {
+		originalState = saveState();
+	}
+
+	public function saveState():Array {
+		return [parent, x, y, blockRef];
+	}
+
+	public function restoreOriginalState():void {
+		restoreState(originalState);
+	}
+
+	public function restoreState(s:Array):void {
+		if (s[0]) {
+			s[0].addChild(this);
+			x = s[1];
+			y = s[2];
+			blockRef = s[3];
+		} else if (parent) {
+			parent.removeChild(this);
+		}
 	}
 
 }}
