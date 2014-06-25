@@ -1081,6 +1081,7 @@ public class ScratchRuntime {
 	private static const DELETE_BLOCK:int = 9;
 	private static const CLEAN_UP:int = 10;
 	private static const DELETE_SPRITE:int = 11;
+	private static const ADD_SPRITE:int = 12;
 
 	public function recordDropBlock(b:Block):void {
 		recordAction([DROP_BLOCK, app.viewedObj(), b.parent, b, b.originalState, b.saveState()]);
@@ -1119,6 +1120,9 @@ public class ScratchRuntime {
 	}
 	public function recordDeleteSprite(s:ScratchSprite):void {
 		recordAction([DELETE_SPRITE, s, s.scratchX, s.scratchY]);
+	}
+	public function recordAddSprite(s:ScratchSprite):void {
+		recordAction([ADD_SPRITE, s]);
 	}
 
 	private function recordAction(a:Array):void {
@@ -1188,9 +1192,11 @@ public class ScratchRuntime {
 			}
 			break;
 		case DELETE_SPRITE:
-			app.addNewSprite(a[1], false, false, false);
+			app.addSprite(a[1]);
 			a[1].setScratchXY(a[2], a[3]);
-			app.selectSprite(a[1]);
+			break;
+		case ADD_SPRITE:
+			a[1].deleteSprite();
 			break;
 		}
 	}
@@ -1242,6 +1248,9 @@ public class ScratchRuntime {
 		case DELETE_SPRITE:
 			a[1].deleteSprite();
 			break;
+		case ADD_SPRITE:
+			app.addSprite(a[1]);
+			break;
 		}
 	}
 
@@ -1258,6 +1267,7 @@ public class ScratchRuntime {
 		case DELETE_BLOCK:
 		case DELETE_SPRITE: return Translator.map('delete');
 		case CLEAN_UP: return Translator.map('clean up');
+		case ADD_SPRITE: return Translator.map('add sprite');
 		}
 		return '';
 	}

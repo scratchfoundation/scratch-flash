@@ -926,16 +926,12 @@ public class Scratch extends Sprite {
 	protected function canUndoRevert():Boolean { return revertUndo != null }
 	private function clearRevertUndo():void { revertUndo = null }
 
-	public function addNewSprite(spr:ScratchSprite, showImages:Boolean = false, atMouse:Boolean = false, isNew:Boolean = true):void {
+	public function addSprite(spr:ScratchSprite, showImages:Boolean = false):void {
 		var c:ScratchCostume, byteCount:int;
-		for each (c in spr.costumes) byteCount + c.baseLayerData.length;
-		if (!okayToAdd(byteCount)) return; // not enough room
-		spr.objName = stagePane.unusedSpriteName(spr.objName);
-		if (isNew) {
-			spr.indexInLibrary = 1000000; // add at end of library
-			spr.setScratchXY(int(200 * Math.random() - 100), int(100 * Math.random() - 50));
+		for each (c in spr.costumes) {
+			if (c.baseLayerData) byteCount + c.baseLayerData.length;
 		}
-		if (atMouse) spr.setScratchXY(stagePane.scratchMouseX(), stagePane.scratchMouseY());
+		if (!okayToAdd(byteCount)) return; // not enough room
 		stagePane.addChild(spr);
 		selectSprite(spr);
 		setTab(showImages ? 'images' : 'scripts');
@@ -944,6 +940,15 @@ public class Scratch extends Sprite {
 		for each (c in spr.costumes) {
 			if (ScratchCostume.isSVGData(c.baseLayerData)) c.setSVGData(c.baseLayerData, false);
 		}
+	}
+
+	public function addNewSprite(spr:ScratchSprite, showImages:Boolean = false, atMouse:Boolean = false):void {
+		spr.objName = stagePane.unusedSpriteName(spr.objName);
+		spr.indexInLibrary = 1000000; // add at end of library
+		spr.setScratchXY(int(200 * Math.random() - 100), int(100 * Math.random() - 50));
+		if (atMouse) spr.setScratchXY(stagePane.scratchMouseX(), stagePane.scratchMouseY());
+		runtime.recordAddSprite(spr);
+		addSprite(spr, showImages);
 	}
 
 	public function addSound(snd:ScratchSound, targetObj:ScratchObj = null):void {
