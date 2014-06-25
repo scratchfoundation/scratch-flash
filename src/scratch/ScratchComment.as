@@ -204,9 +204,9 @@ public class ScratchComment extends Sprite {
 	public function duplicateComment(deltaX:Number, deltaY:Number):void {
 		if (!parent) return;
 		var dup:ScratchComment = new ScratchComment(contents.text, isOpen);
-		dup.x = x + deltaX;
-		dup.y = y + deltaY;
-		parent.addChild(dup);
+		var p:Point = localToGlobal(new Point(0, 0));
+		dup.x = p.x + deltaX;
+		dup.y = p.y + deltaY;
 		Scratch.app.gh.grabOnMouseUp(dup);
 	}
 
