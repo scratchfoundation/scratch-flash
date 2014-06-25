@@ -63,7 +63,7 @@ public class WaveformView extends Sprite implements DragClient {
 	private var condensedSamples:Vector.<int> = new Vector.<int>();
 	private var samplesPerCondensedSample:int = 32;
 
-	private var scrollStart:int;		// first visible condensedSample
+	private var scrollStart:int;	// first visible condensedSample
 	private var selectionStart:int;	// first selected condensedSample
 	private var selectionEnd:int;	// last selected condensedSample
 
@@ -577,7 +577,7 @@ public class WaveformView extends Sprite implements DragClient {
 			if (Math.abs(startOffset - selectionStart) < close) startOffset = selectionStart;
 			if (mousePastEnd()) startOffset = condensedSamples.length;
 		} else {
-			// Clicks close to start or end of slection adjust the selection.
+			// Clicking close to the start or end of a selection adjusts the selection.
 			if (Math.abs(startOffset - selectionStart) < close) selectMode = 'start';
 			else if (Math.abs(startOffset - selectionEnd) < close) selectMode = 'end';
 		}
