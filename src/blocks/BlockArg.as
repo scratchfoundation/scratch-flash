@@ -186,7 +186,7 @@ public class BlockArg extends Sprite {
 	private function stopEditing(ignore:*):void {
 		field.type = TextFieldType.DYNAMIC;
 		field.selectable = false;
-		if (!Block(parent).isInPalette()) {
+		if (!Block(parent).isInPalette() && stage) {
 			Scratch.app.runtime.recordChangeInput(this, oldValue);
 		}
 	}
