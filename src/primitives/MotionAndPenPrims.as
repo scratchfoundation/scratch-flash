@@ -303,7 +303,7 @@ public class MotionAndPenPrims {
 
 	private function turnAwayFromEdge(s:ScratchSprite):Boolean {
 		// turn away from the nearest edge if it's close enough; otherwise do nothing
-		// Note: comparisions are in the stage coordinates, with origin (0, 0)
+		// Note: comparisons are in the stage coordinates, with origin (0, 0)
 		// use bounding rect of the sprite to account for costume rotation and scale
 		var r:Rectangle = s.getRect(app.stagePane);
 		// measure distance to edges
