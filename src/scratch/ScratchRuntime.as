@@ -1104,6 +1104,7 @@ public class ScratchRuntime {
 	private static const RENAME_SPRITE:int = 14;
 	private static const RENAME_COSTUME:int = 15;
 	private static const RENAME_SOUND:int = 16;
+	private static const EDIT_SOUND:int = 17;
 
 	public function recordDropBlock(b:Block):void {
 		recordAction([DROP_BLOCK, app.viewedObj(), b.parent, b, b.originalState, b.saveState()]);
@@ -1163,6 +1164,11 @@ public class ScratchRuntime {
 	public function recordRenameSound(s:ScratchSound, name:String):void {
 		var obj:ScratchObj = app.viewedObj();
 		recordAction([RENAME_SOUND, obj, s, s.soundName, name]);
+	}
+	public function recordEditSound(s:ScratchSound, action:String, record:Array):void {
+		var obj:ScratchObj = app.viewedObj();
+		var d:Object = s.editorData;
+		recordAction([EDIT_SOUND, obj, s, action, [d.samples, d.condensedSamples, d.samplesPerCondensedSample], record]);
 	}
 
 	private function recordAction(a:Array):void {
@@ -1260,6 +1266,12 @@ public class ScratchRuntime {
 			setSoundName(a[2], a[3]);
 			app.soundsPart.selectSound(a[2]);
 			break;
+		case EDIT_SOUND:
+			selectSpriteIfNeeded(a[1]);
+			selectTabIfNeeded('sounds');
+			app.soundsPart.selectSound(a[2]);
+			app.soundsPart.editor.waveform.installUndoRecord(a[4]);
+			break;
 		}
 	}
 
@@ -1335,6 +1347,12 @@ public class ScratchRuntime {
 			setSoundName(a[2], a[4]);
 			app.soundsPart.selectSound(a[2]);
 			break;
+		case EDIT_SOUND:
+			selectSpriteIfNeeded(a[1]);
+			selectTabIfNeeded('sounds');
+			app.soundsPart.selectSound(a[2]);
+			app.soundsPart.editor.waveform.installUndoRecord(a[5]);
+			break;
 		}
 	}
 
@@ -1356,6 +1374,7 @@ public class ScratchRuntime {
 		case RENAME_SPRITE: return Translator.map('rename sprite');
 		case RENAME_COSTUME: return a[1].isStage ? Translator.map('rename backdrop') : Translator.map('rename costume');
 		case RENAME_SOUND: return Translator.map('rename sound');
+		case EDIT_SOUND: return Translator.map(a[3]);
 		}
 		return '';
 	}

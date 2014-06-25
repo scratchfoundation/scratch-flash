@@ -309,7 +309,7 @@ public class WaveformView extends Sprite implements DragClient {
 		var insertionPoint:int = ((selectionStart == 0) && ((selectionEnd - selectionStart) < 5)) ? 0 : selectionEnd;
 		var before:Vector.<int> = extract(0, insertionPoint);
 		var after:Vector.<int> = extract(insertionPoint);
-		updateContents(before.concat(newSamples).concat(after), false, 128);
+		updateContents('record', before.concat(newSamples).concat(after), false, 128);
 		selectionStart = before.length / samplesPerCondensedSample;
 		selectionEnd = (before.length + newSamples.length) / samplesPerCondensedSample;
 		scrollTo(selectionStart);
@@ -417,16 +417,16 @@ public class WaveformView extends Sprite implements DragClient {
 
 	public function deleteSelection(crop:Boolean = false):void {
 		if (crop) {
-			updateContents(extract(selectionStart, selectionEnd));
+			updateContents('delete', extract(selectionStart, selectionEnd));
 		} else {
-			updateContents(extract(0, selectionStart).concat(extract(selectionEnd)));
+			updateContents('delete', extract(0, selectionStart).concat(extract(selectionEnd)));
 		}
 	}
 
 	public function paste():void {
 		var before:Vector.<int> = extract(0, selectionStart);
 		var after:Vector.<int> = extract(selectionEnd);
-		updateContents(before.concat(PasteBuffer).concat(after));
+		updateContents('paste', before.concat(PasteBuffer).concat(after));
 	}
 
 	public function selectAll():void {
@@ -444,13 +444,14 @@ public class WaveformView extends Sprite implements DragClient {
 		return samples.slice(first, last);
 	}
 
-	private function updateContents(newSamples:Vector.<int>, keepSelection:Boolean = false, newCondensation:int = -1):void {
+	private function updateContents(action:String, newSamples:Vector.<int>, keepSelection:Boolean = false, newCondensation:int = -1):void {
 		// Replace my contents with the given sample buffer.
 		// Record change for undo.
-		recordForUndo();
 		samples = newSamples;
 		if (newCondensation > 0) samplesPerCondensedSample = newCondensation;
 		computeCondensedSamples();
+
+		recordForUndo(action);
 
 		var data:Object = targetSound.editorData;
 		data.samples = samples;
@@ -485,7 +486,7 @@ public class WaveformView extends Sprite implements DragClient {
 		case 'silence': silence(selection); break;
 		case 'reverse': reverse(selection); break;
 		}
-		updateContents(before.concat(selection).concat(after), true);
+		updateContents(effect, before.concat(selection).concat(after), true);
 	}
 
 	private function fadeIn(buf:Vector.<int>):void {
@@ -528,23 +529,7 @@ public class WaveformView extends Sprite implements DragClient {
 
 	/* Undo */
 
-	public function undo(ignore:* = null):void {
-		var data:Object = targetSound.editorData;
-		if (data.undoIndex == data.undoList.length) data.undoList.push([samples, condensedSamples, samplesPerCondensedSample]); // save current state for redo
-		if (data.undoIndex > 0) installUndoRecord(data.undoList[--data.undoIndex]);
-		soundsPart.refreshUndoButtons();
-	}
-
-	public function redo(ignore:* = null):void {
-		var data:Object = targetSound.editorData;
-		if (data.undoIndex < (data.undoList.length - 1)) installUndoRecord(data.undoList[++data.undoIndex]);
-		soundsPart.refreshUndoButtons();
-	}
-
-	public function canUndo():Boolean { return targetSound && targetSound.editorData.undoIndex > 0 }
-	public function canRedo():Boolean { return targetSound && targetSound.editorData.undoIndex < (targetSound.editorData.undoList.length - 1) }
-
-	private function installUndoRecord(r:Array):void {
+	public function installUndoRecord(r:Array):void {
 		stopAll();
 		samples = r[0];
 		condensedSamples = r[1];
@@ -553,12 +538,8 @@ public class WaveformView extends Sprite implements DragClient {
 		scrollTo(0);
 	}
 
-	private function recordForUndo():void {
-		var data:Object = targetSound.editorData;
-		if (data.undoList.length > data.undoIndex) data.undoList = data.undoList.slice(0, data.undoIndex);
-		data.undoList.push([samples, condensedSamples, samplesPerCondensedSample]);
-		data.undoIndex = data.undoList.length;
-		soundsPart.refreshUndoButtons();
+	private function recordForUndo(action:String):void {
+		editor.app.runtime.recordEditSound(targetSound, action, [samples, condensedSamples, samplesPerCondensedSample]);
 	}
 
 	/* Mouse */

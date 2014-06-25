@@ -46,8 +46,6 @@ public class SoundsPart extends UIPart {
 	private var shape:Shape;
 	private var listFrame:ScrollFrame;
 	private var nameField:EditableLabel;
-	private var undoButton:IconButton;
-	private var redoButton:IconButton;
 
 	private var newSoundLabel:TextField;
 	private var libraryButton:IconButton;
@@ -64,7 +62,6 @@ public class SoundsPart extends UIPart {
 		addListFrame();
 		addChild(nameField = new EditableLabel(nameChanged));
 		addChild(editor = new SoundEditor(app, this));
-		addUndoButtons();
 		app.stage.addEventListener(KeyboardEvent.KEY_DOWN, editor.keyDown);
 		updateTranslation();
 	}
@@ -107,15 +104,10 @@ public class SoundsPart extends UIPart {
 		if (viewedObj.sounds.length < 1) {
 			nameField.visible = false;
 			editor.visible = false;
-			undoButton.visible = false;
-			redoButton.visible = false;
 			return;
 		} else {
 			nameField.visible = true;
 			editor.visible = true;
-			undoButton.visible = true;
-			redoButton.visible = true;
-			refreshUndoButtons();
 		}
 
 		editor.waveform.stopAll();
@@ -160,11 +152,6 @@ public class SoundsPart extends UIPart {
 		nameField.x = contentsX;
 		nameField.y = 15;
 
-		// undo buttons
-		undoButton.x = nameField.x + nameField.width + 30;
-		redoButton.x = undoButton.right() + 8;
-		undoButton.y = redoButton.y = nameField.y - 2;
-
 		editor.setWidthHeight(contentsW, 200);
 		editor.x = contentsX;
 		editor.y = 50;
@@ -204,22 +191,6 @@ public class SoundsPart extends UIPart {
 		app.runtime.renameSound(current, nameField.contents());
 		nameField.setContents(current.soundName);
 		(listFrame.contents as MediaPane).refresh();
-	}
-
-	// -----------------------------
-	// Undo/Redo
-	//------------------------------
-
-	private function addUndoButtons():void {
-		addChild(undoButton = new IconButton(editor.waveform.undo, makeButtonImg('undo', true), makeButtonImg('undo', false)));
-		addChild(redoButton = new IconButton(editor.waveform.redo, makeButtonImg('redo', true), makeButtonImg('redo', false)));
-		undoButton.isMomentary = true;
-		redoButton.isMomentary = true;
-	}
-
-	public function refreshUndoButtons():void {
-		undoButton.setDisabled(!editor.waveform.canUndo(), 0.5);
-		redoButton.setDisabled(!editor.waveform.canRedo(), 0.5);
 	}
 
 	public static function makeButtonImg(iconName:String, isOn:Boolean, buttonSize:Point = null):Sprite {
