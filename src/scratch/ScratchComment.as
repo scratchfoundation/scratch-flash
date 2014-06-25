@@ -192,10 +192,11 @@ public class ScratchComment extends Sprite {
 		if (tool == 'cut') deleteComment();
 	}
 
-	public function deleteComment():void {
+	public function deleteComment(original:Boolean = false):void {
+		var app:Scratch = Scratch.app;
+		app.runtime.recordDeleteComment(this, original ? app.gh.originalPosition.x : x, original ? app.gh.originalPosition.y : y);
 		if (parent) parent.removeChild(this);
-		// Scratch.app.runtime.recordForUndelete(this, x, y, 0, Scratch.app.viewedObj());
-		Scratch.app.scriptsPane.saveScripts();
+		app.scriptsPane.saveScripts();
 	}
 
 	public function duplicateComment(deltaX:Number, deltaY:Number):void {

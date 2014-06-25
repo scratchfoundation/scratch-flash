@@ -69,7 +69,7 @@ public class GestureHandler {
 	// Grab-n-drop support:
 	public var carriedObj:Sprite;
 	private var originalParent:DisplayObjectContainer;
-	private var originalPosition:Point;
+	public var originalPosition:Point;
 	private var originalScale:Number;
 
 	private var app:Scratch;

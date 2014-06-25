@@ -1105,6 +1105,7 @@ public class ScratchRuntime {
 	private static const RENAME_COSTUME:int = 15;
 	private static const RENAME_SOUND:int = 16;
 	private static const EDIT_SOUND:int = 17;
+	private static const DELETE_COMMENT:int = 18;
 
 	public function recordDropBlock(b:Block):void {
 		recordAction([DROP_BLOCK, app.viewedObj(), b.parent, b, b.originalState, b.saveState()]);
@@ -1170,13 +1171,16 @@ public class ScratchRuntime {
 		var d:Object = s.editorData;
 		recordAction([EDIT_SOUND, obj, s, action, [d.samples, d.condensedSamples, d.samplesPerCondensedSample], record]);
 	}
+	public function recordDeleteComment(c:ScratchComment, x:Number, y:Number):void {
+		recordAction([DELETE_COMMENT, app.viewedObj(), c, x, y]);
+	}
 
 	private function recordAction(a:Array):void {
 		done.push(a);
 		undone.length = 0;
 	}
 
-	private static const scriptActions:Array = [DROP_BLOCK, REPLACE_ARG, INSERT_BLOCK, INSERT_BLOCK_ABOVE, INSERT_BLOCK_SUB1, INSERT_BLOCK_SUB2, INSERT_BLOCK_AROUND, DELETE_BLOCK, CLEAN_UP, CHANGE_INPUT, RENAME_SPRITE];
+	private static const scriptActions:Array = [DROP_BLOCK, REPLACE_ARG, INSERT_BLOCK, INSERT_BLOCK_ABOVE, INSERT_BLOCK_SUB1, INSERT_BLOCK_SUB2, INSERT_BLOCK_AROUND, DELETE_BLOCK, CLEAN_UP, CHANGE_INPUT, RENAME_SPRITE, DELETE_COMMENT];
 	private function unperform(a:Array):void {
 		selectSpriteForAction(a);
 		switch (a[0]) {
@@ -1272,6 +1276,11 @@ public class ScratchRuntime {
 			app.soundsPart.selectSound(a[2]);
 			app.soundsPart.editor.waveform.installUndoRecord(a[4]);
 			break;
+		case DELETE_COMMENT:
+			app.scriptsPane.addChild(a[2]);
+			a[2].x = a[3];
+			a[2].y = a[4];
+			break;
 		}
 	}
 
@@ -1353,6 +1362,9 @@ public class ScratchRuntime {
 			app.soundsPart.selectSound(a[2]);
 			app.soundsPart.editor.waveform.installUndoRecord(a[5]);
 			break;
+		case DELETE_COMMENT:
+			if (a[2].parent) a[2].parent.removeChild(a[2]);
+			break;
 		}
 	}
 
@@ -1375,6 +1387,7 @@ public class ScratchRuntime {
 		case RENAME_COSTUME: return a[1].isStage ? Translator.map('rename backdrop') : Translator.map('rename costume');
 		case RENAME_SOUND: return Translator.map('rename sound');
 		case EDIT_SOUND: return Translator.map(a[3]);
+		case DELETE_COMMENT: return Translator.map('delete comment');
 		}
 		return '';
 	}
