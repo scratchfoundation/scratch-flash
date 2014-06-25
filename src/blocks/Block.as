@@ -824,10 +824,11 @@ public class Block extends Sprite {
 		Scratch.app.gh.grabOnMouseUp(newStack);
 	}
 
-	public function deleteStack():Boolean {
+	public function deleteStack(state:BlockState = null):Boolean {
 		if (op == 'proc_declaration') {
 			return (parent as Block).deleteStack();
 		}
+		if (!state) state = saveState();
 		var app:Scratch = Scratch.app;
 		var top:Block = topBlock();
 		if (op == Specs.PROCEDURE_DEF && app.runtime.allCallsOf(spec, app.viewedObj()).length) {
@@ -837,6 +838,7 @@ public class Block extends Sprite {
 		if (top == this && app.interp.isRunning(top, app.viewedObj())) {
 			app.interp.toggleThread(top, app.viewedObj());
 		}
+		app.runtime.recordDeleteBlock(this, state);
 		// TODO: Remove any waiting reporter data in the Scratch.app.extensionManager
 		if (parent is Block) Block(parent).removeBlock(this);
 		else if (parent) parent.removeChild(this);
@@ -845,7 +847,6 @@ public class Block extends Sprite {
 		x = top.x;
 		y = top.y;
 		if (top != this) x += top.width + 5;
-		// app.runtime.recordForUndelete(this, x, y, 0, app.viewedObj());
 		app.scriptsPane.saveScripts();
 		app.runtime.checkForGraphicEffects();
 		app.updatePalette();

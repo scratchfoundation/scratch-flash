@@ -62,7 +62,7 @@ public class BlockPalette extends ScrollFrameContents {
 		}
 		var b:Block = obj as Block;
 		if (b) {
-			return b.deleteStack();
+			return b.deleteStack(b.originalState);
 		}
 		return false;
 	}

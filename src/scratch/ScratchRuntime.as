@@ -30,8 +30,7 @@ package scratch {
 	import flash.system.System;
 	import flash.text.TextField;
 	import flash.utils.*;
-	import blocks.Block;
-	import blocks.BlockArg;
+	import blocks.*;
 	import interpreter.*;
 	import primitives.VideoMotionPrims;
 	import sound.ScratchSoundPlayer;
@@ -1068,6 +1067,7 @@ public class ScratchRuntime {
 	private static const INSERT_BLOCK_SUB2:int = 6;
 	private static const INSERT_BLOCK_AROUND:int = 7;
 	private static const DROP_INTO_THUMBNAIL:int = 8;
+	private static const DELETE_BLOCK:int = 9;
 
 	public function recordDropBlock(b:Block):void {
 		recordAction([DROP_BLOCK, app.viewedObj(), b.parent, b, b.originalState, b.saveState()]);
@@ -1093,13 +1093,16 @@ public class ScratchRuntime {
 	public function recordDropIntoThumbnail(t:ScratchObj, b:Block):void {
 		recordAction([DROP_INTO_THUMBNAIL, t, b]);
 	}
+	public function recordDeleteBlock(b:Block, state:BlockState):void {
+		recordAction([DELETE_BLOCK, app.viewedObj(), b, state]);
+	}
 
 	private function recordAction(a:Array):void {
 		done.push(a);
 		undone.length = 0;
 	}
 
-	private static const scriptActions:Array = [DROP_BLOCK, REPLACE_ARG, INSERT_BLOCK, INSERT_BLOCK_ABOVE, INSERT_BLOCK_SUB1, INSERT_BLOCK_SUB2, INSERT_BLOCK_AROUND];
+	private static const scriptActions:Array = [DROP_BLOCK, REPLACE_ARG, INSERT_BLOCK, INSERT_BLOCK_ABOVE, INSERT_BLOCK_SUB1, INSERT_BLOCK_SUB2, INSERT_BLOCK_AROUND, DELETE_BLOCK];
 	private function unperform(a:Array):void {
 		selectSpriteForAction(a);
 		switch (a[0]) {
@@ -1151,6 +1154,9 @@ public class ScratchRuntime {
 			selectSpriteIfNeeded(a[1]);
 			if (a[2].parent) a[2].parent.removeChild(a[2]);
 			break;
+		case DELETE_BLOCK:
+			a[2].restoreState(a[3]);
+			break;
 		}
 	}
 
@@ -1190,6 +1196,10 @@ public class ScratchRuntime {
 			a[2].x = app.scriptsPane.padding;
 			a[2].y = app.scriptsPane.padding;
 			app.scriptsPane.addChild(a[2]);
+			break;
+		case DELETE_BLOCK:
+			removeBlock(a[2]);
+			if (a[2].parent) a[2].parent.removeChild(a[2]);
 			break;
 		}
 	}
