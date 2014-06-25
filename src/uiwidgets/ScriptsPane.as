@@ -463,6 +463,7 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 		c.blockRef = b;
 		c.x = x;
 		c.y = y;
+		app.runtime.recordAddComment(c);
 		addChild(c);
 		saveScripts();
 		updateSize();

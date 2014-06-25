@@ -1106,6 +1106,7 @@ public class ScratchRuntime {
 	private static const RENAME_SOUND:int = 16;
 	private static const EDIT_SOUND:int = 17;
 	private static const DELETE_COMMENT:int = 18;
+	private static const ADD_COMMENT:int = 19;
 
 	public function recordDropBlock(b:Block):void {
 		recordAction([DROP_BLOCK, app.viewedObj(), b.parent, b, b.originalState, b.saveState()]);
@@ -1174,13 +1175,16 @@ public class ScratchRuntime {
 	public function recordDeleteComment(c:ScratchComment, x:Number, y:Number):void {
 		recordAction([DELETE_COMMENT, app.viewedObj(), c, x, y]);
 	}
+	public function recordAddComment(c:ScratchComment):void {
+		recordAction([ADD_COMMENT, app.viewedObj(), c, c.x, c.y, c.blockRef]);
+	}
 
 	private function recordAction(a:Array):void {
 		done.push(a);
 		undone.length = 0;
 	}
 
-	private static const scriptActions:Array = [DROP_BLOCK, REPLACE_ARG, INSERT_BLOCK, INSERT_BLOCK_ABOVE, INSERT_BLOCK_SUB1, INSERT_BLOCK_SUB2, INSERT_BLOCK_AROUND, DELETE_BLOCK, CLEAN_UP, CHANGE_INPUT, RENAME_SPRITE, DELETE_COMMENT];
+	private static const scriptActions:Array = [DROP_BLOCK, REPLACE_ARG, INSERT_BLOCK, INSERT_BLOCK_ABOVE, INSERT_BLOCK_SUB1, INSERT_BLOCK_SUB2, INSERT_BLOCK_AROUND, DELETE_BLOCK, CLEAN_UP, CHANGE_INPUT, RENAME_SPRITE, DELETE_COMMENT, ADD_COMMENT];
 	private function unperform(a:Array):void {
 		selectSpriteForAction(a);
 		switch (a[0]) {
@@ -1281,6 +1285,9 @@ public class ScratchRuntime {
 			a[2].x = a[3];
 			a[2].y = a[4];
 			break;
+		case ADD_COMMENT:
+			app.scriptsPane.removeChild(a[2]);
+			break;
 		}
 	}
 
@@ -1365,6 +1372,12 @@ public class ScratchRuntime {
 		case DELETE_COMMENT:
 			if (a[2].parent) a[2].parent.removeChild(a[2]);
 			break;
+		case ADD_COMMENT:
+			app.scriptsPane.addChild(a[2]);
+			a[2].x = a[3];
+			a[2].y = a[4];
+			a[2].blockRef = a[5];
+			break;
 		}
 	}
 
@@ -1376,10 +1389,10 @@ public class ScratchRuntime {
 		case INSERT_BLOCK_ABOVE:
 		case INSERT_BLOCK_SUB1:
 		case INSERT_BLOCK_SUB2:
-		case INSERT_BLOCK_AROUND: return Translator.map('drop');
-		case DROP_INTO_THUMBNAIL: return Translator.map('duplicate');
-		case DELETE_BLOCK:
-		case DELETE_SPRITE: return Translator.map('delete');
+		case INSERT_BLOCK_AROUND: return Translator.map('drop block');
+		case DROP_INTO_THUMBNAIL: return Translator.map('copy block');
+		case DELETE_BLOCK: return Translator.map('delete block');
+		case DELETE_SPRITE: return Translator.map('delete sprite');
 		case CLEAN_UP: return Translator.map('clean up');
 		case ADD_SPRITE: return Translator.map('add sprite');
 		case CHANGE_INPUT: return Translator.map('change input');
@@ -1388,6 +1401,7 @@ public class ScratchRuntime {
 		case RENAME_SOUND: return Translator.map('rename sound');
 		case EDIT_SOUND: return Translator.map(a[3]);
 		case DELETE_COMMENT: return Translator.map('delete comment');
+		case ADD_COMMENT: return Translator.map('add comment');
 		}
 		return '';
 	}
