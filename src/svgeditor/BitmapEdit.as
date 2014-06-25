@@ -23,7 +23,7 @@ John:
   [x] deactivate when media library showing (so cursor doesn't disappear)
   [ ] snap costume center to grid
   [ ] allow larger pens (make size slider be non-linear)
-  [ ] when converting stage from bm to vector, trim white area (?)
+  [ ] when converting stage from bitmap to vector, trim white area (?)
   [ ] minor: small shift when baking in after moving selection
   [ ] add readout for pen size
   [ ] add readout for zoom
