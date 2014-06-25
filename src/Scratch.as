@@ -736,8 +736,8 @@ public class Scratch extends Sprite {
 
 	public function showEditMenu(b:*):void {
 		var m:Menu = new Menu(null, 'More', CSS.topBarColor, 28);
-		m.addItem('Undo', runtime.undo, runtime.canUndo());
-		m.addItem('Redo', runtime.redo, runtime.canRedo());
+		m.addItem(runtime.undoLabel() + ' ', runtime.undo, runtime.canUndo());
+		m.addItem(runtime.redoLabel() + ' ', runtime.redo, runtime.canRedo());
 		m.addLine();
 		m.addItem('Small stage layout', toggleSmallStage, true, stageIsContracted);
 		m.addItem('Turbo mode', toggleTurboMode, true, interp.turboMode);

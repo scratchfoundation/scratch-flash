@@ -1043,6 +1043,17 @@ public class ScratchRuntime {
 		return !!undone.length && !app.gh.carriedObj;
 	}
 
+	public function undoLabel():String {
+		return actionListLabel('Undo', done);
+	}
+	public function redoLabel():String {
+		return actionListLabel('Redo', undone);
+	}
+	private function actionListLabel(prefix:String, a:Array):String {
+		var action:String = a.length ? getActionName(a[a.length - 1]) : '';
+		return Translator.map(prefix) + ' ' + action;
+	}
+
 	public function undo():Boolean {
 		if (!canUndo()) return false;
 		var a:Array = done.pop();
@@ -1220,6 +1231,22 @@ public class ScratchRuntime {
 			app.scriptsPane.cleanup();
 			break;
 		}
+	}
+
+	public function getActionName(a:Array):String {
+		switch (a[0]) {
+		case DROP_BLOCK:
+		case REPLACE_ARG:
+		case INSERT_BLOCK:
+		case INSERT_BLOCK_ABOVE:
+		case INSERT_BLOCK_SUB1:
+		case INSERT_BLOCK_SUB2:
+		case INSERT_BLOCK_AROUND: return Translator.map('drop');
+		case DROP_INTO_THUMBNAIL: return Translator.map('duplicate');
+		case DELETE_BLOCK: return Translator.map('delete');
+		case CLEAN_UP: return Translator.map('clean up');
+		}
+		return '';
 	}
 
 	private function selectSpriteForAction(a:Array):void {
