@@ -1182,6 +1182,7 @@ public class ScratchRuntime {
 		recordAction([EDIT_SOUND, obj, s, action, [d.samples, d.condensedSamples, d.samplesPerCondensedSample], record]);
 	}
 	public function recordDeleteComment(c:ScratchComment, x:Number, y:Number):void {
+		if (!c.originalState[0]) return;
 		recordAction([DELETE_COMMENT, app.viewedObj(), c, x, y]);
 	}
 	public function recordAddComment(c:ScratchComment):void {
