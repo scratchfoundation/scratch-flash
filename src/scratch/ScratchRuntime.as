@@ -1109,6 +1109,7 @@ public class ScratchRuntime {
 		recordAction([DROP_INTO_THUMBNAIL, t, b]);
 	}
 	public function recordDeleteBlock(b:Block, state:BlockState):void {
+		if (state.role == Block.ROLE_NONE) return;
 		recordAction([DELETE_BLOCK, app.viewedObj(), b, state]);
 	}
 	public function recordCleanUp():void {
