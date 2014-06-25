@@ -20,9 +20,9 @@
 // SqueakSoundPlayer.as
 // John Maloney, June 2010
 //
-// Decode and play a Squeak ADPCM compressed sound with 2, 3, 4, or 5 bits pers sample.
+// Decode and play a Squeak ADPCM compressed sound with 2, 3, 4, or 5 bits per sample.
 // Note: To make old projects open more quickly, sounds compressed in the old Squeak ACPDM
-// format are not converted to WAV format immediately. Such sounds are coverted to WAV format
+// format are not converted to WAV format immediately. Such sounds are converted to WAV format
 // if and when the project is saved. Meanwhile, this module allows these sounds to be played.
 
 package sound {
