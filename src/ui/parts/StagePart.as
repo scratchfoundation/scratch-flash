@@ -264,7 +264,7 @@ public class StagePart extends UIPart {
 	private function updateRunStopButtons():void {
 		// Update the run/stop buttons.
 		// Note: To ensure that the user sees at least a flash of the
-		// on button, it stays on a minumum of two display cycles.
+		// on button, it stays on a minimum of two display cycles.
 		if (app.interp.threadCount() > 0) threadStarted();
 		else { // nothing running
 			if (runButtonOnTicks > 2) {
@@ -278,7 +278,7 @@ public class StagePart extends UIPart {
 	private var lastX:int, lastY:int;
 
 	private function updateMouseReadout():void {
-		// Update the mouse reaadouts. Do nothing if they are up-to-date (to minimize CPU load).
+		// Update the mouse readouts. Do nothing if they are up-to-date (to minimize CPU load).
 		if (stage.mouseX != lastX) {
 			lastX = app.stagePane.scratchMouseX();
 			xReadout.text = String(lastX);
@@ -366,7 +366,7 @@ public class StagePart extends UIPart {
 	private function showPlayButton():void {
 		// The play button is a YouTube-like button the covers the entire stage.
 		// Used by the player to ensure that the user clicks on the SWF to start
-		// the project, which ensurs that the SWF gets keyboard focus.
+		// the project, which ensures that the SWF gets keyboard focus.
 		if (!playButton) {
 			playButton = new Sprite();
 			playButton.graphics.beginFill(0, 0.3);
