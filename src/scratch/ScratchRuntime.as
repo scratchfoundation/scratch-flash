@@ -1082,6 +1082,7 @@ public class ScratchRuntime {
 	private static const CLEAN_UP:int = 10;
 	private static const DELETE_SPRITE:int = 11;
 	private static const ADD_SPRITE:int = 12;
+	private static const CHANGE_INPUT:int = 13;
 
 	public function recordDropBlock(b:Block):void {
 		recordAction([DROP_BLOCK, app.viewedObj(), b.parent, b, b.originalState, b.saveState()]);
@@ -1124,13 +1125,17 @@ public class ScratchRuntime {
 	public function recordAddSprite(s:ScratchSprite):void {
 		recordAction([ADD_SPRITE, s]);
 	}
+	public function recordChangeInput(i:BlockArg, old:String):void {
+		if (old == i.field.text) return;
+		recordAction([CHANGE_INPUT, app.viewedObj(), i, old, i.field.text]);
+	}
 
 	private function recordAction(a:Array):void {
 		done.push(a);
 		undone.length = 0;
 	}
 
-	private static const scriptActions:Array = [DROP_BLOCK, REPLACE_ARG, INSERT_BLOCK, INSERT_BLOCK_ABOVE, INSERT_BLOCK_SUB1, INSERT_BLOCK_SUB2, INSERT_BLOCK_AROUND, DELETE_BLOCK, CLEAN_UP];
+	private static const scriptActions:Array = [DROP_BLOCK, REPLACE_ARG, INSERT_BLOCK, INSERT_BLOCK_ABOVE, INSERT_BLOCK_SUB1, INSERT_BLOCK_SUB2, INSERT_BLOCK_AROUND, DELETE_BLOCK, CLEAN_UP, CHANGE_INPUT];
 	private function unperform(a:Array):void {
 		selectSpriteForAction(a);
 		switch (a[0]) {
@@ -1198,6 +1203,9 @@ public class ScratchRuntime {
 		case ADD_SPRITE:
 			a[1].deleteSprite();
 			break;
+		case CHANGE_INPUT:
+			a[2].setArgValue(a[3]);
+			break;
 		}
 	}
 
@@ -1251,6 +1259,9 @@ public class ScratchRuntime {
 		case ADD_SPRITE:
 			app.addSprite(a[1]);
 			break;
+		case CHANGE_INPUT:
+			a[2].setArgValue(a[4]);
+			break;
 		}
 	}
 
@@ -1268,6 +1279,7 @@ public class ScratchRuntime {
 		case DELETE_SPRITE: return Translator.map('delete');
 		case CLEAN_UP: return Translator.map('clean up');
 		case ADD_SPRITE: return Translator.map('add sprite');
+		case CHANGE_INPUT: return Translator.map('change input');
 		}
 		return '';
 	}
