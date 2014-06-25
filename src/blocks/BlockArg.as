@@ -160,7 +160,7 @@ public class BlockArg extends Sprite {
 
 			if (!label && (value is Number) && ((value - epsilon) is int)) {
 				// Append '.0' to numeric values that are exactly epsilon
-				// greather than an integer. See comment in textChanged().
+				// greater than an integer. See comment in textChanged().
 				field.text = (value - epsilon) + '.0';
 			}
 			textChanged(null);
