@@ -767,7 +767,7 @@ public class Block extends Sprite {
 	/* Menu */
 
 	public function menu(evt:MouseEvent):void {
-		// Note: Unlike most menu() mehtods, this method invokes
+		// Note: Unlike most menu() methods, this method invokes
 		// the menu itself rather than returning a menu to the caller.
 		if (MenuHandlerFunction == null) return;
 		if (isEmbeddedInProcHat()) MenuHandlerFunction(null, parent);
