@@ -953,15 +953,15 @@ public class Scratch extends Sprite {
 	}
 
 	public function addSound(snd:ScratchSound, targetObj:ScratchObj = null):void {
-		if (snd.soundData && !okayToAdd(snd.soundData.length)) return; // not enough room
 		if (!targetObj) targetObj = viewedObj();
+		runtime.recordAddSound(snd, targetObj);
+		if (snd.soundData && !okayToAdd(snd.soundData.length)) return; // not enough room
 		snd.soundName = targetObj.unusedSoundName(snd.soundName);
 		targetObj.sounds.push(snd);
 		setSaveNeeded(true);
-		if (targetObj == viewedObj()) {
-			soundsPart.selectSound(snd);
-			setTab('sounds');
-		}
+		if (targetObj != viewedObj()) selectSprite(targetObj);
+		soundsPart.selectSound(snd);
+		setTab('sounds');
 	}
 
 	public function addCostume(c:ScratchCostume, targetObj:ScratchObj = null):void {

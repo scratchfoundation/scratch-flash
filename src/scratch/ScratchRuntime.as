@@ -1109,6 +1109,7 @@ public class ScratchRuntime {
 	private static const ADD_COMMENT:int = 19;
 	private static const DROP_COMMENT:int = 20;
 	private static const CHANGE_COMMENT:int = 21;
+	private static const ADD_SOUND:int = 22;
 
 	public function recordDropBlock(b:Block):void {
 		recordAction([DROP_BLOCK, app.viewedObj(), b.parent, b, b.originalState, b.saveState()]);
@@ -1194,6 +1195,9 @@ public class ScratchRuntime {
 	public function recordChangeComment(c:ScratchComment, old:String, text:String):void {
 		if (old == text) return;
 		recordAction([CHANGE_COMMENT, app.viewedObj(), c, old, text]);
+	}
+	public function recordAddSound(s:ScratchSound, obj:ScratchObj):void {
+		recordAction([ADD_SOUND, obj, s, obj.sounds.length]);
 	}
 
 	private function recordAction(a:Array):void {
@@ -1314,6 +1318,12 @@ public class ScratchRuntime {
 		case CHANGE_COMMENT:
 			a[2].setContents(a[3]);
 			break;
+		case ADD_SOUND:
+			selectSpriteIfNeeded(a[1]);
+			selectTabIfNeeded('sounds');
+			a[1].deleteSound(a[2]);
+			app.soundsPart.refresh();
+			break;
 		}
 		saveForAction(a);
 	}
@@ -1414,6 +1424,12 @@ public class ScratchRuntime {
 		case CHANGE_COMMENT:
 			a[2].setContents(a[4]);
 			break;
+		case ADD_SOUND:
+			selectSpriteIfNeeded(a[1]);
+			selectTabIfNeeded('sounds');
+			a[1].sounds.splice(a[3], 0, a[2]);
+			app.soundsPart.selectSound(a[2]);
+			break;
 		}
 		saveForAction(a);
 	}
@@ -1441,6 +1457,7 @@ public class ScratchRuntime {
 		case ADD_COMMENT: return Translator.map('add comment');
 		case DROP_COMMENT: return Translator.map('drop comment');
 		case CHANGE_COMMENT: return Translator.map('edit comment');
+		case ADD_SOUND: return Translator.map('add sound');
 		}
 		return '';
 	}
