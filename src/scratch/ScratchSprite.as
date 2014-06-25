@@ -453,7 +453,7 @@ public class ScratchSprite extends ScratchObj {
 		m.addItem('info', showDetails);
 		m.addLine();
 		m.addItem('duplicate', duplicateSprite);
-		m.addItem('delete', deleteSprite);
+		m.addItem('delete', recordAndDeleteSprite);
 		m.addLine();
 		m.addItem('save to local file', saveToLocalFile);
 		return m;
@@ -461,7 +461,7 @@ public class ScratchSprite extends ScratchObj {
 
 	public function handleTool(tool:String, evt:MouseEvent):void {
 		if (tool == 'copy') duplicateSprite(true);
-		if (tool == 'cut') deleteSprite();
+		if (tool == 'cut') recordAndDeleteSprite();
 		if (tool == 'grow') growSprite();
 		if (tool == 'shrink') shrinkSprite();
 		if (tool == 'help') Scratch.app.showTip('scratchUI');
@@ -500,10 +500,14 @@ public class ScratchSprite extends ScratchObj {
 		return stg ? stg.unusedSpriteName(baseName) : baseName;
 	}
 
+	private function recordAndDeleteSprite():void {
+		Scratch.app.runtime.recordDeleteSprite(this);
+		deleteSprite();
+	}
+
 	public function deleteSprite():void {
 		if (parent != null) {
 			var app:Scratch = Scratch.app;
-			// app.runtime.recordForUndelete(this, scratchX, scratchY, 0, app.stagePane);
 			hideBubble();
 
 			// Force redisplay (workaround for flash display update bug)

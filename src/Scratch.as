@@ -926,13 +926,15 @@ public class Scratch extends Sprite {
 	protected function canUndoRevert():Boolean { return revertUndo != null }
 	private function clearRevertUndo():void { revertUndo = null }
 
-	public function addNewSprite(spr:ScratchSprite, showImages:Boolean = false, atMouse:Boolean = false):void {
+	public function addNewSprite(spr:ScratchSprite, showImages:Boolean = false, atMouse:Boolean = false, isNew:Boolean = true):void {
 		var c:ScratchCostume, byteCount:int;
 		for each (c in spr.costumes) byteCount + c.baseLayerData.length;
 		if (!okayToAdd(byteCount)) return; // not enough room
 		spr.objName = stagePane.unusedSpriteName(spr.objName);
-		spr.indexInLibrary = 1000000; // add at end of library
-		spr.setScratchXY(int(200 * Math.random() - 100), int(100 * Math.random() - 50));
+		if (isNew) {
+			spr.indexInLibrary = 1000000; // add at end of library
+			spr.setScratchXY(int(200 * Math.random() - 100), int(100 * Math.random() - 50));
+		}
 		if (atMouse) spr.setScratchXY(stagePane.scratchMouseX(), stagePane.scratchMouseY());
 		stagePane.addChild(spr);
 		selectSprite(spr);

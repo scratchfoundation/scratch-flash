@@ -1080,6 +1080,7 @@ public class ScratchRuntime {
 	private static const DROP_INTO_THUMBNAIL:int = 8;
 	private static const DELETE_BLOCK:int = 9;
 	private static const CLEAN_UP:int = 10;
+	private static const DELETE_SPRITE:int = 11;
 
 	public function recordDropBlock(b:Block):void {
 		recordAction([DROP_BLOCK, app.viewedObj(), b.parent, b, b.originalState, b.saveState()]);
@@ -1115,6 +1116,9 @@ public class ScratchRuntime {
 			positions.push([s, s.x, s.y]);
 		}
 		recordAction([CLEAN_UP, obj, positions]);
+	}
+	public function recordDeleteSprite(s:ScratchSprite):void {
+		recordAction([DELETE_SPRITE, s, s.scratchX, s.scratchY]);
 	}
 
 	private function recordAction(a:Array):void {
@@ -1183,6 +1187,11 @@ public class ScratchRuntime {
 				s[0].y = s[2];
 			}
 			break;
+		case DELETE_SPRITE:
+			app.addNewSprite(a[1], false, false, false);
+			a[1].setScratchXY(a[2], a[3]);
+			app.selectSprite(a[1]);
+			break;
 		}
 	}
 
@@ -1230,6 +1239,9 @@ public class ScratchRuntime {
 		case CLEAN_UP:
 			app.scriptsPane.cleanup();
 			break;
+		case DELETE_SPRITE:
+			a[1].deleteSprite();
+			break;
 		}
 	}
 
@@ -1243,7 +1255,8 @@ public class ScratchRuntime {
 		case INSERT_BLOCK_SUB2:
 		case INSERT_BLOCK_AROUND: return Translator.map('drop');
 		case DROP_INTO_THUMBNAIL: return Translator.map('duplicate');
-		case DELETE_BLOCK: return Translator.map('delete');
+		case DELETE_BLOCK:
+		case DELETE_SPRITE: return Translator.map('delete');
 		case CLEAN_UP: return Translator.map('clean up');
 		}
 		return '';
