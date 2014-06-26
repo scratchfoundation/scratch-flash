@@ -474,7 +474,7 @@ public class ScratchRuntime {
 		p.x = 15;
 		p.y = ScratchObj.STAGEH - p.height - 5;
 		app.stagePane.addChild(p);
-		setTimeout(p.grabKeyboardFocus, 100); // work-around for Window keyboard event handling
+		setTimeout(p.grabKeyboardFocus, 100); // workaround for Window keyboard event handling
 	}
 
 	public function hideAskPrompt(p:AskPrompter):void {
