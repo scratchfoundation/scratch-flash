@@ -221,7 +221,7 @@ public class ListWatcher extends Sprite {
 	//------------------------------
 
 	public function updateWatcher(i:int, readOnly:Boolean, interp:Interpreter):void {
-		// Called by list primitives. Record access to entry at i and if list contents has changed.
+		// Called by list primitives. Record access to entry at i and whether list contents have changed.
 		// readOnly should be true for read operations, false for operations that change the list.
 		// Note: To reduce the cost of list operations, this function merely records changes,
 		// leaving the more time-consuming work of updating the visual feedback to step(), which
