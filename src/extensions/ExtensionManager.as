@@ -535,7 +535,7 @@ public class ExtensionManager {
 					if ('_problem' == key) ext.problem = line.slice(9);
 					if ('_success' == key) ext.success = line.slice(9);
 				} else { // sensor value
-					var val:String = tokens[1];
+					var val:String = decodeURIComponent(tokens[1]);
 					var n:Number = Number(val);
 					var path:Array = key.split('/');
 					for (i = 0; i < path.length; i++) {
