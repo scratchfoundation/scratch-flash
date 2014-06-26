@@ -370,7 +370,7 @@ public class ScratchRuntime {
 		stopAll();
 		var fileList:FileReferenceList = new FileReferenceList();
 		fileList.addEventListener(Event.SELECT, fileSelected);
-		var filter0:FileFilter = new FileFilter('All Scratch Projects', '*.sb?');
+		var filter0:FileFilter = new FileFilter('Scratch Projects', '*.sb;*.sb2');
 		var filter1:FileFilter = new FileFilter('Scratch 1.4 Projects (*.sb)', '*.sb');
 		var filter2:FileFilter = new FileFilter('Scratch 2 Projects (*.sb2)', '*.sb2');
 		try {
