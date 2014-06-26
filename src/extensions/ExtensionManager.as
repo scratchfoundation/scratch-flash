@@ -326,7 +326,7 @@ public class ExtensionManager {
 					value = ext.stateVars[sensorName];
 				}
 				else if(Scratch.app.jsEnabled) {
-					// Javascript
+					// JavaScript
 					value = ExternalInterface.call('ScratchExtensions.getReporter', ext.name, sensorName, args);
 				}
 				if (value == undefined) value = 0; // default to zero if missing

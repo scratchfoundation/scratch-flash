@@ -276,11 +276,11 @@ public class ScratchStage extends ScratchObj {
 		if(Scratch.app.isIn3D)
 			Scratch.app.render3D.getUIContainer().transform.matrix = transform.matrix.clone();
 
-		return; // scrolling backround support is disabled; see note below
+		return; // scrolling background support is disabled; see note below
 
 		// NOTE: The following code supports the scrolling backgrounds
 		// feature, which was explored but removed before launch.
-		// This prototype implemenation renders SVG backdrops to a bitmap
+		// This prototype implementation renders SVG backdrops to a bitmap
 		// (to allow wrapping) but that causes pixelation in presentation mode.
 		// If the scrolling backgrounds feature is ever resurrected this code
 		// is a good starting point but the pixelation issue should be fixed.

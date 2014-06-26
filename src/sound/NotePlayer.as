@@ -121,7 +121,7 @@ public class NotePlayer extends ScratchSoundPlayer {
 			next = (result <= 32767 ? result : result - 65536);
 		}
 		var sample:Number = (curr + (frac * (next - curr))) / 100000; // xxx 32000; attenuate...
-		if (samplesRemaining < 1000) sample *= (samplesRemaining / 1000.0); // relaase phease
+		if (samplesRemaining < 1000) sample *= (samplesRemaining / 1000.0); // release phase
 		updateEnvelope();
 		return envelopeValue * volume * sample;
 	}

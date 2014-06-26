@@ -173,7 +173,7 @@ public class TalkBubble extends Sprite {
 	}
 
 	private function arc(x:int, y:int):void {
-		// Draw a curve between two points. Compute control point by following an orthogal vector
+		// Draw a curve between two points. Compute control point by following an orthogonal vector
 		// from the midpoint of the L between p1 and p2 scaled by roundness * dist(p1, p2).
 		// If concave is true, invert the curvature.
 

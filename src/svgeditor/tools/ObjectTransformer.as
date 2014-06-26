@@ -253,7 +253,7 @@ package svgeditor.tools  {
 			toggleHandles(!!targetObj);
 			if(targetObj) {
 				targetObj.toggleHighlight(true);
-				// Add to the displaylist of the object's parent
+				// Add to the display list of the object's parent
 				targetObj.addEventListener(MouseEvent.MOUSE_DOWN, moveHandler, false, 0, true);
 				// Add the move cursor
 //trace('adding events');

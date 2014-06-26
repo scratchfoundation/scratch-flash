@@ -51,7 +51,7 @@ public class ScratchExtension {
 	public var menus:Object = {};
 	public var thumbnailMD5:String = ''; // md5 has for extension image shown in extension library
 	public var url:String = ''; // URL for extension documentation page (with helper app download link, if appropriate)
-	public var javascriptURL:String = ''; // URL to load a javascript extension
+	public var javascriptURL:String = ''; // URL to load a JavaScript extension
 	public var tags:Array = []; // tags for the extension library filter
 
 	// Runtime state

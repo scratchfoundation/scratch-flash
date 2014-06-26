@@ -21,7 +21,7 @@
 // John Maloney, November 2010
 //
 // A ScrollFrame allows the user to view and scroll it's contents, an instance
-// of ScrollFrameContents or one of its sublasses. The frame can have an outer
+// of ScrollFrameContents or one of its subclasses. The frame can have an outer
 // frame or be undecorated. The default corner radius can be changed (make it
 // zero for square corners).
 
@@ -261,7 +261,7 @@ public class ScrollFrame extends Sprite implements DragClient {
 	}
 
 	private function step(evt:Event):void {
-		// Implements intertia after releasing the mouse when dragScrolling.
+		// Implements inertia after releasing the mouse when dragScrolling.
 		xVelocity = decayFactor * xVelocity;
 		yVelocity = decayFactor * yVelocity;
 		if (Math.abs(xVelocity) < stopThreshold) xVelocity = 0;

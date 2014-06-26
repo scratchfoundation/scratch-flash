@@ -80,7 +80,7 @@ public class ScratchRuntime {
 			return;
 		}
 
-		if (recording) saveFrame(); // Recording a Youtube video?  Old / Unused currently.
+		if (recording) saveFrame(); // Recording a YouTube video?  Old / Unused currently.
 		app.extensionManager.step();
 		if (motionDetector) motionDetector.step(); // Video motion detection
 
@@ -474,7 +474,7 @@ public class ScratchRuntime {
 		p.x = 15;
 		p.y = ScratchObj.STAGEH - p.height - 5;
 		app.stagePane.addChild(p);
-		setTimeout(p.grabKeyboardFocus, 100); // work-dround for Window keyboard event handling
+		setTimeout(p.grabKeyboardFocus, 100); // workaround for Window keyboard event handling
 	}
 
 	public function hideAskPrompt(p:AskPrompter):void {

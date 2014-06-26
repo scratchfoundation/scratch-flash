@@ -127,7 +127,7 @@ public class SpriteThumbnail extends Sprite {
 	}
 
 	public function showHighlight(flag:Boolean):void {
-		// Display a highlight if flag is true (e.g. to show broadcast sender/eceivers).
+		// Display a highlight if flag is true (e.g. to show broadcast senders/receivers).
 		highlightFrame.visible = flag;
 	}
 

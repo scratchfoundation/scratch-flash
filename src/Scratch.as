@@ -976,7 +976,7 @@ public class Scratch extends Sprite {
 		return true;
 	}
 	// -----------------------------
-	// Flash sprite (helps connect a sprite on thestage with a sprite library entry)
+	// Flash sprite (helps connect a sprite on the stage with a sprite library entry)
 	//------------------------------
 
 	public function flashSprite(spr:ScratchSprite):void {
