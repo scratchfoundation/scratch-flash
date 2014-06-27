@@ -24,10 +24,10 @@ package svgeditor.tools
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
-	
+
 	import svgeditor.ImageEdit;
 	import svgeditor.objs.*;
-	
+
 	import svgutils.SVGPath;
 
 	public class SVGTool extends Sprite
@@ -126,7 +126,7 @@ package svgeditor.tools
 		protected function getContinuableShapeUnderMouse(strokeWidth:Number):Object {
 			// Hide the current path so we don't get that
 			var obj:ISVGEditable = getEditableUnderMouse(false);
-			
+
 			if(obj is SVGShape) {
 				var s:SVGShape = obj as SVGShape;
 				var path:SVGPath = s.getElement().path;
@@ -145,7 +145,7 @@ package svgeditor.tools
 					}
 				}
 			}
-			
+
 			return null;
 		}
 	}

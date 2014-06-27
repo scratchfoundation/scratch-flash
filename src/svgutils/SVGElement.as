@@ -31,7 +31,7 @@ package svgutils {
 	import flash.display.*;
 	import flash.geom.*;
 	import flash.text.*;
-	
+
 	import svgeditor.DrawProperties;
 
 public class SVGElement {

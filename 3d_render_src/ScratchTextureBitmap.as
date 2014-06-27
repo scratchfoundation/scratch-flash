@@ -143,7 +143,7 @@ internal final class Dbg
 	public static function printObj(obj:*):String
 	{
 		var memoryHash:String;
-		
+
 		try
 		{
 			FakeClass(obj);
@@ -152,7 +152,7 @@ internal final class Dbg
 		{
 			memoryHash = String(e).replace(/.*([@|\$].*?) to .*$/gi, '$1');
 		}
-		
+
 		return flash.utils.getQualifiedClassName(obj) + memoryHash;
 	}
 }

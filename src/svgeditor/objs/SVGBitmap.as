@@ -23,12 +23,12 @@ package svgeditor.objs
 	import flash.display.BitmapData;
 	import flash.display.DisplayObject;
 	import flash.events.Event;
-	
+
 	import svgeditor.objs.ISVGEditable;
-	
+
 	import svgutils.SVGDisplayRender;
 	import svgutils.SVGElement;
-	
+
 	public class SVGBitmap extends Bitmap implements ISVGEditable
 	{
 		private var element:SVGElement;

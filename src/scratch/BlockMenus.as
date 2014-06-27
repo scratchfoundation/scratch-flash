@@ -41,6 +41,9 @@ public class BlockMenus implements DragClient {
 	private static const basicMathOps:Array = ['+', '-', '*', '/'];
 	private static const comparisonOps:Array = ['<', '=', '>'];
 
+	private static const spriteAttributes:Array = ['x position', 'y position', 'direction', 'costume #', 'costume name', 'size', 'volume'];
+	private static const stageAttributes:Array = ['backdrop #', 'backdrop name', 'volume'];
+
 	public static function BlockMenuHandler(evt:MouseEvent, block:Block, blockArg:BlockArg = null, menuName:String = null):void {
 		var menuHandler:BlockMenus = new BlockMenus(block, blockArg);
 		var op:String = block.op;
@@ -159,10 +162,7 @@ public class BlockMenus implements DragClient {
 		}
 		switch (menuName) {
 		case 'attribute':
-			var attributes:Array = [
-				'x position', 'y position', 'direction', 'costume #', 'costume name', 'size', 'volume',
-				'backdrop #', 'backdrop name', 'volume'];
-			return attributes.indexOf(item) > -1;
+			return spriteAttributes.indexOf(item) > -1 || stageAttributes.indexOf(item) > -1;
 		case 'backdrop':
 			return ['next backdrop', 'previous backdrop'].indexOf(item) > -1;
 		case 'broadcast':
@@ -190,8 +190,8 @@ public class BlockMenus implements DragClient {
 		m.color = block.base.color;
 		m.itemHeight = 22;
 		if (blockArg) {
-			var p:Point = blockArg.localToGlobal(new Point(0, 0));
-			m.showOnStage(app.stage, p.x - 9, p.y + blockArg.height);
+			var p:Point = blockArg.localToGlobal(new Point(0, blockArg.height));
+			m.showOnStage(app.stage, p.x - 9, p.y);
 		} else {
 			m.showOnStage(app.stage);
 		}
@@ -208,8 +208,7 @@ public class BlockMenus implements DragClient {
 		if (block && block.args[1]) {
 			obj = app.stagePane.objNamed(block.args[1].argValue);
 		}
-		var attributes:Array = ['x position', 'y position', 'direction', 'costume #', 'costume name', 'size', 'volume'];
-		if (obj is ScratchStage) attributes = ['backdrop #', 'backdrop name', 'volume'];
+		var attributes:Array = obj is ScratchStage ? stageAttributes : spriteAttributes;
 		var m:Menu = new Menu(setBlockArg, 'attribute');
 		for each (var s:String in attributes) m.addItem(s);
 		if (obj is ScratchObj) {
@@ -399,7 +398,7 @@ public class BlockMenus implements DragClient {
 		m.addItem('record...', recordSound);
 		showMenu(m);
 	}
-	
+
 	private function recordSound():void {
 		app.setTab('sounds');
 		app.soundsPart.recordSound();
@@ -413,6 +412,14 @@ public class BlockMenus implements DragClient {
 			else if (s == 'myself') blockArg.setArgValue('_myself_', Translator.map('myself'));
 			else if (s == 'Stage') blockArg.setArgValue('_stage_', Translator.map('Stage'));
 			else blockArg.setArgValue(s);
+			if (block.op == 'getAttribute:of:') {
+				var obj:ScratchObj = app.stagePane.objNamed(s);
+				var attr:String = block.args[0].argValue;
+				var validAttrs:Array = obj && obj.isStage ? stageAttributes : spriteAttributes;
+				if (validAttrs.indexOf(attr) == -1 && !obj.ownsVar(attr)) {
+					block.args[0].setArgValue(validAttrs[0]);
+				}
+			}
 			Scratch.app.setSaveNeeded();
 		}
 		var spriteNames:Array = [];
@@ -447,8 +454,10 @@ public class BlockMenus implements DragClient {
 			Scratch.app.setSaveNeeded();
 		}
 		var m:Menu = new Menu(setStopType, 'stop');
-		m.addItem('all');
-		m.addItem('this script');
+		if (!block.nextBlock) {
+			m.addItem('all');
+			m.addItem('this script');
+		}
 		m.addItem(app.viewedObj().isStage ? 'other scripts in stage' : 'other scripts in sprite');
 		showMenu(m);
 	}
@@ -514,9 +523,9 @@ public class BlockMenus implements DragClient {
 		if (!isInPalette(block)) {
 			if (!block.isProcDef()) {
 				m.addItem('duplicate', duplicateStack);
-				m.addItem('delete', block.deleteStack);
-				m.addLine();
 			}
+			m.addItem('delete', block.deleteStack);
+			m.addLine();
 			m.addItem('add comment', block.addComment);
 		}
 		m.addItem('help', block.showHelp);
@@ -691,10 +700,12 @@ public class BlockMenus implements DragClient {
 		}
 		if (blockArg != null) blockArg.setArgValue(newName);
 		if (block != null) {
-			if (block.op == Specs.GET_VAR) block.setSpec(newName);
+			if (block.op == Specs.GET_VAR) {
+				block.setSpec(newName);
+				block.fixExpressionLayout();
+			}
 		}
 		Scratch.app.setSaveNeeded();
-		app.updatePalette();
 	}
 
 	// ***** Color picker support *****

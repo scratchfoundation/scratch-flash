@@ -53,7 +53,7 @@ package {
 
 public class Scratch extends Sprite {
 	// Version
-	public static const versionString:String = 'v419';
+	public static const versionString:String = 'v420';
 	public static var app:Scratch; // static reference to the app, used for debugging
 
 	// Display modes
@@ -839,10 +839,10 @@ public class Scratch extends Sprite {
 
 	public function handleTool(tool:String, evt:MouseEvent):void { }
 
-	public function showBubble(text:String, source:Object, x:* = null, y:* = null, width:Number = 0):void {
+	public function showBubble(text:String, x:* = null, y:* = null, width:Number = 0):void {
 		if (x == null) x = stage.mouseX;
 		if (y == null) y = stage.mouseY;
-		gh.showBubble(text, source, Number(x), Number(y), width);
+		gh.showBubble(text, Number(x), Number(y), width);
 	}
 
 	// -----------------------------
@@ -997,7 +997,7 @@ public class Scratch extends Sprite {
 		return true;
 	}
 	// -----------------------------
-	// Flash sprite (helps connect a sprite on thestage with a sprite library entry)
+	// Flash sprite (helps connect a sprite on the stage with a sprite library entry)
 	//------------------------------
 
 	public function flashSprite(spr:ScratchSprite):void {

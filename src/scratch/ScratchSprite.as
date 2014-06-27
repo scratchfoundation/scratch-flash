@@ -56,7 +56,7 @@ public class ScratchSprite extends ScratchObj {
 	public var penColorCache:Number = 0xFF;
 
 	private var cachedBitmap:BitmapData;	// current costume, rotated & scaled
-	private var cachedBounds:Rectangle;		// bounds of non-tranparent cachedBitmap in stage coords
+	private var cachedBounds:Rectangle;		// bounds of non-transparent cachedBitmap in stage coords
 
 	public var localMotionAmount:int = -2;
 	public var localMotionDirection:int = -2;
@@ -172,8 +172,8 @@ public class ScratchSprite extends ScratchObj {
 	}
 
 	public function setScratchXY(newX:Number, newY:Number):void {
-		scratchX = newX;
-		scratchY = newY;
+		scratchX = isFinite(newX) ? newX : newX > 0 ? 1e6 : -1e6;
+		scratchY = isFinite(newY) ? newY : newY > 0 ? 1e6 : -1e6;
 		x = 240 + Math.round(scratchX);
 		y = 180 - Math.round(scratchY);
 		updateBubble();

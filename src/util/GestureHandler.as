@@ -95,6 +95,7 @@ public class GestureHandler {
 
 	public function setDragClient(newClient:DragClient, evt:MouseEvent):void {
 		Menu.removeMenusFrom(stage);
+		if (carriedObj) return;
 		if (dragClient != null) dragClient.dragEnd(evt);
 		dragClient = newClient as DragClient;
 		dragClient.dragBegin(evt);
@@ -410,10 +411,14 @@ public class GestureHandler {
 
 		if (obj is Block) {
 			var b:Block = Block(obj);
-			b.saveOriginalPosition();
+			b.saveOriginalState();
 			if (b.parent is Block) Block(b.parent).removeBlock(b);
 			if (b.parent != null) b.parent.removeChild(b);
 			app.scriptsPane.prepareToDrag(b);
+		} else if (obj is ScratchComment) {
+			var c:ScratchComment = ScratchComment(obj);
+			if (c.parent != null) c.parent.removeChild(c);
+			app.scriptsPane.prepareToDragComment(c);
 		} else {
 			var inStage:Boolean = (obj.parent == app.stagePane);
 			if (obj.parent != null) {
@@ -451,9 +456,13 @@ public class GestureHandler {
 				possibleTargets.push(app.stagePane);
 		}
 		possibleTargets.reverse();
+		var tried:Array = [];
 		for each (var o:* in possibleTargets) {
 			while (o) { // see if some parent can handle the drop
-				if (('handleDrop' in o) && o.handleDrop(droppedObj)) return true;
+				if (tried.indexOf(o) == -1) {
+					if (('handleDrop' in o) && o.handleDrop(droppedObj)) return true;
+					tried.push(o);
+				}
 				o = o.parent;
 			}
 		}
@@ -468,7 +477,9 @@ public class GestureHandler {
 		carriedObj.parent.removeChild(carriedObj);
 
 		if (!dropHandled(carriedObj, evt)) {
-			if (originalParent) { // put carriedObj back where it came from
+			if (carriedObj is Block) {
+				Block(carriedObj).restoreOriginalState();
+			} else if (originalParent) { // put carriedObj back where it came from
 				carriedObj.x = originalPosition.x;
 				carriedObj.y = originalPosition.y;
 				carriedObj.scaleX = carriedObj.scaleY = originalScale;
@@ -503,9 +514,9 @@ public class GestureHandler {
 		o.filters = newFilters;
 	}
 
-	public function showBubble(text:String, source:Object, x:Number, y:Number, width:Number = 0):void {
+	public function showBubble(text:String, x:Number, y:Number, width:Number = 0):void {
 		hideBubble();
-		bubble = new TalkBubble(text || ' ', 'say', 'result', source);
+		bubble = new TalkBubble(text || ' ', 'say', 'result', this);
 		bubbleStartX = stage.mouseX;
 		bubbleStartY = stage.mouseY;
 		var bx:Number = x + width;

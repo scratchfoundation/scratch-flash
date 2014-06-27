@@ -31,7 +31,7 @@ public class Multipart {
 
 	private const crlf:String = '\r\n';
 	private var parts:Array = []; // list of name-value-type triples
-	
+
 	public function Multipart() {
 		separator = generateSeparator();
 	}

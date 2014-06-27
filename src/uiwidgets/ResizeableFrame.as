@@ -124,9 +124,9 @@ public class ResizeableFrame extends Sprite implements DragClient {
 	public function dragEnd(evt:MouseEvent):void { }
 
 	public function dragMove(evt:MouseEvent):void {
-		var topLeft:Point = this.localToGlobal(new Point(0, 0));
-		var newW:int = Math.max(minWidth, evt.stageX + 3 - topLeft.x);
-		var newH:int = Math.max(minHeight, evt.stageY + 3 - topLeft.y);
+		var pt:Point = this.globalToLocal(new Point(evt.stageX, evt.stageY));
+		var newW:int = Math.max(minWidth, pt.x + 3);
+		var newH:int = Math.max(minHeight, pt.y + 3);
 		setWidthHeight(newW, newH);
 		if (parent && ('fixLayout' in parent)) (parent as Object).fixLayout();
 	}

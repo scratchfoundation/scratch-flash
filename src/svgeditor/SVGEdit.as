@@ -24,19 +24,19 @@ package svgeditor {
 	import flash.geom.*;
 	import flash.text.*;
 	import flash.utils.*;
-	
+
 	import scratch.ScratchCostume;
-	
+
 	import svgeditor.*;
 	import svgeditor.objs.*;
 	import svgeditor.tools.*;
-	
+
 	import svgutils.*;
-	
+
 	import ui.parts.ImagesPart;
-	
+
 	import uiwidgets.*;
-	
+
 	public class SVGEdit extends ImageEdit {
 		public static const tools:Array = [
 			{ name: 'select',		desc: 'Select' },

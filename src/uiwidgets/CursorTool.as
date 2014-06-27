@@ -24,7 +24,7 @@ package uiwidgets {
 	import flash.system.Capabilities;
 	import flash.ui.*;
 	import assets.Resources;
-	
+
 public class CursorTool {
 
 	public static var tool:String; // null or one of: copy, cut, grow, shrink, help
@@ -66,7 +66,7 @@ public class CursorTool {
 	}
 
 	private static function hideSoftwareCursor():void {
-		// Hide the current cursor and revert to using the hardward cursor.
+		// Hide the current cursor and revert to using the hardware cursor.
 		if (currentCursor && currentCursor.parent) currentCursor.parent.removeChild(currentCursor);
 		currentCursor = null;
 		Mouse.cursor = MouseCursor.AUTO;

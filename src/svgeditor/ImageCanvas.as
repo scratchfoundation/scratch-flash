@@ -259,7 +259,7 @@ return 1; // Force integer scaling in both editors for now
 			var lineColor:int = 0xB0B0B0;
 			var thickness:Number = 0.5;
 			var centerX:Number = canvasWidth / 2;
-			var centerY:Number = canvasHeight / 2;	
+			var centerY:Number = canvasHeight / 2;
 			g.beginFill(lineColor);
 			g.drawRect(centerX - 4, centerY - (thickness / 2), 8, thickness);
 			g.beginFill(lineColor);
@@ -363,9 +363,9 @@ return 1; // Force integer scaling in both editors for now
 		// -----------------------------
 		// Cursor Tool Support
 		//------------------------------
-		
+
 		private const growthFactor:Number = 1.2;
-		
+
 		public function handleTool(tool:String, evt:MouseEvent):void {
 			if ('help' == tool) Scratch.app.showTip('paint');
 			var bitmapEditor:BitmapEdit = editor as BitmapEdit;

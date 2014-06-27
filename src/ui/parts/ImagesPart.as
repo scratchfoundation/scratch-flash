@@ -151,7 +151,7 @@ public class ImagesPart extends UIPart {
 	}
 
 	private function fixlayout():void {
-		var extraSpace:int = Math.max(0, (w - 537) / 3);
+		var extraSpace:int = Math.max(0, (w - 590) / 3);
 		bigSpace = smallSpace + extraSpace;
 
 		newCostumeLabel.x = 7;
@@ -200,13 +200,9 @@ public class ImagesPart extends UIPart {
 	}
 
 	private function nameChanged():void {
-		var obj:ScratchObj = app.viewedObj();
-		if(!obj.isCostumeNameUsed(nameField.contents())) {
-			obj.currentCostume().costumeName = nameField.contents();
-			(listFrame.contents as MediaPane).refresh();
-		}
-		else
-			nameField.setContents(obj.currentCostume().costumeName);
+		app.runtime.renameCostume(nameField.contents());
+		nameField.setContents(app.viewedObj().currentCostume().costumeName);
+		(listFrame.contents as MediaPane).refresh();
 	}
 
 	private function addNewCostumeButtons():void {

@@ -34,7 +34,9 @@ package scratch {
 	import interpreter.*;
 	import primitives.VideoMotionPrims;
 	import sound.ScratchSoundPlayer;
+	import translation.*;
 	import ui.media.MediaInfo;
+	import ui.BlockPalette;
 	import uiwidgets.DialogBox;
 	import util.*;
 	import watchers.*;
@@ -77,7 +79,7 @@ public class ScratchRuntime {
 			return;
 		}
 
-		if (recording) saveFrame(); // Recording a Youtube video?  Old / Unused currently.
+		if (recording) saveFrame(); // Recording a YouTube video?  Old / Unused currently.
 		app.extensionManager.step();
 		if (motionDetector) motionDetector.step(); // Video motion detection
 
@@ -201,19 +203,25 @@ public class ScratchRuntime {
 	}
 
 	public function collectBroadcasts():Array {
+		function addBlock(b:Block):void {
+			if ((b.op == 'broadcast:') ||
+				(b.op == 'doBroadcastAndWait') ||
+				(b.op == 'whenIReceive')) {
+					if (b.args[0] is BlockArg) {
+						var msg:String = b.args[0].argValue;
+						if (result.indexOf(msg) < 0) result.push(msg);
+					}
+			}
+		}
 		var result:Array = [];
 		allStacksAndOwnersDo(function (stack:Block, target:ScratchObj):void {
-			stack.allBlocksDo(function (b:Block):void {
-				if ((b.op == 'broadcast:') ||
-					(b.op == 'doBroadcastAndWait') ||
-					(b.op == 'whenIReceive')) {
-						if (b.args[0] is BlockArg) {
-							var msg:String = b.args[0].argValue;
-							if (result.indexOf(msg) < 0) result.push(msg);
-						}
-				}
-			});
+			stack.allBlocksDo(addBlock);
 		});
+		var palette:BlockPalette = app.palette;
+		for (var i:int = 0; i < palette.numChildren; i++) {
+			var b:Block = palette.getChildAt(i) as Block;
+			if (b) addBlock(b);
+		}
 		result.sort();
 		return result;
 	}
@@ -468,7 +476,7 @@ public class ScratchRuntime {
 		p.x = 15;
 		p.y = ScratchObj.STAGEH - p.height - 5;
 		app.stagePane.addChild(p);
-		setTimeout(p.grabKeyboardFocus, 100); // work-dround for Window keyboard event handling
+		setTimeout(p.grabKeyboardFocus, 100); // workaround for Window keyboard event handling
 	}
 
 	public function hideAskPrompt(p:AskPrompter):void {
@@ -614,8 +622,12 @@ public class ScratchRuntime {
 	private function updateVarRefs(oldName:String, newName:String, owner:ScratchObj):void {
 		// Change the variable name in all blocks that use it.
 		for each (var b:Block in allUsesOfVariable(oldName, owner)) {
-			if (b.op == Specs.GET_VAR) b.setSpec(newName);
-			else b.args[0].setArgValue(newName);
+			if (b.op == Specs.GET_VAR) {
+				b.setSpec(newName);
+				b.fixExpressionLayout();
+			} else {
+				b.args[0].setArgValue(newName);
+			}
 		}
 	}
 
@@ -662,6 +674,45 @@ public class ScratchRuntime {
 	// -----------------------------
 	// Script utilities
 	//------------------------------
+
+	public function renameCostume(newName:String):void {
+		var obj:ScratchObj = app.viewedObj();
+		var costume:ScratchCostume = obj.currentCostume();
+		var oldName:String = costume.costumeName;
+		newName = obj.unusedCostumeName(newName || Translator.map('costume1'));
+		costume.costumeName = newName;
+		updateArgs(obj.isStage ? allUsesOfBackdrop(oldName) : allUsesOfCostume(oldName), newName);
+	}
+
+	public function renameSprite(newName:String):void {
+		var obj:ScratchObj = app.viewedObj();
+		var oldName:String = obj.objName;
+		obj.objName = '';
+		newName = app.stagePane.unusedSpriteName(newName || 'Sprite1');
+		obj.objName = newName;
+		for each (var lw:ListWatcher in app.viewedObj().lists) {
+			lw.updateTitle();
+		}
+		updateArgs(allUsesOfSprite(oldName), newName);
+	}
+
+	private function updateArgs(args:Array, newValue:*):void {
+		for each (var a:BlockArg in args) {
+			a.setArgValue(newValue);
+		}
+		app.setSaveNeeded();
+	}
+
+    public function renameSound(s:ScratchSound, newName:String):void {
+        var obj:ScratchObj = app.viewedObj();
+        var oldName:String = s.soundName;
+        newName = obj.unusedSoundName(newName || Translator.map('sound1'));
+        s.soundName = newName;
+        allUsesOfSoundDo(oldName, function (a:BlockArg):void {
+            a.setArgValue(newName);
+        });
+        app.setSaveNeeded();
+    }
 
 	public function clearRunFeedback():void {
 		if(app.editMode) {
@@ -719,6 +770,44 @@ public class ScratchRuntime {
 		return false;
 	}
 
+	public function allUsesOfBackdrop(backdropName:String):Array {
+		var result:Array = [];
+		allStacksAndOwnersDo(function (stack:Block, target:ScratchObj):void {
+			stack.allBlocksDo(function (b:Block):void {
+				for each (var a:BlockArg in b.args) {
+					if (a.menuName == 'backdrop' && a.argValue == backdropName) result.push(a);
+				}
+			});
+		});
+		return result;
+	}
+
+	public function allUsesOfCostume(costumeName:String):Array {
+		var result:Array = [];
+		for each (var stack:Block in app.viewedObj().scripts) {
+			stack.allBlocksDo(function (b:Block):void {
+				for each (var a:BlockArg in b.args) {
+					if (a.menuName == 'costume' && a.argValue == costumeName) result.push(a);
+				}
+			});
+		}
+		return result;
+	}
+
+	public function allUsesOfSprite(spriteName:String):Array {
+		var spriteMenus:Array = ["spriteOnly", "spriteOrMouse", "spriteOrStage", "touching"];
+		var result:Array = [];
+		for each (var stack:Block in allStacks()) {
+			// for each block in stack
+			stack.allBlocksDo(function (b:Block):void {
+				for each (var a:BlockArg in b.args) {
+					if (spriteMenus.indexOf(a.menuName) != -1 && a.argValue == spriteName) result.push(a);
+				}
+			});
+		}
+		return result;
+	}
+
 	public function allUsesOfVariable(varName:String, owner:ScratchObj):Array {
 		var variableBlocks:Array = [Specs.SET_VAR, Specs.CHANGE_VAR, "showVariable:", "hideVariable:"];
 		var result:Array = [];
@@ -732,6 +821,16 @@ public class ScratchRuntime {
 		}
 		return result;
 	}
+
+    public function allUsesOfSoundDo(soundName:String, f:Function):void {
+        for each (var stack:Block in app.viewedObj().scripts) {
+            stack.allBlocksDo(function (b:Block):void {
+                for each (var a:BlockArg in b.args) {
+                    if (a.menuName == 'sound' && a.argValue == soundName) f(a);
+                }
+            });
+        }
+    }
 
 	public function allCallsOf(callee:String, owner:ScratchObj):Array {
 		var result:Array = [];
@@ -943,6 +1042,16 @@ public class ScratchRuntime {
 	public function clearLastDelete():void { lastDelete = null }
 
 	public function recordForUndelete(obj:*, x:int, y:int, index:int, owner:* = null):void {
+		if (obj is Block) {
+			var comments:Array = (obj as Block).attachedCommentsIn(app.scriptsPane);
+			if (comments.length) {
+				for each (var c:ScratchComment in comments) {
+					c.parent.removeChild(c);
+				}
+				app.scriptsPane.fixCommentLayout();
+				obj = [obj, comments];
+			}
+		}
 		lastDelete = [obj, x, y, index, owner];
 	}
 
@@ -968,13 +1077,20 @@ public class ScratchRuntime {
 			app.addNewSprite(obj);
 			obj.setScratchXY(x, y);
 			app.selectSprite(obj);
-		} else if ((obj is Block) || (obj is ScratchComment)) {
+		} else if ((obj is Array) || (obj is Block) || (obj is ScratchComment)) {
 			app.selectSprite(prevOwner);
 			app.setTab('scripts');
-			obj.x = x;
-			obj.y = y;
-			if (obj is Block) obj.cacheAsBitmap = true;
-			app.scriptsPane.addChild(obj);
+			var b:DisplayObject = obj is Array ? obj[0] : obj;
+			b.x = app.scriptsPane.padding;
+			b.y = app.scriptsPane.padding;
+			if (b is Block) b.cacheAsBitmap = true;
+			app.scriptsPane.addChild(b);
+			if (obj is Array) {
+				for each (var c:ScratchComment in obj[1]) {
+					app.scriptsPane.addChild(c);
+				}
+				app.scriptsPane.fixCommentLayout();
+			}
 		}
 	}
 

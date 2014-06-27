@@ -21,13 +21,13 @@
 // John Maloney, April 2012.
 //
 // An SVGDisplayRender converts an SVGElement tree (the result of importing an SVG file)
-// into a Flash Sprite with children respresenting the visual elements of the SVG as
+// into a Flash Sprite with children representing the visual elements of the SVG as
 // Flash DisplayObjects. For example, SVG image elements become Bitmaps, path elements
 // become Shapes, and text elements become TextFields. For efficiency, multiple path
 // elements are drawn onto a single Shape. This speeds up drawing the sprite and also
 // saves a little memory.
 //
-// SVGDisplayRender is optimied for for displaying an SVG image as a Scratch costume
+// SVGDisplayRender is optimized for for displaying an SVG image as a Scratch costume
 // or scene, possibly scaled or rotated. A vector graphics editor would use a different
 // internal representation optimized for editing.
 

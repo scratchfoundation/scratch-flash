@@ -407,7 +407,7 @@ public class MediaInfo extends Sprite {
 			}
 			if (mysound) {
 				owner.deleteSound(mysound);
-				Scratch.app.refreshSoundTab()
+				Scratch.app.refreshSoundTab();
 			}
 		}
 	}

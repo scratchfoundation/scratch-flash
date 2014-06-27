@@ -42,6 +42,7 @@ public class ScriptsPane extends ScrollFrameContents {
 	private const INSERT_WRAP:int = 4;
 
 	public var app:Scratch;
+	public var padding:int = 10;
 
 	private var viewedObj:ScratchObj;
 	private var commentLines:Shape;
@@ -127,6 +128,10 @@ public class ScriptsPane extends ScrollFrameContents {
 		addFeedbackShape();
 	}
 
+	public function prepareToDragComment(c:ScratchComment):void {
+		c.scaleX = c.scaleY = scaleX;
+	}
+
 	public function draggingDone():void {
 		hideFeedbackShape();
 		possibleTargets = [];
@@ -135,6 +140,32 @@ public class ScriptsPane extends ScrollFrameContents {
 
 	public function updateFeedbackFor(b:Block):void {
 		nearestTarget = nearestTargetForBlockIn(b, possibleTargets);
+		if (b.base.canHaveSubstack1() && !b.subStack1) {
+			var o:Block = null;
+			if (nearestTarget) {
+				t = nearestTarget[1];
+				switch (nearestTarget[2]) {
+					case INSERT_NORMAL:
+						o = t.nextBlock;
+						break;
+					case INSERT_WRAP:
+						o = t;
+						break;
+					case INSERT_SUB1:
+						o = t.subStack1;
+						break;
+					case INSERT_SUB2:
+						o = t.subStack2;
+						break;
+				}
+			}
+			var h:int = BlockShape.EmptySubstackH;
+			if (o) {
+				h = o.height;
+				if (!o.bottomBlock().isTerminal) h -= BlockShape.NotchDepth;
+			}
+			b.previewSubstack1Height(h);
+		}
 		if (nearestTarget != null) {
 			var localP:Point = globalToLocal(nearestTarget[0]);
 			var t:* = nearestTarget[1];
@@ -221,7 +252,7 @@ public class ScriptsPane extends ScrollFrameContents {
 							p = target.localToGlobal(new Point(-BlockShape.SubstackInset, -(b.base.substack1y() - BlockShape.NotchDepth)));
 							possibleTargets.push([p, target, INSERT_WRAP]);
 						}
-						if (!b.isHat) findCommandTargetsIn(target, bEndWithTerminal);
+						if (!b.isHat) findCommandTargetsIn(target, bEndWithTerminal && !bCanWrap);
 					}
 				}
 			}
@@ -408,6 +439,8 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 	}
 
 	public function setScale(newScale:Number):void {
+		x *= newScale / scaleX;
+		y *= newScale / scaleY;
 		newScale = Math.max(1/6, Math.min(newScale, 6.0));
 		scaleX = scaleY = newScale;
 		updateSize();
@@ -467,21 +500,20 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 		//	3. Compute the column widths
 		//	4. Move stacks into place
 
-		var pad:int = 10;
 		var stacks:Array = stacksSortedByX();
 		var columns:Array = assignStacksToColumns(stacks);
 		var columnWidths:Array = computeColumnWidths(columns);
 
-		var nextX:int = pad;
+		var nextX:int = padding;
 		for (var i:int = 0; i < columns.length; i++) {
 			var col:Array = columns[i];
-			var nextY:int = pad;
+			var nextY:int = padding;
 			for each (var b:Block in col) {
 				b.x = nextX;
 				b.y = nextY;
-				nextY += b.height + pad;
+				nextY += b.height + padding;
 			}
-			nextX += columnWidths[i] + pad;
+			nextX += columnWidths[i] + padding;
 		}
 		saveScripts();
 	}

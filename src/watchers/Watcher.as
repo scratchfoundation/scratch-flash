@@ -392,6 +392,7 @@ public class Watcher extends Sprite implements DragClient {
 			sliderMax = Math.max(minVal, maxVal);
 			isDiscrete = (min.indexOf('.') < 0) && (max.indexOf('.') < 0);
 			setSliderValue(sliderMin);
+			Scratch.app.setSaveNeeded();
 		}
 		var d:DialogBox = new DialogBox(setMinMax);
 		d.addTitle('Slider Range');
