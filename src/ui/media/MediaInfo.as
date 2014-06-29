@@ -400,8 +400,8 @@ public class MediaInfo extends Sprite {
 
 	protected function deleteMe(ignore:* = null):void {
 		if (owner) {
-			// Scratch.app.runtime.recordForUndelete(this, 0, 0, 0, owner);
 			if (mycostume) {
+				Scratch.app.runtime.recordDeleteCostume(mycostume, owner);
 				owner.deleteCostume(mycostume);
 				Scratch.app.refreshImageTab(false);
 			}
