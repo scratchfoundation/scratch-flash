@@ -518,6 +518,9 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 			costumeOrSprite = s;
 			uploadSprite(s, uploadComplete);
 		}
+		function imagesDecoded():void {
+			spriteDecoded(sprite);
+		}
 		function uploadComplete():void {
 			app.removeLoadProgressBox();
 			whenDone(costumeOrSprite);
@@ -550,7 +553,23 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 			costumeOrSprite.setSVGData(data, true);
 			uploadCostume(costumeOrSprite as ScratchCostume, uploadComplete);
 		} else {
-			new ProjectIO(app).decodeSpriteFromZipFile(data, spriteDecoded);
+			data.position = 0;
+			if (data.readUTFBytes(4) != 'ObjS') {
+				data.position = 0;
+				new ProjectIO(app).decodeSpriteFromZipFile(data, spriteDecoded);
+			} else {
+				var info:Object;
+				var objTable:Array;
+				data.position = 0;
+				var reader:ObjReader = new ObjReader(data);
+				try { info = reader.readInfo() } catch (e:Error) { data.position = 0 }
+				try { objTable = reader.readObjTable() } catch (e:Error) { }
+				if (!objTable) return;
+				var newProject:ScratchStage = new OldProjectReader().extractProject(objTable);
+				var sprite:ScratchSprite = newProject.numChildren > 3 ? newProject.getChildAt(3) as ScratchSprite : null;
+				if (!sprite) return;
+				new ProjectIO(app).decodeAllImages(newProject.allObjects(), imagesDecoded);
+			}
 		}
 	}
 
