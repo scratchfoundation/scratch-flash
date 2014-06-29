@@ -968,6 +968,7 @@ public class Scratch extends Sprite {
 		if (!c.baseLayerData) c.prepareToSave();
 		if (!okayToAdd(c.baseLayerData.length)) return; // not enough room
 		if (!targetObj) targetObj = viewedObj();
+		runtime.recordAddCostume(c, targetObj);
 		c.costumeName = targetObj.unusedCostumeName(c.costumeName);
 		targetObj.costumes.push(c);
 		targetObj.showCostumeNamed(c.costumeName);

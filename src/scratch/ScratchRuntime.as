@@ -1111,6 +1111,7 @@ public class ScratchRuntime {
 	private static const CHANGE_COMMENT:int = 21;
 	private static const ADD_SOUND:int = 22;
 	private static const DELETE_SOUND:int = 23;
+	private static const ADD_COSTUME:int = 24;
 
 	public function recordDropBlock(b:Block):void {
 		recordAction([DROP_BLOCK, app.viewedObj(), b.parent, b, b.originalState, b.saveState()]);
@@ -1202,6 +1203,9 @@ public class ScratchRuntime {
 	}
 	public function recordDeleteSound(s:ScratchSound, obj:ScratchObj):void {
 		recordAction([DELETE_SOUND, obj, s, obj.sounds.indexOf(s)]);
+	}
+	public function recordAddCostume(c:ScratchCostume, obj:ScratchObj):void {
+		recordAction([ADD_COSTUME, obj, c, obj.costumes.length]);
 	}
 
 	private function recordAction(a:Array):void {
@@ -1334,6 +1338,12 @@ public class ScratchRuntime {
 			a[1].sounds.splice(a[3], 0, a[2]);
 			app.soundsPart.selectSound(a[2]);
 			break;
+		case ADD_COSTUME:
+			selectSpriteIfNeeded(a[1]);
+			selectTabIfNeeded('images');
+			a[1].deleteCostume(a[2]);
+			app.imagesPart.refresh();
+			break;
 		}
 		saveForAction(a);
 	}
@@ -1446,6 +1456,13 @@ public class ScratchRuntime {
 			a[1].deleteSound(a[2]);
 			app.soundsPart.refresh();
 			break;
+		case ADD_COSTUME:
+			selectSpriteIfNeeded(a[1]);
+			selectTabIfNeeded('images');
+			a[1].costumes.splice(a[3], 0, a[2]);
+			a[1].currentCostumeIndex = a[3];
+			app.imagesPart.refresh();
+			break;
 		}
 		saveForAction(a);
 	}
@@ -1475,6 +1492,7 @@ public class ScratchRuntime {
 		case CHANGE_COMMENT: return Translator.map('edit comment');
 		case ADD_SOUND: return Translator.map('add sound');
 		case DELETE_SOUND: return Translator.map('delete sound');
+		case ADD_COSTUME: return a[1].isStage ? Translator.map('add backdrop') : Translator.map('add costume');
 		}
 		return '';
 	}
