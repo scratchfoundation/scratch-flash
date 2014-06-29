@@ -1474,6 +1474,7 @@ public class ScratchRuntime {
 		case DROP_COMMENT: return Translator.map('drop comment');
 		case CHANGE_COMMENT: return Translator.map('edit comment');
 		case ADD_SOUND: return Translator.map('add sound');
+		case DELETE_SOUND: return Translator.map('delete sound');
 		}
 		return '';
 	}
