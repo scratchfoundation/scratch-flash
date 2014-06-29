@@ -1110,6 +1110,7 @@ public class ScratchRuntime {
 	private static const DROP_COMMENT:int = 20;
 	private static const CHANGE_COMMENT:int = 21;
 	private static const ADD_SOUND:int = 22;
+	private static const DELETE_SOUND:int = 23;
 
 	public function recordDropBlock(b:Block):void {
 		recordAction([DROP_BLOCK, app.viewedObj(), b.parent, b, b.originalState, b.saveState()]);
@@ -1198,6 +1199,9 @@ public class ScratchRuntime {
 	}
 	public function recordAddSound(s:ScratchSound, obj:ScratchObj):void {
 		recordAction([ADD_SOUND, obj, s, obj.sounds.length]);
+	}
+	public function recordDeleteSound(s:ScratchSound, obj:ScratchObj):void {
+		recordAction([DELETE_SOUND, obj, s, obj.sounds.indexOf(s)]);
 	}
 
 	private function recordAction(a:Array):void {
@@ -1324,6 +1328,12 @@ public class ScratchRuntime {
 			a[1].deleteSound(a[2]);
 			app.soundsPart.refresh();
 			break;
+		case DELETE_SOUND:
+			selectSpriteIfNeeded(a[1]);
+			selectTabIfNeeded('sounds');
+			a[1].sounds.splice(a[3], 0, a[2]);
+			app.soundsPart.selectSound(a[2]);
+			break;
 		}
 		saveForAction(a);
 	}
@@ -1429,6 +1439,12 @@ public class ScratchRuntime {
 			selectTabIfNeeded('sounds');
 			a[1].sounds.splice(a[3], 0, a[2]);
 			app.soundsPart.selectSound(a[2]);
+			break;
+		case DELETE_SOUND:
+			selectSpriteIfNeeded(a[1]);
+			selectTabIfNeeded('sounds');
+			a[1].deleteSound(a[2]);
+			app.soundsPart.refresh();
 			break;
 		}
 		saveForAction(a);

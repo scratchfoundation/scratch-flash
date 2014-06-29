@@ -406,6 +406,7 @@ public class MediaInfo extends Sprite {
 				Scratch.app.refreshImageTab(false);
 			}
 			if (mysound) {
+				Scratch.app.runtime.recordDeleteSound(mysound, owner);
 				owner.deleteSound(mysound);
 				Scratch.app.refreshSoundTab()
 			}
