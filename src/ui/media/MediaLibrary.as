@@ -519,6 +519,7 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 			uploadSprite(s, uploadComplete);
 		}
 		function imagesDecoded():void {
+			sprite.updateScriptsAfterTranslation();
 			spriteDecoded(sprite);
 		}
 		function uploadComplete():void {
