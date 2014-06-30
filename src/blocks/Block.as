@@ -813,7 +813,7 @@ public class Block extends Sprite {
 		}
 		var app:Scratch = Scratch.app;
 		var top:Block = topBlock();
-		if (op == Specs.PROCEDURE_DEF && app.runtime.allCallsOf(spec, app.viewedObj()).length) {
+		if (op == Specs.PROCEDURE_DEF && app.runtime.allCallsOf(spec, app.viewedObj(), false).length) {
 			DialogBox.notify('Cannot Delete', 'To delete a block definition, first remove all uses of the block.', stage);
 			return false;
 		}

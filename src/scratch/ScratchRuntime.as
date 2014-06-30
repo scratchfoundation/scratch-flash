@@ -830,9 +830,10 @@ public class ScratchRuntime {
         }
     }
 
-	public function allCallsOf(callee:String, owner:ScratchObj):Array {
+	public function allCallsOf(callee:String, owner:ScratchObj, includeRecursive:Boolean = true):Array {
 		var result:Array = [];
 		for each (var stack:Block in owner.scripts) {
+			if (!includeRecursive && stack.op == Specs.PROCEDURE_DEF && stack.spec == callee) continue;
 			// for each block in stack
 			stack.allBlocksDo(function (b:Block):void {
 				if (b.op == Specs.CALL && b.spec == callee) result.push(b);
