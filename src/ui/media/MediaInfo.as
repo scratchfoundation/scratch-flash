@@ -60,6 +60,7 @@ public class MediaInfo extends Sprite {
 
 	public var owner:ScratchObj; // object owning a sound or costume in MediaPane; null for other cases
 	public var isBackdrop:Boolean;
+	public var forBackpack:Boolean;
 
 	private var frame:Shape; // visible when selected
 	private var thumbnail:Bitmap;
@@ -201,6 +202,7 @@ public class MediaInfo extends Sprite {
 	//------------------------------
 
 	public function updateLabelAndInfo(forBackpack:Boolean):void {
+		this.forBackpack = forBackpack;
 		setText(label, (forBackpack ? backpackTitle() : objName));
 		label.x = ((frameWidth - label.textWidth) / 2) - 2;
 
