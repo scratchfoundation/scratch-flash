@@ -36,10 +36,10 @@ package svgeditor
 		private var bitmapLayer:Bitmap;
 		private var visibleMask:Shape;
 
-		static public const canvasWidth:uint = 480;
-		static public const canvasHeight:uint = 360;
+		static public const canvasWidth:uint = 640;
+		static public const canvasHeight:uint = 480;
 		static private const canvasBorderWidth:uint = 25;
-		static private const scrollbarThickness:int = 9;
+		static private const scrollbarThickness:int = 12;
 		static private const maxZoom:Number = 16;
 		private var hScrollbar:Scrollbar;
 		private var vScrollbar:Scrollbar;
@@ -140,7 +140,7 @@ package svgeditor
 
 			if (editor is BitmapEdit) {
 				// Bitmap editor works at double resolution.
-				var bm:BitmapData = new BitmapData(960, 720, true, 0);
+				var bm:BitmapData = new BitmapData(1280, 960, true, 0);
 				visibleArea.addChild(bitmapLayer = new Bitmap(bm));
 				bitmapLayer.scaleX = bitmapLayer.scaleY = 0.5;
 			}
