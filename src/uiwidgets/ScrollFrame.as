@@ -48,7 +48,7 @@ public class ScrollFrame extends Sprite implements DragClient {
 	private const cornerRadius:int = 0;
 	private const useFrame:Boolean = false;
 
-	private var scrollbarThickness:int = 9;
+	private var scrollbarThickness:int = 12;
 
 	private var shadowFrame:Shape;
 	private var hScrollbar:Scrollbar;
