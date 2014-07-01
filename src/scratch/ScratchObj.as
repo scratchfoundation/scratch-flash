@@ -554,7 +554,7 @@ public class ScratchObj extends Sprite {
 		// Update the scripts of this object after switching languages.
 		var newScripts:Array = [];
 		for each (var b:Block in scripts) {
-			var newStack:Block = BlockIO.arrayToStack(BlockIO.stackToArray(b), isStage);
+			var newStack:Block = Scratch.app.blockIO.arrayToStack(Scratch.app.blockIO.stackToArray(b), isStage);
 			newStack.x = b.x;
 			newStack.y = b.y;
 			newScripts.push(newStack);
@@ -575,7 +575,7 @@ public class ScratchObj extends Sprite {
 	public function writeJSON(json:util.JSON):void {
 		var allScripts:Array = [];
 		for each (var b:Block in scripts) {
-			allScripts.push([b.x, b.y, BlockIO.stackToArray(b)]);
+			allScripts.push([b.x, b.y, Scratch.app.blockIO.stackToArray(b)]);
 		}
 		var allComments:Array = [];
 		for each (var c:ScratchComment in scriptComments) {
@@ -632,7 +632,7 @@ public class ScratchObj extends Sprite {
 		for (i = 0; i < scripts.length; i++) {
 			// entries are of the form: [x y stack]
 			var entry:Array = scripts[i];
-			var b:Block = BlockIO.arrayToStack(entry[2], isStage);
+			var b:Block = Scratch.app.blockIO.arrayToStack(entry[2], isStage);
 			b.x = entry[0];
 			b.y = entry[1];
 			scripts[i] = b;

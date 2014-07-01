@@ -24,9 +24,7 @@
 // Represents a variable display.
 
 package watchers {
-import blocks.BlockIO;
-
-import flash.display.*;
+	import flash.display.*;
 	import flash.filters.BevelFilter;
 	import flash.events.MouseEvent;
 	import flash.geom.Point;

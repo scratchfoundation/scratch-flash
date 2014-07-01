@@ -474,14 +474,14 @@ public class BlockMenus implements DragClient {
 		showMenu(m);
 	}
 
-	private function videoMotionTypeMenu(evt:MouseEvent):void {
+	protected function videoMotionTypeMenu(evt:MouseEvent):void {
 		var m:Menu = new Menu(setBlockArg, 'videoMotion');
 		m.addItem('motion');
 		m.addItem('direction');
 		showMenu(m);
 	}
 
-	private function videoStateMenu(evt:MouseEvent):void {
+	protected function videoStateMenu(evt:MouseEvent):void {
 		var m:Menu = new Menu(setBlockArg, 'videoState');
 		m.addItem('off');
 		m.addItem('on');
@@ -663,7 +663,7 @@ public class BlockMenus implements DragClient {
 		d.showOnStage(app.stage);
 	}
 
-	private function deleteVarOrList():void {
+	protected function deleteVarOrList():void {
 		function doDelete(selection:*):void {
 			if (block.op == Specs.GET_VAR) {
 				app.runtime.deleteVariable(blockVarOrListName());
@@ -676,11 +676,11 @@ public class BlockMenus implements DragClient {
 		DialogBox.confirm(Translator.map('Delete') + ' ' + blockVarOrListName() + '?', app.stage, doDelete);
 	}
 
-	private function blockVarOrListName():String {
+	protected function blockVarOrListName():String {
 		return (blockArg != null) ? blockArg.argValue : block.spec;
 	}
 
-	private function setBlockVarOrListName(newName:String):void {
+	protected function setBlockVarOrListName(newName:String):void {
 		if (newName.length == 0) return;
 		if ((block.op == Specs.GET_VAR) || (block.op == Specs.SET_VAR) || (block.op == Specs.CHANGE_VAR)) {
 			app.runtime.createVariable(newName);
@@ -727,11 +727,11 @@ public class BlockMenus implements DragClient {
 		g.drawRect(0, 0, app.stage.stageWidth, app.stage.stageHeight);
 	}
 
-	private var pickingColor:Boolean = false;
 	private var colorPickerSprite:Sprite;
-	private var onePixel:BitmapData = new BitmapData(1, 1);
+	protected var pickingColor:Boolean = false;
+	protected var onePixel:BitmapData = new BitmapData(1, 1);
 
-	private function pixelColorAt(x:int, y:int):int {
+	protected function pixelColorAt(x:int, y:int):int {
 		var m:Matrix = new Matrix();
 		m.translate(-x, -y);
 		onePixel.fillRect(onePixel.rect, 0);
@@ -744,7 +744,7 @@ public class BlockMenus implements DragClient {
 
 	// ***** Broadcast menu *****
 
-	private function broadcastMenu(evt:MouseEvent):void {
+	protected function broadcastMenu(evt:MouseEvent):void {
 		function broadcastMenuSelection(selection:*):void {
 			if (selection is Function) selection();
 			else setBlockArg(selection);
@@ -760,7 +760,7 @@ public class BlockMenus implements DragClient {
 		showMenu(m);
 	}
 
-	private function newBroadcast():void {
+	protected function newBroadcast():void {
 		function changeBroadcast(dialog:DialogBox):void {
 			var newName:String = dialog.fields['Message Name'].text;
 			if (newName.length == 0) return;
@@ -773,7 +773,7 @@ public class BlockMenus implements DragClient {
 		d.showOnStage(app.stage);
 	}
 
-	private function broadcastInfoMenu(evt:MouseEvent):void {
+	protected function broadcastInfoMenu(evt:MouseEvent):void {
 		function showBroadcasts(selection:*):void {
 			if (selection is Function) { selection(); return; }
 			var msg:String = block.args[0].argValue;

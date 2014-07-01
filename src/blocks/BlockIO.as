@@ -31,15 +31,25 @@ package blocks {
 
 public class BlockIO {
 
-	public static function stackToString(b:Block):String {
+	public static function makeBlock(spec:String, type:String = " ", color:int = 0xD00000, op:* = 0, defaultArgs:Array = null):Block {
+		return Scratch.app.blockIO.makeBlock(spec, type, color, op, defaultArgs);
+	}
+
+	public function BlockIO() {}
+
+	public function makeBlock(spec:String, type:String = " ", color:int = 0xD00000, op:* = 0, defaultArgs:Array = null):Block {
+		return new Block(spec, type, color, op, defaultArgs);
+	}
+
+	public function stackToString(b:Block):String {
 		return util.JSON.stringify(stackToArray(b));
 	}
 
-	public static function stringToStack(s:String, forStage:Boolean = false):Block {
+	public function stringToStack(s:String, forStage:Boolean = false):Block {
 		return arrayToStack(util.JSON.parse(s) as Array, forStage);
 	}
 
-	public static function stackToArray(b:Block):Array {
+	public function stackToArray(b:Block):Array {
 		// Return an array structure representing this entire stack.
 		if (b == null) return null;
 		var result:Array = [];
@@ -50,12 +60,12 @@ public class BlockIO {
 		return result;
 	}
 
-	public static function arrayToStack(cmdList:Array, forStage:Boolean = false):Block {
+	public function arrayToStack(cmdList:Array, forStage:Boolean = false):Block {
 		// Return the stack represented by an array structure.
 		var topBlock:Block, lastBlock:Block;
 		for each (var cmd:Array in cmdList) {
 			var b:Block = null;
-			try { b = arrayToBlock(cmd, '', forStage) } catch (e:*) { b = new Block('undefined') }
+			try { b = arrayToBlock(cmd, '', forStage) } catch (e:*) { b = makeBlock('undefined') }
 			if (topBlock == null) topBlock = b;
 			if (lastBlock != null) lastBlock.insertBlock(b);
 			lastBlock = b;
@@ -63,7 +73,7 @@ public class BlockIO {
 		return topBlock;
 	}
 
-	private static function blockToArray(b:Block):Array {
+	private function blockToArray(b:Block):Array {
 		// Return an array structure for this block.
 		var result:Array = [b.op];
 		if (b.op == Specs.GET_VAR) return [Specs.GET_VAR, b.spec];		// variable reporter
@@ -89,7 +99,7 @@ public class BlockIO {
 		return result;
 	}
 
-	private static function arrayToBlock(cmd:Array, undefinedBlockType:String, forStage:Boolean = false):Block {
+	private function arrayToBlock(cmd:Array, undefinedBlockType:String, forStage:Boolean = false):Block {
 		// Make a block from an array of form: <op><arg>*
 
 		if (cmd[0] == 'getUserName') Scratch.app.usesUserNameBlock = true;
@@ -102,13 +112,13 @@ public class BlockIO {
 		if (b) { b.fixArgLayout(); return b }
 
 		if (cmd[0] == Specs.CALL) {
-			b = new Block(cmd[1], '', Specs.procedureColor, Specs.CALL);
+			b = makeBlock(cmd[1], '', Specs.procedureColor, Specs.CALL);
 			cmd.splice(0, 1);
 		} else {
 			var spec:Array = specForCmd(cmd, undefinedBlockType);
 			var label:String = spec[0];
 			if(forStage && spec[3] == 'whenClicked') label = 'when Stage clicked';
-			b = new Block(label, spec[1], Specs.blockColor(spec[2]), spec[3]);
+			b = makeBlock(label, spec[1], Specs.blockColor(spec[2]), spec[3]);
 		}
 
 		var args:Array = argsForCmd(cmd, b.rightToLeft);
@@ -131,7 +141,7 @@ public class BlockIO {
 		return b;
 	}
 
-	public static function specForCmd(cmd:Array, undefinedBlockType:String):Array {
+	public function specForCmd(cmd:Array, undefinedBlockType:String):Array {
 		// Return the block specification for the given command.
 		var op:String = cmd[0];
 		if (op == '\\\\') op = '%'; // convert old Squeak modulo operator
@@ -146,7 +156,7 @@ public class BlockIO {
 		return [spec, undefinedBlockType, 0, op]; // no match found
 	}
 
-	private static function argsForCmd(cmd:Array, reverseArgs:Boolean):Array {
+	private function argsForCmd(cmd:Array, reverseArgs:Boolean):Array {
 		// Return an array of zero or more arguments for the given command.
 		// Skip substacks. Arguments may be literal values or reporter blocks (expressions).
 		var result:Array = [];
@@ -164,7 +174,7 @@ public class BlockIO {
 		return result;
 	}
 
-	private static function substacksForCmd(cmd:Array):Array {
+	private function substacksForCmd(cmd:Array):Array {
 		// Return an array of zero or more substacks for the given command.
 		var result:Array = [];
 		for (var i:int = 1; i < cmd.length; i++) {
@@ -176,19 +186,19 @@ public class BlockIO {
 		return result;
 	}
 
-	private static const controlColor:int = Specs.blockColor(Specs.controlCategory);
+	private const controlColor:int = Specs.blockColor(Specs.controlCategory);
 
-	private static function specialCmd(cmd:Array, forStage:Boolean):Block {
+	private function specialCmd(cmd:Array, forStage:Boolean):Block {
 		// If the given command is special (e.g. a reporter or old-style a hat blocK), return a block for it.
 		// Otherwise, return null.
 		var b:Block;
 		switch (cmd[0]) {
 		case Specs.GET_VAR:
-			return new Block(cmd[1], 'r', Specs.variableColor, Specs.GET_VAR);
+			return makeBlock(cmd[1], 'r', Specs.variableColor, Specs.GET_VAR);
 		case Specs.GET_LIST:
-			return new Block(cmd[1], 'r', Specs.listColor, Specs.GET_LIST);
+			return makeBlock(cmd[1], 'r', Specs.listColor, Specs.GET_LIST);
 		case Specs.PROCEDURE_DEF:
-			b = new Block('', 'p', Specs.procedureColor, Specs.PROCEDURE_DEF);
+			b = makeBlock('', 'p', Specs.procedureColor, Specs.PROCEDURE_DEF);
 			b.parameterNames = cmd[2];
 			b.defaultArgValues = cmd[3];
 			if (cmd.length > 4) b.warpProcFlag = cmd[4];
@@ -197,13 +207,13 @@ public class BlockIO {
 			return b;
 		case Specs.GET_PARAM:
 			var paramType:String = (cmd.length >= 3) ? cmd[2] : 'r';
-			return new Block(cmd[1], paramType, Specs.parameterColor, Specs.GET_PARAM);
+			return makeBlock(cmd[1], paramType, Specs.parameterColor, Specs.GET_PARAM);
 		case 'changeVariable':
 			var varOp:String = cmd[2];
 			if (varOp == Specs.SET_VAR) {
-				b = new Block('set %m.var to %s', ' ', Specs.variableColor, Specs.SET_VAR);
+				b = makeBlock('set %m.var to %s', ' ', Specs.variableColor, Specs.SET_VAR);
 			} else if (varOp == Specs.CHANGE_VAR) {
-				b = new Block('change %m.var by %n', ' ', Specs.variableColor, Specs.CHANGE_VAR);
+				b = makeBlock('change %m.var by %n', ' ', Specs.variableColor, Specs.CHANGE_VAR);
 			}
 			if (b == null) return null;
 			var arg:* = cmd[3];
@@ -213,21 +223,21 @@ public class BlockIO {
 			return b;
 		case 'EventHatMorph':
 			if (cmd[1] == 'Scratch-StartClicked') {
-				return new Block('when @greenFlag clicked', 'h', controlColor, 'whenGreenFlag');
+				return makeBlock('when @greenFlag clicked', 'h', controlColor, 'whenGreenFlag');
 			}
-			b = new Block('when I receive %m.broadcast', 'h', controlColor, 'whenIReceive');
+			b = makeBlock('when I receive %m.broadcast', 'h', controlColor, 'whenIReceive');
 			b.setArg(0, cmd[1]);
 			return b;
 		case 'MouseClickEventHatMorph':
-			b = new Block('when I am clicked', 'h', controlColor, 'whenClicked');
+			b = makeBlock('when I am clicked', 'h', controlColor, 'whenClicked');
 			return b;
 		case 'KeyEventHatMorph':
-			b = new Block('when %m.key key pressed', 'h', controlColor, 'whenKeyPressed');
+			b = makeBlock('when %m.key key pressed', 'h', controlColor, 'whenKeyPressed');
 			b.setArg(0, cmd[1]);
 			return b;
 		case 'stopScripts':
 			var type:String = (cmd[1].indexOf('other scripts') == 0) ? ' ' : 'f'; // block type depends on menu arg
-			b = new Block('stop %m.stop', type, controlColor, 'stopScripts');
+			b = makeBlock('stop %m.stop', type, controlColor, 'stopScripts');
 			if (type == ' ') {
 				if(forStage) cmd[1] = 'other scripts in stage';
 				else cmd[1] = 'other scripts in sprite';
@@ -238,7 +248,7 @@ public class BlockIO {
 		return null;
 	}
 
-	private static function convertOldCmd(cmd:Array):Block {
+	private function convertOldCmd(cmd:Array):Block {
 		// If the given command is one of a handful of old Scratch blocks,
 		// covert it to it's new form and return it. Otherwise, return null.
 		var b:Block;
@@ -248,49 +258,49 @@ public class BlockIO {
 
 		switch (cmd[0]) {
 		case 'abs':
-			b = new Block('%m.mathOp of %n', 'r', operatorsColor, 'computeFunction:of:');
+			b = makeBlock('%m.mathOp of %n', 'r', operatorsColor, 'computeFunction:of:');
 			b.setArg(0, 'abs');
 			b.setArg(1, convertArg(cmd[1]));
 			return b;
 		case 'sqrt':
-			b = new Block('%m.mathOp of %n', 'r', operatorsColor, 'computeFunction:of:');
+			b = makeBlock('%m.mathOp of %n', 'r', operatorsColor, 'computeFunction:of:');
 			b.setArg(0, 'sqrt');
 			b.setArg(1, convertArg(cmd[1]));
 			return b;
 		case 'doReturn':
-			b = new Block('stop %m.stop', 'f', controlColor, 'stopScripts');
+			b = makeBlock('stop %m.stop', 'f', controlColor, 'stopScripts');
 			b.setArg(0, 'this script');
 			return b;
 		case 'stopAll':
-			b = new Block('stop %m.stop', 'f', controlColor, 'stopScripts');
+			b = makeBlock('stop %m.stop', 'f', controlColor, 'stopScripts');
 			b.setArg(0, 'all');
 			return b;
 		case 'showBackground:':
-			b = new Block('switch backdrop to %m.backdrop', ' ', looksColor, 'startScene');
+			b = makeBlock('switch backdrop to %m.backdrop', ' ', looksColor, 'startScene');
 			b.setArg(0, convertArg(cmd[1]));
 			return b;
 		case 'nextBackground':
-			b = new Block('next background', ' ', looksColor, 'nextScene');
+			b = makeBlock('next background', ' ', looksColor, 'nextScene');
 			return b;
 		case 'doForeverIf':
-			var ifBlock:Block = new Block('if %b then', 'c', controlColor, 'doIf');
+			var ifBlock:Block = makeBlock('if %b then', 'c', controlColor, 'doIf');
 			ifBlock.setArg(0, convertArg(cmd[1]));
 			if (cmd[2] is Array) ifBlock.insertBlockSub1(arrayToStack(cmd[2]));
 			ifBlock.fixArgLayout();
 
-			b = new Block('forever', 'cf', controlColor, 'doForever');
+			b = makeBlock('forever', 'cf', controlColor, 'doForever');
 			b.insertBlockSub1(ifBlock);
 			return b;
 		}
 		return null;
 	}
 
-	private static function convertArg(arg:*):* {
+	private function convertArg(arg:*):* {
 		// If arg is an array, convert it to a block. Otherwise, return it unchanged.
 		return (arg is Array) ? arrayToBlock(arg, 'r') : arg;
 	}
 
-	private static function fixMouseEdgeRefs(b:Block):void {
+	private function fixMouseEdgeRefs(b:Block):void {
 		var refCmds:Array = [
 			'createCloneOf', 'distanceTo:', 'getAttribute:of:',
 			'gotoSpriteOrMouse:', 'pointTowards:', 'touching:'];
