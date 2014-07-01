@@ -174,14 +174,14 @@ public class ScratchSprite extends ScratchObj {
 	public function setScratchXY(newX:Number, newY:Number):void {
 		scratchX = isFinite(newX) ? newX : newX > 0 ? 1e6 : -1e6;
 		scratchY = isFinite(newY) ? newY : newY > 0 ? 1e6 : -1e6;
-		x = 240 + Math.round(scratchX);
-		y = 180 - Math.round(scratchY);
+		x = 320 + Math.round(scratchX);
+		y = 240 - Math.round(scratchY);
 		updateBubble();
 	}
 
-	static private var stageRect:Rectangle = new Rectangle(0, 0, 480, 360);
+	static private var stageRect:Rectangle = new Rectangle(0, 0, 640, 480);
 	static private var emptyRect:Rectangle = new Rectangle(0, 0, 0, 0);
-	static private var edgeBox:Rectangle = new Rectangle(0, 0, 480, 360);
+	static private var edgeBox:Rectangle = new Rectangle(0, 0, 640, 480);
 	public function keepOnStage():void {
 		var myBox:Rectangle;
 		if(width == 0 && height == 0) {
@@ -248,7 +248,7 @@ public class ScratchSprite extends ScratchObj {
 		var origW:int = img.width;
 		var origH:int = img.height;
 		var minScale:Number = Math.min(1, Math.max(5 / origW, 5 / origH));
-		var maxScale:Number = Math.min((1.5 * 480) / origW, (1.5 * 360) / origH);
+		var maxScale:Number = Math.min((1.5 * 640) / origW, (1.5 * 480) / origH);
 		scaleX = scaleY = Math.max(minScale, Math.min(percent / 100.0, maxScale));
 		clearCachedBitmap();
 		updateBubble();
