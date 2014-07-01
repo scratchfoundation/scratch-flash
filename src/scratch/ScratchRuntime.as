@@ -98,7 +98,7 @@ public class ScratchRuntime {
 	private var frames:Array = [];
 
 	private function saveFrame():void {
-		var f:BitmapData = new BitmapData(480, 360);
+		var f:BitmapData = new BitmapData(640, 480);
 		f.draw(app.stagePane);
 		frames.push(f);
 		if ((frames.length % 100) == 0) {
@@ -126,7 +126,7 @@ public class ScratchRuntime {
 	public function saveRecording():void {
 		var myWriter:SimpleFlvWriter = SimpleFlvWriter.getInstance();
 		var data:ByteArray = new ByteArray();
-		myWriter.createFile(data, 480, 360, 30, frames.length / 30.0);
+		myWriter.createFile(data, 640, 480, 30, frames.length / 30.0);
 		for (var i:int = 0; i < frames.length; i++) {
 			myWriter.saveFrame(frames[i]);
 			frames[i] = null;
