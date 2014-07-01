@@ -65,6 +65,7 @@ public class Primitives {
 
 		primTable["%"]					= primModulo;
 		primTable["rounded"]			= function(b:*):* { return Math.round(interp.numarg(b, 0)) };
+		primTable["pi"]					= function(b:*):* { return Math.PI };
 		primTable["computeFunction:of:"] = primMathFunction;
 
 		// clone
