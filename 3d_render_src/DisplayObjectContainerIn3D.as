@@ -251,11 +251,11 @@ package {
 			var p:Point = scratchStage.localToGlobal(originPt);
 			stage3D.x = p.x;
 			stage3D.y = p.y;
-			var width:uint = Math.ceil(480*scratchStage.scaleX), height:uint = Math.ceil(360*scratchStage.scaleX);
+			var width:uint = Math.ceil(640*scratchStage.scaleX), height:uint = Math.ceil(480*scratchStage.scaleX);
 			var rect:Rectangle = new Rectangle(0, 0, width, height);
 			if(stage3D.context3D && (!scissorRect || !scissorRect.equals(rect))) {
 				scissorRect = rect;
-				projMatrix = createOrthographicProjectionMatrix(480, 360, 0, 0);
+				projMatrix = createOrthographicProjectionMatrix(640, 480, 0, 0);
 				stage3D.context3D.setScissorRectangle(scissorRect);
 				stage3D.context3D.configureBackBuffer(width, height, 0, false, true);
 //trace('Setting backbuffer and scissor rectangle');
@@ -1195,8 +1195,8 @@ package {
 		}
 
 		private const FC0:Vector.<Number> = Vector.<Number>([1, 2, 0, 0.5]);
-		private const FC1:Vector.<Number> = Vector.<Number>([3.1415926535, 180, 60, 120]);
-		private const FC2:Vector.<Number> = Vector.<Number>([240, 3, 4, 5]);
+		private const FC1:Vector.<Number> = Vector.<Number>([3.1415926535, 240, 60, 120]);
+		private const FC2:Vector.<Number> = Vector.<Number>([320, 3, 4, 5]);
 		private const FC3:Vector.<Number> = Vector.<Number>([6, 0.11, 0.09, 0.001]);
 		private const FC4:Vector.<Number> = Vector.<Number>([360, 0, 0, 0]);
 		public function render(quadCount:uint, blend:Boolean = true):void
