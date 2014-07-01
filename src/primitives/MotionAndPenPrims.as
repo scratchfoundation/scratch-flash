@@ -295,8 +295,8 @@ public class MotionAndPenPrims {
 	private function stroke(s:ScratchSprite, oldX:Number, oldY:Number, newX:Number, newY:Number):void {
 		var g:Graphics = app.stagePane.newPenStrokes.graphics;
 		g.lineStyle(s.penWidth, s.penColorCache);
-		g.moveTo(240 + oldX, 180 - oldY);
-		g.lineTo(240 + newX, 180 - newY);
+		g.moveTo(320 + oldX, 240 - oldY);
+		g.lineTo(320 + newX, 240 - newY);
 //trace('pen line('+oldX+', '+oldY+', '+newX+', '+newY+')');
 		app.stagePane.penActivity = true;
 	}
