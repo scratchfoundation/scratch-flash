@@ -203,8 +203,8 @@ public class ScratchSprite extends ScratchObj {
 		var inset:int = Math.min(18, Math.min(myBox.width, myBox.height) / 2);
 		edgeBox.x = edgeBox.y = inset;
 		inset += inset;
-		edgeBox.width = 480 - inset;
-		edgeBox.height = 360 - inset;
+		edgeBox.width = 640 - inset;
+		edgeBox.height = 480 - inset;
 		if (myBox.intersects(edgeBox)) return; // sprite is sufficiently on stage
 		if (myBox.right < edgeBox.left)
 			scratchX = Math.ceil(scratchX + (edgeBox.left - myBox.right));
