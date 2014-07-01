@@ -736,6 +736,15 @@ public class Scratch extends Sprite {
 	protected function canExportInternals():Boolean {
 		return false;
 	}
+	
+	public function showDebugMenu(b:*):void {
+		var m:Menu = new Menu(null, 'Debugging', CSS.topBarColor, 28);
+		m.addItem('Single Stepping Fast', toggleSingleSteppingFast, true, interp.singleSteppingFast);
+		m.addItem('Single Stepping Slow', toggleSingleSteppingSlow, true, interp.singleSteppingSlow);
+		m.addItem('Stop Single Stepping', toggleSingleSteppingStop);
+
+		m.showOnStage(stage, b.x, topBarPart.bottom() - 1);
+	}
 
 	private function showAboutDialog():void {
 		DialogBox.notify(
@@ -813,6 +822,30 @@ public class Scratch extends Sprite {
 
 	public function toggleTurboMode():void {
 		interp.turboMode = !interp.turboMode;
+		toggleSingleSteppingStop();
+		stagePart.refresh();
+	}
+	
+	public function toggleSingleSteppingFast():void {
+		interp.singleSteppingFast = !interp.singleSteppingFast;
+		interp.singleSteppingSlow = false;
+		
+		interp.turboMode = false;
+		stagePart.refresh();
+	}
+
+	public function toggleSingleSteppingSlow():void {
+		interp.singleSteppingSlow = !interp.singleSteppingSlow;
+		interp.singleSteppingFast = false;
+		
+		interp.turboMode = false;
+		stagePart.refresh();
+	}
+	
+	public function toggleSingleSteppingStop():void {
+		interp.singleSteppingFast = false;
+		interp.singleSteppingSlow = false;
+		
 		stagePart.refresh();
 	}
 
@@ -976,7 +1009,7 @@ public class Scratch extends Sprite {
 		return true;
 	}
 	// -----------------------------
-	// Flash sprite (helps connect a sprite on the stage with a sprite library entry)
+	// Flash sprite (helps connect a sprite on thestage with a sprite library entry)
 	//------------------------------
 
 	public function flashSprite(spr:ScratchSprite):void {
