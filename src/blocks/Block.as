@@ -577,7 +577,7 @@ public class Block extends Sprite {
 		for (var i:int = 0; i < srcArgs.length; i++) {
 			var argToCopy:* = srcArgs[i];
 			if (argToCopy is BlockArg) {
-				var a:BlockArg = new BlockArg(argToCopy.type, -1);
+				var a:BlockArg = makeArg(argToCopy.type, -1);
 				a.argValue = argToCopy.argValue;
 				args.push(a);
 			}
@@ -734,17 +734,21 @@ public class Block extends Sprite {
 		//	a token consisting of a single % or @ character is also a label
 		if (s.length >= 2 && s.charAt(0) == "%") { // argument spec
 			var argSpec:String = s.charAt(1);
-			if (argSpec == "b") return new BlockArg("b", c);
-			if (argSpec == "c") return new BlockArg("c", c);
-			if (argSpec == "d") return new BlockArg("d", c, true, s.slice(3));
-			if (argSpec == "m") return new BlockArg("m", c, false, s.slice(3));
-			if (argSpec == "n") return new BlockArg("n", c, true);
-			if (argSpec == "s") return new BlockArg("s", c, true);
-		} else if (s.length >= 2 && s.charAt(0) == "@") { // icon spec
+			if (argSpec == "b") return makeArg("b", c);
+			if (argSpec == "c") return makeArg("c", c);
+			if (argSpec == "d") return makeArg("d", c, true, s.slice(3));
+			if (argSpec == "m") return makeArg("m", c, false, s.slice(3));
+			if (argSpec == "n") return makeArg("n", c, true);
+			if (argSpec == "s") return makeArg("s", c, true);
+		} else if ((s.length >= 2) && (s.charAt(0) == "@")) { // icon spec
 			var icon:* = Specs.IconNamed(s.slice(1));
 			return (icon) ? icon : makeLabel(s);
 		}
 		return makeLabel(ReadStream.unescape(s));
+	}
+
+	protected function makeArg(type:String, color:int, editable:Boolean = false, menuName:String = ''):BlockArg {
+		return new BlockArg(type, color, editable, menuName);
 	}
 
 	protected function makeLabel(label:String):TextField {

@@ -281,12 +281,12 @@ public class ScriptsPane extends ScrollFrameContents {
 				p = target.localToGlobal(new Point(0, target.base.nextBlockY() - 3));
 				possibleTargets.push([p, target, INSERT_NORMAL]);
 			}
-			if (target.base.canHaveSubstack1() && (!endsWithTerminal || target.subStack1 == null)) {
-				p = target.localToGlobal(new Point(15, target.base.substack1y()));
+			if (target.base.canHaveSubstack1() && (!endsWithTerminal || target.subStack2 == null)) {
+				p = target.localToGlobal(new Point(BlockShape.SubstackInset, target.base.substack1y()));
 				possibleTargets.push([p, target, INSERT_SUB1]);
 			}
 			if (target.base.canHaveSubstack2() && (!endsWithTerminal || target.subStack2 == null)) {
-				p = target.localToGlobal(new Point(15, target.base.substack2y()));
+				p = target.localToGlobal(new Point(BlockShape.SubstackInset, target.base.substack2y()));
 				possibleTargets.push([p, target, INSERT_SUB2]);
 			}
 			if (target.subStack1 != null) findCommandTargetsIn(target.subStack1, endsWithTerminal);

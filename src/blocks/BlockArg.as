@@ -73,35 +73,7 @@ public class BlockArg extends Sprite {
 			if ((type == 'd') || (type == 'n')) isNumber = true;
 			return;
 		}
-		var c:int = Color.scaleBrightness(color, 0.92);
-		if (type == 'b') {
-			base = new BlockShape(BlockShape.BooleanShape, c);
-			argValue = false;
-		} else if (type == 'c') {
-			base = new BlockShape(BlockShape.RectShape, c);
-			this.menuName = 'colorPicker';
-			addEventListener(MouseEvent.MOUSE_DOWN, invokeMenu);
-		} else if (type == 'd') {
-			base = new BlockShape(BlockShape.NumberShape, c);
-			isNumber = true;
-			this.menuName = menuName;
-			addEventListener(MouseEvent.MOUSE_DOWN, invokeMenu);
-		} else if (type == 'm') {
-			base = new BlockShape(BlockShape.RectShape, c);
-			this.menuName = menuName;
-			addEventListener(MouseEvent.MOUSE_DOWN, invokeMenu);
-		} else if (type == 'n') {
-			base = new BlockShape(BlockShape.NumberShape, c);
-			isNumber = true;
-			argValue = 0;
-		} else if (type == 's') {
-			base = new BlockShape(BlockShape.RectShape, c);
-		} else {
-			// custom type; subclass is responsible for adding
-			// the desired children, setting width and height,
-			// and optionally defining the base shape
-			return;
-		}
+		if (setType(type, color)) return;
 
 		if (type == 'c') {
 			base.setWidthAndTopHeight(13, 13);
@@ -140,6 +112,43 @@ public class BlockArg extends Sprite {
 		} else {
 			base.redraw();
 		}
+	}
+
+	protected function setType(type:String, color:int):Boolean {
+		var c:int = Color.scaleBrightness(color, 0.92);
+		if (type == 'b') {
+			base = makeBlockShape(BlockShape.BooleanShape, c);
+			argValue = false;
+		} else if (type == 'c') {
+			base = makeBlockShape(BlockShape.RectShape, c);
+			this.menuName = 'colorPicker';
+			addEventListener(MouseEvent.MOUSE_DOWN, invokeMenu);
+		} else if (type == 'd') {
+			base = makeBlockShape(BlockShape.NumberShape, c);
+			isNumber = true;
+			this.menuName = menuName;
+			addEventListener(MouseEvent.MOUSE_DOWN, invokeMenu);
+		} else if (type == 'm') {
+			base = makeBlockShape(BlockShape.RectShape, c);
+			this.menuName = menuName;
+			addEventListener(MouseEvent.MOUSE_DOWN, invokeMenu);
+		} else if (type == 'n') {
+			base = makeBlockShape(BlockShape.NumberShape, c);
+			isNumber = true;
+			argValue = 0;
+		} else if (type == 's') {
+			base = makeBlockShape(BlockShape.RectShape, c);
+		} else {
+			// custom type; subclass is responsible for adding
+			// the desired children, setting width and height,
+			// and optionally defining the base shape
+			return true;
+		}
+		return false;
+	}
+
+	protected function makeBlockShape(shape:int, color:int):BlockShape {
+		return new BlockShape(shape, color);
 	}
 
 	public function labelOrNull():String { return field ? field.text : null }
@@ -186,7 +195,7 @@ public class BlockArg extends Sprite {
 		field.selectable = false;
 	}
 
-	private function blockArgFilters():Array {
+	protected function blockArgFilters():Array {
 		// filters for BlockArg outlines
 		var f:BevelFilter = new BevelFilter(1);
 		f.blurX = f.blurY = 2;
@@ -245,7 +254,7 @@ public class BlockArg extends Sprite {
 		if (evt && Scratch.app) Scratch.app.setSaveNeeded();
 	}
 
-	private function invokeMenu(evt:MouseEvent):void {
+	protected function invokeMenu(evt:MouseEvent):void {
 		if ((menuIcon != null) && (evt.localX <= menuIcon.x)) return;
 		if (Block.MenuHandlerFunction != null) {
 			Block.MenuHandlerFunction(evt, parent, this, menuName);
