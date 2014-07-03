@@ -190,8 +190,8 @@ public class BitmapEdit extends ImageEdit {
 		var el:SVGElement = SVGElement.makeBitmapEl(c.bitmapForEditor(isScene), 0.5);
 		var sel:SVGBitmap = new SVGBitmap(el, el.bitmap);
 		sel.redraw();
-		sel.x = destP.x;
-		sel.y = destP.y;
+		sel.x = destP.x - c.width() / 2;
+		sel.y = destP.y - c.height() / 2;
 		workArea.getContentLayer().addChild(sel);
 
 		setToolMode('bitmapSelect');
