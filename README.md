@@ -16,6 +16,8 @@ FLEX_HOME=/home/joe/downloads/flex_sdk_4.11
 ```
 Now you can run Ant ('ant' from the commandline) to build the SWF.
 
+If the source is building but producing runtime errors, your first course of action should be to download version 4.11 of the Flex SDK (the Apache foundation maintains an installer that lets you select a variety of versions [here](http://flex.apache.org/installer.html)) and try targeting that.
+
 ### Debugging
 Here are a few integrated development environments available with Flash debugging support:
 * [Intellij IDEA](http://www.jetbrains.com/idea/features/flex_ide.html)
