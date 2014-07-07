@@ -207,7 +207,7 @@ public class Piano extends Sprite {
 			} else {
 				k.x = x;
 				k.y = 1;
-				x += k.width + 1;
+				x += k.width;
 			}
 		}
 	}
@@ -215,7 +215,7 @@ public class Piano extends Sprite {
 	private function redraw():void {
 		var g:Graphics = shape.graphics;
 		g.beginFill(color, 1);
-		g.drawRect(0, 0, width + 2, 64);
+		g.drawRect(0, 0, width + 1, 64);
 		g.endFill();
 	}
 
@@ -291,6 +291,11 @@ class PianoKey extends Sprite {
 		if (isSelected && isBlack) graphics.lineStyle(1, 0, 1, true);
 		graphics.drawRect(0, 0, w, h);
 		graphics.endFill();
+		if (!isBlack) {
+			graphics.beginFill(0, 0);
+			graphics.drawRect(w, 0, 1, h);
+			graphics.endFill();
+		}
 	}
 
 }
