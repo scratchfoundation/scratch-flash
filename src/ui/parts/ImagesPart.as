@@ -184,10 +184,12 @@ public class ImagesPart extends UIPart {
 		if (obj == null) return;
 		nameField.setContents(obj.currentCostume().costumeName);
 
+		var zoomAndScroll:Array = editor.getZoomAndScroll();
 		editor.shutdown();
 		var c:ScratchCostume = obj.currentCostume();
 		useBitmapEditor(c.isBitmap() && !c.text);
 		editor.editCostume(c, obj.isStage);
+		editor.setZoomAndScroll(zoomAndScroll);
 		if(changed) app.setSaveNeeded();
 	}
 
