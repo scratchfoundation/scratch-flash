@@ -676,6 +676,7 @@ public class ScratchRuntime {
 	public function renameCostume(newName:String):void {
 		var obj:ScratchObj = app.viewedObj();
 		var costume:ScratchCostume = obj.currentCostume();
+        costume.costumeName = '';
 		var oldName:String = costume.costumeName;
 		newName = obj.unusedCostumeName(newName || Translator.map('costume1'));
 		costume.costumeName = newName;
@@ -704,6 +705,7 @@ public class ScratchRuntime {
     public function renameSound(s:ScratchSound, newName:String):void {
         var obj:ScratchObj = app.viewedObj();
         var oldName:String = s.soundName;
+        s.soundName = '';
         newName = obj.unusedSoundName(newName || Translator.map('sound1'));
         s.soundName = newName;
         allUsesOfSoundDo(oldName, function (a:BlockArg):void {
