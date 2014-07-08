@@ -539,7 +539,7 @@ public class ScratchObj extends Sprite {
 		var now:uint = getTimer();
 		app.runtime.startClickedHats(this);
 		if ((now - lastClickTime) < DOUBLE_CLICK_MSECS) {
-			if (!isStage && ScratchSprite(this).isClone) return;
+			if (isStage || ScratchSprite(this).isClone) return;
 			app.selectSprite(this);
 			lastClickTime = 0;
 		} else {
