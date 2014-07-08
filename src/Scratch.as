@@ -1098,7 +1098,7 @@ public class Scratch extends Sprite {
 		cameraDialog = new CameraDialog(savePhoto);
 		cameraDialog.fixLayout();
 		cameraDialog.x = (stage.stageWidth - cameraDialog.width) / 2;
-		cameraDialog.y = (stage.stageHeight - cameraDialog.height) / 2;;
+		cameraDialog.y = (stage.stageHeight - cameraDialog.height) / 2;
 		addChild(cameraDialog);
 	}
 

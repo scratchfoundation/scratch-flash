@@ -136,7 +136,7 @@ public class SoundBank {
 					var oneCycle:Number = 22050 / keyPitch;
 					var cycles:int = Math.round(loopLen / oneCycle);
 					var loopPitch:Number = 22050 / (loopLen / cycles);
-					var cents:Number = 1200 * Math.log(keyPitch / loopPitch) / Math.LN2;;
+					var cents:Number = 1200 * Math.log(keyPitch / loopPitch) / Math.LN2;
 					var leftoverCount:int = (buf.length / 2) - loopEnd;
 					if (leftoverCount < 0) {
 						trace(' ***** file too short: loopEnd: ' + loopEnd + ' buf size: ' + (buf.length / 2));
