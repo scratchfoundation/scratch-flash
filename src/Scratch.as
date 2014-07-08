@@ -771,7 +771,7 @@ public class Scratch extends Sprite {
 			return;
 		}
 		var d:DialogBox = new DialogBox();
-		d.addTitle(Translator.map('Save project') + '?');
+		d.addTitle('Save project?');
 		d.addButton('Save', save);
 		d.addButton('Don\'t save', proceedWithoutSaving);
 		d.addButton('Cancel', cancel);
