@@ -512,8 +512,9 @@ public class ExtensionManager {
 			processPollResponse(ext, loader.data);
 		}
 		function errorHandler(e:Event):void {
+			// ignore errors
 			delete pollInProgress[ext];
-		} // ignore errors
+		}
 		var url:String = 'http://' + ext.host + ':' + ext.port + '/poll';
 		var loader:URLLoader = new URLLoader();
 		loader.addEventListener(Event.COMPLETE, completeHandler);
