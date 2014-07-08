@@ -229,11 +229,11 @@ public class MediaLibrary extends Sprite {
 
 	private function addTitle():void {
 		var s:String = assetType;
-		if ('backdrop' == s) s = Translator.map('Backdrop Library');
-		if ('costume' == s) s = Translator.map('Costume Library');
-		if ('extension' == s) s = Translator.map('Extension Library');
-		if ('sprite' == s) s = Translator.map('Sprite Library');
-		if ('sound' == s) s = Translator.map('Sound Library');
+		if ('backdrop' == s) s = 'Backdrop Library';
+		if ('costume' == s) s = 'Costume Library';
+		if ('extension' == s) s = 'Extension Library';
+		if ('sprite' == s) s = 'Sprite Library';
+		if ('sound' == s) s = 'Sound Library';
 		addChild(title = Resources.makeLabel(Translator.map(s), titleFormat));
 	}
 
