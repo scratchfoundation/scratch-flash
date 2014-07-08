@@ -228,7 +228,7 @@ public class Block extends Sprite {
 		var font:String = Resources.chooseFont([
 			'Lucida Grande', 'Verdana', 'Arial', 'DejaVu Sans']);
 		blockLabelFormat = new TextFormat(font, labelSize, 0xFFFFFF, boldFlag);
-		argTextFormat = new TextFormat(font, argSize, 0x505050, boldFlag);
+		argTextFormat = new TextFormat(font, argSize, 0x505050, false);
 		Block.vOffset = vOffset;
 	}
 

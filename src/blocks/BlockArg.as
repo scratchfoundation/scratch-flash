@@ -202,7 +202,6 @@ public class BlockArg extends Sprite {
 		tf.x = offsets[0];
 		tf.y = offsets[1];
 		tf.autoSize = TextFieldAutoSize.LEFT;
-		Block.argTextFormat.bold = isNumber;
 		tf.defaultTextFormat = Block.argTextFormat;
 		tf.selectable = false;
 		tf.addEventListener(Event.CHANGE, textChanged);
