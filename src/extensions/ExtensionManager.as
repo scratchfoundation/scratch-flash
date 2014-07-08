@@ -29,6 +29,7 @@ import blocks.BlockArg;
 import flash.events.*;
 	import flash.external.ExternalInterface;
 	import flash.net.*;
+	import flash.utils.Dictionary;
 	import flash.utils.getTimer;
 	import blocks.Block;
 	import interpreter.*;
@@ -43,6 +44,7 @@ public class ExtensionManager {
 	private var app:Scratch;
 	private var extensionDict:Object = new Object(); // extension name -> extension record
 	private var justStartedWait:Boolean;
+	private var pollInProgress:Dictionary = new Dictionary(true);
 	static public const wedoExt:String = 'LEGO WeDo';
 
 	public function ExtensionManager(app:Scratch) {
@@ -497,16 +499,27 @@ public class ExtensionManager {
 	}
 
 	private function httpPoll(ext:ScratchExtension):void {
+
+		if (pollInProgress[ext]) {
+			// Don't poll again if there's already one in progress.
+			// This can happen a lot if the connection is timing out.
+			return;
+		}
+
 		// Poll via HTTP.
 		function completeHandler(e:Event):void {
+			delete pollInProgress[ext];
 			processPollResponse(ext, loader.data);
 		}
-		function errorHandler(e:Event):void { } // ignore errors
+		function errorHandler(e:Event):void {
+			delete pollInProgress[ext];
+		} // ignore errors
 		var url:String = 'http://' + ext.host + ':' + ext.port + '/poll';
 		var loader:URLLoader = new URLLoader();
 		loader.addEventListener(Event.COMPLETE, completeHandler);
 		loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, errorHandler);
 		loader.addEventListener(IOErrorEvent.IO_ERROR, errorHandler);
+		pollInProgress[ext] = true;
 		loader.load(new URLRequest(url));
 	}
 
