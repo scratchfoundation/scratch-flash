@@ -57,6 +57,7 @@ package util {
 	import blocks.*;
 	import scratch.*;
 	import uiwidgets.*;
+	import svgeditor.*;
 	import watchers.*;
 
 public class GestureHandler {
@@ -392,7 +393,7 @@ public class GestureHandler {
 			return;
 		}
 		if (t && 'handleTool' in t) t.handleTool(CursorTool.tool, evt);
-		if (isGrowShrink && (t is Block) && (t.isInPalette)) return; // grow/shrink sticky for scripting area
+		if (isGrowShrink && (t is Block && t.isInPalette || t is ImageCanvas)) return; // grow/shrink sticky for scripting area
 
 		if (!evt.shiftKey) app.clearTool(); // don't clear if shift pressed
 	}
