@@ -179,7 +179,7 @@ public class BitmapEdit extends ImageEdit {
 		var costumeBM:BitmapData = c.bitmapForEditor(isScene);
 		var destP:Point = isScene ?
 			new Point(0, 0) :
-			new Point(480 - (scale * c.rotationCenterX), 360 - (scale * c.rotationCenterY));
+			new Point(640 - (scale * c.rotationCenterX), 480 - (scale * c.rotationCenterY));
 		bm.copyPixels(costumeBM, costumeBM.rect, destP);
 		if (c.undoList.length == 0) {
 			recordForUndo(costumeBM, (scale * c.rotationCenterX), (scale * c.rotationCenterY));
@@ -222,7 +222,7 @@ public class BitmapEdit extends ImageEdit {
 			} else {
 				newBM = new BitmapData(2, 2, true, 0); // empty bitmap
 			}
-			c.setBitmapData(newBM, Math.floor(480 - r.x), Math.floor(360 - r.y));
+			c.setBitmapData(newBM, Math.floor(640 - r.x), Math.floor(480 - r.y));
 		}
 		recordForUndo(c.baseLayerBitmap.clone(), c.rotationCenterX, c.rotationCenterY);
 		Scratch.app.setSaveNeeded();

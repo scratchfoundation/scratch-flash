@@ -156,8 +156,8 @@ public class ScratchStage extends ScratchObj {
 	public function baseW():Number { return bg.width }
 	public function baseH():Number { return bg.height }
 
-	public function scratchMouseX():int { return Math.max(-240, Math.min(mouseX - (STAGEW / 2), 240)) }
-	public function scratchMouseY():int { return -Math.max(-180, Math.min(mouseY - (STAGEH / 2), 180)) }
+	public function scratchMouseX():int { return Math.max(-320, Math.min(mouseX - (STAGEW / 2), 320)) }
+	public function scratchMouseY():int { return -Math.max(-240, Math.min(mouseY - (STAGEH / 2), 240)) }
 
 	public override function allObjects():Array {
 		// Return an array of all sprites in this project plus the stage.
@@ -222,7 +222,7 @@ public class ScratchStage extends ScratchObj {
 	}
 
 	private function saveScreenshot():void {
-		var bitmapData:BitmapData = new BitmapData(480, 360, true, 0x0);
+		var bitmapData:BitmapData = new BitmapData(640, 480, true, 0x0);
 		bitmapData.draw(this);
 		var pngData:ByteArray = PNG24Encoder.encode(bitmapData, PNGFilter.PAETH);
 		var file:FileReference = new FileReference();
@@ -438,7 +438,7 @@ public class ScratchStage extends ScratchObj {
 			camera.setMode(640, 480, 30);
 		}
 		if (video == null) {
-			video = new Video(480, 360);
+			video = new Video(640, 480);
 			video.attachCamera(camera);
 			videoImage = new Bitmap(new BitmapData(video.width, video.height, false));
 			videoImage.alpha = videoAlpha;
@@ -678,10 +678,10 @@ public class ScratchStage extends ScratchObj {
 			if (obj.parent) obj.parent.removeChild(obj); // force redisplay
 			addChild(obj);
 			if (obj is ScratchSprite) {
-				obj.setScratchXY(p.x - 240, 180 - p.y);
+				obj.setScratchXY(p.x - 320, 240 - p.y);
 				(obj as ScratchSprite).updateCostume();
 				Scratch.app.selectSprite(obj);
-				obj.setScratchXY(p.x - 240, 180 - p.y); // needed because selectSprite() moves sprite back if costumes tab is open
+				obj.setScratchXY(p.x - 320, 240 - p.y); // needed because selectSprite() moves sprite back if costumes tab is open
 				(obj as ScratchObj).applyFilters();
 			}
 			if (!(obj is ScratchSprite) || Scratch.app.editMode) Scratch.app.setSaveNeeded();

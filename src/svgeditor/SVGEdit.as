@@ -355,7 +355,7 @@ package svgeditor {
 			workArea.getContentLayer().addChild(svgText);
 
 			// Wrap the text
-			var maxWidth:Number = 480 - svgText.x;
+			var maxWidth:Number = 640 - svgText.x;
 			var text:String = textEl.text;
 			var firstChar:uint = 0;
 			svgText.text = '';

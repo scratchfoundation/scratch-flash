@@ -357,7 +357,7 @@ public class ImagesPart extends UIPart {
 	}
 
 	private function addCostume(c:ScratchCostume):void {
-		var p:Point = new Point(240, 180);
+		var p:Point = new Point(320, 240);
 		editor.addCostume(c, p);
 	}
 
@@ -443,10 +443,10 @@ public class ImagesPart extends UIPart {
 			var obj:ScratchObj = app.viewedObj();
 			if (obj == null) return;
 			if (obj.isStage) { // resize photo to stage
-				var scale:Number = 480 / photo.width;
+				var scale:Number = 640 / photo.width;
 				var m:Matrix = new Matrix();
 				m.scale(scale, scale);
-				var scaledPhoto:BitmapData = new BitmapData(480, 360, true, 0);
+				var scaledPhoto:BitmapData = new BitmapData(640, 480, true, 0);
 				scaledPhoto.draw(photo, m);
 				photo = scaledPhoto;
 			}

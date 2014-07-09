@@ -35,8 +35,8 @@ public class VideoMotionPrims {
 	public static var readMotionSensor:Function;
 
 	private const toDegree:Number = 180 / Math.PI;
-	private const WIDTH:int = 480;
-	private const HEIGHT:int = 360;
+	private const WIDTH:int = 640;
+	private const HEIGHT:int = 480;
 	private const AMOUNT_SCALE:int = 100; // chosen empirically to give a range of roughly 0-100
 	private const THRESHOLD:int = 10;
 	private const WINSIZE:int = 8;
