@@ -603,6 +603,7 @@ public class Scratch extends Sprite {
 			}
 			stagePart.x = 5;
 			stagePart.y = topBarPart.bottom() + 5;
+			fixLoadProgressLayout();
 		} else {
 			drawBG();
 			var pad:int = (w > 550) ? 16 : 0; // add padding for full-screen mode
