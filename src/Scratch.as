@@ -337,6 +337,7 @@ public class Scratch extends Sprite {
 		return [
 			'a copy of the project file on your computer.',
 			'Project not saved!', 'Save now', 'Not saved; project did not load.',
+			'Save project?', 'Don\'t save',
 			'Save now', 'Saved',
 			'Revert', 'Undo Revert', 'Reverting...',
 			'Throw away all changes since opening this project?',
