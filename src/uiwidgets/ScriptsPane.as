@@ -493,7 +493,7 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 	/* Stack cleanup */
 
 	private function cleanUp():void {
-		// Cleanup the layout of stacks and blocks in the scripts pane.
+		// Clean up the layout of stacks and blocks in the scripts pane.
 		// Steps:
 		//	1. Collect stacks and sort by x
 		//	2. Assign stacks to columns such that the y-ranges of all stacks in a column do not overlap
