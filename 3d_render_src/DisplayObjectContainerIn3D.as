@@ -152,7 +152,7 @@ package {
 				boundsDict = new Dictionary();
 				cachedOtherRenderBitmaps = new Dictionary();
 				stampsByID = {};
-				cleanupUnusedBitmaps();
+				cleanUpUnusedBitmaps();
 			}
 
 			scratchStage = stage;
@@ -635,8 +635,8 @@ package {
 			vertexData.writeFloat(texIndex);
 		}
 
-		private function cleanupUnusedBitmaps():void {
-//trace('cleanupUnusedBitmaps()');
+		private function cleanUpUnusedBitmaps():void {
+//trace('cleanUpUnusedBitmaps()');
 			var deletedBMs:Array = [];
 			for (var k:Object in bitmapsByID) {
 				var bmID:String = k as String;
@@ -973,7 +973,7 @@ package {
 
 				if(bmsToPack > 0) {
 					if(!cleanedUnused) {
-						cleanupUnusedBitmaps();
+						cleanUpUnusedBitmaps();
 						cleanedUnused = true;
 					}
 					else {

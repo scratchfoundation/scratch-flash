@@ -433,7 +433,7 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 		var y:Number = mouseY;
 		function newComment():void { addComment(null, x, y) }
 		var m:Menu = new Menu();
-		m.addItem('cleanup', cleanup);
+		m.addItem('clean up', cleanUp);
 		m.addItem('add comment', newComment);
 		return m;
 	}
@@ -492,8 +492,8 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 
 	/* Stack cleanup */
 
-	private function cleanup():void {
-		// Cleanup the layout of stacks and blocks in the scripts pane.
+	private function cleanUp():void {
+		// Clean up the layout of stacks and blocks in the scripts pane.
 		// Steps:
 		//	1. Collect stacks and sort by x
 		//	2. Assign stacks to columns such that the y-ranges of all stacks in a column do not overlap
