@@ -472,7 +472,10 @@ package svgeditor.tools  {
 				// Keep the current operations cursor even if the mouse moves away from the handle
 				if(!isTransforming) {
 					//trace('removing cursor, no operation in progress');
-					editor.setCurrentCursor(null);
+					if(editor)
+						editor.setCurrentCursor(null);
+					else if(e.currentTarget)
+						e.currentTarget.removeEventListener(e.type, arguments.callee);
 				}
 				return;
 			}
