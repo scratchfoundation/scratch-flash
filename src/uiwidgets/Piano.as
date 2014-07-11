@@ -6,6 +6,7 @@ package uiwidgets {
 	import flash.text.*;
 
 	import sound.*;
+	import translation.*;
 
 public class Piano extends Sprite {
 
@@ -240,7 +241,13 @@ public class Piano extends Sprite {
 
 	private static var noteNames:Array = ['C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'G#', 'A', 'Bb', 'B'];
 	private static function getNoteName(n:int):String {
-		return noteNames[getNoteOffset(n)];
+		var o:int = getNoteOffset(n);
+		return o ? noteNames[o] : getOctaveName(n / 12);
+	}
+
+	private static var octaveNames:Array = ['Low C', 'Middle C', 'High C'];
+	private static function getOctaveName(n:int):String {
+		return n >= 4 && n <= 6 ? Translator.map(octaveNames[n - 4]) : 'C';
 	}
 
 	private static function getNoteOffset(n:int):int {
