@@ -653,6 +653,15 @@ public class ScratchStage extends ScratchObj {
 		if (userAgent) info.userAgent = userAgent;
 	}
 
+	public function updateListWatchers():void {
+		for (var i:int = 0; i < numChildren; i++) {
+			var c:DisplayObject = getChildAt(i);
+			if (c is ListWatcher) {
+				ListWatcher(c).updateContents();
+			}
+		}
+	}
+
 	public function scriptCount():int {
 		var scriptCount:int;
 		for each (var obj:ScratchObj in allObjects()) {

@@ -563,6 +563,7 @@ public class Scratch extends Sprite {
 			hide(tabsPart);
 			setTab(null); // hides scripts, images, and sounds
 		}
+		stagePane.updateListWatchers();
 		show(stagePart); // put stage in front
 		fixLayout();
 		stagePart.refresh();
