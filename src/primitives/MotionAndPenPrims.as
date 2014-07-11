@@ -273,7 +273,13 @@ public class MotionAndPenPrims {
 
 	private function primStamp(b:Block):void {
 		var s:ScratchSprite = interp.targetSprite();
-		doStamp(s, s.img.transform.colorTransform.alphaMultiplier);
+		// In 3D mode, get the alpha from the ghost filter
+		// Otherwise, it can be easily accessed from the color transform.
+		var alpha:Number = (Scratch.app.isIn3D ?
+			1.0 - (Math.max(0, Math.min(s.filterPack.getFilterSetting('ghost'), 100)) / 100) :
+			s.img.transform.colorTransform.alphaMultiplier);
+
+		doStamp(s, alpha);
 	}
 
 	private function doStamp(s:ScratchSprite, stampAlpha:Number):void {
