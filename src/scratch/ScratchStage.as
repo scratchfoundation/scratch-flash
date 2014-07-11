@@ -136,9 +136,9 @@ public class ScratchStage extends ScratchObj {
 	override public function hasVarName(varName:String):Boolean {
 		// Return true if this object owns a variable of the given name.
 		for each (var s:ScratchSprite in sprites()) {
-			if (s.ownsVar(varName)) return true;
+			if (s.ownsVar(varName) || s.ownsList(varName)) return true;
 		}
-		return ownsVar(varName);
+		return ownsVar(varName) || ownsList(varName);
 	}
 
 	private function initMedia():void {
