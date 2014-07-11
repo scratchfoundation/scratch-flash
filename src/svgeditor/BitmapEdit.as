@@ -219,10 +219,11 @@ public class BitmapEdit extends ImageEdit {
 			if (r.width >= 1 && r.height >= 1) {
 				newBM = new BitmapData(r.width, r.height, true, 0);
 				newBM.copyPixels(bm, r, new Point(0, 0));
+				c.setBitmapData(newBM, Math.floor(480 - r.x), Math.floor(360 - r.y));
 			} else {
 				newBM = new BitmapData(2, 2, true, 0); // empty bitmap
+				c.setBitmapData(newBM, 0, 0);
 			}
-			c.setBitmapData(newBM, Math.floor(480 - r.x), Math.floor(360 - r.y));
 		}
 		recordForUndo(c.baseLayerBitmap.clone(), c.rotationCenterX, c.rotationCenterY);
 		Scratch.app.setSaveNeeded();
