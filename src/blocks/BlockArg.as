@@ -247,7 +247,7 @@ public class BlockArg extends Sprite {
 	}
 
 	private function invokeMenu(evt:MouseEvent):void {
-		if ((menuIcon != null) && (evt.localX <= menuIcon.x)) return;
+		if (menuIcon != null && type != 'm' && evt.localX <= menuIcon.x) return;
 		if (Block.MenuHandlerFunction != null) {
 			Block.MenuHandlerFunction(evt, parent, this, menuName);
 			evt.stopImmediatePropagation();
