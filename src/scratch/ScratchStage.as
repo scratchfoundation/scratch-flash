@@ -133,13 +133,12 @@ public class ScratchStage extends ScratchObj {
 		return withoutTrailingDigits(baseName) + i;
 	}
 
-	override public function anyChildOwnsVar(varName:String):Boolean {
+	override public function hasVarName(varName:String):Boolean {
 		// Return true if this object owns a variable of the given name.
-		if (ownsVar(varName)) return true;
 		for each (var s:ScratchSprite in sprites()) {
 			if (s.ownsVar(varName)) return true;
 		}
-		return false;
+		return ownsVar(varName);
 	}
 
 	private function initMedia():void {

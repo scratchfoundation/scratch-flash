@@ -448,8 +448,8 @@ public class ScratchObj extends Sprite {
 		return false;
 	}
 
-	public function anyChildOwnsVar(varName:String):Boolean {
-		return ownsVar(varName);
+	public function hasVarName(varName:String):Boolean {
+		return ownsVar(varName) || ScratchObj(parent).ownsVar(varName);
 	}
 
 	public function lookupOrCreateVar(varName:String):Variable {

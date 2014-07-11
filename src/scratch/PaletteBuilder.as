@@ -174,7 +174,7 @@ public class PaletteBuilder {
 
 	protected function createVar(name:String, varSettings:VariableSettings):* {
 		var obj:ScratchObj = (varSettings.isLocal) ? app.viewedObj() : app.stageObj();
-		if (obj.anyChildOwnsVar(name)) {
+		if (obj.hasVarName(name)) {
 			DialogBox.notify("Cannot Add", "That variable name is already in use.");
 			return;
 		}
