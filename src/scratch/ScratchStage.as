@@ -121,7 +121,7 @@ public class ScratchStage extends ScratchObj {
 	}
 
 	public function unusedSpriteName(baseName:String):String {
-		var existingNames:Array = [];
+		var existingNames:Array = ['_mouse_', '_stage_', '_edge_', '_myself_'];
 		for each (var s:ScratchSprite in sprites()) {
 			existingNames.push(s.objName.toLowerCase());
 		}
