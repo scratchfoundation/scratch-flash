@@ -278,6 +278,7 @@ public class ScratchRuntime {
 	private function startEdgeTriggeredHats(hat:Block, target:ScratchObj):void {
 		if (!hat.isHat || !hat.nextBlock) return; // skip disconnected hats
 		var triggerCondition:Boolean = false;
+		var dotIndex:int = hat.op.indexOf('.');
 		if ('whenSensorGreaterThan' == hat.op) {
 			var sensorName:String = interp.arg(hat, 0);
 			var threshold:Number = interp.numarg(hat, 1);
@@ -287,17 +288,60 @@ public class ScratchRuntime {
 					(('video motion' == sensorName) && (VideoMotionPrims.readMotionSensor('motion', target) > threshold)));
 		} else if ('whenSensorConnected' == hat.op) {
 			triggerCondition = getBooleanSensor(interp.arg(hat, 0));
-		} else if (app.jsEnabled) {
-			var dotIndex:int = hat.op.indexOf('.');
-			if (dotIndex > -1) {
-				var extName:String = hat.op.substr(0, dotIndex);
-				if (app.extensionManager.extensionActive(extName)) {
-					var op:String = hat.op.substr(dotIndex+1);
-					var args:Array = hat.args;
-					var finalArgs:Array = new Array(args.length);
-					for (var i:uint=0; i<args.length; ++i)
-						finalArgs[i] = interp.arg(hat, i);
-
+		} else if (dotIndex > -1) {
+			var extName:String = hat.op.substr(0, dotIndex);
+			var op:String = hat.op.substr(dotIndex+1);
+			if (app.extensionManager.extensionActive(extName)) {
+				var args:Array = hat.args;
+				var finalArgs:Array = new Array(args.length);
+				for (var i:uint=0; i<args.length; ++i)
+					finalArgs[i] = interp.arg(hat, i);
+					
+				if (app.extensionManager.isHttp(extName)) {
+					if ('whenHttpHat' == op) {						//Special case op for processing http hats
+						var httpSensorName:String = finalArgs[0]; 	//arg 0 must always be the reporter name
+						var operator:String = finalArgs[1]; 		//arg 1 must always be the operator		
+						var targetString:String = finalArgs[2];		//arg 2 is always the target value, provided as a string
+						var targetValue:Number = Number(targetString); 	// but may be required as a number for comaprisons				
+						var currentValue:* = app.extensionManager.getStateVar(extName, httpSensorName, ''); //Get current value of reporter
+						switch (operator) { 
+						case '>':
+							if (!isNaN(targetValue) && (typeof(currentValue) == 'number') && (currentValue > targetValue)) triggerCondition = true;
+							break;
+						case '<':
+							if (!isNaN(targetValue) && (typeof(currentValue) == 'number') && (currentValue < targetValue)) triggerCondition = true; 
+							break;
+						case '>=':
+							if (!isNaN(targetValue) && (typeof(currentValue) == 'number') && (currentValue >= targetValue)) triggerCondition = true;
+							break;
+						case '<=':
+							if (!isNaN(targetValue) && (typeof(currentValue) == 'number') && (currentValue <= targetValue)) triggerCondition = true;
+							break;
+						case '=':
+							if (typeof(currentValue) == 'number') {
+								if (!isNaN(targetValue) && (currentValue == targetValue)) triggerCondition = true;
+							} else {
+								if (targetString == currentValue) triggerCondition = true;
+							}
+							break;
+						case 'not =': //intentional double entry
+						case '!=':
+							if (typeof(currentValue) == 'number') {
+								if (!isNaN(targetValue) && (currentValue != targetValue)) triggerCondition = true;
+							} else {
+								if (targetString != currentValue) triggerCondition = true;
+							}
+							break;
+						}
+					} else {
+						//not the special whenHttpHat op, so look for any matching var value that returns 'true' in the http poll response
+						httpSensorName = op;
+						for each (var a:* in args) httpSensorName += '/' + a; 
+						var customValue:* = app.extensionManager.getStateVar(extName, httpSensorName, 'false');						
+						if ((typeof(customValue) == 'string') &&  ('true' == customValue)) triggerCondition = true;
+					}
+				} else if(Scratch.app.jsEnabled) {
+					//javascript version
 					if (ExternalInterface.call('ScratchExtensions.getReporter', extName, op, finalArgs)) {
 						triggerCondition = true;
 					}
