@@ -125,19 +125,6 @@ public class MediaLibrary extends Sprite {
 		else importImagesOrSpritesFromDisk();
 	}
 
-	public function importMediaList(items:Array):void {
-		// Called from JS. Call whenDone() with each of the media items from the given list.
-		Mouse.cursor = MouseCursor.AUTO; // reset the cursor (was sometimes left as pointing finger by JS)
-		var io:ProjectIO = new ProjectIO(app);
-		for each (var pair:Array in items) {
-			var itemName:String = pair[0];
-			var md5:String = pair[1];
-			if (md5.slice(-5) == '.json') io.fetchSprite(md5, whenDone);
-			else if (assetType == 'sound') io.fetchSound(md5, itemName, whenDone);
-			else io.fetchImage(md5, itemName, whenDone);
-		}
-	}
-
 	private function close(ignore:* = null):void {
 		stopLoadingThumbnails();
 		parent.removeChild(this);
