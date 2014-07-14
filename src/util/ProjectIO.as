@@ -298,7 +298,7 @@ public class ProjectIO {
 	// Fetch a costume or sound from the server
 	//----------------------------
 
-	public function fetchImage(id:String, costumeName:String, whenDone:Function):URLLoader {
+	public function fetchImage(id:String, costumeName:String, width:int, whenDone:Function):URLLoader {
 		// Fetch an image asset from the server and call whenDone with the resulting ScratchCostume.
 		var c:ScratchCostume;
 		function gotCostumeData(data:ByteArray):void {
@@ -318,6 +318,7 @@ public class ProjectIO {
 		}
 		function imageLoaded(e:Event):void {
 			c = new ScratchCostume(costumeName, e.target.content.bitmapData);
+			if (width) c.bitmapResolution = c.baseLayerBitmap.width / width;
 			c.baseLayerMD5 = id;
 			whenDone(c);
 		}

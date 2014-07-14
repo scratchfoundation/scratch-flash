@@ -722,7 +722,7 @@ public class ScratchStage extends ScratchObj {
 				return true;
 			}
 			if (obj.objType == 'image') {
-				new ProjectIO(app).fetchImage(obj.md5, obj.objName, addSpriteForCostume);
+				new ProjectIO(app).fetchImage(obj.md5, obj.objName, obj.objWidth, addSpriteForCostume);
 				return true;
 			}
 		}
