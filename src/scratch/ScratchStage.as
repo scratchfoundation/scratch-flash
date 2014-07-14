@@ -222,7 +222,7 @@ public class ScratchStage extends ScratchObj {
 	}
 
 	private function saveScreenshot():void {
-		var bitmapData:BitmapData = new BitmapData(480, 360, true, 0x0);
+		var bitmapData:BitmapData = new BitmapData(STAGEW, STAGEH, true, 0);
 		bitmapData.draw(this);
 		var pngData:ByteArray = PNG24Encoder.encode(bitmapData, PNGFilter.PAETH);
 		var file:FileReference = new FileReference();
