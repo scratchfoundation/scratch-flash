@@ -590,19 +590,24 @@ public class ScratchRuntime {
 		return result;
 	}
 
-	public function renameVariable(oldName:String, newName:String, block:Block):void {
+	public function renameVariable(oldName:String, newName:String):void {
+		if (oldName == newName) return;
 		var owner:ScratchObj = app.viewedObj();
-		var v:Variable = owner.lookupVar(oldName);
+		if (!owner.ownsVar(oldName)) owner = app.stagePane;
+		if (owner.hasName(newName)) {
+			DialogBox.notify("Cannot Rename", "That name is already in use.");
+			return;
+		}
 
+		var v:Variable = owner.lookupVar(oldName);
 		if (v != null) {
-			if (!owner.ownsVar(v.name)) owner = app.stagePane;
 			v.name = newName;
 			if (v.watcher) v.watcher.changeVarName(newName);
 		} else {
 			owner.lookupOrCreateVar(newName);
 		}
 		updateVarRefs(oldName, newName, owner);
-		clearAllCaches();
+		app.updatePalette();
 	}
 
 	public function updateVariable(v:Variable):void {}
