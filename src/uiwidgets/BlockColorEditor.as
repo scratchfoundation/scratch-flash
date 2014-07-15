@@ -104,14 +104,8 @@ public class BlockColorEditor extends Sprite {
 	}
 
 	public function loadColors(b:IconButton):void {
-		function fileSelected(event:Event):void {
-			if (fileList.fileList.length == 0) return;
-			var file:FileReference = FileReference(fileList.fileList[0]);
-			file.addEventListener(Event.COMPLETE, fileLoaded);
-			file.load();
-		}
 		function fileLoaded(event:Event):void {
-		var data:ByteArray = FileReference(event.target).data;
+			var data:ByteArray = FileReference(event.target).data;
 			var colors:Object = util.JSON.parse(data.toString());
 			for (var k:String in colors) {
  				setCategoryColor(k, colors[k]);
@@ -119,12 +113,8 @@ public class BlockColorEditor extends Sprite {
 			selectCategory(categoryName.text);
  			Scratch.app.translationChanged();
  		}
-		var fileList:FileReferenceList = new FileReferenceList();
-		fileList.addEventListener(Event.SELECT, fileSelected);
-		try {
-			// Ignore the exception that happens when you call browse() with the file browser open
-			fileList.browse();
-		} catch(e:*) {}
+
+		Scratch.loadSingleFile(fileLoaded);
 	}
 
 	public function saveColors(b:IconButton):void {

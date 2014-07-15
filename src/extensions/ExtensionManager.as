@@ -123,35 +123,6 @@ public class ExtensionManager {
 		}
 	}
 
-	// -----------------------------
-	// Importing
-	//------------------------------
-
-	public function importExtension():void {
-		function fileSelected(event:Event):void {
-			if (fileList.fileList.length == 0) return;
-			var file:FileReference = FileReference(fileList.fileList[0]);
-			file.addEventListener(Event.COMPLETE, fileLoaded);
-			file.load();
-		}
-		function fileLoaded(event:Event):void {
-			var extObj:Object;
-			try {
-				extObj = util.JSON.parse(FileReference(event.target).data.toString());
-			} catch(e:*) {}
-			if (!extObj || !('extensionName' in extObj) || !('extensionPort' in extObj)) return;
-			if (!extObj.blockSpecs) extObj.blockSpecs = [];
-
-			loadRawExtension(extObj);
-		}
-		var fileList:FileReferenceList = new FileReferenceList();
-		fileList.addEventListener(Event.SELECT, fileSelected);
-		try {
-			// Ignore the exception that happens when you call browse() with the file browser open
-			fileList.browse();
-		} catch(e:*) {}
-	}
-
 	public function extensionsToSave():Array {
 		// Answer an array of extension descriptor objects for imported extensions to be saved with the project.
 		var result:Array = [];
@@ -168,6 +139,10 @@ public class ExtensionManager {
 		}
 		return result;
 	}
+
+	// -----------------------------
+	// Communications
+	//------------------------------
 
 	public function callCompleted(extensionName:String, id:Number):void {
 		var ext:ScratchExtension = extensionDict[extensionName];
@@ -193,6 +168,10 @@ public class ExtensionManager {
 			}
 		}
 	}
+
+	// -----------------------------
+	// Loading
+	//------------------------------
 
 	public function loadRawExtension(extObj:Object):void {
 		var ext:ScratchExtension = extensionDict[extObj.extensionName];

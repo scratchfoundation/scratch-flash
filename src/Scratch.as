@@ -30,6 +30,7 @@ package {
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.net.FileReference;
+	import flash.net.FileReferenceList;
 	import flash.net.LocalConnection;
 	import flash.system.*;
 	import flash.text.*;
@@ -1150,6 +1151,23 @@ public class Scratch extends Sprite {
 	// Misc.
 	public function createMediaInfo(obj:*, owningObj:ScratchObj = null):MediaInfo {
 		return new MediaInfo(obj, owningObj);
+	}
+
+	static public function loadSingleFile(fileLoaded:Function, filters:Array = null):void {
+		function fileSelected(event:Event):void {
+			if (fileList.fileList.length > 0) {
+				var file:FileReference = FileReference(fileList.fileList[0]);
+				file.addEventListener(Event.COMPLETE, fileLoaded);
+				file.load();
+			}
+		}
+
+		var fileList:FileReferenceList = new FileReferenceList();
+		fileList.addEventListener(Event.SELECT, fileSelected);
+		try {
+			// Ignore the exception that happens when you call browse() with the file browser open
+			fileList.browse(filters);
+		} catch(e:*) {}
 	}
 
 	// -----------------------------
