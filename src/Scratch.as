@@ -561,6 +561,10 @@ public class Scratch extends Sprite {
 		return new LibraryPart(this);
 	}
 
+	public function fixExtensionURL(javascriptURL:String):String {
+		return javascriptURL;
+	}
+
 	// -----------------------------
 	// UI Modes and Resizing
 	//------------------------------

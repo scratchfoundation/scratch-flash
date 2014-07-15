@@ -37,7 +37,6 @@
 //	'%b' - boolean argument slot
 
 package extensions {
-import flash.filesystem.File;
 import flash.utils.Dictionary;
 
 public class ScratchExtension {
@@ -73,11 +72,6 @@ public class ScratchExtension {
 		var path:String = Scratch.app.isOffline ? '' : '/scratchr2/';
 
 		path += 'static/js/scratch_extensions/' + extensionName;
-
-		if (Scratch.app.isOffline) {
-			var f:File = File.applicationStorageDirectory.resolvePath(path);
-			path = 'file:///' + f.nativePath;
-		}
 
 		return path;
 	}
