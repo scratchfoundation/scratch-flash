@@ -372,7 +372,6 @@ return 1; // Force integer scaling in both editors for now
 			if (bitmapEditor && (('grow' == tool) || ('shrink' == tool))) {
 				if ('grow' == tool) bitmapEditor.scaleAll(growthFactor);
 				if ('shrink' == tool) bitmapEditor.scaleAll(1 / growthFactor);
-				if (!evt.shiftKey) editor.app.clearTool(); // don't clear if shift pressed
 			} else {
 				CursorTool.setTool(null);
 			}

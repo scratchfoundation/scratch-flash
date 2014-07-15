@@ -119,7 +119,7 @@ public class ScratchStage extends ScratchObj {
 	}
 
 	public function unusedSpriteName(baseName:String):String {
-		var existingNames:Array = [];
+		var existingNames:Array = ['_mouse_', '_stage_', '_edge_', '_myself_'];
 		for each (var s:ScratchSprite in sprites()) {
 			existingNames.push(s.objName.toLowerCase());
 		}
@@ -220,7 +220,7 @@ public class ScratchStage extends ScratchObj {
 	}
 
 	private function saveScreenshot():void {
-		var bitmapData:BitmapData = new BitmapData(480, 360, true, 0x0);
+		var bitmapData:BitmapData = new BitmapData(STAGEW, STAGEH, true, 0);
 		bitmapData.draw(this);
 		var pngData:ByteArray = PNG24Encoder.encode(bitmapData, PNGFilter.PAETH);
 		var file:FileReference = new FileReference();
@@ -650,6 +650,15 @@ public class ScratchStage extends ScratchObj {
 			Scratch.app.externalCall('window.navigator.userAgent.toString', function(userAgent:String):void {
 				if (userAgent) info.userAgent = userAgent;
 			});
+		}
+	}
+
+	public function updateListWatchers():void {
+		for (var i:int = 0; i < numChildren; i++) {
+			var c:DisplayObject = getChildAt(i);
+			if (c is ListWatcher) {
+				ListWatcher(c).updateContents();
+			}
 		}
 	}
 

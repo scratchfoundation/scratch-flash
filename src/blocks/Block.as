@@ -801,7 +801,7 @@ public class Block extends Sprite {
 	}
 
 	public function duplicateStack(deltaX:Number, deltaY:Number):void {
-		if (isProcDef()) return; // don't duplicate procedure definition
+		if (isProcDef() || op == 'proc_declaration') return; // don't duplicate procedure definition
 		var forStage:Boolean = Scratch.app.viewedObj() && Scratch.app.viewedObj().isStage;
 		var newStack:Block = BlockIO.stringToStack(BlockIO.stackToString(this), forStage);
 		var p:Point = localToGlobal(new Point(0, 0));
@@ -816,7 +816,7 @@ public class Block extends Sprite {
 		}
 		var app:Scratch = Scratch.app;
 		var top:Block = topBlock();
-		if (op == Specs.PROCEDURE_DEF && app.runtime.allCallsOf(spec, app.viewedObj()).length) {
+		if (op == Specs.PROCEDURE_DEF && app.runtime.allCallsOf(spec, app.viewedObj(), false).length) {
 			DialogBox.notify('Cannot Delete', 'To delete a block definition, first remove all uses of the block.', stage);
 			return false;
 		}

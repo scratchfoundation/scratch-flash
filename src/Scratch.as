@@ -53,7 +53,7 @@ package {
 
 public class Scratch extends Sprite {
 	// Version
-	public static const versionString:String = 'v420';
+	public static const versionString:String = 'v421';
 	public static var app:Scratch; // static reference to the app, used for debugging
 
 	// Display modes
@@ -584,6 +584,7 @@ public class Scratch extends Sprite {
 			hide(tabsPart);
 			setTab(null); // hides scripts, images, and sounds
 		}
+		stagePane.updateListWatchers();
 		show(stagePart); // put stage in front
 		fixLayout();
 		stagePart.refresh();
@@ -624,6 +625,7 @@ public class Scratch extends Sprite {
 			}
 			stagePart.x = 5;
 			stagePart.y = topBarPart.bottom() + 5;
+			fixLoadProgressLayout();
 		} else {
 			drawBG();
 			var pad:int = (w > 550) ? 16 : 0; // add padding for full-screen mode
@@ -1119,7 +1121,7 @@ public class Scratch extends Sprite {
 		cameraDialog = new CameraDialog(savePhoto);
 		cameraDialog.fixLayout();
 		cameraDialog.x = (stage.stageWidth - cameraDialog.width) / 2;
-		cameraDialog.y = (stage.stageHeight - cameraDialog.height) / 2;;
+		cameraDialog.y = (stage.stageHeight - cameraDialog.height) / 2;
 		addChild(cameraDialog);
 	}
 

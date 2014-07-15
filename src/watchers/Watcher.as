@@ -153,7 +153,7 @@ public class Watcher extends Sprite implements DragClient {
 
 	public function step(runtime:ScratchRuntime):void {
 		var newValue:* = getValue(runtime);
-		if (newValue != lastValue) {
+		if (newValue !== lastValue) {
 			showValue(newValue);
 			runtime.interp.redraw();
 		}

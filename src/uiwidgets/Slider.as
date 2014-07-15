@@ -21,7 +21,7 @@
 // John Maloney, February 2013
 //
 // A simple slider for a fractional value from 0-1. Either vertical or horizontal, depending on its aspect ratio.
-// The client can supply and optional function to be called when the value is changed.
+// The client can supply an optional function to be called when the value is changed.
 
 package uiwidgets {
 	import flash.display.*;
