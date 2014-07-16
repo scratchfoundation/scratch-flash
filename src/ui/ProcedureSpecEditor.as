@@ -304,7 +304,7 @@ public class ProcedureSpecEditor extends Sprite {
 		result.backgroundColor = labelColor;
 		result.background = true;
 		result.type = TextFieldType.INPUT;
-		result.defaultTextFormat = new TextFormat(CSS.font, 12, 0xFFFFFF);
+		result.defaultTextFormat = Block.blockLabelFormat;
 		if (contents.length > 0) {
 			result.width = 1000;
 			result.text = contents;
