@@ -337,7 +337,7 @@ public class Scratch extends Sprite {
 
 	protected function determineJSAccess():void {
 		// After checking for JS access, call initialize().
-		throw new IllegalOperationError('Must override this function.');
+		initialize();
 	}
 
 	private var debugRect:Shape;
@@ -1146,14 +1146,14 @@ public class Scratch extends Sprite {
 	//------------------------------
 
 	public function externalInterfaceAvailable():Boolean {
-		throw new IllegalOperationError('Must override this function.');
+		return false;
 	}
 
 	public function externalCall(functionName:String, returnValueCallback:Function = null, ...args):void {
 		throw new IllegalOperationError('Must override this function.');
 	}
 
-	public function addExternalCallback(functionName:String,closure:Function):void {
+	public function addExternalCallback(functionName:String, closure:Function):void {
 		throw new IllegalOperationError('Must override this function.');
 	}
 }}
