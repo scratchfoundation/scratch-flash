@@ -758,7 +758,18 @@ public class Scratch extends Sprite {
 		m.showOnStage(stage, b.x, topBarPart.bottom() - 1);
 	}
 
-	protected function addEditMenuItems(b:*, m:Menu):void {}
+	protected function addEditMenuItems(b:*, m:Menu):void {
+		m.addLine();
+		m.addItem('Edit block colors', editBlockColors);
+	}
+
+	protected function editBlockColors():void {
+		var d:DialogBox = new DialogBox();
+		d.addTitle('Edit Block Colors');
+		d.addWidget(new BlockColorEditor());
+		d.addButton('Close', d.cancel);
+		d.showOnStage(stage, true);
+	}
 
 	protected function canExportInternals():Boolean {
 		return false;
