@@ -26,7 +26,7 @@
 // Several techniques are used to collection UI strings:
 //	1. a UI class can provide the function strings() that returns an array of the strings it uses
 //	2. menu strings are collected by putting Menu into string collection mode and creating menus.
-//	3. in some cases (e.g. BlockPalette, strings may be added to the collection at initialization time.
+//	3. in some cases (e.g., BlockPalette), strings may be added to the collection at initialization time.
 // In any case, the collectAndExport() method is extended with the appropriate calls to UI modules.
 // This task could be automated, of course, but this way gives the programmer precise control over
 // what strings are collected (for example, it can collect strings that are constructed dynamically).
