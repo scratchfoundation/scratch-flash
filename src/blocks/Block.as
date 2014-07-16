@@ -737,7 +737,7 @@ public class Block extends Sprite {
 		//	@<iconName>
 		//	label (any string with no embedded white space that does not start with % or @)
 		//	a token consisting of a single % or @ character is also a label
-		if ((s.length >= 2) && (s.charAt(0) == "%")) { // argument spec
+		if (s.length >= 2 && s.charAt(0) == "%") { // argument spec
 			var argSpec:String = s.charAt(1);
 			if (argSpec == "b") return new BlockArg("b", c);
 			if (argSpec == "c") return new BlockArg("c", c);
@@ -745,11 +745,11 @@ public class Block extends Sprite {
 			if (argSpec == "m") return new BlockArg("m", c, false, s.slice(3));
 			if (argSpec == "n") return new BlockArg("n", c, true);
 			if (argSpec == "s") return new BlockArg("s", c, true);
-		} else if ((s.length >= 2) && (s.charAt(0) == "@")) { // icon spec
+		} else if (s.length >= 2 && s.charAt(0) == "@") { // icon spec
 			var icon:* = Specs.IconNamed(s.slice(1));
 			return (icon) ? icon : makeLabel(s);
 		}
-		return makeLabel(s);
+		return makeLabel(ReadStream.unescape(s));
 	}
 
 	private function makeLabel(label:String):TextField {
