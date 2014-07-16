@@ -529,6 +529,9 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 		function decodeError():void {
 			DialogBox.notify('Error decoding image', 'Sorry, Scratch was unable to load the image '+fName+'.', Scratch.app.stage);
 		}
+		function spriteError():void {
+			DialogBox.notify('Error decoding sprite', 'Sorry, Scratch was unable to load the sprite '+fName+'.', Scratch.app.stage);
+		}
 		var costumeOrSprite:*;
 		var fExt:String = '';
 		var i:int = fName.lastIndexOf('.');
@@ -557,7 +560,7 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 			data.position = 0;
 			if (data.readUTFBytes(4) != 'ObjS') {
 				data.position = 0;
-				new ProjectIO(app).decodeSpriteFromZipFile(data, spriteDecoded);
+				new ProjectIO(app).decodeSpriteFromZipFile(data, spriteDecoded, spriteError);
 			} else {
 				var info:Object;
 				var objTable:Array;
@@ -565,11 +568,17 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 				var reader:ObjReader = new ObjReader(data);
 				try { info = reader.readInfo() } catch (e:Error) { data.position = 0 }
 				try { objTable = reader.readObjTable() } catch (e:Error) { }
-				if (!objTable) return;
+				if (!objTable) {
+					spriteError();
+					return;
+				}
 				var newProject:ScratchStage = new OldProjectReader().extractProject(objTable);
 				var sprite:ScratchSprite = newProject.numChildren > 3 ? newProject.getChildAt(3) as ScratchSprite : null;
-				if (!sprite) return;
-				new ProjectIO(app).decodeAllImages(newProject.allObjects(), imagesDecoded);
+				if (!sprite) {
+					spriteError();
+					return;
+				}
+				new ProjectIO(app).decodeAllImages(newProject.allObjects(), imagesDecoded, spriteError);
 			}
 		}
 	}
