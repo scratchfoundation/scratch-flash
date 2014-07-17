@@ -25,6 +25,8 @@
 package primitives {
 	import blocks.Block;
 	import flash.utils.Dictionary;
+	import flash.utils.ByteArray;
+	import flash.media.SoundMixer;
 	import interpreter.*;
 	import scratch.*;
 	import sound.*;
@@ -43,6 +45,7 @@ public class SoundPrims {
 		primTable["playSound:"]			= primPlaySound;
 		primTable["doPlaySoundAndWait"]	= primPlaySoundUntilDone;
 		primTable["stopAllSounds"]		= function(b:*):* { ScratchSoundPlayer.stopAllSounds() };
+		primTable["getSoundData"]       = getSoundData;
 
 		primTable["drum:duration:elapsed:from:"]	= primPlayDrum; // Scratch 1.4 drum numbers
 		primTable["playDrum"]						= primPlayDrum;
@@ -81,6 +84,18 @@ public class SoundPrims {
 		} else {
 			interp.doYield();
 		}
+	}
+	
+	private function getSoundData(b:Block):Number {
+		var bytes:ByteArray = new ByteArray();
+		SoundMixer.computeSpectrum(bytes, true, 0);
+		
+		for(var i:int = 0; i<512; i++)
+		{
+			var value:Number = bytes.readFloat();
+			return value;
+		}
+	return value;
 	}
 
 	private function primPlayNote(b:Block):void {
