@@ -24,7 +24,8 @@
 
 package ui.parts {
 	import flash.display.*;
-	import flash.geom.*;
+import flash.external.ExternalInterface;
+import flash.geom.*;
 	import flash.text.*;
 	import flash.utils.*;
 	import scratch.*;
@@ -347,8 +348,17 @@ public class LibraryPart extends UIPart {
 		app.openCameraDialog(savePhoto);
 	}
 
-	private function spriteFromComputer(b:IconButton):void { importSprite(true) }
-	private function spriteFromLibrary(b:IconButton):void { importSprite(false) }
+	private function spriteFromComputer(b:IconButton):void {
+        importSprite(true);
+    }
+
+	private function spriteFromLibrary(b:IconButton):void {
+        if(ExternalInterface.available && ExternalInterface.call('CommunityLibrary.useHTMLBrowser')) {
+            ExternalInterface.call('CommunityLibrary.showBrowser');
+        } else {
+            importSprite(false);
+        }
+    }
 
 	private function importSprite(fromComputer:Boolean):void {
 		function addSprite(costumeOrSprite:*):void {

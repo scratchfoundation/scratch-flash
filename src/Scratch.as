@@ -1113,4 +1113,8 @@ public class Scratch extends Sprite {
 	public function createMediaInfo(obj:*, owningObj:ScratchObj = null):MediaInfo {
 		return new MediaInfo(obj, owningObj);
 	}
+
+    public function createProjectIO():ProjectIO {
+        return new ProjectIO(this);
+    }
 }}

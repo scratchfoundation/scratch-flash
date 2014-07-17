@@ -39,6 +39,8 @@ import flash.geom.Matrix;
 import flash.net.SharedObject;
 import flash.net.URLLoader;
 
+import scratch.ScratchSprite;
+
 public class Server implements IServer {
 	// -----------------------------
 	// Asset API
