@@ -27,11 +27,11 @@ public class DrawProperties {
 	public function set color(c:uint):void { rawColor = c }
 	public function get color():uint { return rawColor & 0xFFFFFF }
 	public function get alpha():Number { return ((rawColor >> 24) & 0xFF) / 0xFF }
-	
+
 	public function set secondColor(c:uint):void { rawSecondColor = c }
 	public function get secondColor():uint { return rawSecondColor & 0xFFFFFF }
 	public function get secondAlpha():Number { return ((rawSecondColor >> 24) & 0xFF) / 0xFF }
-	
+
 	// stroke
 	public var smoothness:Number = 1;
 	private var rawStrokeWidth:Number = 1;

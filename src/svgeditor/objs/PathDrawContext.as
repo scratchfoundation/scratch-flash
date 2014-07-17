@@ -20,7 +20,7 @@
 package svgeditor.objs
 {
 	import flash.geom.Point;
-	
+
 	public class PathDrawContext
 	{
 		public var cmds:Array;

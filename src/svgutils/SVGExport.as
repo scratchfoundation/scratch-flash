@@ -29,7 +29,7 @@
 //	* 'subElements' field of group elements
 //	* 'transform' field (null if element is not transformed)
 //	* gradient fills: an SVGElement with a 'stop' subElement for each color
-	
+
 package svgutils {
 	import flash.display.Sprite;
 	import flash.geom.*;
@@ -193,7 +193,7 @@ public class SVGExport {
 		if ((m.a == 1) && (m.b == 0) && (m.c == 0) && (m.d == 1) && (m.tx == 0) && (m.ty == 0)) return; // identity
 		node.@['transform'] = 'matrix(' + m.a + ', ' + m.b + ', ' + m.c + ', ' + m.d + ', ' + m.tx + ', ' + m.ty + ')';
 	}
-	
+
 	// Gradients
 
 	private function defineGradient(gradEl:SVGElement):String {

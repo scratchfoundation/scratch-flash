@@ -19,7 +19,7 @@
 
 package {
 	import flash.display.BitmapData;
-	
+
 	public class SpriteStamp extends BitmapData {
 		private var fx:Object;
 		public function SpriteStamp(width:int, height:int, fx:Object) {
@@ -36,7 +36,7 @@ package {
 					fx[prop] = o[prop];
 			}
 		}
-		
+
 		public function get effects():Object {
 			return fx;
 		}

@@ -37,7 +37,7 @@ package ui.parts {
 	import translation.Translator;
 	import uiwidgets.IconButton;
  	import util.DrawPath;
- 
+
 public class UIPart extends Sprite {
 
 	protected static const cornerRadius:int = 8;

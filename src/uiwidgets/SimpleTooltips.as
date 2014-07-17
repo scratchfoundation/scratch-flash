@@ -32,20 +32,20 @@ import translation.Translator;
 	public class SimpleTooltips {
 		static private var instance:SimpleTooltip = null;
 		/**
-		 * Add a tooltip to a DisplayObject 
+		 * Add a tooltip to a DisplayObject
 		 * @param dObj Attach the tooltip to this
 		 * @param opts Options (just 'text' and 'direction' right now)
-		 * 
+		 *
 		 */
 		static public function add(dObj:DisplayObject, opts:Object):void {
 			if(!instance) instance = new SimpleTooltip();
 			instance.addTooltip(dObj, opts);
 		}
-		
+
 		static public function hideAll():void {
 			if(instance) instance.forceHide();
 		}
-		
+
 		static public function showOnce(dObj:DisplayObject, opts:Object):void {
 			if(!instance) instance = new SimpleTooltip();
 			instance.showOnce(dObj, opts);
@@ -68,20 +68,20 @@ class SimpleTooltip {
 	private var tipObjs:Dictionary = new Dictionary();
 	private var currentTipObj:DisplayObject;
 	private var nextTipObj:DisplayObject;
-	
+
 	// Timing values (in milliseconds)
 	private const delay:uint = 500;
 	private const linger:uint = 1000;
 	private const fadeIn:uint = 200;
 	private const fadeOut:uint = 500;
-	
+
 	private const bgColor:uint = 0xfcfed4;
-	
+
 	// Timers
 	private var showTimer:Timer;
 	private var hideTimer:Timer;
 	private var animTimer:Timer;
-	
+
 	private var sprite:Sprite;
 	private var textField:TextField;
 	private var stage:Stage;
@@ -91,7 +91,7 @@ class SimpleTooltip {
 		showTimer.addEventListener(TimerEvent.TIMER, eventHandler);
 		hideTimer = new Timer(linger);
 		hideTimer.addEventListener(TimerEvent.TIMER, eventHandler);
-		
+
 		// Setup display objects
 		sprite = new Sprite();
 		sprite.mouseEnabled = false;
@@ -105,7 +105,7 @@ class SimpleTooltip {
 		textField.textColor = CSS.buttonLabelColor;
 		sprite.addChild(textField);
 	}
-	
+
 	static private var instance:*;
 	public function addTooltip(dObj:DisplayObject, opts:Object):void {
 		if(!opts.hasOwnProperty('text') || !opts.hasOwnProperty('direction') ||
@@ -113,13 +113,13 @@ class SimpleTooltip {
 			trace('Invalid parameters!');
 			return;
 		}
-		
+
 		if(tipObjs[dObj] == null) {
 			dObj.addEventListener(MouseEvent.MOUSE_OVER, eventHandler);
 		}
 		tipObjs[dObj] = opts;
 	}
-	
+
 	private function eventHandler(evt:Event):void {
 		switch(evt.type) {
 			case MouseEvent.MOUSE_OVER:
@@ -127,12 +127,12 @@ class SimpleTooltip {
 				break;
 			case MouseEvent.MOUSE_OUT:
 				(evt.currentTarget as DisplayObject).removeEventListener(MouseEvent.MOUSE_OUT, eventHandler);
-				
+
 				if(showTimer.running) {
 					showTimer.reset();
 					nextTipObj = null;
 				}
-				
+
 				startHideTimer(evt.currentTarget as DisplayObject);
 				break;
 			case TimerEvent.TIMER:
@@ -148,7 +148,7 @@ class SimpleTooltip {
 				break;
 		}
 	}
-	
+
 	private function startShow():void {
 		//trace('startShow()');
 		showTimer.reset();
@@ -157,16 +157,16 @@ class SimpleTooltip {
 		var ttOpts:Object = tipObjs[nextTipObj];
 		renderTooltip(ttOpts.text);
 		currentTipObj = nextTipObj;
-		
+
 		// TODO: Make it fade in
 		sprite.alpha = 1;
 		stage.addChild(sprite);
-		
+
 		var pos:Point = getPos(ttOpts.direction);
 		sprite.x = pos.x;
 		sprite.y = pos.y;
 	}
-	
+
 	public function showOnce(dObj:DisplayObject, ttOpts:Object):void {
 		if(!stage && dObj.stage) stage = dObj.stage;
 		//trace('showOnce()');
@@ -176,22 +176,22 @@ class SimpleTooltip {
 		sprite.alpha = 0;
 		renderTooltip(ttOpts.text);
 		currentTipObj = dObj;
-		
+
 		// TODO: Make it fade in
 		sprite.alpha = 1;
 		stage.addChild(sprite);
-		
+
 		var pos:Point = getPos(ttOpts.direction);
 		sprite.x = pos.x;
 		sprite.y = pos.y;
-		
+
 		// Show the tooltip for twice as long
 		var myTimer:Timer = new Timer(5000);
 		myTimer.addEventListener(TimerEvent.TIMER, eventHandler);
 		myTimer.reset();
 		myTimer.start();
 	}
-	
+
 	private function getPos(direction:String):Point {
 		var rect:Rectangle = currentTipObj.getBounds(stage);
 		var pos:Point;
@@ -213,11 +213,11 @@ class SimpleTooltip {
 		if (pos.y < 0) pos.y = 0;
 		return pos;
 	}
-	
+
 	public function forceHide():void {
 		startHide(hideTimer);
 	}
-	
+
 	private function startHide(timer:Timer):void {
 		//trace('startHide()');
 		hideTimer.reset();
@@ -225,7 +225,7 @@ class SimpleTooltip {
 		sprite.alpha = 0;
 		if(sprite.parent) stage.removeChild(sprite);
 	}
-	
+
 	private function renderTooltip(text:String):void {
 		//trace('renderTooltip(\''+text+'\')');
 		var g:Graphics = sprite.graphics;
@@ -236,30 +236,30 @@ class SimpleTooltip {
 		g.drawRect(0, 0, textField.textWidth + 5, textField.textHeight + 3);
 		g.endFill();
 	}
-	
+
 	private function startShowTimer(dObj:DisplayObject):void {
 		//trace('startShowTimer()');
 		if(!stage && dObj.stage) stage = dObj.stage;
-		
+
 		dObj.addEventListener(MouseEvent.MOUSE_OUT, eventHandler);
-		
+
 		if(dObj === currentTipObj) {
 			hideTimer.reset();
 			return;
 		}
-		
+
 		if(tipObjs[dObj] is Object) {
 			nextTipObj = dObj;
-			
+
 			showTimer.reset();
 			showTimer.start();
 		}
 	}
-	
+
 	private function startHideTimer(dObj:DisplayObject):void {
 		//trace('startHideTimer()');
 		if(dObj !== currentTipObj) return;
-		
+
 		hideTimer.reset();
 		hideTimer.start();
 	}

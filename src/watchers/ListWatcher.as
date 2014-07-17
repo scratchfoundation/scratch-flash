@@ -221,7 +221,7 @@ public class ListWatcher extends Sprite {
 	//------------------------------
 
 	public function updateWatcher(i:int, readOnly:Boolean, interp:Interpreter):void {
-		// Colled by list primitives. Reccord access to entry at i and if list contents has changed.
+		// Called by list primitives. Record access to entry at i and whether list contents have changed.
 		// readOnly should be true for read operations, false for operations that change the list.
 		// Note: To reduce the cost of list operations, this function merely records changes,
 		// leaving the more time-consuming work of updating the visual feedback to step(), which
@@ -472,7 +472,7 @@ public class ListWatcher extends Sprite {
 	}
 
 	private function cellNumWidth():int {
-		// Return the estimated maxium cell number width. We assume that a list
+		// Return the estimated maximum cell number width. We assume that a list
 		// can display at most 20 elements, so we need enough width to display
 		// firstVisibleIndex + 20. Take the log base 10 to get the number of digits
 		// and measure the width of a textfield with that many zeros.
@@ -483,7 +483,7 @@ public class ListWatcher extends Sprite {
 	}
 
 	private function removeAllCells():void {
-		// Remove all children except the mask. Reycle ListCells and TextFields.
+		// Remove all children except the mask. Recycle ListCells and TextFields.
 		while (cellPane.numChildren > 1) {
 			var o:DisplayObject = cellPane.getChildAt(1);
 			if (o is ListCell) cellPool.push(o);
@@ -539,8 +539,8 @@ public class ListWatcher extends Sprite {
 	//------------------------------
 
 	private function textChanged(e:Event):void {
-		// Triggered by editing the contents of a cell. Copy the
-		// the cell contents into the underlying list.
+		// Triggered by editing the contents of a cell.
+		// Copy the cell contents into the underlying list.
 		var cellContents:TextField = e.target as TextField;
 		for (var i:int = 0; i < visibleCells.length; i++) {
 			var cell:ListCell = visibleCells[i];

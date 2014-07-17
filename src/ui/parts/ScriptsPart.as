@@ -93,7 +93,7 @@ public class ScriptsPart extends UIPart {
 	}
 
 	public function step():void {
-		// Update the mouse reaadouts. Do nothing if they are up-to-date (to minimize CPU load).
+		// Update the mouse readouts. Do nothing if they are up-to-date (to minimize CPU load).
 		var target:ScratchObj = app.viewedObj();
 		if (target.isStage) {
 			if (xyDisplay.visible) xyDisplay.visible = false;

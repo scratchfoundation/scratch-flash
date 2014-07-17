@@ -25,10 +25,10 @@ package svgeditor.objs
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
-	
+
 	import svgeditor.objs.ISVGEditable;
 	import svgeditor.tools.PixelPerfectCollisionDetection;
-	
+
 	import svgutils.SVGDisplayRender;
 	import svgutils.SVGElement;
 	import svgutils.SVGExport;
@@ -117,7 +117,7 @@ package svgeditor.objs
 				parent.addChild(debugCD);
 			}
 
-			var path:SVGPath = element.path;			
+			var path:SVGPath = element.path;
 			var cmd:Array = path[index];
 			var p1:Point = path.getPos(index-1);
 			var p2:Point = path.getPos(index);
@@ -150,7 +150,7 @@ package svgeditor.objs
 					}
 				}
 			}
-			
+
 			showIntersections(intersections);
 		}
 
@@ -172,7 +172,7 @@ package svgeditor.objs
 					if(npt.subtract(pt).length > distCheck) {
 						// Recurse to get a more precise time
 						interval *= 0.5;
-						return getNextCollisionChange(ct, p1, cp1, cp2, p2, otherShape); 
+						return getNextCollisionChange(ct, p1, cp1, cp2, p2, otherShape);
 					}
 					else {
 						collisionState = colliding;
@@ -180,7 +180,7 @@ package svgeditor.objs
 					}
 				}
 			}
-			
+
 			return -1;
 		}
 
@@ -197,12 +197,12 @@ package svgeditor.objs
 
 			var forceLines:Boolean = (element.path.length < 3 );
 			var dRect:Rectangle = getBounds(this);
-			
+
 			// Adjust the path so that the top left is at 0,0 locally
 			// This allows us to create the smallest bitmap for rendering it to
 			var bmp:BitmapData = new BitmapData(dRect.width, dRect.height, true, 0);
 			var m:Matrix = new Matrix(1, 0, 0, 1, -dRect.topLeft.x, -dRect.topLeft.y);
-			
+
 			var lastCP:Point = new Point();
 			var startP:Point = new Point();
 			var mousePos:Point = new Point(mouseX, mouseY);
@@ -211,10 +211,10 @@ package svgeditor.objs
 			for(var i:uint = 0; i <= max; ++i) {
 				// Clear the bitmap
 				bmp.fillRect(bmp.rect, 0x00000000);
-				
+
 				// Draw the path up until point #i
 				SVGPath.renderPathCmd(element.path[i], g, lastCP, startP);
-				
+
 				// Return this index if the mouse location has been drawn on
 				bmp.draw(canvas, m);
 				if(bmp.hitTest(dRect.topLeft, 0xFF, mousePos)) {
@@ -222,7 +222,7 @@ package svgeditor.objs
 					break;
 				}
 			}
-			
+
 			bmp.dispose();
 			return index;
 		}
@@ -242,7 +242,7 @@ package svgeditor.objs
 			var img:BitmapData = new BitmapData(rect.width, rect.height, true, 0x00000000);
 			var m:Matrix = transform.concatenatedMatrix.clone();
 			m.translate(-rect.x, -rect.y);
-			
+
 			var removedPoint:Boolean = false;
 			var start:Number = (new Date).getTime();
 			var elem:SVGElement = getElement();
@@ -261,12 +261,12 @@ package svgeditor.objs
 					img.fillRect(img.rect, 0);
 					img.draw(this, m);
 					img.threshold(img, img.rect, new Point, "<", 0xF0000000, 0, 0xF0000000);
-					
+
 					var cmd:Array = elem.path[index];
 					elem.path.splice(index, 1);
 					elem.path.adjustPathAroundAnchor(index, 3, 1);
 					redraw();
-					
+
 					img.draw(this, m, null, BlendMode.ERASE);
 					img.threshold(img, img.rect, new Point, "<", 0xF0000000, 0, 0xF0000000);
 					var r:Rectangle = img.getColorBoundsRect(0xFF000000, 0xFF000000, true);
@@ -318,7 +318,7 @@ package svgeditor.objs
 				elem.setAttribute('stroke', 'black');
 				elem.setAttribute('stroke-width', 2);
 			}
-			
+
 			// Take a snapshot
 			redraw();
 			var rect:Rectangle = getBounds(stage);
@@ -338,7 +338,7 @@ package svgeditor.objs
 				for(var j:uint = or.top; j<or.bottom; ++j)
 					if((img.getPixel32(i, j)>>24) & 0xF0)
 						++totalPixels;
-			
+
 			var removedPoint:Boolean = false;
 			var start:Number = (new Date).getTime();
 			var passCount:uint = 0;
@@ -362,12 +362,12 @@ package svgeditor.objs
 
 					// Get a fresh copy of the original render
 					img2.copyPixels(img, img.rect, new Point);
-					
+
 					var cmd:Array = elem.path[index];
 					elem.path.splice(index, 1);
 					elem.path.adjustPathAroundAnchor(index, 3, 1);
 					redraw();
-					
+
 					img2.draw(this, m, null, BlendMode.ERASE);
 					img2.threshold(img, img.rect, new Point, "<", 0xF0000000, 0, 0xF0000000);
 					var r:Rectangle = img.getColorBoundsRect(0xFF000000, 0xFF000000, true);
@@ -399,7 +399,7 @@ package svgeditor.objs
 			} while(removedPoint)
 			img.dispose();
 			img2.dispose();
-			
+
 			// Reset stroke and fill then redraw
 			elem.setAttribute('stroke', stroke);
 			elem.setAttribute('stroke-width', strokeWidth);
@@ -426,7 +426,7 @@ package svgeditor.objs
 				parent.addChild(debugShape);
 				debugShape.transform = transform;
 			}
-			
+
 			for(var i:int=0; i<intersections.length; ++i) {
 				var section:Object = intersections[i];
 				var stopTime:Number = (section.end && section.start.index == section.end.index) ? section.end.time : 1.0;
@@ -440,7 +440,7 @@ package svgeditor.objs
 				}
 			}
 		}
-		
+
 		public function showPoints():void {
 			debugShape.graphics.lineStyle(2, 0x00CCFF);
 			for(var j:int=0; j<element.path.length; ++j) {
@@ -448,7 +448,7 @@ package svgeditor.objs
 				debugShape.graphics.drawCircle(pt.x, pt.y, 3);
 			}
 		}
-		
+
 		private function showPartialCurve(index:int, start:Number, stop:Number):void {
 			if(!debugMode)
 				return;
@@ -470,7 +470,7 @@ package svgeditor.objs
 				//g.moveTo(pt.x, pt.y);
 				//var grn:int = ((1 - percComp) * 0xFF) << 8;
 				//g.lineStyle(5, 0xFF0000 + grn, 0.5, false, "normal", CapsStyle.NONE, JointStyle.MITER, 0);
-				
+
 				pt = SVGPath.getPosByTime(i, p1, c1, c2, p2);
 				g.lineTo(pt.x, pt.y);
 			}
@@ -517,16 +517,16 @@ package svgeditor.objs
 			var args:Array = otherElem.path.concat();
 			if(endContinued)
 				args.shift();
-			
+
 			args.unshift(endContinued ? 0 : 1);
-			
+
 			var insertIndex:int = (endContinued ? indexContinued + 1 : indexContinued);
 			args.unshift(insertIndex);
-			
+
 			// Insert the curve commands
 			var pc:SVGPath = element.path;
 			pc.splice.apply(pc, args);
-			
+
 			// Close the path?
 			endPts = element.path.getSegmentEndPoints();
 			if(element.path.getPos(endPts[0]).subtract(element.path.getPos(endPts[1])).length < strokeWidth * 2) {

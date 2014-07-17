@@ -25,8 +25,8 @@
 package {
 	import extensions.ExtensionManager;
 	import flash.display.*;
+	import flash.errors.IllegalOperationError;
 	import flash.events.*;
-	import flash.external.ExternalInterface;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.net.FileReference;
@@ -53,7 +53,7 @@ package {
 
 public class Scratch extends Sprite {
 	// Version
-	public static const versionString:String = 'v420';
+	public static const versionString:String = 'v421';
 	public static var app:Scratch; // static reference to the app, used for debugging
 
 	// Display modes
@@ -63,6 +63,7 @@ public class Scratch extends Sprite {
 	public var stageIsContracted:Boolean; // true when the stage is half size to give more space on small screens
 	public var isIn3D:Boolean;
 	public var render3D:IRenderIn3D;
+	public var isArmCPU:Boolean;
 	public var jsEnabled:Boolean = false; // true when the SWF can talk to the webpage
 
 	// Runtime
@@ -106,6 +107,13 @@ public class Scratch extends Sprite {
 
 	public function Scratch() {
 		loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, uncaughtErrorHandler);
+		app = this;
+
+		// This one must finish before most other queries can start, so do it separately
+		determineJSAccess();
+	}
+
+	protected function initialize():void {
 		isOffline = loaderInfo.url.indexOf('http:') == -1;
 		checkFlashVersion();
 		initServer();
@@ -168,6 +176,15 @@ public class Scratch extends Sprite {
 		server = new Server();
 	}
 
+	protected function setupExternalInterface(oldWebsitePlayer:Boolean):void {
+		if (!jsEnabled) return;
+
+		addExternalCallback('ASloadExtension', extensionManager.loadRawExtension);
+		addExternalCallback('ASextensionCallDone', extensionManager.callCompleted);
+		addExternalCallback('ASextensionReporterDone', extensionManager.reporterCompleted);
+		addExternalCallback('AScanShare', function():Boolean { return !runtime.hasUnofficialExtensions(); });
+	}
+
 	public function showTip(tipName:String):void {}
 	public function closeTips():void {}
 	public function reopenTips():void {}
@@ -218,7 +235,6 @@ public class Scratch extends Sprite {
 	public static const MySwfData:Class;
 	protected function checkFlashVersion():void {
 		if(Capabilities.playerType != "Desktop" || Capabilities.version.indexOf('IOS') === 0) {
-			var isArmCPU:Boolean = (jsEnabled && ExternalInterface.call("window.navigator.userAgent.toString").indexOf('CrOS arm') > -1);
 			var versionString:String = Capabilities.version.substr(Capabilities.version.indexOf(' ')+1);
 			var versionParts:Array = versionString.split(',');
 			var majorVersion:int = parseInt(versionParts[0]);
@@ -319,6 +335,11 @@ public class Scratch extends Sprite {
 		stagePane.applyFilters();
 	}
 
+	protected function determineJSAccess():void {
+		// After checking for JS access, call initialize().
+		initialize();
+	}
+
 	private var debugRect:Shape;
 	public function showDebugRect(r:Rectangle):void {
 		// Used during debugging...
@@ -383,12 +404,12 @@ public class Scratch extends Sprite {
 			wasEditing = editMode;
 			if (wasEditing) {
 				setEditMode(false);
-				if(jsEnabled) ExternalInterface.call('tip_bar_api.hide');
+				if(jsEnabled) externalCall('tip_bar_api.hide');
 			}
 		} else {
 			if (wasEditing) {
 				setEditMode(true);
-				if(jsEnabled) ExternalInterface.call('tip_bar_api.show');
+				if(jsEnabled) externalCall('tip_bar_api.show');
 			}
 		}
 		if (isOffline) {
@@ -540,6 +561,10 @@ public class Scratch extends Sprite {
 		return new LibraryPart(this);
 	}
 
+	public function fixExtensionURL(javascriptURL:String):String {
+		return javascriptURL;
+	}
+
 	// -----------------------------
 	// UI Modes and Resizing
 	//------------------------------
@@ -563,6 +588,7 @@ public class Scratch extends Sprite {
 			hide(tabsPart);
 			setTab(null); // hides scripts, images, and sounds
 		}
+		stagePane.updateListWatchers();
 		show(stagePart); // put stage in front
 		fixLayout();
 		stagePart.refresh();
@@ -603,6 +629,7 @@ public class Scratch extends Sprite {
 			}
 			stagePart.x = 5;
 			stagePart.y = topBarPart.bottom() + 5;
+			fixLoadProgressLayout();
 		} else {
 			drawBG();
 			var pad:int = (w > 550) ? 16 : 0; // add padding for full-screen mode
@@ -709,7 +736,7 @@ public class Scratch extends Sprite {
 				function loadJSExtension(dialog:DialogBox):void {
 					var url:String = dialog.fields['URL'].text.replace(/^\s+|\s+$/g, '');
 					if (url.length == 0) return;
-					ExternalInterface.call('ScratchExtensions.loadExternalJS', url);
+					externalCall('ScratchExtensions.loadExternalJS', null, url);
 				}
 				var d:DialogBox = new DialogBox(loadJSExtension);
 				d.addTitle('Load Javascript Scratch Extension');
@@ -976,7 +1003,7 @@ public class Scratch extends Sprite {
 		return true;
 	}
 	// -----------------------------
-	// Flash sprite (helps connect a sprite on thestage with a sprite library entry)
+	// Flash sprite (helps connect a sprite on the stage with a sprite library entry)
 	//------------------------------
 
 	public function flashSprite(spr:ScratchSprite):void {
@@ -1098,7 +1125,7 @@ public class Scratch extends Sprite {
 		cameraDialog = new CameraDialog(savePhoto);
 		cameraDialog.fixLayout();
 		cameraDialog.x = (stage.stageWidth - cameraDialog.width) / 2;
-		cameraDialog.y = (stage.stageHeight - cameraDialog.height) / 2;;
+		cameraDialog.y = (stage.stageHeight - cameraDialog.height) / 2;
 		addChild(cameraDialog);
 	}
 
@@ -1117,4 +1144,20 @@ public class Scratch extends Sprite {
     public function createProjectIO():ProjectIO {
         return new ProjectIO(this);
     }
+
+	// -----------------------------
+	// External Interface abstraction
+	//------------------------------
+
+	public function externalInterfaceAvailable():Boolean {
+		return false;
+	}
+
+	public function externalCall(functionName:String, returnValueCallback:Function = null, ...args):void {
+		throw new IllegalOperationError('Must override this function.');
+	}
+
+	public function addExternalCallback(functionName:String, closure:Function):void {
+		throw new IllegalOperationError('Must override this function.');
+	}
 }}

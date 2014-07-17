@@ -1,4 +1,4 @@
-## Scratch 2.0 editor and player [![Build Status](https://magnum.travis-ci.com/LLK/scratch-flash.svg?token=AdpuaYipHZPQFZCpxuxX&branch=master)](https://magnum.travis-ci.com/LLK/scratch-flash)
+## Scratch 2.0 editor and player [![Build Status](https://api.travis-ci.org/LLK/scratch-flash.svg?branch=master)](https://magnum.travis-ci.com/LLK/scratch-flash)
 This is the open source version of Scratch 2.0 and the core code for the official version found on http://scratch.mit.edu. This code has been released under the GPL version 2 license.
 
 If you're interested in contributing to Scratch, please take a look at the issues on this repository. Two great ways of helping Scratch are helping us identify bugs and documenting them as issues or fixing issues and creating pull requests. When submitting pull requests please be patient. The Scratch Team is very busy and it can take a while to find time to review the pull requests. Your code may require changes before being accepted or may not be suitable to acceptance. The organization and class structures can't be radically changed without significant coordination and collaboration from the Scratch Team. These types of changes should be avoided since they would impact the official version.
@@ -15,6 +15,8 @@ The ``build.properties`` file sets the default location for the Flex SDK. Create
 FLEX_HOME=/home/joe/downloads/flex_sdk_4.11
 ```
 Now you can run Ant ('ant' from the commandline) to build the SWF.
+
+If the source is building but the resulting .swf is producing runtime errors, your first course of action should be to download version 4.11 of the Flex SDK and try targeting that. The Apache foundation maintains an [installer](http://flex.apache.org/installer.html) that lets you select a variety of versions. Newer versions of the SDK will build successfully but are known to cause runtime errors related to the ``flash.display3D.Context3D`` class.
 
 ### Debugging
 Here are a few integrated development environments available with Flash debugging support:

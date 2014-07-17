@@ -60,6 +60,7 @@ public class MediaInfo extends Sprite {
 
 	public var owner:ScratchObj; // object owning a sound or costume in MediaPane; null for other cases
 	public var isBackdrop:Boolean;
+	public var forBackpack:Boolean;
 
 	private var frame:Shape; // visible when selected
 	private var thumbnail:Bitmap;
@@ -201,6 +202,7 @@ public class MediaInfo extends Sprite {
 	//------------------------------
 
 	public function updateLabelAndInfo(forBackpack:Boolean):void {
+		this.forBackpack = forBackpack;
 		setText(label, (forBackpack ? backpackTitle() : objName));
 		label.x = ((frameWidth - label.textWidth) / 2) - 2;
 
@@ -243,12 +245,12 @@ public class MediaInfo extends Sprite {
 	}
 
 	private function soundInfoString(msecs:Number):String {
-		// Return a formatted time in MM:SS.T (where T is tenths of a second).
+		// Return a formatted time in MM:SS.HH (where HH is hundredths of a second).
 		function twoDigits(n:int):String { return (n < 10) ? '0' + n : '' + n }
 
 		var secs:int = msecs / 1000;
-		var tenths:int = (msecs % 1000) / 100;
-		return twoDigits(secs / 60) + ':' + twoDigits(secs % 60) + '.' + tenths;
+		var hundredths:int = (msecs % 1000) / 10;
+		return twoDigits(secs / 60) + ':' + twoDigits(secs % 60) + '.' + twoDigits(hundredths);
 	}
 
 	// -----------------------------
@@ -407,7 +409,7 @@ public class MediaInfo extends Sprite {
 			}
 			if (mysound) {
 				owner.deleteSound(mysound);
-				Scratch.app.refreshSoundTab()
+				Scratch.app.refreshSoundTab();
 			}
 		}
 	}

@@ -41,6 +41,9 @@ public class BlockMenus implements DragClient {
 	private static const basicMathOps:Array = ['+', '-', '*', '/'];
 	private static const comparisonOps:Array = ['<', '=', '>'];
 
+	private static const spriteAttributes:Array = ['x position', 'y position', 'direction', 'costume #', 'costume name', 'size', 'volume'];
+	private static const stageAttributes:Array = ['backdrop #', 'backdrop name', 'volume'];
+
 	public static function BlockMenuHandler(evt:MouseEvent, block:Block, blockArg:BlockArg = null, menuName:String = null):void {
 		var menuHandler:BlockMenus = new BlockMenus(block, blockArg);
 		var op:String = block.op;
@@ -74,7 +77,7 @@ public class BlockMenus implements DragClient {
 		if (menuName == 'listItem') menuHandler.listItem(evt, false);
 		if (menuName == 'mathOp') menuHandler.mathOpMenu(evt);
 		if (menuName == 'motorDirection') menuHandler.motorDirectionMenu(evt);
-		if (menuName == 'note') menuHandler.noteMenu(evt);
+		if (menuName == 'note') menuHandler.notePicker(evt);
 		if (menuName == 'procMenu') menuHandler.procMenu(evt);
 		if (menuName == 'rotationStyle') menuHandler.rotationStyleMenu(evt);
 		if (menuName == 'scrollAlign') menuHandler.scrollAlignMenu(evt);
@@ -159,10 +162,7 @@ public class BlockMenus implements DragClient {
 		}
 		switch (menuName) {
 		case 'attribute':
-			var attributes:Array = [
-				'x position', 'y position', 'direction', 'costume #', 'costume name', 'size', 'volume',
-				'backdrop #', 'backdrop name', 'volume'];
-			return attributes.indexOf(item) > -1;
+			return spriteAttributes.indexOf(item) > -1 || stageAttributes.indexOf(item) > -1;
 		case 'backdrop':
 			return ['next backdrop', 'previous backdrop'].indexOf(item) > -1;
 		case 'broadcast':
@@ -208,8 +208,7 @@ public class BlockMenus implements DragClient {
 		if (block && block.args[1]) {
 			obj = app.stagePane.objNamed(block.args[1].argValue);
 		}
-		var attributes:Array = ['x position', 'y position', 'direction', 'costume #', 'costume name', 'size', 'volume'];
-		if (obj is ScratchStage) attributes = ['backdrop #', 'backdrop name', 'volume'];
+		var attributes:Array = obj is ScratchStage ? stageAttributes : spriteAttributes;
 		var m:Menu = new Menu(setBlockArg, 'attribute');
 		for each (var s:String in attributes) m.addItem(s);
 		if (obj is ScratchObj) {
@@ -330,35 +329,13 @@ public class BlockMenus implements DragClient {
 		showMenu(m);
 	}
 
-	private function noteMenu(evt:MouseEvent):void {
-		var notes:Array = [
-			['Low C', 48],
-			['D', 50],
-			['E', 52],
-			['F', 53],
-			['G', 55],
-			['A', 57],
-			['B', 59],
-			['Middle C', 60],
-			['D', 62],
-			['E', 64],
-			['F', 65],
-			['G', 67],
-			['A', 69],
-			['B', 71],
-			['High C', 72],
-		];
-		if (!Menu.stringCollectionMode) {
-			for (var i:int = 0; i < notes.length; i++) {
-				notes[i][0] = '(' + notes[i][1] + ') ' + Translator.map(notes[i][0]); // show key number in menu
-			}
-			notes.reverse();
+	private function notePicker(evt:MouseEvent):void {
+		var piano:Piano = new Piano(block.base.color, app.viewedObj().instrument, setBlockArg);
+		if (!isNaN(blockArg.argValue)) {
+			piano.selectNote(int(blockArg.argValue));
 		}
-		var m:Menu = new Menu(setBlockArg, 'note');
-		for each (var pair:Array in notes) {
-			m.addItem(pair[0], pair[1]);
-		}
-		showMenu(m);
+		var p:Point = blockArg.localToGlobal(new Point(blockArg.width, blockArg.height));
+		piano.showOnStage(app.stage, int(p.x - piano.width / 2), p.y);
 	}
 
 	private function rotationStyleMenu(evt:MouseEvent):void {
@@ -413,6 +390,14 @@ public class BlockMenus implements DragClient {
 			else if (s == 'myself') blockArg.setArgValue('_myself_', Translator.map('myself'));
 			else if (s == 'Stage') blockArg.setArgValue('_stage_', Translator.map('Stage'));
 			else blockArg.setArgValue(s);
+			if (block.op == 'getAttribute:of:') {
+				var obj:ScratchObj = app.stagePane.objNamed(s);
+				var attr:String = block.args[0].argValue;
+				var validAttrs:Array = obj && obj.isStage ? stageAttributes : spriteAttributes;
+				if (validAttrs.indexOf(attr) == -1 && !obj.ownsVar(attr)) {
+					block.args[0].setArgValue(validAttrs[0]);
+				}
+			}
 			Scratch.app.setSaveNeeded();
 		}
 		var spriteNames:Array = [];
@@ -516,9 +501,9 @@ public class BlockMenus implements DragClient {
 		if (!isInPalette(block)) {
 			if (!block.isProcDef()) {
 				m.addItem('duplicate', duplicateStack);
-				m.addItem('delete', block.deleteStack);
-				m.addLine();
 			}
+			m.addItem('delete', block.deleteStack);
+			m.addLine();
 			m.addItem('add comment', block.addComment);
 		}
 		m.addItem('help', block.showHelp);
@@ -730,8 +715,11 @@ public class BlockMenus implements DragClient {
 		var m:Matrix = new Matrix();
 		m.translate(-x, -y);
 		onePixel.fillRect(onePixel.rect, 0);
+		if (app.isIn3D) app.stagePane.visible = true;
 		onePixel.draw(app, m);
-		return onePixel.getPixel(0, 0) | 0xFF000000; // alpha is always 0xFF
+		if (app.isIn3D) app.stagePane.visible = false;
+		var x:int = onePixel.getPixel32(0, 0);
+		return x ? x | 0xFF000000 : 0xFFFFFFFF; // alpha is always 0xFF
 	}
 
 	// ***** Broadcast menu *****

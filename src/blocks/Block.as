@@ -43,7 +43,7 @@ import flash.display.*;
 	import translation.Translator;
 	import util.*;
 	import uiwidgets.*;
-	import scratch.ScratchStage;
+	import scratch.*;
 
 public class Block extends Sprite {
 
@@ -77,7 +77,8 @@ public class Block extends Sprite {
 
 	// Blocking operations
 	public var isRequester:Boolean = false;
-	public var requestState:int = 0;        // 0 - no request made, 1 - awaiting response, 2 - data ready
+	public var forcedRequester:Boolean = false;	// We've forced requester-like treatment on a non-requester block.
+	public var requestState:int = 0;		// 0 - no request made, 1 - awaiting response, 2 - data ready
 	public var response:* = null;
 	public var requestLoader:URLLoader = null;
 
@@ -95,8 +96,14 @@ public class Block extends Sprite {
 	private var indentTop:int = 2, indentBottom:int = 3;
 	private var indentLeft:int = 4, indentRight:int = 3;
 
-	public var wasInScriptsPane:Boolean;
-	private var originalX:int, originalY:int;
+	private static var ROLE_NONE:int = 0;
+	private static var ROLE_ABSOLUTE:int = 1;
+	private static var ROLE_EMBEDDED:int = 2;
+	private static var ROLE_NEXT:int = 3;
+	private static var ROLE_SUBSTACK1:int = 4;
+	private static var ROLE_SUBSTACK2:int = 5;
+
+	private var originalParent:DisplayObjectContainer, originalRole:int, originalIndex:int, originalPosition:Point;
 
 	public function Block(spec:String, type:String = " ", color:int = 0xD00000, op:* = 0, defaultArgs:Array = null) {
 		this.spec = Translator.map(spec);
@@ -123,11 +130,12 @@ public class Block extends Sprite {
 			isReporter = true;
 			indentLeft = 9;
 			indentRight = 7;
-		} else if (type == "r" || type == "R") {
+		} else if (type == "r" || type == "R" || type == "rR") {
 			this.type = 'r';
 			base = new BlockShape(BlockShape.NumberShape, color);
 			isReporter = true;
-			isRequester = (type == 'R');
+			isRequester = ((type == 'R') || (type == 'rR'));
+			forcedRequester = (type == 'rR');
 			indentTop = 2;
 			indentBottom = 2;
 			indentLeft = 6;
@@ -299,13 +307,22 @@ public class Block extends Sprite {
 	}
 
 	public function showRunFeedback():void {
-		if (!filters || (filters.length == 0)) {
-			filters = runFeedbackFilters();
+		if (filters && filters.length > 0) {
+			for each (var f:* in filters) {
+				if (f is GlowFilter) return;
+			}
 		}
+		filters = runFeedbackFilters().concat(filters || []);
 	}
 
 	public function hideRunFeedback():void {
-		if (filters && (filters.length > 0)) filters = [];
+		if (filters && filters.length > 0) {
+			var newFilters:Array = [];
+			for each (var f:* in filters) {
+				if (!(f is GlowFilter)) newFilters.push(f);
+			}
+			filters = newFilters;
+		}
 	}
 
 	private function runFeedbackFilters():Array {
@@ -317,15 +334,58 @@ public class Block extends Sprite {
 		return [f];
 	}
 
-	public function saveOriginalPosition():void {
-		wasInScriptsPane = topBlock().parent is ScriptsPane;
-		originalX = x;
-		originalY = y;
+	public function saveOriginalState():void {
+		originalParent = parent;
+		if (parent) {
+			var b:Block = parent as Block;
+			if (b == null) {
+				originalRole = ROLE_ABSOLUTE;
+			} else if (isReporter) {
+				originalRole = ROLE_EMBEDDED;
+				originalIndex = b.args.indexOf(this);
+			} else if (b.nextBlock == this) {
+				originalRole = ROLE_NEXT;
+			} else if (b.subStack1 == this) {
+				originalRole = ROLE_SUBSTACK1;
+			} else if (b.subStack2 == this) {
+				originalRole = ROLE_SUBSTACK2;
+			}
+			originalPosition = localToGlobal(new Point(0, 0));
+		} else {
+			originalRole = ROLE_NONE;
+			originalPosition = null;
+		}
 	}
 
-	public function restoreOriginalPosition():void {
-		x = originalX;
-		y = originalY;
+	public function restoreOriginalState():void {
+		var b:Block = originalParent as Block;
+		switch (originalRole) {
+		case ROLE_NONE:
+			if (parent) parent.removeChild(this);
+			break;
+		case ROLE_ABSOLUTE:
+			originalParent.addChild(this);
+			var p:Point = originalParent.globalToLocal(originalPosition);
+			x = p.x;
+			y = p.y;
+			break;
+		case ROLE_EMBEDDED:
+			b.replaceArgWithBlock(b.args[originalIndex], this, Scratch.app.scriptsPane);
+			break;
+		case ROLE_NEXT:
+			b.insertBlock(this);
+			break;
+		case ROLE_SUBSTACK1:
+			b.insertBlockSub1(this);
+			break;
+		case ROLE_SUBSTACK2:
+			b.insertBlockSub2(this);
+			break;
+		}
+	}
+
+	public function originalPositionIn(p:DisplayObject):Point {
+		return originalPosition && p.globalToLocal(originalPosition);
 	}
 
 	private function setDefaultArgs(defaults:Array):void {
@@ -395,6 +455,7 @@ public class Block extends Sprite {
 		if ([' ', '', 'o'].indexOf(type) >= 0) x = Math.max(x, minCommandWidth); // minimum width for command blocks
 		if (['c', 'cf', 'e'].indexOf(type) >= 0) x = Math.max(x, minLoopWidth); // minimum width for C and E blocks
 		if (['h'].indexOf(type) >= 0) x = Math.max(x, minHatWidth); // minimum width for hat blocks
+		if (elseLabel) x = Math.max(x, indentLeft + elseLabel.width + 2);
 
 		base.setWidthAndTopHeight(x + indentRight, indentTop + maxH + indentBottom);
 		if ((type == "c") || (type == "e")) fixStackLayout();
@@ -463,9 +524,10 @@ public class Block extends Sprite {
 
 	public function duplicate(forClone:Boolean, forStage:Boolean = false):Block {
 		var newSpec:String = spec;
-		if (forStage && op == 'whenClicked') newSpec = 'when Stage clicked';
+		if (op == 'whenClicked') newSpec = forStage ? 'when Stage clicked' : 'when this sprite clicked';
 		var dup:Block = new Block(newSpec, type, (int)(forClone ? -1 : base.color), op);
 		dup.isRequester = isRequester;
+		dup.forcedRequester = forcedRequester;
 		dup.parameterNames = parameterNames;
 		dup.defaultArgValues = defaultArgValues;
 		dup.warpProcFlag = warpProcFlag;
@@ -708,7 +770,7 @@ public class Block extends Sprite {
 	/* Menu */
 
 	public function menu(evt:MouseEvent):void {
-		// Note: Unlike most menu() mehtods, this method invokes
+		// Note: Unlike most menu() methods, this method invokes
 		// the menu itself rather than returning a menu to the caller.
 		if (MenuHandlerFunction == null) return;
 		if (isEmbeddedInProcHat()) MenuHandlerFunction(null, parent);
@@ -739,30 +801,57 @@ public class Block extends Sprite {
 	}
 
 	public function duplicateStack(deltaX:Number, deltaY:Number):void {
-		if (isProcDef()) return; // don't duplicate procedure definition
+		if (isProcDef() || op == 'proc_declaration') return; // don't duplicate procedure definition
 		var forStage:Boolean = Scratch.app.viewedObj() && Scratch.app.viewedObj().isStage;
 		var newStack:Block = BlockIO.stringToStack(BlockIO.stackToString(this), forStage);
-		newStack.x = x + deltaX;
-		newStack.y = y + deltaY;
-		parent.addChild(newStack);
+		var p:Point = localToGlobal(new Point(0, 0));
+		newStack.x = p.x + deltaX;
+		newStack.y = p.y + deltaY;
 		Scratch.app.gh.grabOnMouseUp(newStack);
 	}
 
-	public function deleteStack():void {
-		if (isProcDef() || isEmbeddedInProcHat()) return; // don't delete procedure definition this way for now
-		if (parent == null) return;
+	public function deleteStack():Boolean {
+		if (op == 'proc_declaration') {
+			return (parent as Block).deleteStack();
+		}
+		var app:Scratch = Scratch.app;
 		var top:Block = topBlock();
+		if (op == Specs.PROCEDURE_DEF && app.runtime.allCallsOf(spec, app.viewedObj(), false).length) {
+			DialogBox.notify('Cannot Delete', 'To delete a block definition, first remove all uses of the block.', stage);
+			return false;
+		}
+		if (top == this && app.interp.isRunning(top, app.viewedObj())) {
+			app.interp.toggleThread(top, app.viewedObj());
+		}
 		// TODO: Remove any waiting reporter data in the Scratch.app.extensionManager
 		if (parent is Block) Block(parent).removeBlock(this);
-		else parent.removeChild(this);
+		else if (parent) parent.removeChild(this);
 		this.cacheAsBitmap = false;
 		// set position for undelete
 		x = top.x;
 		y = top.y;
 		if (top != this) x += top.width + 5;
-		Scratch.app.runtime.recordForUndelete(this, x, y, 0, Scratch.app.viewedObj());
-		Scratch.app.scriptsPane.saveScripts();
-		Scratch.app.runtime.checkForGraphicEffects();
+		app.runtime.recordForUndelete(this, x, y, 0, app.viewedObj());
+		app.scriptsPane.saveScripts();
+		app.runtime.checkForGraphicEffects();
+		app.updatePalette();
+		return true;
+	}
+
+	public function attachedCommentsIn(scriptsPane:ScriptsPane):Array {
+		var allBlocks:Array = [];
+		allBlocksDo(function (b:Block):void {
+			allBlocks.push(b);
+		});
+		var result:Array = []
+		if (!scriptsPane) return result;
+		for (var i:int = 0; i < scriptsPane.numChildren; i++) {
+			var c:ScratchComment = scriptsPane.getChildAt(i) as ScratchComment;
+			if (c && c.blockRef && allBlocks.indexOf(c.blockRef) != -1) {
+				result.push(c);
+			}
+		}
+		return result;
 	}
 
 	public function addComment():void {

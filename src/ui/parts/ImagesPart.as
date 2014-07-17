@@ -184,10 +184,12 @@ public class ImagesPart extends UIPart {
 		if (obj == null) return;
 		nameField.setContents(obj.currentCostume().costumeName);
 
+		var zoomAndScroll:Array = editor.getZoomAndScroll();
 		editor.shutdown();
 		var c:ScratchCostume = obj.currentCostume();
 		useBitmapEditor(c.isBitmap() && !c.text);
 		editor.editCostume(c, obj.isStage);
+		editor.setZoomAndScroll(zoomAndScroll);
 		if(changed) app.setSaveNeeded();
 	}
 
@@ -357,7 +359,7 @@ public class ImagesPart extends UIPart {
 	}
 
 	private function addCostume(c:ScratchCostume):void {
-		var p:Point = new Point(240 - (c.width() / 2), 180 - (c.height() / 2));
+		var p:Point = new Point(240, 180);
 		editor.addCostume(c, p);
 	}
 

@@ -25,7 +25,7 @@ package svgeditor.tools
 	import flash.events.MouseEvent;
 	import flash.filters.GlowFilter;
 	import flash.geom.Point;
-	
+
 	import svgeditor.ImageEdit;
 	import svgeditor.Selection;
 	import svgeditor.objs.ISVGEditable;
@@ -59,14 +59,14 @@ package svgeditor.tools
 		// so that the mouseDown method below is overridden
 		protected function edit(obj:ISVGEditable, event:MouseEvent):void {
 			if(obj == object) return;
-			
+
 			if(object) {
 				//(object as DisplayObject).filters = [];
 			}
 
 			if(obj && (!editTag || editTag.indexOf(obj.getElement().tag) > -1)) {
 				object = obj;
-				
+
 				if(object) {
 					//(object as DisplayObject).filters = [new GlowFilter(0x28A5DA)];
 				}
@@ -95,7 +95,7 @@ package svgeditor.tools
 			currentEvent = event;
 			edit(obj, event);
 			currentEvent = null;
-			
+
 			event.stopPropagation();
 		}
 	}

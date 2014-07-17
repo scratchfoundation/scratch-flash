@@ -20,7 +20,7 @@
 package svgeditor.tools
 {
 	import assets.Resources;
-	
+
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.BlendMode;
@@ -35,14 +35,14 @@ package svgeditor.tools
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
-	
+
 	import svgeditor.DrawProperties;
 	import svgeditor.ImageEdit;
 	import svgeditor.objs.ISVGEditable;
 	import svgeditor.objs.SVGBitmap;
 	import svgeditor.objs.SVGGroup;
 	import svgeditor.objs.SVGShape;
-	
+
 	import svgutils.SVGElement;
 	import svgutils.SVGExport;
 	import svgutils.SVGPath;
@@ -60,7 +60,7 @@ package svgeditor.tools
 			eraserShape = new Shape();
 			lastPos = null;
 			erased = false;
-			
+
 			cursorHotSpot = new Point(7,18);
 		}
 
@@ -122,7 +122,7 @@ package svgeditor.tools
 
 			lastPos = new Point(eraserShape.mouseX, eraserShape.mouseY);
 		}
-		
+
 		private function getObjectsUnderEraser():Array {
 			var objs:Array = [];
 			var cl:Sprite = editor.getContentLayer();
@@ -180,7 +180,7 @@ package svgeditor.tools
 				g.endFill();
 				g.moveTo(p.x, p.y);
 			}
-			
+
 			// Force the draw cache to refresh
 			eraserShape.visible = true;
 			eraserShape.visible = false;
@@ -191,7 +191,7 @@ package svgeditor.tools
 			var m:Matrix = bmObj.transform.concatenatedMatrix;
 			m.invert();
 			bmObj.bitmapData.draw(eraserShape, m, null, BlendMode.ERASE, null);
-			
+
 			var r:Rectangle = bmObj.bitmapData.getColorBoundsRect(0xFF000000, 0x00000000, false);
 			if(!r || r.width == 0 || r.height == 0) {
 				bmObj.parent.removeChild(bmObj);
@@ -204,10 +204,10 @@ package svgeditor.tools
 			// Does the path collide with the backdrop shapes?
 			if(!PixelPerfectCollisionDetection.isColliding(svgShape, eraserShape)) return;
 			//trace("Path intersects with backdrop!");
-			
+
 			var thisSW:* = svgShape.getElement().getAttribute('stroke-width');
 			var thisSC:* = svgShape.getElement().getAttribute('stroke-linecap');
-			
+
 			// Make sure that it isn't just the stroke width that is causing the intersection.
 			// We want paths which intersect and not just "touch"
 			//svgShape.getElement().setAttribute('stroke-width', 2.0);
@@ -269,7 +269,7 @@ trace(str);
 				var endCmds:Array = path.slice(endIndex + 1);
 
 				var startTime:Number = inter.start.time;
-				if(startIndex == inter.end.index + ofs) { 
+				if(startIndex == inter.end.index + ofs) {
 					startTime = startTime / endTime;
 				}
 
@@ -295,7 +295,7 @@ trace(str);
 					// Copy the commands but not the ending 'Z' command
 					var cmds:Array = path.splice(indices[0], indices[1] + 1);
 					var stitchIndex:int = cmds.length - 1;
-					
+
 					// Re-insert the commands at the beginning
 					cmds.unshift(1);
 					cmds.unshift(0);

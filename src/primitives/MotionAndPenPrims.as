@@ -24,13 +24,13 @@
 
 package primitives {
 	import blocks.*;
-	
+
 	import flash.display.*;
 	import flash.geom.*;
 	import flash.utils.Dictionary;
-	
+
 	import interpreter.*;
-	
+
 	import scratch.*;
 
 public class MotionAndPenPrims {
@@ -273,7 +273,13 @@ public class MotionAndPenPrims {
 
 	private function primStamp(b:Block):void {
 		var s:ScratchSprite = interp.targetSprite();
-		doStamp(s, s.img.transform.colorTransform.alphaMultiplier);
+		// In 3D mode, get the alpha from the ghost filter
+		// Otherwise, it can be easily accessed from the color transform.
+		var alpha:Number = (Scratch.app.isIn3D ?
+			1.0 - (Math.max(0, Math.min(s.filterPack.getFilterSetting('ghost'), 100)) / 100) :
+			s.img.transform.colorTransform.alphaMultiplier);
+
+		doStamp(s, alpha);
 	}
 
 	private function doStamp(s:ScratchSprite, stampAlpha:Number):void {
@@ -303,7 +309,7 @@ public class MotionAndPenPrims {
 
 	private function turnAwayFromEdge(s:ScratchSprite):Boolean {
 		// turn away from the nearest edge if it's close enough; otherwise do nothing
-		// Note: comparisions are in the stage coordinates, with origin (0, 0)
+		// Note: comparisons are in the stage coordinates, with origin (0, 0)
 		// use bounding rect of the sprite to account for costume rotation and scale
 		var r:Rectangle = s.getRect(app.stagePane);
 		// measure distance to edges
