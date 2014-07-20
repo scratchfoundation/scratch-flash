@@ -26,22 +26,17 @@
 package scratch {
 	import flash.display.*;
 	import flash.events.*;
-import flash.external.ExternalInterface;
-import flash.filters.GlowFilter;
-import flash.geom.*;
-import flash.geom.ColorTransform;
-import flash.net.URLLoader;
-import flash.net.URLRequest;
-import flash.net.URLRequest;
-import flash.net.navigateToURL;
-import flash.utils.*;
+	import flash.external.ExternalInterface;
+	import flash.geom.*;
+	import flash.geom.ColorTransform;
+	import flash.utils.*;
 	import flash.net.FileReference;
 	import filters.FilterPack;
 	import interpreter.Variable;
 	import translation.Translator;
 
-import uiwidgets.DialogBox;
-import uiwidgets.Menu;
+	import uiwidgets.DialogBox;
+	import uiwidgets.Menu;
 	import util.*;
 	import watchers.ListWatcher;
 

@@ -24,8 +24,7 @@
 
 package ui.parts {
 	import flash.display.*;
-import flash.external.ExternalInterface;
-import flash.geom.*;
+	import flash.external.ExternalInterface;
 	import flash.text.*;
 	import flash.utils.*;
 	import scratch.*;
@@ -33,7 +32,6 @@ import flash.geom.*;
 	import ui.media.*;
 	import ui.SpriteThumbnail;
 	import uiwidgets.*;
-	import util.ProjectIO;
 
 public class LibraryPart extends UIPart {
 
