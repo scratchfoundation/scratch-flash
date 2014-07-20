@@ -1141,9 +1141,9 @@ public class Scratch extends Sprite {
 		return new MediaInfo(obj, owningObj);
 	}
 
-    public function createProjectIO():ProjectIO {
-        return new ProjectIO(this);
-    }
+	public function createProjectIO():ProjectIO {
+		return new ProjectIO(this);
+	}
 
 	// -----------------------------
 	// External Interface abstraction

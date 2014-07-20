@@ -509,11 +509,11 @@ public class ProjectIO {
 		return id;
 	}
 
-    //----------------------------
-    // Community library upload
-    //----------------------------
+	//----------------------------
+	// Community library upload
+	//----------------------------
 
-    public function uploadToCommunityLibrary(spr:ScratchSprite,whenDone:Function):void {
-        // Do nothing, this only exists to be overriden by ProjectIOOnline
-    }
+	public function uploadToCommunityLibrary(spr:ScratchSprite,whenDone:Function):void {
+		// Do nothing, this only exists to be overriden by ProjectIOOnline
+	}
 }}

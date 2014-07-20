@@ -463,9 +463,9 @@ public class ScratchSprite extends ScratchObj {
 		m.addItem('delete', deleteSprite);
 		m.addLine();
 		m.addItem('save to local file', saveToLocalFile);
-        if(Scratch.app.jsEnabled && ExternalInterface.available && ExternalInterface.call('CommunityLibrary.useHTMLBrowser')) {
-            m.addItem('submit to community library', submitToCommunityLibrary);
-        }
+		if(Scratch.app.jsEnabled && ExternalInterface.available && ExternalInterface.call('CommunityLibrary.useHTMLBrowser')) {
+			m.addItem('submit to community library', submitToCommunityLibrary);
+		}
 		return m;
 	}
 
@@ -556,18 +556,18 @@ public class ScratchSprite extends ScratchObj {
 		file.save(zipData, defaultName);
 	}
 
-    private function submitToCommunityLibrary():void {
-        Scratch.app.createProjectIO().uploadToCommunityLibrary(this,function(res:*):void {
-            if(res.okay) {
-               ExternalInterface.call('CommunityLibrary.submit',res.url);
-            } else {
-                DialogBox.notify(
-                    'Unable to submit sprite',
-                    res.error
-                );
-            }
-        });
-    }
+	private function submitToCommunityLibrary():void {
+		Scratch.app.createProjectIO().uploadToCommunityLibrary(this,function(res:*):void {
+			if(res.okay) {
+			   ExternalInterface.call('CommunityLibrary.submit',res.url);
+			} else {
+				DialogBox.notify(
+					'Unable to submit sprite',
+					res.error
+				);
+			}
+		});
+	}
 
 	public function copyToShare():ScratchSprite {
 		// Return a copy of the current sprite set up to be shared.

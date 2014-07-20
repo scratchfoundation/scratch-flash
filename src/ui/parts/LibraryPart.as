@@ -200,7 +200,7 @@ public class LibraryPart extends UIPart {
 		var index:int = 1;
 		for each (var spr:ScratchSprite in sortedSprites) {
 			spr.indexInLibrary = index++; // renumber to ensure unique indices
- 			var tn:SpriteThumbnail = new SpriteThumbnail(spr, app);
+			var tn:SpriteThumbnail = new SpriteThumbnail(spr, app);
 			tn.x = nextX;
 			tn.y = nextY;
 			spritesPane.addChild(tn);
@@ -349,16 +349,16 @@ public class LibraryPart extends UIPart {
 	}
 
 	private function spriteFromComputer(b:IconButton):void {
-        importSprite(true);
-    }
+		importSprite(true);
+	}
 
 	private function spriteFromLibrary(b:IconButton):void {
-        if(ExternalInterface.available && ExternalInterface.call('CommunityLibrary.useHTMLBrowser')) {
-            ExternalInterface.call('CommunityLibrary.showBrowser');
-        } else {
-            importSprite(false);
-        }
-    }
+		if(ExternalInterface.available && ExternalInterface.call('CommunityLibrary.useHTMLBrowser')) {
+			ExternalInterface.call('CommunityLibrary.showBrowser');
+		} else {
+			importSprite(false);
+		}
+	}
 
 	private function importSprite(fromComputer:Boolean):void {
 		function addSprite(costumeOrSprite:*):void {
