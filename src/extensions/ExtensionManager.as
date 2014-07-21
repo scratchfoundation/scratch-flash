@@ -38,7 +38,7 @@ package extensions {
 public class ExtensionManager {
 
 	private var app:Scratch;
-	private var extensionDict:Object = new Object(); // extension name -> extension record
+	protected var extensionDict:Object = new Object(); // extension name -> extension record
 	private var justStartedWait:Boolean;
 	private var pollInProgress:Dictionary = new Dictionary(true);
 	static public const wedoExt:String = 'LEGO WeDo';
@@ -57,6 +57,11 @@ public class ExtensionManager {
 	}
 
 	public function clearImportedExtensions():void {
+		for each(var ext:ScratchExtension in extensionDict) {
+			if(ext.showBlocks)
+				setEnabled(ext.name, false);
+		}
+
 		// Clear imported extensions before loading a new project.
 		extensionDict = {};
 		extensionDict['PicoBoard'] = ScratchExtension.PicoBoard();
@@ -173,10 +178,18 @@ public class ExtensionManager {
 	// Loading
 	//------------------------------
 
-	public function loadRawExtension(extObj:Object):void {
+	public function loadCustom(ext:ScratchExtension):void {
+		if(!extensionDict[ext.name] && ext.javascriptURL) {
+			extensionDict[ext.name] = ext;
+			ext.showBlocks = false;
+			setEnabled(ext.name, true);
+		}
+	}
+
+	public function loadRawExtension(extObj:Object):ScratchExtension {
 		var ext:ScratchExtension = extensionDict[extObj.extensionName];
 		if(!ext || (ext.blockSpecs && ext.blockSpecs.length))
-				ext = new ScratchExtension(extObj.extensionName, extObj.extensionPort);
+			ext = new ScratchExtension(extObj.extensionName, extObj.extensionPort);
 		ext.blockSpecs = extObj.blockSpecs;
 		if (app.isOffline && (ext.port == 0)) {
 			// Fix up block specs to force reporters to be treated as requesters.
@@ -205,6 +218,8 @@ public class ExtensionManager {
 				break;
 			}
 		}
+
+		return ext;
 	}
 
 	public function loadSavedExtensions(savedExtensions:Array):void {
@@ -223,11 +238,15 @@ public class ExtensionManager {
 			}
 
 			var ext:ScratchExtension = new ScratchExtension(extObj.extensionName, extObj.extensionPort || 0);
+			extensionDict[extObj.extensionName] = ext;
 			ext.blockSpecs = extObj.blockSpecs;
 			ext.showBlocks = true;
 			ext.menus = extObj.menus;
-			if(extObj.javascriptURL) ext.javascriptURL = extObj.javascriptURL;
-			extensionDict[extObj.extensionName] = ext;
+			if(extObj.javascriptURL) {
+				ext.javascriptURL = extObj.javascriptURL;
+				ext.showBlocks = false;
+				setEnabled(extObj.extensionName, true);
+			}
 		}
 		Scratch.app.updatePalette();
 	}
@@ -269,7 +288,7 @@ public class ExtensionManager {
 						Scratch.app.showTip('extensions');
 //					DialogBox.notify('Extension Problem', 'It looks like the '+ext.name+' is not working properly.' +
 //							'Please read the extensions help in the tips window.', Scratch.app.stage);
-						DialogBox.notify('Extension Problem', 'See the Tips window (on the right) to install the plug-in and get the extension working.', Scratch.app.stage);
+						DialogBox.notify('Extension Problem', 'See the Tips window (on the right) to install the plug-in and get the extension working.');
 					}
 				}
 

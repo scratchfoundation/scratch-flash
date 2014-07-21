@@ -132,7 +132,7 @@ public class Scratch extends Sprite {
 		gh = new GestureHandler(this, (loaderInfo.parameters['inIE'] == 'true'));
 		initInterpreter();
 		initRuntime();
-		extensionManager = new ExtensionManager(this);
+		initExtensionManager();
 		Translator.initializeLanguageList();
 
 		playerBG = new Shape(); // create, but don't add
@@ -173,6 +173,10 @@ public class Scratch extends Sprite {
 		runtime = new ScratchRuntime(this, interp);
 	}
 
+	protected function initExtensionManager():void {
+		extensionManager = new ExtensionManager(this);
+	}
+
 	protected function initServer():void {
 		server = new Server();
 	}
@@ -183,7 +187,6 @@ public class Scratch extends Sprite {
 		addExternalCallback('ASloadExtension', extensionManager.loadRawExtension);
 		addExternalCallback('ASextensionCallDone', extensionManager.callCompleted);
 		addExternalCallback('ASextensionReporterDone', extensionManager.reporterCompleted);
-		addExternalCallback('AScanShare', function():Boolean { return !runtime.hasUnofficialExtensions(); });
 	}
 
 	public function showTip(tipName:String):void {}
@@ -194,8 +197,8 @@ public class Scratch extends Sprite {
 		return isOffline;
 	}
 
-	public function getMediaLibrary(app:Scratch, type:String, whenDone:Function):MediaLibrary {
-		return new MediaLibrary(app, type, whenDone);
+	public function getMediaLibrary(type:String, whenDone:Function):MediaLibrary {
+		return new MediaLibrary(this, type, whenDone);
 	}
 
 	public function getMediaPane(app:Scratch, type:String):MediaPane {

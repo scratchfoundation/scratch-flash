@@ -48,7 +48,7 @@ public class UIPart extends Sprite {
 	public function right():int { return x + w }
 	public function bottom():int { return y + h }
 
-	protected static function makeLabel(s:String, fmt:TextFormat, x:int = 0, y:int = 0):TextField {
+	public static function makeLabel(s:String, fmt:TextFormat, x:int = 0, y:int = 0):TextField {
 		// Create a non-editable text field for use as a label.
 		var tf:TextField = new TextField();
 		tf.autoSize = TextFieldAutoSize.LEFT;
