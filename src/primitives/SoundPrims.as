@@ -93,6 +93,7 @@ public class SoundPrims {
 		for(var i:int = 0; i<512; i++)
 		{
 			var value:Number = bytes.readFloat();
+			value = Math.round(value * 70.7213) // this will convert the value given which is from 0 - 1.414 to a value of 0-100 and then rounds it.
 			return value;
 		}
 	return value;
