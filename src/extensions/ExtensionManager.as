@@ -188,8 +188,9 @@ public class ExtensionManager {
 
 	public function loadRawExtension(extObj:Object):ScratchExtension {
 		var ext:ScratchExtension = extensionDict[extObj.extensionName];
-		if(!ext || (ext.blockSpecs && ext.blockSpecs.length))
+		if(!ext)
 			ext = new ScratchExtension(extObj.extensionName, extObj.extensionPort);
+		ext.port = extObj.extensionPort;
 		ext.blockSpecs = extObj.blockSpecs;
 		if (app.isOffline && (ext.port == 0)) {
 			// Fix up block specs to force reporters to be treated as requesters.
@@ -245,6 +246,7 @@ public class ExtensionManager {
 			if(extObj.javascriptURL) {
 				ext.javascriptURL = extObj.javascriptURL;
 				ext.showBlocks = false;
+				if(extObj.id) ext.id = extObj.id;
 				setEnabled(extObj.extensionName, true);
 			}
 		}
