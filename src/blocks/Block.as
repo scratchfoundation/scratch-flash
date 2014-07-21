@@ -357,6 +357,7 @@ public class Block extends Sprite {
 
 	public function restoreOriginalState():void {
 		var b:Block = originalParent as Block;
+		scaleX = scaleY = 1;
 		switch (originalRole) {
 		case ROLE_NONE:
 			if (parent) parent.removeChild(this);
