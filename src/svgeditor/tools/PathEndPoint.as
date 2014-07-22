@@ -63,6 +63,7 @@ package svgeditor.tools
 
 		private function proxyEvent(e:MouseEvent):void {
 			editor.getCanvasLayer().dispatchEvent(e);
+			e.stopImmediatePropagation();
 		}
 
 		private function showOrb(e:MouseEvent):void {
