@@ -122,7 +122,9 @@ public class ProcedureSpecEditor extends Sprite {
 				}
 			} else {
 				if ((row.length > 0) && (row[row.length - 1] is TextField)) {
-					TextField(row[row.length - 1]).appendText(' ' + ReadStream.unescape(s));
+					var tf:TextField = row[row.length - 1];
+					tf.appendText(' ' + ReadStream.unescape(s));
+					fixLabelWidth(tf);
 				} else {
 					addElement(makeTextField(ReadStream.unescape(s)));
 				}
