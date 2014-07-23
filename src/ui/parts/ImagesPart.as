@@ -454,6 +454,7 @@ public class ImagesPart extends UIPart {
 			}
 			var c:ScratchCostume = new ScratchCostume(Translator.map('photo1'), photo);
 			addAndSelectCostume(c);
+			editor.getWorkArea().zoom();
 		}
 		app.openCameraDialog(savePhotoAsCostume);
 	}
