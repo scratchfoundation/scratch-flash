@@ -776,8 +776,8 @@ public class ScratchRuntime {
 		var result:Array = [];
 		allStacksAndOwnersDo(function (stack:Block, target:ScratchObj):void {
 			stack.allBlocksDo(function (b:Block):void {
-				for each (var a:BlockArg in b.args) {
-					if (a.menuName == 'backdrop' && a.argValue == backdropName) result.push(a);
+				for each (var a:* in b.args) {
+					if (a is BlockArg && a.menuName == 'backdrop' && a.argValue == backdropName) result.push(a);
 				}
 			});
 		});
@@ -788,8 +788,8 @@ public class ScratchRuntime {
 		var result:Array = [];
 		for each (var stack:Block in app.viewedObj().scripts) {
 			stack.allBlocksDo(function (b:Block):void {
-				for each (var a:BlockArg in b.args) {
-					if (a.menuName == 'costume' && a.argValue == costumeName) result.push(a);
+				for each (var a:* in b.args) {
+					if (a is BlockArg && a.menuName == 'costume' && a.argValue == costumeName) result.push(a);
 				}
 			});
 		}
@@ -802,8 +802,8 @@ public class ScratchRuntime {
 		for each (var stack:Block in allStacks()) {
 			// for each block in stack
 			stack.allBlocksDo(function (b:Block):void {
-				for each (var a:BlockArg in b.args) {
-					if (spriteMenus.indexOf(a.menuName) != -1 && a.argValue == spriteName) result.push(a);
+				for each (var a:* in b.args) {
+					if (a is BlockArg && spriteMenus.indexOf(a.menuName) != -1 && a.argValue == spriteName) result.push(a);
 				}
 			});
 		}
