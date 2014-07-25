@@ -205,9 +205,9 @@ public class MediaLibraryItem extends Sprite {
 
 	protected function addLabel():void {
 		var objName:String = dbObj.name ? dbObj.name : '';
-		var labelTxt:TextField = Resources.makeLabel(objName, labelFormat);
-		label = labelTxt;
-		label.x = ((frameWidth - labelTxt.textWidth) / 2) - 2;
+		var tf:TextField = Resources.makeLabel(objName, labelFormat);
+		label = tf;
+		label.x = ((frameWidth - tf.textWidth) / 2) - 2;
 		label.y = frameHeight - 32;
 		addChild(label);
 	}
