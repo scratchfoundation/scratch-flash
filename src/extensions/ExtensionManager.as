@@ -342,7 +342,9 @@ public class ExtensionManager {
 					if (Scratch.app.isOffline) {
 						throw new IllegalOperationError("JS reporters must be requesters in Offline.");
 					}
-					value = app.externalCall('ScratchExtensions.getReporter', null, ext.name, sensorName, args);
+					app.externalCall('ScratchExtensions.getReporter', function(v:*):void {
+						value = v;
+					}, ext.name, sensorName, args);
 				}
 				if (value == undefined) value = 0; // default to zero if missing
 				if ('b' == b.type) value = (ext.port>0 ? 'true' == value : true == value); // coerce value to a boolean
