@@ -259,5 +259,4 @@ public class BlockArg extends Sprite {
 		}
 	}
 
-}
-}
+}}
