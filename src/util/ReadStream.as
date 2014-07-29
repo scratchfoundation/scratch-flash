@@ -87,12 +87,19 @@ public class ReadStream {
 		if (atEnd()) return '';
 		var isArg:Boolean;
 		var start:int = i;
+		var inBrackets:Boolean = false;
 		while (i < src.length) {
-			if (src.charCodeAt(i) <= 32) break;
+			if (src.charCodeAt(i) <= 32 && !inBrackets) break;
 			var ch:String = src.charAt(i);
 			if (ch == '%') {
 				if (i > start) break; // percent sign starts new token
 				isArg = true;
+			}
+			if (ch == '[') {
+				inBrackets = true;
+			}
+			if (ch == ']') {
+				inBrackets = false;
 			}
 			// certain punctuation marks following an argument start a new token
 			// example: 'touching %m?' (question mark after arg starts a new token) vs. 'loud?' (doesn't)
