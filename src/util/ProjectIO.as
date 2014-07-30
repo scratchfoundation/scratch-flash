@@ -409,7 +409,7 @@ public class ProjectIO {
 			for each (var c:ScratchCostume in obj.costumes) {
 				data = assetDict[c.baseLayerMD5];
 				if (data) c.baseLayerData = data;
-				else c.setSVGData(ScratchCostume.emptySVG(), true); // missing asset data; use empty costume
+				else c.baseLayerData = ScratchCostume.emptySVG(); // missing asset data; use empty costume
 				if (c.textLayerMD5) c.textLayerData = assetDict[c.textLayerMD5];
 			}
 			for each (var snd:ScratchSound in obj.sounds) {
