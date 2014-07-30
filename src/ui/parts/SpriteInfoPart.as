@@ -242,6 +242,12 @@ public class SpriteInfoPart extends UIPart implements DragClient {
 		draggableLabel.y = nextY;
 		draggableButton.x = draggableLabel.x + draggableLabel.textWidth + 10;
 		draggableButton.y = nextY + 4;
+
+		nextY += 22;
+		showSpriteLabel.x = left;
+		showSpriteLabel.y = nextY;
+		showSpriteButton.x = showSpriteLabel.x + showSpriteLabel.textWidth + 10;
+		showSpriteButton.y = nextY + 4;
 	}
 
 	private function closeSpriteInfo(ignore:*):void {
