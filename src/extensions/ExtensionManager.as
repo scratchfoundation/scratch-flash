@@ -93,14 +93,15 @@ public class ExtensionManager {
 		var ext:ScratchExtension = extensionDict[extName];
 		if (ext && ext.showBlocks != flag) {
 			ext.showBlocks = flag;
-			if(app.jsEnabled) {
-				if(flag && ext.javascriptURL) {
+			if(app.jsEnabled && ext.javascriptURL) {
+				if(flag) {
 					var javascriptURL:String = Scratch.app.fixExtensionURL(ext.javascriptURL);
 					app.externalCall('ScratchExtensions.loadExternalJS', null, javascriptURL);
 					ext.showBlocks = false; // Wait for it to load
 				}
-				else if(!flag) {
+				else {
 					app.externalCall('ScratchExtensions.unregister', null, extName);
+					delete extensionDict[extName];
 				}
 			}
 		}
