@@ -132,23 +132,13 @@ public class ListWatcher extends Sprite {
 	private function importList():void {
 		// Prompt user for a file name and import that file.
 		// Each line of the file becomes a list item.
-		function fileSelected(event:Event):void {
-			if (fileList.fileList.length == 0) return;
-			file = FileReference(fileList.fileList[0]);
-			file.addEventListener(Event.COMPLETE, fileLoadHandler);
-			file.load();
-		}
-		function fileLoadHandler(event:Event):void {
+		function fileLoaded(event:Event):void {
+			var file:FileReference = FileReference(event.target);
 			var s:String = file.data.readUTFBytes(file.data.length);
 			importLines(removeTrailingEmptyLines(s.split(/\r\n|[\r\n]/)));
 		}
-		var fileList:FileReferenceList = new FileReferenceList();
-		var file:FileReference;
-		fileList.addEventListener(Event.SELECT, fileSelected);
-		try {
-			// Ignore the exception that happens when you call browse() with the file browser open
-			fileList.browse();
-		} catch(e:*) {}
+
+		Scratch.loadSingleFile(fileLoaded);
 	}
 
 	private function exportList():void {

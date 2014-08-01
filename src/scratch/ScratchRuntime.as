@@ -354,15 +354,10 @@ public class ScratchRuntime {
 	public function selectProjectFile():void {
 		// Prompt user for a file name and load that file.
 		var fileName:String, data:ByteArray;
-		function fileSelected(event:Event):void {
-			if (fileList.fileList.length == 0) return;
-			var file:FileReference = FileReference(fileList.fileList[0]);
-			fileName = file.name;
-			file.addEventListener(Event.COMPLETE, fileLoadHandler);
-			file.load();
-		}
 		function fileLoadHandler(event:Event):void {
-			data = FileReference(event.target).data;
+			var file:FileReference = FileReference(event.target);
+			fileName = file.name;
+			data = file.data;
 			if (app.stagePane.isEmpty()) doInstall();
 			else DialogBox.confirm('Replace contents of the current project?', app.stage, doInstall);
 		}
@@ -370,14 +365,9 @@ public class ScratchRuntime {
 			installProjectFromFile(fileName, data);
 		}
 		stopAll();
-		var fileList:FileReferenceList = new FileReferenceList();
-		fileList.addEventListener(Event.SELECT, fileSelected);
 		var filter1:FileFilter = new FileFilter('Scratch 1.4 Project', '*.sb');
 		var filter2:FileFilter = new FileFilter('Scratch 2 Project', '*.sb2');
-		try {
-			// Ignore the exception that happens when you call browse() with the file browser open
-			fileList.browse([filter1, filter2]);
-		} catch(e:*) {}
+		Scratch.loadSingleFile(fileLoadHandler, [filter1, filter2])
 	}
 
 	public function installProjectFromFile(fileName:String, data:ByteArray):void {

@@ -30,6 +30,7 @@ package {
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.net.FileReference;
+	import flash.net.FileReferenceList;
 	import flash.net.LocalConnection;
 	import flash.system.*;
 	import flash.text.*;
@@ -131,7 +132,7 @@ public class Scratch extends Sprite {
 		gh = new GestureHandler(this, (loaderInfo.parameters['inIE'] == 'true'));
 		initInterpreter();
 		initRuntime();
-		extensionManager = new ExtensionManager(this);
+		initExtensionManager();
 		Translator.initializeLanguageList();
 
 		playerBG = new Shape(); // create, but don't add
@@ -172,6 +173,10 @@ public class Scratch extends Sprite {
 		runtime = new ScratchRuntime(this, interp);
 	}
 
+	protected function initExtensionManager():void {
+		extensionManager = new ExtensionManager(this);
+	}
+
 	protected function initServer():void {
 		server = new Server();
 	}
@@ -182,7 +187,6 @@ public class Scratch extends Sprite {
 		addExternalCallback('ASloadExtension', extensionManager.loadRawExtension);
 		addExternalCallback('ASextensionCallDone', extensionManager.callCompleted);
 		addExternalCallback('ASextensionReporterDone', extensionManager.reporterCompleted);
-		addExternalCallback('AScanShare', function():Boolean { return !runtime.hasUnofficialExtensions(); });
 	}
 
 	public function showTip(tipName:String):void {}
@@ -193,8 +197,8 @@ public class Scratch extends Sprite {
 		return isOffline;
 	}
 
-	public function getMediaLibrary(app:Scratch, type:String, whenDone:Function):MediaLibrary {
-		return new MediaLibrary(app, type, whenDone);
+	public function getMediaLibrary(type:String, whenDone:Function):MediaLibrary {
+		return new MediaLibrary(this, type, whenDone);
 	}
 
 	public function getMediaPane(app:Scratch, type:String):MediaPane {
@@ -1150,6 +1154,23 @@ public class Scratch extends Sprite {
 	// Misc.
 	public function createMediaInfo(obj:*, owningObj:ScratchObj = null):MediaInfo {
 		return new MediaInfo(obj, owningObj);
+	}
+
+	static public function loadSingleFile(fileLoaded:Function, filters:Array = null):void {
+		function fileSelected(event:Event):void {
+			if (fileList.fileList.length > 0) {
+				var file:FileReference = FileReference(fileList.fileList[0]);
+				file.addEventListener(Event.COMPLETE, fileLoaded);
+				file.load();
+			}
+		}
+
+		var fileList:FileReferenceList = new FileReferenceList();
+		fileList.addEventListener(Event.SELECT, fileSelected);
+		try {
+			// Ignore the exception that happens when you call browse() with the file browser open
+			fileList.browse(filters);
+		} catch(e:*) {}
 	}
 
 	// -----------------------------

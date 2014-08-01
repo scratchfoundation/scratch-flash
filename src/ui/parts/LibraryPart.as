@@ -376,7 +376,7 @@ public class LibraryPart extends UIPart {
 				app.addNewSprite(spr);
 			}
 		}
-		var lib:MediaLibrary = new MediaLibrary(app, 'sprite', addSprite);
+		var lib:MediaLibrary = app.getMediaLibrary('sprite', addSprite);
 		if (fromComputer) lib.importFromDisk();
 		else lib.open();
 	}
@@ -394,12 +394,12 @@ public class LibraryPart extends UIPart {
 	}
 
 	private function backdropFromComputer(b:IconButton):void {
-		var lib:MediaLibrary = new MediaLibrary(app, 'backdrop', addBackdrop);
+		var lib:MediaLibrary = app.getMediaLibrary('backdrop', addBackdrop);
 		lib.importFromDisk();
 	}
 
 	private function backdropFromLibrary(b:IconButton):void {
-		var lib:MediaLibrary = new MediaLibrary(app, 'backdrop', addBackdrop);
+		var lib:MediaLibrary = app.getMediaLibrary('backdrop', addBackdrop);
 		lib.open();
 	}
 

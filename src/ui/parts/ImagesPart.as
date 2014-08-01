@@ -349,12 +349,12 @@ public class ImagesPart extends UIPart {
 
 	private function importFromLibrary():void {
 		var type:String = isStage() ? 'backdrop' : 'costume';
-		var lib:MediaLibrary = new MediaLibrary(app, type, addCostume);
+		var lib:MediaLibrary = app.getMediaLibrary(type, addCostume);
 		lib.open();
 	}
 
 	private function importIntoEditor():void {
-		var lib:MediaLibrary = new MediaLibrary(app, '', addCostume);
+		var lib:MediaLibrary = app.getMediaLibrary('', addCostume);
 		lib.importFromDisk();
 	}
 
@@ -430,7 +430,7 @@ public class ImagesPart extends UIPart {
 			}
 		}
 		var type:String = isStage() ? 'backdrop' : 'costume';
-		var lib:MediaLibrary = new MediaLibrary(app, type, addCostume);
+		var lib:MediaLibrary = app.getMediaLibrary(type, addCostume);
 		if (fromComputer) lib.importFromDisk();
 		else lib.open();
 	}
