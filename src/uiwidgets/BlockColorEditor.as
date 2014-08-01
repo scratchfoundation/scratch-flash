@@ -80,7 +80,7 @@ public class BlockColorEditor extends Sprite {
 			if ('List' == catName) Specs.listColor = c;
 			if ('More Blocks' == catName) Specs.procedureColor = c;
 			if ('Parameter' == catName) Specs.parameterColor = c;
-			if ('Exension' == catName) Specs.extensionsColor = c;
+			if ('Extension' == catName) Specs.extensionsColor = c;
 		}
 	}
 
