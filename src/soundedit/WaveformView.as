@@ -275,9 +275,11 @@ public class WaveformView extends Sprite implements DragClient {
 			stopRecording();
 		} else {
 			stopAll();
-			recordSamples = new Vector.<int>();
 			openMicrophone();
-			mic.addEventListener(SampleDataEvent.SAMPLE_DATA, recordData);
+			if(mic) {
+				recordSamples = new Vector.<int>();
+				mic.addEventListener(SampleDataEvent.SAMPLE_DATA, recordData);
+			}
 		}
 		editor.updateIndicators();
 		drawWave();
@@ -317,6 +319,8 @@ public class WaveformView extends Sprite implements DragClient {
 
 	private function openMicrophone():void {
 		mic = Microphone.getMicrophone();
+		if (!mic) return;
+
 		mic.setSilenceLevel(0);
 		mic.setLoopBack(true);
 		mic.soundTransform = new SoundTransform(0, 0);

@@ -131,13 +131,20 @@ public class PaletteBuilder {
 			nextY += 5;
 		}
 
-		addItem(new Button(Translator.map('Add an Extension'), showAnExtension, false, '/help/studio/tips/blocks/add-an-extension/'));
+		addExtensionButtons();
 		for each (var ext:* in app.extensionManager.enabledExtensions()) {
 			addExtensionSeparator(ext);
 			addBlocksForExtension(ext);
 		}
 
 		updateCheckboxes();
+	}
+
+	protected function addExtensionButtons():void {
+	}
+
+	protected function addAddExtensionButton():void {
+		addItem(new Button(Translator.map('Add an Extension'), showAnExtension, false, '/help/studio/tips/blocks/add-an-extension/'));
 	}
 
 	private function showDataCategory():void {

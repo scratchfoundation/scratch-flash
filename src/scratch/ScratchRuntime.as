@@ -827,8 +827,8 @@ public class ScratchRuntime {
     public function allUsesOfSoundDo(soundName:String, f:Function):void {
         for each (var stack:Block in app.viewedObj().scripts) {
             stack.allBlocksDo(function (b:Block):void {
-                for each (var a:BlockArg in b.args) {
-                    if (a.menuName == 'sound' && a.argValue == soundName) f(a);
+                for each (var a:* in b.args) {
+                    if (a is BlockArg && a.menuName == 'sound' && a.argValue == soundName) f(a);
                 }
             });
         }
