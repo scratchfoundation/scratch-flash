@@ -354,7 +354,8 @@ public class PaletteBuilder {
 			// Open in the tips window if the URL starts with /info/ and another tab otherwise
 			if (ext.url) {
 				if (ext.url.indexOf('/info/') === 0) app.showTip(ext.url);
-				else navigateToURL(new URLRequest(ext.url));
+				else if(ext.url.indexOf('http') === 0) navigateToURL(new URLRequest(ext.url));
+				else DialogBox.notify('Extensions', 'Unable to load about page: the URL given for extension "' + ext.name + '" is not formatted correctly.');
 			}
 		}
 		function hideExtension():void {
@@ -363,7 +364,7 @@ public class PaletteBuilder {
 		}
 
 		var m:Menu = new Menu();
-		m.addItem(Translator.map('About') + ' ' + ext.name + ' ' + Translator.map('extension') + '...', showAbout);
+		m.addItem(Translator.map('About') + ' ' + ext.name + ' ' + Translator.map('extension') + '...', showAbout, !!ext.url);
 		m.addItem('Remove extension blocks', hideExtension);
 		return m;
 	}
@@ -394,8 +395,7 @@ public class PaletteBuilder {
 
 	protected function addLineForExtensionTitle(titleButton:IconButton, ext:ScratchExtension):void {
 		var x:int = titleButton.width + 12;
-		var w:int = app.palette.width - x - 38;
-		addLine(x, nextY + 9, w);
+		addLine(x, nextY + 9, app.palette.width - x - 38);
 	}
 
 	private function addBlocksForExtension(ext:ScratchExtension):void {
