@@ -813,4 +813,12 @@ public class ScratchStage extends ScratchObj {
 		}
 	}
 
+	public override function getSummary():String {
+		var summary:String = super.getSummary();
+		for each (var s:ScratchSprite in sprites()) {
+			summary += "\n\n" + s.getSummary();
+		}
+		return summary;
+	}
+
 }}

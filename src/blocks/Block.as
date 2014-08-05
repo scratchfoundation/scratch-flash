@@ -911,4 +911,45 @@ public class Block extends Sprite {
 		}
 	}
 
+	public function getSummary():String {
+		var s:String = type == "r" ? "(" : type == "b" ? "<" : "";
+		var space:Boolean = false;
+		for each (var x:DisplayObject in labelsAndArgs) {
+			if (space) {
+				s += " ";
+			}
+			space = true;
+			var ba:BlockArg, b:Block, tf:TextField;
+			if ((ba = x as BlockArg)) {
+				s += ba.isNumber ? "(" : "[";
+				s += ba.argValue;
+				if (!ba.isEditable) s += " v";
+				s += ba.isNumber ? ")" : "]";
+			} else if ((b = x as Block)) {
+				s += b.getSummary();
+			} else if ((tf = x as TextField)) {
+				s += TextField(x).text;
+			} else {
+				s += "@";
+			}
+		}
+		if (base.canHaveSubstack1()) {
+			s += "\n" + (subStack1 ? indent(subStack1.getSummary()) : "");
+			if (base.canHaveSubstack2()) {
+				s += "\n" + elseLabel.text;
+				s += "\n" + (subStack2 ? indent(subStack2.getSummary()) : "");
+			}
+			s += "\n" + Translator.map("end");
+		}
+		if (nextBlock) {
+			s += "\n" + nextBlock.getSummary();
+		}
+		s += type == "r" ? ")" : type == "b" ? ">" : "";
+		return s;
+	}
+
+	protected static function indent(s:String):String {
+		return s.replace(/^/gm, "    ");
+	}
+
 }}
