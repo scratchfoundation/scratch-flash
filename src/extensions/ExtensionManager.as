@@ -95,7 +95,7 @@ public class ExtensionManager {
 			ext.showBlocks = flag;
 			if(app.jsEnabled && ext.javascriptURL) {
 				if(flag) {
-					var javascriptURL:String = Scratch.app.fixExtensionURL(ext.javascriptURL);
+					var javascriptURL:String = ext.isInternal ? Scratch.app.fixExtensionURL(ext.javascriptURL) : ext.javascriptURL;
 					app.externalCall('ScratchExtensions.loadExternalJS', null, javascriptURL);
 					ext.showBlocks = false; // Wait for it to load
 				}
