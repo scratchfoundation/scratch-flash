@@ -292,7 +292,7 @@ public class ProcedureSpecEditor extends Sprite {
 		addChild(o);
 		if (stage) {
 			if (o is TextField) stage.focus = TextField(o);
-			if (o is BlockArg) BlockArg(o).startEditing();	
+			if (o is BlockArg) BlockArg(o).startEditing();
 		}
 		fixLayout();
 		if (parent is DialogBox) DialogBox(parent).fixLayout();
@@ -421,7 +421,7 @@ public class ProcedureSpecEditor extends Sprite {
 	private function setFocus(o:DisplayObject):void {
 		if (!stage) return;
 		if (o is TextField) stage.focus = TextField(o);
-		if (o is BlockArg) BlockArg(o).startEditing();			
+		if (o is BlockArg) BlockArg(o).startEditing();
 	}
 
 	private function focusChange(evt:FocusEvent):void {
