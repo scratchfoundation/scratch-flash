@@ -263,7 +263,7 @@ public class ExtensionManager {
 		var i:int = op.indexOf('.');
 		if (i < 0) return null;
 		var ext:ScratchExtension = extensionDict[op.slice(0, i)];
-		if (ext == null) return null; // unknown extension
+		if (!ext || !ext.menus) return null; // unknown extension
 		return ext.menus[menuName];
 	}
 

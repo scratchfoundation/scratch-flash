@@ -56,10 +56,7 @@ public class BlockMenus implements DragClient {
 			if ((comparisonOps.indexOf(op)) > -1) { menuHandler.changeOpMenu(evt, comparisonOps); return; }
 			if (menuName == null) { menuHandler.genericBlockMenu(evt); return; }
 		}
-		if (op.indexOf('.') > -1) {
-			menuHandler.extensionMenu(evt, menuName);
-			return;
-		}
+		if (op.indexOf('.') > -1 && menuHandler.extensionMenu(evt, menuName)) return;
 		if (menuName == 'attribute') menuHandler.attributeMenu(evt);
 		if (menuName == 'backdrop') menuHandler.backdropMenu(evt);
 		if (menuName == 'booleanSensor') menuHandler.booleanSensorMenu(evt);
@@ -276,12 +273,13 @@ public class BlockMenus implements DragClient {
 		showMenu(m);
 	}
 
-	private function extensionMenu(evt:MouseEvent, menuName:String):void {
+	private function extensionMenu(evt:MouseEvent, menuName:String):Boolean {
 		var items:Array = app.extensionManager.menuItemsFor(block.op, menuName);
-		if (app.viewedObj() == null) return;
+		if (!items) return false;
 		var m:Menu = new Menu(setBlockArg);
 		for each (var s:String in items) m.addItem(s);
 		showMenu(m);
+		return true;
 	}
 
 	private function instrumentMenu(evt:MouseEvent):void {
