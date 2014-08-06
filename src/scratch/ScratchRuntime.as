@@ -383,7 +383,7 @@ public class ScratchRuntime {
 		var newProject:ScratchStage;
 		stopAll();
 		data.position = 0;
-		if (data.readUTFBytes(8) != 'ScratchV') {
+		if (data.length < 8 || data.readUTFBytes(8) != 'ScratchV') {
 			data.position = 0;
 			newProject = new ProjectIO(app).decodeProjectFromZipFile(data);
 			if (!newProject) {
