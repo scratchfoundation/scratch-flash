@@ -28,6 +28,7 @@
 
 package svgutils {
 	import flash.geom.Point;
+	import flash.geom.Matrix;
 
 public class SVGImportPath {
 
@@ -138,7 +139,7 @@ public class SVGImportPath {
 		// Convert an SVG path to a Flash-friendly version that contains only absolute
 		// move, line, cubic, and quadratic curve commands (M, L, C, Q). The output is
 		// an array of command arrays of the form [<cmd> args...].
-		var result:SVGPath = new SVGPath();
+		var cmds:Array = [];
 		firstMove = true;
 		startX = startY = 0;
 		lastX = lastY = 0;
@@ -149,21 +150,23 @@ public class SVGImportPath {
 			var args:Array = el.extractNumericArgs(cmdString.substr(1));
 			var argCount:int = pathCmdArgCount[cmd];
 			if (argCount == 0) {
-				result.push(simplePathCommand(cmd, args));
+				cmds = cmds.concat(simplePathCommands(cmd, args));
 				continue;
 			}
 			if (('m' == cmd.toLowerCase()) && (args.length > 2)) {
 				// Special case: If 'M' or 'm' has more than 2 arguments, the
 				// extra arguments are for an implied 'L' or 'l' line command.
-				result.push(simplePathCommand(cmd, args));
+				cmds = cmds.concat(simplePathCommands(cmd, args));
 				args = args.slice(2);
 				cmd = ('M' == cmd) ? 'L' : 'l';
 			}
 			while (args.length >= argCount) { // sequence commands of the same kind (with command letter omitted)
-				result.push(simplePathCommand(cmd, args));
+				cmds = cmds.concat(simplePathCommands(cmd, args));
 				args = args.slice(argCount);
 			}
 		}
+		var result:SVGPath() = new SVGPath();
+		result.set(cmds);
 		return result;
 	}
 
@@ -180,35 +183,37 @@ public class SVGImportPath {
 		Z: 0, z: 0
 	}
 
-	private function simplePathCommand(cmd:String, args:Array):Array {
-		// Return a simple path command for the given SVG command letter
+	private function simplePathCommands(cmd:String, args:Array):Array {
+		// Return an array of simple path commands for the given SVG command letter
 		// and arguments, converting relative commands to absolute ones.
-		// The resulting command is an array consists of a letter from the
-		// set {M, L, C, Q} followed by two to six numeric arguments.
-		switch (cmd) {
-		case 'A': return arcCmd(args, false);
-		case 'a': return arcCmd(args, true);
-		case 'C': return cubicCurveCmd(args, false);
-		case 'c': return cubicCurveCmd(args, true);
-		case 'H': return hLineCmd(args[0]);
-		case 'h': return hLineCmd(lastX + args[0]);
-		case 'L': return lineCmd(absoluteArgs(args));
-		case 'l': return lineCmd(relativeArgs(args));
-		case 'M': return moveCmd(absoluteArgs(args));
-		case 'm': return moveCmd(relativeArgs(args));
-		case 'Q': return quadraticCurveCmd(args, false);
-		case 'q': return quadraticCurveCmd(args, true);
-		case 'S': return cubicCurveSmoothCmd(args, false);
-		case 's': return cubicCurveSmoothCmd(args, true);
-		case 'T': return quadraticCurveSmoothCmd(args, false);
-		case 't': return quadraticCurveSmoothCmd(args, true);
-		case 'V': return vLineCmd(args[0]);
-		case 'v': return vLineCmd(lastY + args[0]);
+		// Each command in resulting array is an array consists of a letter from the
+		// set {M, L, C, Q, Z} followed by zero to six numeric arguments.
+		// In general, arc cannot be represented by a single bezier curve precisely.
+		// All other commands are packed into arrays to have the same format.
+		switch (cmd) {//return array of commands
+		case 'A': return arcCmds(args, false);
+		case 'a': return arcCmds(args, true);
+		case 'C': return [cubicCurveCmd(args, false)];
+		case 'c': return [cubicCurveCmd(args, true)];
+		case 'H': return [hLineCmd(args[0])];
+		case 'h': return [hLineCmd(lastX + args[0])];
+		case 'L': return [lineCmd(absoluteArgs(args))];
+		case 'l': return [lineCmd(relativeArgs(args))];
+		case 'M': return [moveCmd(absoluteArgs(args))];
+		case 'm': return [moveCmd(relativeArgs(args))];
+		case 'Q': return [quadraticCurveCmd(args, false)];
+		case 'q': return [quadraticCurveCmd(args, true)];
+		case 'S': return [cubicCurveSmoothCmd(args, false)];
+		case 's': return [cubicCurveSmoothCmd(args, true)];
+		case 'T': return [quadraticCurveSmoothCmd(args, false)];
+		case 't': return [quadraticCurveSmoothCmd(args, true)];
+		case 'V': return [vLineCmd(args[0])];
+		case 'v': return [vLineCmd(lastY + args[0])];
 		case 'Z':
-		case 'z': return ['Z'];
+		case 'z': return [['Z']];
 		}
 		trace('Unknown path command: ' + cmd); // unknown path command; should not happen
-		return ['M', lastX, lastY];	// return a command that has no effect
+		return [];
 	}
 
 	private function absoluteArgs(args:Array):Array {
@@ -223,27 +228,73 @@ public class SVGImportPath {
 		return args;
 	}
 
-	private function arcCmd(args:Array, isRelative:Boolean):Array {
-		// ToDo: Arcs not fully supported because they're quite complicated.
-		// An partial solution that works for many uses of the arc command
-		// found in Inkscape files is to use a cubic Bezier curve to approximate
-		// a half-circle. Although this is not correct for partial arc segments
-		// (i.e. in pie charts) or ellipses, the Inkscape ellipse tool generates
-		// a pair of arc commands, so a semi-circle is often correct in practice
-		// (e.g. for small dots or eyes). This is just a placeholder until we
-		// have a chance to do a correct implementation.
-		var startX:Number = lastX;
-		var startY:Number = lastY;
+	private function arcCmds(args:Array, isRelative:Boolean):Array {
+		// Return array of bezier curves, approximating given arc.
+		// Points :
+		// A: arc begin; B: arc end; M: midpoint of AB; C: center of ellipse
+		// TTemp: consequently maps points of ellipse to a unitary circle
+		// TForward: circle to ellipse transform, all at once
+		// See: http://www.w3.org/TR/SVG/paths/p.a#PathDataEllipticalArcCommands
+		var a:Point = new Point(lastX, lastY);
 		lastX = isRelative ? lastX + args[5] : args[5];
 		lastY = isRelative ? lastY + args[6] : args[6];
-		var d:Number = Point.distance(new Point(startX, startY), new Point(lastX, lastY));
-		var unit:Point = new Point((lastX - startX) / d, (lastY - startY) / d);
-		var normal:Point = new Point(unit.y, -unit.x);
-		var c1x:Number = startX + (2/3 * d * normal.x) + (0.05 * unit.x);
-		var c1y:Number = startY + (2/3 * d * normal.y) + (0.05 * unit.y);
-		var c2x:Number = lastX + (2/3 * d * normal.x) - (0.05 * unit.x);
-		var c2y:Number = lastY + (2/3 * d * normal.y) - (0.05 * unit.y);
-		return ['C', c1x, c1y, c2x, c2y, lastX, lastY];
+		var b:Point = new Point(lastX, lastY);
+		var ab_length:Number = Point.distance(a, b);
+		if (ab_length == 0) {
+			return [];
+		}
+		var rx:Number = (args[0] * args[1] == 0) ? (ab_length / 2) : Math.abs(args[0]);
+		var ry:Number = (args[0] * args[1] == 0) ? (ab_length / 2) : Math.abs(args[1]);
+		var largeArcFlag:Boolean = (args[3] == 1);
+		var sweepFlag:Boolean = (args[4] == 1);
+		var convexityFlag:Number = (largeArcFlag == sweepFlag) ? 1 : -1;
+		var TTemp:Matrix = new Matrix();
+		TTemp.rotate(-args[2]);
+		TTemp.scale(1/rx, 1/ry);
+		a = TTemp.transformPoint(a);
+		b = TTemp.transformPoint(b);
+		ab_length = Point.distance(a, b);
+		var extraScale:Number = (ab_length > 2) ? ab_length / 2 : 1;
+		TTemp = new Matrix();
+		TTemp.scale(1 / extraScale, 1 / extraScale);
+		a = TTemp.transformPoint(a);
+		b = TTemp.transformPoint(b);
+		ab_length = Point.distance(a, b);
+		var ab:Point = new Point(b.x - a.x, b.y - a.y);
+		var m:Point = new Point((a.x + b.x) / 2, (a.y + b.y) / 2);
+		var mc_length:Number = Math.sqrt(Math.max(0, 1 - ab_length * ab_length / 4));
+		var mc:Point = new Point(convexityFlag * ab.y / ab_length * mc_length, -convexityFlag * ab.x / ab_length * mc_length);
+		var c:Point = new Point(m.x + mc.x, m.y + mc.y);
+		TTemp = new Matrix;
+		TTemp.translate(-c.x, -c.y);
+		a = TTemp.transformPoint(a);
+		b = TTemp.transformPoint(b);
+		var aPhi:Number = Math.atan2(a.y, a.x);
+		var bPhi:Number = Math.atan2(b.y, b.x);
+		var phi:Number = bPhi - aPhi;
+		if (sweepFlag && phi < 0) {
+			phi += 2 * Math.PI;
+		}
+		if (!sweepFlag && phi > 0) {
+			phi -= 2 * Math.PI;
+		}
+		var TForward:Matrix = new Matrix();
+		TForward.translate(c.x, c.y);
+		TForward.scale(rx * extraScale, ry * extraScale);
+		TForward.rotate(args[2]);
+		const PHI_MAX:Number = Math.PI / 2 * 1.001;//Produce no more than 2 curves for semicircle
+		var steps:int = Math.ceil(Math.abs(phi) / PHI_MAX);
+		var k:Number = 4 / 3 * (1 - Math.cos(phi / 2 / steps)) / Math.sin(phi / 2 / steps);
+		var result:Array = new Array();
+		for (var i:int = 0; i < steps; i++) {
+			var alpha:Number = aPhi + phi * (i / steps);
+			var beta:Number = aPhi + phi * ((i+1) / steps);
+			var control1:Point = TForward.transformPoint(new Point(Math.cos(alpha) - k * Math.sin(alpha), Math.sin(alpha) + k * Math.cos(alpha)));
+			var control2:Point = TForward.transformPoint(new Point(Math.cos(beta) + k * Math.sin(beta), Math.sin(beta) - k * Math.cos(beta)));
+			var finish:Point = TForward.transformPoint(new Point(Math.cos(beta), Math.sin(beta)));
+			result.push(['C', control1.x, control1.y, control2.x, control2.y, finish.x, finish.y]);
+		}
+		return result;
 	}
 
 	private function closePath():Array {
