@@ -165,7 +165,7 @@ public class SVGImportPath {
 				args = args.slice(argCount);
 			}
 		}
-		var result:SVGPath() = new SVGPath();
+		var result:SVGPath = new SVGPath();
 		result.set(cmds);
 		return result;
 	}
