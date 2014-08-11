@@ -76,6 +76,7 @@ public class StagePart extends UIPart {
 		addXYReadouts();
 		addStageSizeButton();
 		fixLayout();
+		addEventListener(MouseEvent.MOUSE_WHEEL, mouseWheel);
 	}
 
 	public static function strings():Array {
@@ -435,6 +436,11 @@ public class StagePart extends UIPart {
 	public function hidePlayButton():void {
 		if (playButton) removeChild(playButton);
 		playButton = null;
+	}
+
+	private function mouseWheel(evt:MouseEvent):void {
+		evt.preventDefault();
+		app.runtime.startKeyHats(evt.delta > 0 ? 30 : 31);
 	}
 
 }}
