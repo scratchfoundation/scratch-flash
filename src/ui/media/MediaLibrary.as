@@ -66,10 +66,10 @@ public class MediaLibrary extends Sprite {
 	private var resultsFrame:ScrollFrame;
 	protected var resultsPane:ScrollFrameContents;
 
-	private var categoryFilter:MediaFilter;
-	private var themeFilter:MediaFilter;
-	private var imageTypeFilter:MediaFilter;
-	private var spriteFeaturesFilter:MediaFilter;
+	protected var categoryFilter:MediaFilter;
+	protected var themeFilter:MediaFilter;
+	protected var imageTypeFilter:MediaFilter;
+	protected var spriteFeaturesFilter:MediaFilter;
 
 	private var closeButton:IconButton;
 	private var okayButton:Button;
