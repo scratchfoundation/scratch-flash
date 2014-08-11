@@ -27,6 +27,7 @@ package extensions {
 	import flash.errors.IllegalOperationError;
 	import flash.events.*;
 	import flash.net.*;
+	import flash.utils.Dictionary;
 	import flash.utils.getTimer;
 	import blocks.Block;
 	import interpreter.*;
@@ -37,8 +38,9 @@ package extensions {
 public class ExtensionManager {
 
 	private var app:Scratch;
-	private var extensionDict:Object = new Object(); // extension name -> extension record
+	protected var extensionDict:Object = new Object(); // extension name -> extension record
 	private var justStartedWait:Boolean;
+	private var pollInProgress:Dictionary = new Dictionary(true);
 	static public const wedoExt:String = 'LEGO WeDo';
 
 	public function ExtensionManager(app:Scratch) {
@@ -55,6 +57,11 @@ public class ExtensionManager {
 	}
 
 	public function clearImportedExtensions():void {
+		for each(var ext:ScratchExtension in extensionDict) {
+			if(ext.showBlocks)
+				setEnabled(ext.name, false);
+		}
+
 		// Clear imported extensions before loading a new project.
 		extensionDict = {};
 		extensionDict['PicoBoard'] = ScratchExtension.PicoBoard();
@@ -86,14 +93,15 @@ public class ExtensionManager {
 		var ext:ScratchExtension = extensionDict[extName];
 		if (ext && ext.showBlocks != flag) {
 			ext.showBlocks = flag;
-			if(app.jsEnabled) {
-				if(flag && ext.javascriptURL) {
-					var javascriptURL:String = Scratch.app.fixExtensionURL(ext.javascriptURL);
+			if(app.jsEnabled && ext.javascriptURL) {
+				if(flag) {
+					var javascriptURL:String = ext.isInternal ? Scratch.app.fixExtensionURL(ext.javascriptURL) : ext.javascriptURL;
 					app.externalCall('ScratchExtensions.loadExternalJS', null, javascriptURL);
 					ext.showBlocks = false; // Wait for it to load
 				}
-				else if(!flag) {
+				else {
 					app.externalCall('ScratchExtensions.unregister', null, extName);
+					delete extensionDict[extName];
 				}
 			}
 		}
@@ -121,35 +129,6 @@ public class ExtensionManager {
 		}
 	}
 
-	// -----------------------------
-	// Importing
-	//------------------------------
-
-	public function importExtension():void {
-		function fileSelected(event:Event):void {
-			if (fileList.fileList.length == 0) return;
-			var file:FileReference = FileReference(fileList.fileList[0]);
-			file.addEventListener(Event.COMPLETE, fileLoaded);
-			file.load();
-		}
-		function fileLoaded(event:Event):void {
-			var extObj:Object;
-			try {
-				extObj = util.JSON.parse(FileReference(event.target).data.toString());
-			} catch(e:*) {}
-			if (!extObj || !('extensionName' in extObj) || !('extensionPort' in extObj)) return;
-			if (!extObj.blockSpecs) extObj.blockSpecs = [];
-
-			loadRawExtension(extObj);
-		}
-		var fileList:FileReferenceList = new FileReferenceList();
-		fileList.addEventListener(Event.SELECT, fileSelected);
-		try {
-			// Ignore the exception that happens when you call browse() with the file browser open
-			fileList.browse();
-		} catch(e:*) {}
-	}
-
 	public function extensionsToSave():Array {
 		// Answer an array of extension descriptor objects for imported extensions to be saved with the project.
 		var result:Array = [];
@@ -166,6 +145,10 @@ public class ExtensionManager {
 		}
 		return result;
 	}
+
+	// -----------------------------
+	// Communications
+	//------------------------------
 
 	public function callCompleted(extensionName:String, id:Number):void {
 		var ext:ScratchExtension = extensionDict[extensionName];
@@ -192,10 +175,23 @@ public class ExtensionManager {
 		}
 	}
 
-	public function loadRawExtension(extObj:Object):void {
+	// -----------------------------
+	// Loading
+	//------------------------------
+
+	public function loadCustom(ext:ScratchExtension):void {
+		if(!extensionDict[ext.name] && ext.javascriptURL) {
+			extensionDict[ext.name] = ext;
+			ext.showBlocks = false;
+			setEnabled(ext.name, true);
+		}
+	}
+
+	public function loadRawExtension(extObj:Object):ScratchExtension {
 		var ext:ScratchExtension = extensionDict[extObj.extensionName];
-		if(!ext || (ext.blockSpecs && ext.blockSpecs.length))
-				ext = new ScratchExtension(extObj.extensionName, extObj.extensionPort);
+		if(!ext)
+			ext = new ScratchExtension(extObj.extensionName, extObj.extensionPort);
+		ext.port = extObj.extensionPort;
 		ext.blockSpecs = extObj.blockSpecs;
 		if (app.isOffline && (ext.port == 0)) {
 			// Fix up block specs to force reporters to be treated as requesters.
@@ -224,6 +220,8 @@ public class ExtensionManager {
 				break;
 			}
 		}
+
+		return ext;
 	}
 
 	public function loadSavedExtensions(savedExtensions:Array):void {
@@ -242,11 +240,16 @@ public class ExtensionManager {
 			}
 
 			var ext:ScratchExtension = new ScratchExtension(extObj.extensionName, extObj.extensionPort || 0);
+			extensionDict[extObj.extensionName] = ext;
 			ext.blockSpecs = extObj.blockSpecs;
 			ext.showBlocks = true;
 			ext.menus = extObj.menus;
-			if(extObj.javascriptURL) ext.javascriptURL = extObj.javascriptURL;
-			extensionDict[extObj.extensionName] = ext;
+			if(extObj.javascriptURL) {
+				ext.javascriptURL = extObj.javascriptURL;
+				ext.showBlocks = false;
+				if(extObj.id) ext.id = extObj.id;
+				setEnabled(extObj.extensionName, true);
+			}
 		}
 		Scratch.app.updatePalette();
 	}
@@ -288,7 +291,7 @@ public class ExtensionManager {
 						Scratch.app.showTip('extensions');
 //					DialogBox.notify('Extension Problem', 'It looks like the '+ext.name+' is not working properly.' +
 //							'Please read the extensions help in the tips window.', Scratch.app.stage);
-						DialogBox.notify('Extension Problem', 'See the Tips window (on the right) to install the plug-in and get the extension working.', Scratch.app.stage);
+						DialogBox.notify('Extension Problem', 'See the Tips window (on the right) to install the plug-in and get the extension working.');
 					}
 				}
 
@@ -340,7 +343,9 @@ public class ExtensionManager {
 					if (Scratch.app.isOffline) {
 						throw new IllegalOperationError("JS reporters must be requesters in Offline.");
 					}
-					value = app.externalCall('ScratchExtensions.getReporter', null, ext.name, sensorName, args);
+					app.externalCall('ScratchExtensions.getReporter', function(v:*):void {
+						value = v;
+					}, ext.name, sensorName, args);
 				}
 				if (value == undefined) value = 0; // default to zero if missing
 				if ('b' == b.type) value = (ext.port>0 ? 'true' == value : true == value); // coerce value to a boolean
@@ -517,16 +522,28 @@ public class ExtensionManager {
 	}
 
 	private function httpPoll(ext:ScratchExtension):void {
+
+		if (pollInProgress[ext]) {
+			// Don't poll again if there's already one in progress.
+			// This can happen a lot if the connection is timing out.
+			return;
+		}
+
 		// Poll via HTTP.
 		function completeHandler(e:Event):void {
+			delete pollInProgress[ext];
 			processPollResponse(ext, loader.data);
 		}
-		function errorHandler(e:Event):void { } // ignore errors
+		function errorHandler(e:Event):void {
+			// ignore errors
+			delete pollInProgress[ext];
+		}
 		var url:String = 'http://' + ext.host + ':' + ext.port + '/poll';
 		var loader:URLLoader = new URLLoader();
 		loader.addEventListener(Event.COMPLETE, completeHandler);
 		loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, errorHandler);
 		loader.addEventListener(IOErrorEvent.IO_ERROR, errorHandler);
+		pollInProgress[ext] = true;
 		loader.load(new URLRequest(url));
 	}
 

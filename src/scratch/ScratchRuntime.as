@@ -354,15 +354,10 @@ public class ScratchRuntime {
 	public function selectProjectFile():void {
 		// Prompt user for a file name and load that file.
 		var fileName:String, data:ByteArray;
-		function fileSelected(event:Event):void {
-			if (fileList.fileList.length == 0) return;
-			var file:FileReference = FileReference(fileList.fileList[0]);
-			fileName = file.name;
-			file.addEventListener(Event.COMPLETE, fileLoadHandler);
-			file.load();
-		}
 		function fileLoadHandler(event:Event):void {
-			data = FileReference(event.target).data;
+			var file:FileReference = FileReference(event.target);
+			fileName = file.name;
+			data = file.data;
 			if (app.stagePane.isEmpty()) doInstall();
 			else DialogBox.confirm('Replace contents of the current project?', app.stage, doInstall);
 		}
@@ -370,14 +365,9 @@ public class ScratchRuntime {
 			installProjectFromFile(fileName, data);
 		}
 		stopAll();
-		var fileList:FileReferenceList = new FileReferenceList();
-		fileList.addEventListener(Event.SELECT, fileSelected);
 		var filter1:FileFilter = new FileFilter('Scratch 1.4 Project', '*.sb');
 		var filter2:FileFilter = new FileFilter('Scratch 2 Project', '*.sb2');
-		try {
-			// Ignore the exception that happens when you call browse() with the file browser open
-			fileList.browse([filter1, filter2]);
-		} catch(e:*) {}
+		Scratch.loadSingleFile(fileLoadHandler, [filter1, filter2])
 	}
 
 	public function installProjectFromFile(fileName:String, data:ByteArray):void {
@@ -776,8 +766,8 @@ public class ScratchRuntime {
 		var result:Array = [];
 		allStacksAndOwnersDo(function (stack:Block, target:ScratchObj):void {
 			stack.allBlocksDo(function (b:Block):void {
-				for each (var a:BlockArg in b.args) {
-					if (a.menuName == 'backdrop' && a.argValue == backdropName) result.push(a);
+				for each (var a:* in b.args) {
+					if (a is BlockArg && a.menuName == 'backdrop' && a.argValue == backdropName) result.push(a);
 				}
 			});
 		});
@@ -788,8 +778,8 @@ public class ScratchRuntime {
 		var result:Array = [];
 		for each (var stack:Block in app.viewedObj().scripts) {
 			stack.allBlocksDo(function (b:Block):void {
-				for each (var a:BlockArg in b.args) {
-					if (a.menuName == 'costume' && a.argValue == costumeName) result.push(a);
+				for each (var a:* in b.args) {
+					if (a is BlockArg && a.menuName == 'costume' && a.argValue == costumeName) result.push(a);
 				}
 			});
 		}
@@ -802,8 +792,8 @@ public class ScratchRuntime {
 		for each (var stack:Block in allStacks()) {
 			// for each block in stack
 			stack.allBlocksDo(function (b:Block):void {
-				for each (var a:BlockArg in b.args) {
-					if (spriteMenus.indexOf(a.menuName) != -1 && a.argValue == spriteName) result.push(a);
+				for each (var a:* in b.args) {
+					if (a is BlockArg && spriteMenus.indexOf(a.menuName) != -1 && a.argValue == spriteName) result.push(a);
 				}
 			});
 		}
@@ -827,8 +817,8 @@ public class ScratchRuntime {
     public function allUsesOfSoundDo(soundName:String, f:Function):void {
         for each (var stack:Block in app.viewedObj().scripts) {
             stack.allBlocksDo(function (b:Block):void {
-                for each (var a:BlockArg in b.args) {
-                    if (a.menuName == 'sound' && a.argValue == soundName) f(a);
+                for each (var a:* in b.args) {
+                    if (a is BlockArg && a.menuName == 'sound' && a.argValue == soundName) f(a);
                 }
             });
         }
