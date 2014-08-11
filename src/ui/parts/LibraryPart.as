@@ -351,7 +351,7 @@ public class LibraryPart extends UIPart {
 	}
 
 	private function spriteFromLibrary(b:IconButton):void {
-		if(ExternalInterface.available && ExternalInterface.call('CommunityLibrary.useHTMLBrowser')) {
+		if(ExternalInterface.available && ExternalInterface.call('CommunityLibrary.enabled')) {
 			ExternalInterface.call('CommunityLibrary.showBrowser');
 		} else {
 			importSprite(false);

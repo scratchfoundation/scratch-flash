@@ -458,7 +458,7 @@ public class ScratchSprite extends ScratchObj {
 		m.addItem('delete', deleteSprite);
 		m.addLine();
 		m.addItem('save to local file', saveToLocalFile);
-		if(Scratch.app.jsEnabled && ExternalInterface.available && ExternalInterface.call('CommunityLibrary.useHTMLBrowser')) {
+		if(Scratch.app.jsEnabled && ExternalInterface.available && ExternalInterface.call('CommunityLibrary.enabled')) {
 			m.addItem('submit to community library', submitToCommunityLibrary);
 		}
 		return m;

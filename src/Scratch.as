@@ -53,7 +53,7 @@ package {
 
 public class Scratch extends Sprite {
 	// Version
-	public static const versionString:String = 'v421';
+	public static const versionString:String = 'v421x1';
 	public static var app:Scratch; // static reference to the app, used for debugging
 
 	// Display modes
