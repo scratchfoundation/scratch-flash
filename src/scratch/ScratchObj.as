@@ -446,6 +446,7 @@ public class ScratchObj extends Sprite {
 		if (v == null) { // not found; create it
 			v = new Variable(varName, 0);
 			variables.push(v);
+			Scratch.app.updatePalette(false);
 		}
 		return v;
 	}
@@ -499,6 +500,7 @@ public class ScratchObj extends Sprite {
 		if (list == null) { // not found; create it
 			list = new ListWatcher(listName, [], this);
 			lists.push(list);
+			Scratch.app.updatePalette(false);
 		}
 		return list;
 	}
