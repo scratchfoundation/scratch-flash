@@ -46,9 +46,11 @@ public class DialogBox extends Sprite {
 	private const blankLineSpace:int = 7;
 
 	private var acceptFunction:Function; // if not nil, called when menu interaction is accepted
+	private var cancelFunction:Function; // if not nil, called when menu interaction is canceled
 
-	public function DialogBox(acceptFunction:Function = null) {
+	public function DialogBox(acceptFunction:Function = null, cancelFunction:Function = null) {
 		this.acceptFunction = acceptFunction;
+		this.cancelFunction = cancelFunction;
 		addFilters();
 		addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
 		addEventListener(MouseEvent.MOUSE_UP, mouseUp);
@@ -200,6 +202,7 @@ private function getCheckMark(b:Boolean):Sprite{
 	}
 
 	public function cancel():void {
+		if (cancelFunction != null) cancelFunction(this);
 		if (parent != null) parent.removeChild(this);
 	}
 
