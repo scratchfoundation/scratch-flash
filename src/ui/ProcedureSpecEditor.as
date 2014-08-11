@@ -110,7 +110,7 @@ public class ProcedureSpecEditor extends Sprite {
 		clearRow();
 		var i:int = 0;
 		for each (var s:String in ReadStream.tokenize(spec)) {
-			if ((s.length >= 2) && (s.charAt(0) == '%')) { // argument spec
+			if (s.length >= 2 && s.charAt(0) == '%') { // argument spec
 				var argSpec:String = s.charAt(1);
 				var arg:BlockArg = null;
 				if (argSpec == 'b') arg = makeBooleanArg();
@@ -122,9 +122,11 @@ public class ProcedureSpecEditor extends Sprite {
 				}
 			} else {
 				if ((row.length > 0) && (row[row.length - 1] is TextField)) {
-					TextField(row[row.length - 1]).appendText(' ' + s);
+					var tf:TextField = row[row.length - 1];
+					tf.appendText(' ' + ReadStream.unescape(s));
+					fixLabelWidth(tf);
 				} else {
-					addElement(makeTextField(s));
+					addElement(makeTextField(ReadStream.unescape(s)));
 				}
 			}
 		}
@@ -135,7 +137,7 @@ public class ProcedureSpecEditor extends Sprite {
 	public function spec():String {
 		var result:String = '';
 		for each (var o:* in row) {
-			if (o is TextField) result += TextField(o).text;
+			if (o is TextField) result += ReadStream.escape(TextField(o).text);
 			if (o is BlockArg) result += '%' + BlockArg(o).type;
 			if ((result.length > 0) && (result.charAt(result.length - 1) != ' ')) result += ' ';
 		}
