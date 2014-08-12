@@ -915,7 +915,7 @@ public class Scratch extends Sprite {
 		var c:ScratchCostume, byteCount:int;
 		for each (c in spr.costumes) {
 			if (!c.baseLayerData) c.prepareToSave()
-			byteCount + c.baseLayerData.length;
+			byteCount += c.baseLayerData.length;
 		}
 		if (!okayToAdd(byteCount)) return; // not enough room
 		spr.objName = stagePane.unusedSpriteName(spr.objName);
