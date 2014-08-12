@@ -168,7 +168,7 @@ public class ScratchCostume {
 	public function setSVGData(data:ByteArray, computeCenter:Boolean, fromEditor:Boolean = true):void {
 		// Initialize an SVG costume.
 		function refreshAfterImagesLoaded():void {
-			svgSprite = new SVGDisplayRender().renderAsSprite(svgRoot);
+			svgSprite = new SVGDisplayRender().renderAsSprite(svgRoot, false, true);
 			if (Scratch.app && Scratch.app.viewedObj() && (Scratch.app.viewedObj().currentCostume() == thisC)) {
 				Scratch.app.viewedObj().updateCostume();
 				Scratch.app.refreshImageTab(fromEditor);
@@ -187,7 +187,7 @@ public class ScratchCostume {
 
 	public function setSVGRoot(svg:SVGElement, computeCenter:Boolean):void {
 		svgRoot = svg;
-		svgSprite = new SVGDisplayRender().renderAsSprite(svgRoot);
+		svgSprite = new SVGDisplayRender().renderAsSprite(svgRoot, false, true);
 		var r:Rectangle;
 		var viewBox:Array = svg.getAttribute('viewBox', '').split(' ');
 		if (viewBox.length == 4) r = new Rectangle(viewBox[0], viewBox[1], viewBox[2], viewBox[3]);
@@ -227,7 +227,7 @@ public class ScratchCostume {
 
 	public function displayObj():DisplayObject {
 		if (svgRoot) {
-			if (!svgSprite) svgSprite = new SVGDisplayRender().renderAsSprite(svgRoot);
+			if (!svgSprite) svgSprite = new SVGDisplayRender().renderAsSprite(svgRoot, false, true);
 			return svgSprite;
 		}
 

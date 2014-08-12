@@ -494,7 +494,7 @@ public dynamic class SVGPath extends Array {
 		var alpha:Number;
 
 		var stroke:* = el.getAttribute('stroke');
-		if (stroke && (stroke != 'none')) {
+		if (stroke && stroke != 'none') {
 			alpha = Number(el.getAttribute('stroke-opacity', 1));
 			alpha = Math.max(0, Math.min(alpha, 1));
 
@@ -512,7 +512,7 @@ public dynamic class SVGPath extends Array {
 		}
 
 		var fill:* = el.getAttribute('fill', 'black');
-		if (fill != 'none') {
+		if (fill && fill != 'none') {
 			alpha = Number(el.getAttribute('fill-opacity', 1));
 			alpha = Math.max(0, Math.min(alpha, 1));
 
