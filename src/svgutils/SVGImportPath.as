@@ -249,7 +249,7 @@ public class SVGImportPath {
 		var sweepFlag:Boolean = (args[4] == 1);
 		var convexityFlag:Number = (largeArcFlag == sweepFlag) ? 1 : -1;
 		var TTemp:Matrix = new Matrix();
-		TTemp.rotate(-args[2]);
+		TTemp.rotate(-args[2] / Math.PI * 180);
 		TTemp.scale(1/rx, 1/ry);
 		a = TTemp.transformPoint(a);
 		b = TTemp.transformPoint(b);
@@ -281,7 +281,7 @@ public class SVGImportPath {
 		var TForward:Matrix = new Matrix();
 		TForward.translate(c.x, c.y);
 		TForward.scale(rx * extraScale, ry * extraScale);
-		TForward.rotate(args[2]);
+		TForward.rotate(args[2] / Math.PI * 180);
 		const PHI_MAX:Number = Math.PI / 2 * 1.001;//Produce no more than 2 curves for semicircle
 		var steps:int = Math.ceil(Math.abs(phi) / PHI_MAX);
 		var k:Number = 4 / 3 * (1 - Math.cos(phi / 2 / steps)) / Math.sin(phi / 2 / steps);
