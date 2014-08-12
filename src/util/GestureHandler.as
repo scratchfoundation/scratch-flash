@@ -134,6 +134,7 @@ public class GestureHandler {
 		if (carriedObj && scrollTarget && (getTimer() - scrollStartTime) > SCROLL_MSECS) {
 			scrollTarget.contents.x = Math.min(0, Math.max(-scrollTarget.maxScrollH(), scrollTarget.contents.x + scrollXVelocity));
 			scrollTarget.contents.y = Math.min(0, Math.max(-scrollTarget.maxScrollV(), scrollTarget.contents.y + scrollYVelocity));
+			scrollTarget.updateScrollbars();
 		}
 	}
 
