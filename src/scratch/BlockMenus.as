@@ -580,15 +580,21 @@ public class BlockMenus implements DragClient {
 
 	private function listMenu(evt:MouseEvent):void {
 		var m:Menu = new Menu(varOrListSelection, 'list');
-		if (block.op == Specs.GET_LIST) {
+		var isGetter:Boolean = block.op == Specs.GET_LIST;
+		if (isGetter) {
 			if (isInPalette(block)) m.addItem('delete list', deleteVarOrList); // list reporter in palette
 			addGenericBlockItems(m);
-		} else {
-			var listName:String;
-			for each (listName in app.stageObj().listNames()) m.addItem(listName);
-			if (!app.viewedObj().isStage) {
-				m.addLine();
-				for each (listName in app.viewedObj().listNames()) m.addItem(listName);
+			m.addLine()
+		}
+		var myName:String = isGetter ? blockVarOrListName() : null;
+		var listName:String;
+		for each (listName in app.stageObj().listNames()) {
+			if (listName != myName) m.addItem(listName);
+		}
+		if (!app.viewedObj().isStage) {
+			m.addLine();
+			for each (listName in app.viewedObj().listNames()) {
+				if (listName != myName) m.addItem(listName);
 			}
 		}
 		showMenu(m);
@@ -677,11 +683,9 @@ public class BlockMenus implements DragClient {
 			app.runtime.createVariable(newName);
 		}
 		if (blockArg != null) blockArg.setArgValue(newName);
-		if (block != null) {
-			if (block.op == Specs.GET_VAR) {
-				block.setSpec(newName);
-				block.fixExpressionLayout();
-			}
+		if (block != null && (block.op == Specs.GET_VAR || block.op == Specs.GET_LIST)) {
+			block.setSpec(newName);
+			block.fixExpressionLayout();
 		}
 		Scratch.app.setSaveNeeded();
 	}
