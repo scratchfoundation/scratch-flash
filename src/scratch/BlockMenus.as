@@ -726,15 +726,15 @@ public class BlockMenus implements DragClient {
 
 	private var pickingColor:Boolean = false;
 	private var colorPickerSprite:Sprite;
-	private var onePixel:BitmapData = new BitmapData(1, 1);
+	private static var onePixel:BitmapData = new BitmapData(1, 1);
 
-	private function pixelColorAt(x:int, y:int):int {
+	public static function pixelColorAt(x:int, y:int):int {
 		var m:Matrix = new Matrix();
 		m.translate(-x, -y);
 		onePixel.fillRect(onePixel.rect, 0);
-		if (app.isIn3D) app.stagePane.visible = true;
-		onePixel.draw(app, m);
-		if (app.isIn3D) app.stagePane.visible = false;
+		if (Scratch.app.isIn3D) Scratch.app.stagePane.visible = true;
+		onePixel.draw(Scratch.app, m);
+		if (Scratch.app.isIn3D) Scratch.app.stagePane.visible = false;
 		var x:int = onePixel.getPixel32(0, 0);
 		return x ? x | 0xFF000000 : 0xFFFFFFFF; // alpha is always 0xFF
 	}

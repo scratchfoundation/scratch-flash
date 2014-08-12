@@ -33,6 +33,8 @@ package svgeditor.tools
 
 	import svgutils.SVGElement;
 
+	import scratch.*;
+
 	public final class EyeDropperTool extends SVGTool
 	{
 		public function EyeDropperTool(svgEditor:ImageEdit) {
@@ -72,26 +74,29 @@ package svgeditor.tools
 			editor.stage.removeEventListener(MouseEvent.MOUSE_UP, mouseUp);
 		}
 
+		private static var pixel:BitmapData = new BitmapData(1, 1, true, 0);
 		private function grabColor():void {
 			var c:uint;
 			var obj:ISVGEditable;
-			if(editor is BitmapEdit) {
+			if (editor is BitmapEdit) {
 				var bmap:Bitmap = editor.getWorkArea().getBitmap();
 				var p:Point = editor.getWorkArea().bitmapMousePoint();
 				c = bmap.bitmapData.getPixel32(p.x, p.y);
-			}
-			else if((obj = getEditableUnderMouse(false)) != null) {
+			} else if ((obj = getEditableUnderMouse(false)) != null) {
 				var dObj:DisplayObject = obj as DisplayObject;
-				var b:BitmapData = new BitmapData(1, 1, true, 0);
 				var m:Matrix = new Matrix();
 				m.translate(-dObj.mouseX, -dObj.mouseY);
-				b.draw(dObj, m);
-				c = b.getPixel32(0, 0);
+				pixel.draw(dObj, m);
+				c = pixel.getPixel32(0, 0);
+			}
+
+			if (!c) {
+				c = BlockMenus.pixelColorAt(stage.mouseX, stage.mouseY);
 			}
 
 			// only grab the color if it's not transparent
 			// TODO: Should we ever handle colors with partial alpha?
-			if(c & 0xFF000000) {
+			if (c & 0xFF000000) {
 				editor.setCurrentColor(c & 0xFFFFFF, 1);
 			}
 		}
