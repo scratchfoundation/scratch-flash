@@ -713,7 +713,7 @@ public class BlockMenus implements DragClient {
 		}
 	}
 
-	private function fixColorPickerLayout():void {
+	private function fixColorPickerLayout(event:Event = null):void {
 		var g:Graphics = colorPickerSprite.graphics;
 		g.clear();
 		g.beginFill(0, 0);
