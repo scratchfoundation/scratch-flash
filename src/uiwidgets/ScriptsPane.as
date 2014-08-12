@@ -224,7 +224,7 @@ public class ScriptsPane extends ScrollFrameContents {
 		app.runtime.blockDropped(b);
 	}
 
-	private function findTargetsFor(b:Block):void {
+	public function findTargetsFor(b:Block):void {
 		possibleTargets = [];
 		var bEndWithTerminal:Boolean = b.bottomBlock().isTerminal;
 		var bCanWrap:Boolean = b.base.canHaveSubstack1() && !b.subStack1; // empty C or E block

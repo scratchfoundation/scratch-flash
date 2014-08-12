@@ -131,10 +131,16 @@ public class GestureHandler {
 				handleClick(mouseDownEvent);
 			}
 		}
-		if (carriedObj && scrollTarget && (getTimer() - scrollStartTime) > SCROLL_MSECS) {
+		if (carriedObj && scrollTarget && (getTimer() - scrollStartTime) > SCROLL_MSECS && (scrollXVelocity || scrollYVelocity)) {
 			scrollTarget.contents.x = Math.min(0, Math.max(-scrollTarget.maxScrollH(), scrollTarget.contents.x + scrollXVelocity));
 			scrollTarget.contents.y = Math.min(0, Math.max(-scrollTarget.maxScrollV(), scrollTarget.contents.y + scrollYVelocity));
+			scrollTarget.constrainScroll();
 			scrollTarget.updateScrollbars();
+			var b:Block = carriedObj as Block;
+			if (b) {
+				app.scriptsPane.findTargetsFor(b);
+				app.scriptsPane.updateFeedbackFor(b);
+			}
 		}
 	}
 

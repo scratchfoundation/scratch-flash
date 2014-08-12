@@ -217,7 +217,7 @@ public class ScrollFrame extends Sprite implements DragClient {
 		updateScrollbars();
 	}
 
-	private function constrainScroll():void {
+	public function constrainScroll():void {
 		contents.x = Math.max(-maxScrollH(), Math.min(contents.x, 0));
 		contents.y = Math.max(-maxScrollV(), Math.min(contents.y, 0));
 	}
