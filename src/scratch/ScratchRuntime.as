@@ -1082,8 +1082,9 @@ public class ScratchRuntime {
 				for each (var c:ScratchComment in obj[1]) {
 					app.scriptsPane.addChild(c);
 				}
-				app.scriptsPane.fixCommentLayout();
 			}
+			app.scriptsPane.saveScripts();
+			if (b is Block) app.updatePalette();
 		}
 	}
 
