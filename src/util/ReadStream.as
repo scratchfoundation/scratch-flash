@@ -102,8 +102,8 @@ public class ReadStream {
 			}
 			// certain punctuation marks following an argument start a new token
 			// example: 'touching %m?' (question mark after arg starts a new token) vs. 'loud?' (doesn't)
-			token += ch;
 			if (isArg && (ch == '?' || ch == '-')) break;
+			token += ch;
 			i++;
 		}
 		return token;
