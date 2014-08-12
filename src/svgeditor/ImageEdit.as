@@ -131,7 +131,7 @@ package svgeditor {
 				var projIO:ProjectIO = new ProjectIO(app);
 				if (item.mycostume) insertCostume(item.mycostume);
 				else if (item.mysprite) insertSprite(item.mysprite);
-				else if ('image' == item.objType) projIO.fetchImage(item.md5, item.objName, insertCostume);
+				else if ('image' == item.objType) projIO.fetchImage(item.md5, item.objName, item.objWidth, insertCostume);
 				else if ('sprite' == item.objType) projIO.fetchSprite(item.md5, insertSprite);
 				return true;
 			}
@@ -657,7 +657,7 @@ package svgeditor {
 			setToolMode((this is SVGEdit) ? 'select' : 'bitmapSelect');
 
 			// If the tool wasn't canceled and an object was created then select it
-			if (nextObject && nextObject.parent) {
+			if (nextObject && (nextObject is Selection || nextObject.parent)) {
 				var s:Selection = (nextObject is Selection ? nextObject: new Selection([nextObject]));
 				(currentTool as ObjectTransformer).select(s);
 			}

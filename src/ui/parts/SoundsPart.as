@@ -262,11 +262,11 @@ public class SoundsPart extends UIPart {
 	}
 
 	public function soundFromLibrary(b:* = null):void {
-		new MediaLibrary(app, "sound", app.addSound).open();
+		app.getMediaLibrary("sound", app.addSound).open();
 	}
 
 	public function soundFromComputer(b:* = null):void {
-		new MediaLibrary(app, "sound", app.addSound).importFromDisk();
+		app.getMediaLibrary("sound", app.addSound).importFromDisk();
 	}
 
 	public function recordSound(b:* = null):void {

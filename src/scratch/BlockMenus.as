@@ -19,7 +19,7 @@
 
 package scratch {
 	import flash.display.*;
-	import flash.events.MouseEvent;
+	import flash.events.*;
 	import flash.geom.*;
 	import flash.ui.*;
 	import blocks.*;
@@ -694,10 +694,15 @@ public class BlockMenus implements DragClient {
 		if (pickingColor) {
 			pickingColor = false;
 			Mouse.cursor = MouseCursor.AUTO;
+			app.stage.removeChild(colorPickerSprite);
+			app.stage.removeEventListener(Event.RESIZE, fixColorPickerLayout);
 		} else {
 			pickingColor = true;
 			app.gh.setDragClient(this, evt);
 			Mouse.cursor = MouseCursor.BUTTON;
+			app.stage.addEventListener(Event.RESIZE, fixColorPickerLayout);
+			app.stage.addChild(colorPickerSprite = new Sprite);
+			fixColorPickerLayout();
 		}
 	}
 
@@ -708,7 +713,15 @@ public class BlockMenus implements DragClient {
 		}
 	}
 
+	private function fixColorPickerLayout(event:Event = null):void {
+		var g:Graphics = colorPickerSprite.graphics;
+		g.clear();
+		g.beginFill(0, 0);
+		g.drawRect(0, 0, app.stage.stageWidth, app.stage.stageHeight);
+	}
+
 	private var pickingColor:Boolean = false;
+	private var colorPickerSprite:Sprite;
 	private var onePixel:BitmapData = new BitmapData(1, 1);
 
 	private function pixelColorAt(x:int, y:int):int {
@@ -718,7 +731,8 @@ public class BlockMenus implements DragClient {
 		if (app.isIn3D) app.stagePane.visible = true;
 		onePixel.draw(app, m);
 		if (app.isIn3D) app.stagePane.visible = false;
-		return onePixel.getPixel(0, 0) | 0xFF000000; // alpha is always 0xFF
+		var x:int = onePixel.getPixel32(0, 0);
+		return x ? x | 0xFF000000 : 0xFFFFFFFF; // alpha is always 0xFF
 	}
 
 	// ***** Broadcast menu *****

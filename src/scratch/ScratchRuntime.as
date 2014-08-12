@@ -23,7 +23,6 @@
 package scratch {
 	import flash.display.*;
 	import flash.events.*;
-	import flash.external.ExternalInterface;
 	import flash.geom.Rectangle;
 	import flash.media.*;
 	import flash.net.*;
@@ -184,7 +183,7 @@ public class ScratchRuntime {
 		}
 	}
 
-	private function startKeyHats(ch:int):void {
+	public function startKeyHats(ch:int):void {
 		var keyName:String = null;
 		if (('a'.charCodeAt(0) <= ch) && (ch <= 'z'.charCodeAt(0))) keyName = String.fromCharCode(ch);
 		if (('0'.charCodeAt(0) <= ch) && (ch <= '9'.charCodeAt(0))) keyName = String.fromCharCode(ch);
@@ -277,16 +276,17 @@ public class ScratchRuntime {
 	private var activeHats:Array = [];
 	private function startEdgeTriggeredHats(hat:Block, target:ScratchObj):void {
 		if (!hat.isHat || !hat.nextBlock) return; // skip disconnected hats
+
 		var triggerCondition:Boolean = false;
 		if ('whenSensorGreaterThan' == hat.op) {
 			var sensorName:String = interp.arg(hat, 0);
 			var threshold:Number = interp.numarg(hat, 1);
-			triggerCondition = (
+			trigger((
 					(('loudness' == sensorName) && (soundLevel() > threshold)) ||
 					(('timer' == sensorName) && (timer() > threshold)) ||
-					(('video motion' == sensorName) && (VideoMotionPrims.readMotionSensor('motion', target) > threshold)));
+					(('video motion' == sensorName) && (VideoMotionPrims.readMotionSensor('motion', target) > threshold))));
 		} else if ('whenSensorConnected' == hat.op) {
-			triggerCondition = getBooleanSensor(interp.arg(hat, 0));
+			trigger(getBooleanSensor(interp.arg(hat, 0)));
 		} else if (app.jsEnabled) {
 			var dotIndex:int = hat.op.indexOf('.');
 			if (dotIndex > -1) {
@@ -298,18 +298,20 @@ public class ScratchRuntime {
 					for (var i:uint=0; i<args.length; ++i)
 						finalArgs[i] = interp.arg(hat, i);
 
-					if (ExternalInterface.call('ScratchExtensions.getReporter', extName, op, finalArgs)) {
-						triggerCondition = true;
-					}
+					app.externalCall('ScratchExtensions.getReporter', trigger, extName, op, finalArgs);
 				}
 			}
 		}
-		if (triggerCondition) {
-			if (triggeredHats.indexOf(hat) == -1) { // not already trigged
-				// only start the stack if it is not already running
-				if (!interp.isRunning(hat, target)) interp.toggleThread(hat, target);
+
+		// TODO: Is it safe to do this in a callback, or must it happen before we return from startEdgeTriggeredHats?
+		function trigger(triggerCondition:Boolean):void {
+			if (triggerCondition) {
+				if (triggeredHats.indexOf(hat) == -1) { // not already trigged
+					// only start the stack if it is not already running
+					if (!interp.isRunning(hat, target)) interp.toggleThread(hat, target);
+				}
+				activeHats.push(hat);
 			}
-			activeHats.push(hat);
 		}
 	}
 
@@ -352,15 +354,10 @@ public class ScratchRuntime {
 	public function selectProjectFile():void {
 		// Prompt user for a file name and load that file.
 		var fileName:String, data:ByteArray;
-		function fileSelected(event:Event):void {
-			if (fileList.fileList.length == 0) return;
-			var file:FileReference = FileReference(fileList.fileList[0]);
-			fileName = file.name;
-			file.addEventListener(Event.COMPLETE, fileLoadHandler);
-			file.load();
-		}
 		function fileLoadHandler(event:Event):void {
-			data = FileReference(event.target).data;
+			var file:FileReference = FileReference(event.target);
+			fileName = file.name;
+			data = file.data;
 			if (app.stagePane.isEmpty()) doInstall();
 			else DialogBox.confirm('Replace contents of the current project?', app.stage, doInstall);
 		}
@@ -368,14 +365,9 @@ public class ScratchRuntime {
 			installProjectFromFile(fileName, data);
 		}
 		stopAll();
-		var fileList:FileReferenceList = new FileReferenceList();
-		fileList.addEventListener(Event.SELECT, fileSelected);
 		var filter1:FileFilter = new FileFilter('Scratch 1.4 Project', '*.sb');
 		var filter2:FileFilter = new FileFilter('Scratch 2 Project', '*.sb2');
-		try {
-			// Ignore the exception that happens when you call browse() with the file browser open
-			fileList.browse([filter1, filter2]);
-		} catch(e:*) {}
+		Scratch.loadSingleFile(fileLoadHandler, [filter1, filter2])
 	}
 
 	public function installProjectFromFile(fileName:String, data:ByteArray):void {
@@ -774,8 +766,8 @@ public class ScratchRuntime {
 		var result:Array = [];
 		allStacksAndOwnersDo(function (stack:Block, target:ScratchObj):void {
 			stack.allBlocksDo(function (b:Block):void {
-				for each (var a:BlockArg in b.args) {
-					if (a.menuName == 'backdrop' && a.argValue == backdropName) result.push(a);
+				for each (var a:* in b.args) {
+					if (a is BlockArg && a.menuName == 'backdrop' && a.argValue == backdropName) result.push(a);
 				}
 			});
 		});
@@ -786,8 +778,8 @@ public class ScratchRuntime {
 		var result:Array = [];
 		for each (var stack:Block in app.viewedObj().scripts) {
 			stack.allBlocksDo(function (b:Block):void {
-				for each (var a:BlockArg in b.args) {
-					if (a.menuName == 'costume' && a.argValue == costumeName) result.push(a);
+				for each (var a:* in b.args) {
+					if (a is BlockArg && a.menuName == 'costume' && a.argValue == costumeName) result.push(a);
 				}
 			});
 		}
@@ -800,8 +792,8 @@ public class ScratchRuntime {
 		for each (var stack:Block in allStacks()) {
 			// for each block in stack
 			stack.allBlocksDo(function (b:Block):void {
-				for each (var a:BlockArg in b.args) {
-					if (spriteMenus.indexOf(a.menuName) != -1 && a.argValue == spriteName) result.push(a);
+				for each (var a:* in b.args) {
+					if (a is BlockArg && spriteMenus.indexOf(a.menuName) != -1 && a.argValue == spriteName) result.push(a);
 				}
 			});
 		}
@@ -825,8 +817,8 @@ public class ScratchRuntime {
     public function allUsesOfSoundDo(soundName:String, f:Function):void {
         for each (var stack:Block in app.viewedObj().scripts) {
             stack.allBlocksDo(function (b:Block):void {
-                for each (var a:BlockArg in b.args) {
-                    if (a.menuName == 'sound' && a.argValue == soundName) f(a);
+                for each (var a:* in b.args) {
+                    if (a is BlockArg && a.menuName == 'sound' && a.argValue == soundName) f(a);
                 }
             });
         }
@@ -1090,8 +1082,9 @@ public class ScratchRuntime {
 				for each (var c:ScratchComment in obj[1]) {
 					app.scriptsPane.addChild(c);
 				}
-				app.scriptsPane.fixCommentLayout();
 			}
+			app.scriptsPane.saveScripts();
+			if (b is Block) app.updatePalette();
 		}
 	}
 

@@ -56,6 +56,7 @@ public class MediaInfo extends Sprite {
 
 	public var objType:String = 'unknown';
 	public var objName:String = '';
+	public var objWidth:int = 0;
 	public var md5:String;
 
 	public var owner:ScratchObj; // object owning a sound or costume in MediaPane; null for other cases
@@ -99,6 +100,7 @@ public class MediaInfo extends Sprite {
 			// initialize from a JSON object
 			objType = obj.type ? obj.type : '';
 			objName = obj.name ? obj.name : '';
+			objWidth = obj.width ? obj.width : 0;
 			scripts = obj.scripts;
 			md5 = ('script' != objType) ? obj.md5 : null;
 		}
@@ -245,12 +247,12 @@ public class MediaInfo extends Sprite {
 	}
 
 	private function soundInfoString(msecs:Number):String {
-		// Return a formatted time in MM:SS.T (where T is tenths of a second).
+		// Return a formatted time in MM:SS.HH (where HH is hundredths of a second).
 		function twoDigits(n:int):String { return (n < 10) ? '0' + n : '' + n }
 
 		var secs:int = msecs / 1000;
-		var tenths:int = (msecs % 1000) / 100;
-		return twoDigits(secs / 60) + ':' + twoDigits(secs % 60) + '.' + tenths;
+		var hundredths:int = (msecs % 1000) / 10;
+		return twoDigits(secs / 60) + ':' + twoDigits(secs % 60) + '.' + twoDigits(hundredths);
 	}
 
 	// -----------------------------
@@ -261,6 +263,7 @@ public class MediaInfo extends Sprite {
 		var result:MediaInfo = Scratch.app.createMediaInfo({
 			type: objType,
 			name: objName,
+			width: objWidth,
 			md5: md5
 		});
 		if (mycostume) result = Scratch.app.createMediaInfo(mycostume, owner);

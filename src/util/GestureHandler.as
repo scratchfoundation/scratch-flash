@@ -49,7 +49,6 @@
 package util {
 	import flash.display.*;
 	import flash.events.MouseEvent;
-	import flash.external.ExternalInterface;
 	import flash.filters.*;
 	import flash.geom.*;
 	import flash.text.*;
@@ -157,7 +156,7 @@ public class GestureHandler {
 
 	public function mouseDown(evt:MouseEvent):void {
 		if(inIE && app.editMode && app.jsEnabled)
-			ExternalInterface.call('tip_bar_api.fixIE');
+			app.externalCall('tip_bar_api.fixIE');
 
 		evt.updateAfterEvent(); // needed to avoid losing display updates with later version of Flash 11
 		hideBubble();

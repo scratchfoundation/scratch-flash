@@ -77,6 +77,7 @@ public class Block extends Sprite {
 
 	// Blocking operations
 	public var isRequester:Boolean = false;
+	public var forcedRequester:Boolean = false;	// We've forced requester-like treatment on a non-requester block.
 	public var requestState:int = 0;		// 0 - no request made, 1 - awaiting response, 2 - data ready
 	public var response:* = null;
 	public var requestLoader:URLLoader = null;
@@ -129,11 +130,12 @@ public class Block extends Sprite {
 			isReporter = true;
 			indentLeft = 9;
 			indentRight = 7;
-		} else if (type == "r" || type == "R") {
+		} else if (type == "r" || type == "R" || type == "rR") {
 			this.type = 'r';
 			base = new BlockShape(BlockShape.NumberShape, color);
 			isReporter = true;
-			isRequester = (type == 'R');
+			isRequester = ((type == 'R') || (type == 'rR'));
+			forcedRequester = (type == 'rR');
 			indentTop = 2;
 			indentBottom = 2;
 			indentLeft = 6;
@@ -188,6 +190,8 @@ public class Block extends Sprite {
 			labelsAndArgs.push(label);
 			var b:Block;
 			labelsAndArgs.push(b = declarationBlock());
+		} else if (op == Specs.GET_VAR || op == Specs.GET_LIST) {
+			labelsAndArgs.push(makeLabel(spec));
 		} else {
 			const loopBlocks:Array = ['doForever', 'doForeverIf', 'doRepeat', 'doUntil'];
 			base.hasLoopArrow = (loopBlocks.indexOf(op) >= 0);
@@ -357,6 +361,7 @@ public class Block extends Sprite {
 
 	public function restoreOriginalState():void {
 		var b:Block = originalParent as Block;
+		scaleX = scaleY = 1;
 		switch (originalRole) {
 		case ROLE_NONE:
 			if (parent) parent.removeChild(this);
@@ -525,6 +530,7 @@ public class Block extends Sprite {
 		if (op == 'whenClicked') newSpec = forStage ? 'when Stage clicked' : 'when this sprite clicked';
 		var dup:Block = new Block(newSpec, type, (int)(forClone ? -1 : base.color), op);
 		dup.isRequester = isRequester;
+		dup.forcedRequester = forcedRequester;
 		dup.parameterNames = parameterNames;
 		dup.defaultArgValues = defaultArgValues;
 		dup.warpProcFlag = warpProcFlag;
@@ -734,7 +740,7 @@ public class Block extends Sprite {
 		//	@<iconName>
 		//	label (any string with no embedded white space that does not start with % or @)
 		//	a token consisting of a single % or @ character is also a label
-		if ((s.length >= 2) && (s.charAt(0) == "%")) { // argument spec
+		if (s.length >= 2 && s.charAt(0) == "%") { // argument spec
 			var argSpec:String = s.charAt(1);
 			if (argSpec == "b") return new BlockArg("b", c);
 			if (argSpec == "c") return new BlockArg("c", c);
@@ -742,11 +748,11 @@ public class Block extends Sprite {
 			if (argSpec == "m") return new BlockArg("m", c, false, s.slice(3));
 			if (argSpec == "n") return new BlockArg("n", c, true);
 			if (argSpec == "s") return new BlockArg("s", c, true);
-		} else if ((s.length >= 2) && (s.charAt(0) == "@")) { // icon spec
+		} else if (s.length >= 2 && s.charAt(0) == "@") { // icon spec
 			var icon:* = Specs.IconNamed(s.slice(1));
 			return (icon) ? icon : makeLabel(s);
 		}
-		return makeLabel(s);
+		return makeLabel(ReadStream.unescape(s));
 	}
 
 	private function makeLabel(label:String):TextField {
@@ -798,7 +804,7 @@ public class Block extends Sprite {
 	}
 
 	public function duplicateStack(deltaX:Number, deltaY:Number):void {
-		if (isProcDef()) return; // don't duplicate procedure definition
+		if (isProcDef() || op == 'proc_declaration') return; // don't duplicate procedure definition
 		var forStage:Boolean = Scratch.app.viewedObj() && Scratch.app.viewedObj().isStage;
 		var newStack:Block = BlockIO.stringToStack(BlockIO.stackToString(this), forStage);
 		var p:Point = localToGlobal(new Point(0, 0));

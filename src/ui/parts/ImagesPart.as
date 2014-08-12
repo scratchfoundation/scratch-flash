@@ -184,10 +184,12 @@ public class ImagesPart extends UIPart {
 		if (obj == null) return;
 		nameField.setContents(obj.currentCostume().costumeName);
 
+		var zoomAndScroll:Array = editor.getZoomAndScroll();
 		editor.shutdown();
 		var c:ScratchCostume = obj.currentCostume();
 		useBitmapEditor(c.isBitmap() && !c.text);
 		editor.editCostume(c, obj.isStage);
+		editor.setZoomAndScroll(zoomAndScroll);
 		if(changed) app.setSaveNeeded();
 	}
 
@@ -347,12 +349,12 @@ public class ImagesPart extends UIPart {
 
 	private function importFromLibrary():void {
 		var type:String = isStage() ? 'backdrop' : 'costume';
-		var lib:MediaLibrary = new MediaLibrary(app, type, addCostume);
+		var lib:MediaLibrary = app.getMediaLibrary(type, addCostume);
 		lib.open();
 	}
 
 	private function importIntoEditor():void {
-		var lib:MediaLibrary = new MediaLibrary(app, '', addCostume);
+		var lib:MediaLibrary = app.getMediaLibrary('', addCostume);
 		lib.importFromDisk();
 	}
 
@@ -428,7 +430,7 @@ public class ImagesPart extends UIPart {
 			}
 		}
 		var type:String = isStage() ? 'backdrop' : 'costume';
-		var lib:MediaLibrary = new MediaLibrary(app, type, addCostume);
+		var lib:MediaLibrary = app.getMediaLibrary(type, addCostume);
 		if (fromComputer) lib.importFromDisk();
 		else lib.open();
 	}
@@ -452,6 +454,7 @@ public class ImagesPart extends UIPart {
 			}
 			var c:ScratchCostume = new ScratchCostume(Translator.map('photo1'), photo);
 			addAndSelectCostume(c);
+			editor.getWorkArea().zoom();
 		}
 		app.openCameraDialog(savePhotoAsCostume);
 	}

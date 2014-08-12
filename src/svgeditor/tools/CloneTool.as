@@ -54,8 +54,10 @@ package svgeditor.tools
 			for each(var dObj:DisplayObject in objs) {
 				contentLayer.addChild(dObj);
 			}
-			previewObjects = (new Selection(objs)).cloneObjs(contentLayer);
-			copiedObjects = (new Selection(objs)).cloneObjs(contentLayer);
+			var s:Selection = new Selection(objs);
+			previewObjects = s.cloneObjs(contentLayer);
+			copiedObjects = s.cloneObjs(contentLayer);
+			s.shutdown();
 			for each(dObj in objs) {
 				contentLayer.removeChild(dObj);
 			}
@@ -118,17 +120,17 @@ package svgeditor.tools
 				dObj.y = pt.y;
 			}
 
-			// Save!
-			dispatchEvent(new Event(Event.CHANGE));
-
 			var s:Selection = new Selection(copiedObjects);
 			if(currentEvent.shiftKey) {
 				// Get another copy
 				copiedObjects = s.cloneObjs(contentLayer);
+				s.shutdown();
 			} else {
 				// Select the copied objects
 				editor.endCurrentTool(s);
 			}
+
+			dispatchEvent(new Event(Event.CHANGE));
 		}
 
 		private function createPreview():void {
