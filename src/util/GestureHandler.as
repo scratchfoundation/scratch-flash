@@ -257,22 +257,22 @@ public class GestureHandler {
 			var mx:int = stage.mouseX;
 			var my:int = stage.mouseY;
 			var d:Number = mx - p.x;
-			if (d >= 0 && d <= SCROLL_RANGE) {
+			if (d >= 0 && d <= SCROLL_RANGE && scrollTarget.canScrollLeft()) {
 				scrollXVelocity = (1 - d / SCROLL_RANGE) * SCROLL_MAX_SPEED;
 			} else {
 				d = p.x + scrollTarget.visibleW() - mx;
-				if (d >= 0 && d <= SCROLL_RANGE) {
+				if (d >= 0 && d <= SCROLL_RANGE && scrollTarget.canScrollRight()) {
 					scrollXVelocity = (d / SCROLL_RANGE - 1) * SCROLL_MAX_SPEED;
 				} else {
 					scrollXVelocity = 0;
 				}
 			}
 			d = my - p.y;
-			if (d >= 0 && d <= SCROLL_RANGE) {
+			if (d >= 0 && d <= SCROLL_RANGE && scrollTarget.canScrollUp()) {
 				scrollYVelocity = (1 - d / SCROLL_RANGE) * SCROLL_MAX_SPEED;
 			} else {
 				d = p.y + scrollTarget.visibleH() - my;
-				if (d >= 0 && d <= SCROLL_RANGE) {
+				if (d >= 0 && d <= SCROLL_RANGE && scrollTarget.canScrollDown()) {
 					scrollYVelocity = (d / SCROLL_RANGE - 1) * SCROLL_MAX_SPEED;
 				} else {
 					scrollYVelocity = 0;

@@ -197,6 +197,11 @@ public class ScrollFrame extends Sprite implements DragClient {
 		return Math.max(0, contents.height - visibleH());
 	}
 
+	public function canScrollLeft():Boolean {return contents.x < 0}
+	public function canScrollRight():Boolean {return contents.x > -maxScrollH()}
+	public function canScrollUp():Boolean {return contents.y < 0}
+	public function canScrollDown():Boolean {return contents.y > -maxScrollV()}
+
 	private function fixLayout():void {
 		var inset:int = 2;
 		if (hScrollbar) {
