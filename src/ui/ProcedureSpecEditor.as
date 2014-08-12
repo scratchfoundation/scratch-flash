@@ -297,7 +297,6 @@ public class ProcedureSpecEditor extends Sprite {
 			if (o is BlockArg) BlockArg(o).startEditing();
 		}
 		fixLayout();
-		if (parent is DialogBox) DialogBox(parent).fixLayout();
 	}
 
 	private function makeTextField(contents:String):TextField {
@@ -375,6 +374,7 @@ public class ProcedureSpecEditor extends Sprite {
 		warpLabel.y = warpCheckbox.y - 3;
 
 		if (updateDelete) updateDeleteButton();
+		if (parent is DialogBox) DialogBox(parent).fixLayout();
 	}
 
 	/* Editing Parameter Names */
