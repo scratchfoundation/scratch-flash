@@ -379,6 +379,7 @@ package svgeditor {
 				}
 				SimpleTooltips.add(toolButtons[tool.name], {text: text, direction: direction});
 			}
+			if (drawPropsUI) drawPropsUI.updateTranslation();
 		}
 
 		private function addDrawPropsUI():void {
