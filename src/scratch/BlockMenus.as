@@ -139,7 +139,7 @@ public class BlockMenus implements DragClient {
 		return [
 			'up arrow', 'down arrow', 'right arrow', 'left arrow', 'space',
 			'backdrop #', 'backdrop name', 'volume', 'OK', 'Cancel',
-			'Edit Block', 'Rename' , 'New name', 'Delete', 'Broadcast', 'Message Name',
+			'Edit Block', 'Rename' , 'New name', 'Delete', 'Broadcast', 'New Message', 'Message Name',
 			'delete variable', 'rename variable',
 			'Low C', 'Middle C', 'High C',
 		];
