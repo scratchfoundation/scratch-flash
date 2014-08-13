@@ -223,7 +223,7 @@ public class BlockMenus implements DragClient {
 		for each (var scene:ScratchCostume in app.stageObj().costumes) {
 			m.addItem(scene.costumeName);
 		}
-		if (block && (block.op.indexOf('startScene') > -1)) {
+		if (block && block.op.indexOf('startScene') > -1 || Menu.stringCollectionMode) {
 			m.addLine();
 			m.addItem('next backdrop');
 			m.addItem('previous backdrop');
