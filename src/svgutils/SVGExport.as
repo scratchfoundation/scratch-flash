@@ -192,50 +192,45 @@ public class SVGExport {
 		// if any of (c, d) (s) (y) (r) (t) is insignificant, it's command is ommited.
 		// Note! The SVG standard requires commands being written in reverse order.
 		// Matrices: m - current transform matrix being dissolved
-		// f - auxilary matrix, used to find out the (t) value
+		// f - auxilary matrix, used to compute the (t)
 		var temp:Matrix = el.transform.clone();
 		el.transform = new Matrix();
 		var svgSprite:Sprite = new SVGDisplayRender().renderAsSprite(el);
-		var r:Rectangle = svgSprite.getBounds(svgSprite);
-		const c:Point = new Point(r.x + r.width / 2, r.y + r.height / 2);
+		var bounds:Rectangle = svgSprite.getBounds(svgSprite);
+		const elCenter:Point = new Point(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
 		el.transform = temp;
-		
 		var m:Matrix = el.transform.clone();
-		
-		var decenter:Point = new Point(c.x, c.y);
-		var decentering:String = (Point.distance(decenter, new Point()) < 1) ? "" : "translate(" + decenter.x.toFixed(2) + " " + decenter.y.toFixed(2) + ") ";
-		m.translate(-c.x, -c.y);
-		
-		var phi:Number = Math.atan2(m.b, m.a);
-		var rotating:String = (Math.abs(phi / Math.PI * 180) < 1) ? "" : "rotate(" + (phi / Math.PI * 180).toFixed(0) + ") ";
-		m.rotate(-phi);
-		
-		var skewX:Number = Math.atan(m.c / m.d);
-		var skewingX:String = (Math.abs(skewX / Math.PI * 180) < 1) ? "" : "skewX(" + (skewX / Math.PI * 180).toFixed(0) + ") ";
+		var d:Point = new Point(elCenter.x, elCenter.y);
+		var decentering:String = (Point.distance(d, new Point()) < 1) ? "" :
+				"translate(" + d.x.toFixed(2) + " " + d.y.toFixed(2) + ") ";
+		var c:Point = new Point(-elCenter.x, -elCenter.y);
+		var centering:String = (Point.distance(c, new Point()) < 1) ? "" :
+				"translate(" + c.x.toFixed(2) + " " + c.y.toFixed(2) + ") ";
+		var r:Number = Math.atan2(m.b, m.a);
+		var rotating:String = (Math.abs(r / Math.PI * 180) < 1) ? "" :
+				"rotate(" + (r / Math.PI * 180).toFixed(0) + ") ";
+		m.rotate(-r);
+		var w:Number = Math.atan(m.c / m.d);
+		var skewingX:String = (Math.abs(w / Math.PI * 180) < 1) ? "" :
+				"skewX(" + (w / Math.PI * 180).toFixed(0) + ") ";
 		temp = new Matrix();
-		temp.c = Math.tan(-skewX);//unskew
+		temp.c = Math.tan(-w);//unskew
 		m.concat(temp);
-		
-		var scale:Point = new Point(m.a, m.d);
-		var scaling:String = (Math.abs(m.a - 1) + Math.abs(m.d - 1) < 1e-3) ? "" : "scale(" + scale.x.toFixed(3) + " " + scale.y.toFixed(3) + ") ";
+		var s:Point = new Point(m.a, m.d);
+		var scaling:String = (Point.distance(s, new Point(1, 1)) < 1e-3) ? "" :
+				"scale(" + s.x.toFixed(3) + ((Math.abs(s.y / s.x - 1) < 1e-3) ? "" : " " + s.y.toFixed(3)) + ") ";
 		m.scale(1 / m.a, 1 / m.d);
-		
-		var center:Point = new Point(-c.x, -c.y);
-		var centering:String = (Point.distance(center, new Point()) < 1) ? "" : "translate(" + center.x.toFixed(2) + " " + center.y.toFixed(2) + ") ";
-		m.translate(c.x, c.y);
-		
-		m = el.transform.clone();
 		var f:Matrix = new Matrix();
-		f.translate(center.x, center.y);
-		f.scale(scale.x, scale.y);
+		f.translate(c.x, c.y);
+		f.scale(s.x, s.y);
 		temp = new Matrix();
-		temp.c = Math.tan(skewX);
+		temp.c = Math.tan(w);
 		f.concat(temp);
-		f.rotate(phi);
-		f.translate(decenter.x, decenter.y);
-		var translate:Point = new Point(el.transform.tx - f.tx, el.transform.ty - f.ty);
-		var translating:String = (Point.distance(translate, new Point()) < 1) ? "" : "translate(" + translate.x.toFixed(2) + " " + translate.y.toFixed(2) + ") ";
-		
+		f.rotate(r);
+		f.translate(d.x, d.y);
+		var t:Point = new Point(el.transform.tx - f.tx, el.transform.ty - f.ty);
+		var translating:String = (Point.distance(t, new Point()) < 1) ? "" :
+				"translate(" + t.x.toFixed(2) + " " + t.y.toFixed(2) + ") ";
 		var transforming:String = rotating + skewingX + scaling;
 		if (transforming != "") {
 			transforming = decentering + transforming + centering;
@@ -243,7 +238,6 @@ public class SVGExport {
 		transforming = translating + transforming;
 		if (transforming == "") return;
 		node.@['transform'] = transforming;
-		return;
 	}
 
 	// Gradients
