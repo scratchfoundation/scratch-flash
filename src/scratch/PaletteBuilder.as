@@ -51,7 +51,7 @@ public class PaletteBuilder {
 			'Stage selected:', 'No motion blocks',
 			'Make a Block', 'Make a List', 'Make a Variable',
 			'New List', 'List name', 'New Variable', 'Variable name',
-			'New Block'];
+			'New Block', 'Add an Extension'];
 	}
 
 	public function showBlocksForCategory(selectedCategory:int, scrollToOrigin:Boolean, shiftKey:Boolean = false):void {
