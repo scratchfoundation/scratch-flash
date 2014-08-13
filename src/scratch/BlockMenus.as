@@ -138,6 +138,7 @@ public class BlockMenus implements DragClient {
 		}
 		return [
 			'up arrow', 'down arrow', 'right arrow', 'left arrow', 'space',
+			'other scripts in sprite', 'other scripts in stage',
 			'backdrop #', 'backdrop name', 'volume', 'OK', 'Cancel',
 			'Edit Block', 'Rename' , 'New name', 'Delete', 'Broadcast', 'New Message', 'Message Name',
 			'delete variable', 'rename variable',
