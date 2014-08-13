@@ -84,6 +84,7 @@ public class ProcedureSpecEditor extends Sprite {
 			'Add string input:',
 			'Add boolean input:',
 			'Add label text:',
+			'text',
 		];
 	}
 
@@ -184,7 +185,7 @@ public class ProcedureSpecEditor extends Sprite {
 			new Button('', function():void { appendObj(makeNumberArg()) }),
 			new Button('', function():void { appendObj(makeStringArg()) }),
 			new Button('', function():void { appendObj(makeBooleanArg()) }),
-			new Button('text', function():void { appendObj(makeTextField('')) })
+			new Button(Translator.map('text'), function():void { appendObj(makeTextField('')) })
 		];
 
 		const lightGray:int = 0xA0A0A0;
