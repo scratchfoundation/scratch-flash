@@ -203,23 +203,23 @@ public class SVGExport {
 		var m:Matrix = el.transform.clone();
 		
 		var decenter:Point = new Point(c.x, c.y);
-		var decentering:String = "translate(" + decenter.x + " " + decenter.y + ") ";
+		var decentering:String = (Point.distance(decenter, new Point()) < 1) ? "" : "translate(" + decenter.x + " " + decenter.y + ") ";
 		m.translate(-c.x, -c.y);
 		
 		var phi:Number = Math.atan2(m.b, m.a);
-		var rotating:String = "rotate(" + (phi / Math.PI * 180) + ") ";
+		var rotating:String = (phi / Math.PI * 180 < 1) ? "" : "rotate(" + (phi / Math.PI * 180) + ") ";
 		m.rotate(-phi);
 		
-		var skewY:Number = Math.atan2(m.c, m.d);
-		var skewingY:String = "skewY(" + (skewY / Math.PI * 180) + ") ";
+		var skewY:Number = Math.atan(m.c / m.d);
+		var skewingY:String = (skewY / Math.PI * 180 < 1) ? "" : "skewY(" + (skewY / Math.PI * 180) + ") ";
 		m.c = 0;//unskew
 		
 		var scale:Point = new Point(m.a, m.d);
-		var scaling:String = "scale(" + scale.x + " " + scale.y + ") ";
+		var scaling:String = (Math.abs(m.a - 1) + Math.abs(m.d - 1) < 1e-3) ? "" : "scale(" + scale.x + " " + scale.y + ") ";
 		m.scale(1 / m.a, 1 / m.d);
 		
 		var center:Point = new Point(-c.x, -c.y);
-		var centering:String = "translate(" + (-c.x) + " " + (-c.y) + ") ";
+		var centering:String = (Point.distance(center, new Point()) < 1) ? "" : "translate(" + center.x + " " + center.y + ") ";
 		m.translate(c.x, c.y);
 		
 		//m = el.transform.clone();
@@ -230,14 +230,16 @@ public class SVGExport {
 		f.rotate(phi);
 		f.translate(decenter.x, decenter.y);
 		var translate:Point = new Point(el.transform.tx - f.tx, el.transform.ty - f.ty);
-		var translating:String = "translate(" + translate.x + " " + translate.y + ") ";
-		node.@['transform'] = translating + decentering + rotating + skewingY + scaling + centering;
+		var translating:String = (Point.distance(translate, new Point()) < 1) ? "" : "translate(" + translate.x + " " + translate.y + ") ";
+		
+		var transforming:String = rotating + skewingY + scaling;
+		if (transforming != "") {
+			transforming = decentering + transforming + centering;
+		}
+		transforming = translating + transforming;
+		if (transforming == "") return;
+		node.@['transform'] = transforming;
 		return;
-		/*END_MY_CODE*/
-		// if (!el.transform) return;
-		// var m:Matrix = el.transform;
-		// if ((m.a == 1) && (m.b == 0) && (m.c == 0) && (m.d == 1) && (m.tx == 0) && (m.ty == 0)) return; // identity
-		// node.@['transform'] = 'matrix(' + m.a + ', ' + m.b + ', ' + m.c + ', ' + m.d + ', ' + m.tx + ', ' + m.ty + ')';
 	}
 
 	// Gradients
