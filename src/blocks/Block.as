@@ -191,7 +191,7 @@ public class Block extends Sprite {
 			var b:Block;
 			labelsAndArgs.push(b = declarationBlock());
 		} else if (op == Specs.GET_VAR || op == Specs.GET_LIST) {
-			labelsAndArgs.push(makeLabel(spec));
+			labelsAndArgs = [makeLabel(spec)];
 		} else {
 			const loopBlocks:Array = ['doForever', 'doForeverIf', 'doRepeat', 'doUntil'];
 			base.hasLoopArrow = (loopBlocks.indexOf(op) >= 0);
