@@ -203,36 +203,40 @@ public class SVGExport {
 		var m:Matrix = el.transform.clone();
 		
 		var decenter:Point = new Point(c.x, c.y);
-		var decentering:String = (Point.distance(decenter, new Point()) < 1) ? "" : "translate(" + decenter.x + " " + decenter.y + ") ";
+		var decentering:String = (Point.distance(decenter, new Point()) < 1) ? "" : "translate(" + decenter.x.toFixed(2) + " " + decenter.y.toFixed(2) + ") ";
 		m.translate(-c.x, -c.y);
 		
 		var phi:Number = Math.atan2(m.b, m.a);
-		var rotating:String = (phi / Math.PI * 180 < 1) ? "" : "rotate(" + (phi / Math.PI * 180) + ") ";
+		var rotating:String = (Math.abs(phi / Math.PI * 180) < 1) ? "" : "rotate(" + (phi / Math.PI * 180).toFixed(0) + ") ";
 		m.rotate(-phi);
 		
-		var skewY:Number = Math.atan(m.c / m.d);
-		var skewingY:String = (skewY / Math.PI * 180 < 1) ? "" : "skewY(" + (skewY / Math.PI * 180) + ") ";
-		m.c = 0;//unskew
+		var skewX:Number = Math.atan(m.c / m.d);
+		var skewingX:String = (Math.abs(skewX / Math.PI * 180) < 1) ? "" : "skewX(" + (skewX / Math.PI * 180).toFixed(0) + ") ";
+		temp = new Matrix();
+		temp.c = Math.tan(-skewX);//unskew
+		m.concat(temp);
 		
 		var scale:Point = new Point(m.a, m.d);
-		var scaling:String = (Math.abs(m.a - 1) + Math.abs(m.d - 1) < 1e-3) ? "" : "scale(" + scale.x + " " + scale.y + ") ";
+		var scaling:String = (Math.abs(m.a - 1) + Math.abs(m.d - 1) < 1e-3) ? "" : "scale(" + scale.x.toFixed(3) + " " + scale.y.toFixed(3) + ") ";
 		m.scale(1 / m.a, 1 / m.d);
 		
 		var center:Point = new Point(-c.x, -c.y);
-		var centering:String = (Point.distance(center, new Point()) < 1) ? "" : "translate(" + center.x + " " + center.y + ") ";
+		var centering:String = (Point.distance(center, new Point()) < 1) ? "" : "translate(" + center.x.toFixed(2) + " " + center.y.toFixed(2) + ") ";
 		m.translate(c.x, c.y);
 		
-		//m = el.transform.clone();
+		m = el.transform.clone();
 		var f:Matrix = new Matrix();
 		f.translate(center.x, center.y);
 		f.scale(scale.x, scale.y);
-		f.c = f.d * Math.tan(skewY);
+		temp = new Matrix();
+		temp.c = Math.tan(skewX);
+		f.concat(temp);
 		f.rotate(phi);
 		f.translate(decenter.x, decenter.y);
 		var translate:Point = new Point(el.transform.tx - f.tx, el.transform.ty - f.ty);
-		var translating:String = (Point.distance(translate, new Point()) < 1) ? "" : "translate(" + translate.x + " " + translate.y + ") ";
+		var translating:String = (Point.distance(translate, new Point()) < 1) ? "" : "translate(" + translate.x.toFixed(2) + " " + translate.y.toFixed(2) + ") ";
 		
-		var transforming:String = rotating + skewingY + scaling;
+		var transforming:String = rotating + skewingX + scaling;
 		if (transforming != "") {
 			transforming = decentering + transforming + centering;
 		}
