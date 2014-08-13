@@ -142,6 +142,7 @@ public class BlockMenus implements DragClient {
 			'backdrop #', 'backdrop name', 'volume', 'OK', 'Cancel',
 			'Edit Block', 'Rename' , 'New name', 'Delete', 'Broadcast', 'New Message', 'Message Name',
 			'delete variable', 'rename variable',
+			'video motion', 'video direction',
 			'Low C', 'Middle C', 'High C',
 		];
 	}
