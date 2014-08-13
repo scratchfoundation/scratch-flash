@@ -95,6 +95,7 @@ public class ImagesPart extends UIPart {
 
 	public function updateTranslation():void {
 		clearButton.setLabel(Translator.map('Clear'));
+		libraryButton.setLabel(Translator.map('Add'));
 		editorImportButton.setLabel(Translator.map('Import'));
 		if (editor) editor.updateTranslation();
 		updateLabel();
