@@ -396,8 +396,8 @@ public class Watcher extends Sprite implements DragClient {
 		}
 		var d:DialogBox = new DialogBox(setMinMax);
 		d.addTitle('Slider Range');
-		d.addField('Min', 120);
-		d.addField('Max', 120);
+		d.addField('Min', 120, isDiscrete || int(sliderMin) != sliderMin ? sliderMin : int(sliderMin) + '.0');
+		d.addField('Max', 120, sliderMax);
 		d.addAcceptCancelButtons('OK');
 		d.showOnStage(stage);
 	}

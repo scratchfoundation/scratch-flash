@@ -183,7 +183,7 @@ public class ScratchRuntime {
 		}
 	}
 
-	private function startKeyHats(ch:int):void {
+	public function startKeyHats(ch:int):void {
 		var keyName:String = null;
 		if (('a'.charCodeAt(0) <= ch) && (ch <= 'z'.charCodeAt(0))) keyName = String.fromCharCode(ch);
 		if (('0'.charCodeAt(0) <= ch) && (ch <= '9'.charCodeAt(0))) keyName = String.fromCharCode(ch);
@@ -1082,8 +1082,9 @@ public class ScratchRuntime {
 				for each (var c:ScratchComment in obj[1]) {
 					app.scriptsPane.addChild(c);
 				}
-				app.scriptsPane.fixCommentLayout();
 			}
+			app.scriptsPane.saveScripts();
+			if (b is Block) app.updatePalette();
 		}
 	}
 

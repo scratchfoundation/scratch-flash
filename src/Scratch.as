@@ -54,7 +54,7 @@ package {
 
 public class Scratch extends Sprite {
 	// Version
-	public static const versionString:String = 'v422';
+	public static const versionString:String = 'v423';
 	public static var app:Scratch; // static reference to the app, used for debugging
 
 	// Display modes
@@ -955,7 +955,10 @@ public class Scratch extends Sprite {
 
 	public function addNewSprite(spr:ScratchSprite, showImages:Boolean = false, atMouse:Boolean = false):void {
 		var c:ScratchCostume, byteCount:int;
-		for each (c in spr.costumes) byteCount + c.baseLayerData.length;
+		for each (c in spr.costumes) {
+			if (!c.baseLayerData) c.prepareToSave()
+			byteCount += c.baseLayerData.length;
+		}
 		if (!okayToAdd(byteCount)) return; // not enough room
 		spr.objName = stagePane.unusedSpriteName(spr.objName);
 		spr.indexInLibrary = 1000000; // add at end of library

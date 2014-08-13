@@ -123,7 +123,7 @@ public class ScrollFrame extends Sprite implements DragClient {
 
 	private function handleScrollWheel(evt:MouseEvent):void {
 		var delta:int = 10 * evt.delta;
-		if (scrollWheelHorizontal) {
+		if (scrollWheelHorizontal != evt.shiftKey) {
 			contents.x = Math.min(0, Math.max(contents.x + delta, -maxScrollH()));
 		} else {
 			contents.y = Math.min(0, Math.max(contents.y + delta, -maxScrollV()));

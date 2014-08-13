@@ -110,7 +110,7 @@ public class ProcedureSpecEditor extends Sprite {
 		clearRow();
 		var i:int = 0;
 		for each (var s:String in ReadStream.tokenize(spec)) {
-			if ((s.length >= 2) && (s.charAt(0) == '%')) { // argument spec
+			if (s.length >= 2 && s.charAt(0) == '%') { // argument spec
 				var argSpec:String = s.charAt(1);
 				var arg:BlockArg = null;
 				if (argSpec == 'b') arg = makeBooleanArg();
@@ -122,9 +122,11 @@ public class ProcedureSpecEditor extends Sprite {
 				}
 			} else {
 				if ((row.length > 0) && (row[row.length - 1] is TextField)) {
-					TextField(row[row.length - 1]).appendText(' ' + s);
+					var tf:TextField = row[row.length - 1];
+					tf.appendText(' ' + ReadStream.unescape(s));
+					fixLabelWidth(tf);
 				} else {
-					addElement(makeTextField(s));
+					addElement(makeTextField(ReadStream.unescape(s)));
 				}
 			}
 		}
@@ -135,7 +137,7 @@ public class ProcedureSpecEditor extends Sprite {
 	public function spec():String {
 		var result:String = '';
 		for each (var o:* in row) {
-			if (o is TextField) result += TextField(o).text;
+			if (o is TextField) result += ReadStream.escape(TextField(o).text);
 			if (o is BlockArg) result += '%' + BlockArg(o).type;
 			if ((result.length > 0) && (result.charAt(result.length - 1) != ' ')) result += ' ';
 		}
@@ -166,7 +168,7 @@ public class ProcedureSpecEditor extends Sprite {
 	public function inputNames():Array {
 		var result:Array = [];
 		for each (var o:* in row) {
-			if (o is BlockArg) result.push(BlockArg(o).field.text);
+			if (o is BlockArg) result.push(uniqueName(result, BlockArg(o).field.text));
 		}
 		return result;
 	}
@@ -295,7 +297,6 @@ public class ProcedureSpecEditor extends Sprite {
 			if (o is BlockArg) BlockArg(o).startEditing();
 		}
 		fixLayout();
-		if (parent is DialogBox) DialogBox(parent).fixLayout();
 	}
 
 	private function makeTextField(contents:String):TextField {
@@ -327,7 +328,7 @@ public class ProcedureSpecEditor extends Sprite {
 		row = newRow;
 	}
 
-	private function fixLayout():void {
+	private function fixLayout(updateDelete:Boolean = true):void {
 		removeDeletedElementsFromRow();
 		blockShape.x = 10;
 		blockShape.y = 10;
@@ -372,7 +373,8 @@ public class ProcedureSpecEditor extends Sprite {
 		warpLabel.x = warpCheckbox.x + 18;
 		warpLabel.y = warpCheckbox.y - 3;
 
-		updateDeleteButton();
+		if (updateDelete) updateDeleteButton();
+		if (parent is DialogBox) DialogBox(parent).fixLayout();
 	}
 
 	/* Editing Parameter Names */
@@ -424,7 +426,21 @@ public class ProcedureSpecEditor extends Sprite {
 		if (o is BlockArg) BlockArg(o).startEditing();
 	}
 
+	private function uniqueName(taken:Array, name:String):String {
+		if (taken.indexOf(name) == -1) return name;
+		var e:Array = /\d+$/.exec(name);
+		var n:String = e ? e[0] : "";
+		var base:String = name.slice(0, name.length - n.length);
+		var i:int = int(n || "1") + 1;
+		while (taken.indexOf(base + i) != -1) {
+			i++;
+		}
+		return base + i;
+	}
+
 	private function focusChange(evt:FocusEvent):void {
+		var params:Array = [];
+		var change:Boolean = false;
 		// Update label fields to show focus.
 		for each (var o:DisplayObject in row) {
 			if (o is TextField) {
@@ -432,9 +448,17 @@ public class ProcedureSpecEditor extends Sprite {
 				var hasFocus:Boolean = (stage != null) && (tf == stage.focus);
 				tf.textColor = hasFocus ? 0 : 0xFFFFFF;
 				tf.backgroundColor = hasFocus ? selectedLabelColor : labelColor;
+			} else if (o is BlockArg) {
+				tf = BlockArg(o).field;
+				if (params.indexOf(tf.text) != -1) {
+					BlockArg(o).setArgValue(uniqueName(params, tf.text));
+					change = true;
+				}
+				params.push(tf.text);
 			}
 		}
-		if (evt.type == FocusEvent.FOCUS_IN) updateDeleteButton();
+		if (change) fixLayout(false);
+		else if (evt.type == FocusEvent.FOCUS_IN) updateDeleteButton();
 	}
 
 	private function updateDeleteButton():void {

@@ -46,9 +46,11 @@ public class DialogBox extends Sprite {
 	private const blankLineSpace:int = 7;
 
 	private var acceptFunction:Function; // if not nil, called when menu interaction is accepted
+	private var cancelFunction:Function; // if not nil, called when menu interaction is canceled
 
-	public function DialogBox(acceptFunction:Function = null) {
+	public function DialogBox(acceptFunction:Function = null, cancelFunction:Function = null) {
 		this.acceptFunction = acceptFunction;
+		this.cancelFunction = cancelFunction;
 		addFilters();
 		addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
 		addEventListener(MouseEvent.MOUSE_UP, mouseUp);
@@ -65,15 +67,15 @@ public class DialogBox extends Sprite {
 		d.showOnStage(stage ? stage : Scratch.app.stage);
 	}
 
-	public static function confirm(question:String, stage:Stage = null, okFunction:Function = null):void {
-		var d:DialogBox = new DialogBox(okFunction);
+	public static function confirm(question:String, stage:Stage = null, okFunction:Function = null, cancelFunction:Function = null):void {
+		var d:DialogBox = new DialogBox(okFunction, cancelFunction);
 		d.addTitle(question);
 		d.addAcceptCancelButtons('OK');
 		d.showOnStage(stage ? stage : Scratch.app.stage);
 	}
 
-	public static function notify(title:String, msg:String, stage:Stage = null, leftJustify:Boolean = false, okFunction:Function = null):void {
-		var d:DialogBox = new DialogBox(okFunction);
+	public static function notify(title:String, msg:String, stage:Stage = null, leftJustify:Boolean = false, okFunction:Function = null, cancelFunction:Function = null):void {
+		var d:DialogBox = new DialogBox(okFunction, cancelFunction);
 		d.leftJustify = leftJustify;
 		d.addTitle(title);
 		d.addText(msg);
@@ -150,7 +152,7 @@ private function getCheckMark(b:Boolean):Sprite{
 
 	public function addButton(label:String, action:Function):void {
 		function doAction():void {
-			cancel();
+			remove();
 			if (action != null) action();
 		}
 		var b:Button = new Button(Translator.map(label), doAction);
@@ -196,11 +198,12 @@ private function getCheckMark(b:Boolean):Sprite{
 
 	public function accept():void {
 		if (acceptFunction != null) acceptFunction(this);
-		if (parent != null) parent.removeChild(this);
+		remove();
 	}
 
 	public function cancel():void {
-		if (parent != null) parent.removeChild(this);
+		if (cancelFunction != null) cancelFunction(this);
+		remove();
 	}
 
 	public function getField(fieldName:String):* {
@@ -216,8 +219,12 @@ private function getCheckMark(b:Boolean):Sprite{
 		}
 	}
 
+	private function remove():void {
+		if (parent != null) parent.removeChild(this);
+	}
+
 	private function makeLabel(s:String, forTitle:Boolean = false):TextField {
-		const normalFormat:TextFormat = new TextFormat(CSS.font, 14, CSS.textColor)
+		const normalFormat:TextFormat = new TextFormat(CSS.font, 14, CSS.textColor);
 		var result:TextField = new TextField();
 		result.autoSize = TextFieldAutoSize.LEFT;
 		result.selectable = false;
