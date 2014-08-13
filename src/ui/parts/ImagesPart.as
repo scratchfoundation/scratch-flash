@@ -85,7 +85,7 @@ public class ImagesPart extends UIPart {
 
 	public static function strings():Array {
 		return [
-			'Clear', 'Import', 'New backdrop:', 'New costume:', 'photo1',
+			'Clear', 'Add', 'Import', 'New backdrop:', 'New costume:', 'photo1',
 			'Undo', 'Redo', 'Flip left-right', 'Flip up-down', 'Set costume center',
 			'Choose backdrop from library', 'Choose costume from library',
 			'Paint new backdrop', 'Upload backdrop from file', 'New backdrop from camera',
