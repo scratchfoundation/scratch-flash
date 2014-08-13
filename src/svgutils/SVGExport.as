@@ -183,15 +183,61 @@ public class SVGExport {
 	// Transforms
 
 	private function setTransform(el:SVGElement, node:XML):void {
-		// If this element has a non-null transform, set the transform
-		// attribute of the given node.
-		// Note: This currently outputs a general matrix transform. To make the
-		// exported SVG file more human-readable, this could output a simpler
-		// transform (e.g. 'rotate(...)' when possible.
-		if (!el.transform) return;
-		var m:Matrix = el.transform;
-		if ((m.a == 1) && (m.b == 0) && (m.c == 0) && (m.d == 1) && (m.tx == 0) && (m.ty == 0)) return; // identity
-		node.@['transform'] = 'matrix(' + m.a + ', ' + m.b + ', ' + m.c + ', ' + m.d + ', ' + m.tx + ', ' + m.ty + ')';
+		// Returns transformation in the most human-readable format possible
+		// The resulting sequense of commands is the following:
+		// translate(c) scale(s) skewY(y) rotate(r) tranlate(d) translate(t)
+		// where: (c) centers the image, so (s, y, r) transform produce no shifting;
+		// (d) decenters the image, has opposite to (c) parameters;
+		// (t) stands for explicit, user-made translation
+		// if any of (c, d) (s) (y) (r) (t) is insignificant, it's command is ommited.
+		// Note! The SVG standard requires commands being written in reverse order.
+		// Matrices: m - current transform matrix being dissolved
+		// f - auxilary matrix, used to find out the (t) value
+		var temp:Matrix = el.transform.clone();
+		el.transform = new Matrix();
+		var svgSprite:Sprite = new SVGDisplayRender().renderAsSprite(el);
+		var r:Rectangle = svgSprite.getBounds(svgSprite);
+		const c:Point = new Point(r.x + r.width / 2, r.y + r.height / 2);
+		el.transform = temp;
+		
+		var m:Matrix = el.transform.clone();
+		
+		var decenter:Point = new Point(c.x, c.y);
+		var decentering:String = "translate(" + decenter.x + " " + decenter.y + ") ";
+		m.translate(-c.x, -c.y);
+		
+		var phi:Number = Math.atan2(m.b, m.a);
+		var rotating:String = "rotate(" + (phi / Math.PI * 180) + ") ";
+		m.rotate(-phi);
+		
+		var skewY:Number = Math.atan2(m.c, m.d);
+		var skewingY:String = "skewY(" + (skewY / Math.PI * 180) + ") ";
+		m.c = 0;//unskew
+		
+		var scale:Point = new Point(m.a, m.d);
+		var scaling:String = "scale(" + scale.x + " " + scale.y + ") ";
+		m.scale(1 / m.a, 1 / m.d);
+		
+		var center:Point = new Point(-c.x, -c.y);
+		var centering:String = "translate(" + (-c.x) + " " + (-c.y) + ") ";
+		m.translate(c.x, c.y);
+		
+		//m = el.transform.clone();
+		var f:Matrix = new Matrix();
+		f.translate(center.x, center.y);
+		f.scale(scale.x, scale.y);
+		f.c = f.d * Math.tan(skewY);
+		f.rotate(phi);
+		f.translate(decenter.x, decenter.y);
+		var translate:Point = new Point(el.transform.tx - f.tx, el.transform.ty - f.ty);
+		var translating:String = "translate(" + translate.x + " " + translate.y + ") ";
+		node.@['transform'] = translating + decentering + rotating + skewingY + scaling + centering;
+		return;
+		/*END_MY_CODE*/
+		// if (!el.transform) return;
+		// var m:Matrix = el.transform;
+		// if ((m.a == 1) && (m.b == 0) && (m.c == 0) && (m.d == 1) && (m.tx == 0) && (m.ty == 0)) return; // identity
+		// node.@['transform'] = 'matrix(' + m.a + ', ' + m.b + ', ' + m.c + ', ' + m.d + ', ' + m.tx + ', ' + m.ty + ')';
 	}
 
 	// Gradients
