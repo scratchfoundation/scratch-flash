@@ -281,10 +281,10 @@ public class ScratchRuntime {
 		if ('whenSensorGreaterThan' == hat.op) {
 			var sensorName:String = interp.arg(hat, 0);
 			var threshold:Number = interp.numarg(hat, 1);
-			trigger((
-					(('loudness' == sensorName) && (soundLevel() > threshold)) ||
-					(('timer' == sensorName) && (timer() > threshold)) ||
-					(('video motion' == sensorName) && (VideoMotionPrims.readMotionSensor('motion', target) > threshold))));
+			trigger(
+				('loudness' == sensorName && soundLevel() > threshold) ||
+				('timer' == sensorName && timer() > threshold) ||
+				('video motion' == sensorName && target.visible && VideoMotionPrims.readMotionSensor('motion', target) > threshold));
 		} else if ('whenSensorConnected' == hat.op) {
 			trigger(getBooleanSensor(interp.arg(hat, 0)));
 		} else if (app.jsEnabled) {
