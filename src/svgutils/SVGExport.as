@@ -191,9 +191,9 @@ public class SVGExport {
 		// (t) stands for explicit, user-made translation
 		// if any of (c, d) (s) (y) (r) (t) is insignificant, it's command is ommited.
 		// Note! The SVG standard requires commands being written in reverse order.
-		// Matrices: m - current transform matrix being dissolved
-		// f - auxilary matrix, used to compute the (t)
-		var temp:Matrix = el.transform.clone();
+		// Matrices: m - current transform matrix being dissolved, and then
+		// composed back to compute (t).
+		var temp:Matrix = el.transform;
 		el.transform = new Matrix();
 		var svgSprite:Sprite = new SVGDisplayRender().renderAsSprite(el);
 		var bounds:Rectangle = svgSprite.getBounds(svgSprite);
@@ -219,20 +219,18 @@ public class SVGExport {
 		var s:Point = new Point(m.a, m.d);
 		var scaling:String = (Point.distance(s, new Point(1, 1)) < 1e-3) ? "" :
 				"scale(" + s.x.toFixed(3) + ((Math.abs(s.y / s.x - 1) < 1e-3) ? "" : " " + s.y.toFixed(3)) + ") ";
-		m.scale(1 / m.a, 1 / m.d);
-		var f:Matrix = new Matrix();
-		f.translate(c.x, c.y);
-		f.scale(s.x, s.y);
-		temp = new Matrix();
+		m.identity()
+		m.translate(c.x, c.y);
+		m.scale(s.x, s.y);
 		temp.c = Math.tan(w);
-		f.concat(temp);
-		f.rotate(r);
-		f.translate(d.x, d.y);
-		var t:Point = new Point(el.transform.tx - f.tx, el.transform.ty - f.ty);
+		m.concat(temp);
+		m.rotate(r);
+		m.translate(d.x, d.y);
+		var t:Point = new Point(el.transform.tx - m.tx, el.transform.ty - m.ty);
 		var translating:String = (Point.distance(t, new Point()) < 1) ? "" :
 				"translate(" + t.x.toFixed(2) + " " + t.y.toFixed(2) + ") ";
 		var transforming:String = rotating + skewingX + scaling;
-		if (transforming != "") {
+		if (transforming.length > 0) {
 			transforming = decentering + transforming + centering;
 		}
 		transforming = translating + transforming;
