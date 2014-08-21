@@ -369,6 +369,7 @@ public class PaletteBuilder {
 		return m;
 	}
 
+	protected const pwidth:int = 215;
 	protected function addExtensionSeparator(ext:ScratchExtension):void {
 		function extensionMenu(ignore:*):void {
 			var m:Menu = getExtensionMenu(ext);
@@ -386,7 +387,7 @@ public class PaletteBuilder {
 		var indicator:IndicatorLight = new IndicatorLight(ext);
 		indicator.addEventListener(MouseEvent.CLICK, function(e:Event):void {Scratch.app.showTip('extensions');}, false, 0, true);
 		app.extensionManager.updateIndicator(indicator, ext);
-		indicator.x = app.palette.width - 30;
+		indicator.x = pwidth - 30;
 		indicator.y = nextY + 2;
 		app.palette.addChild(indicator);
 
@@ -395,7 +396,7 @@ public class PaletteBuilder {
 
 	protected function addLineForExtensionTitle(titleButton:IconButton, ext:ScratchExtension):void {
 		var x:int = titleButton.width + 12;
-		addLine(x, nextY + 9, app.palette.width - x - 38);
+		addLine(x, nextY + 9, pwidth - x - 38);
 	}
 
 	private function addBlocksForExtension(ext:ScratchExtension):void {
