@@ -228,21 +228,22 @@ public class ExtensionManager {
 		// Reset the system extensions and load the given array of saved extensions.
 		if (!savedExtensions) return; // no saved extensions
 		for each (var extObj:Object in savedExtensions) {
+			if (isInternal(extObj.extensionName)) {
+				setEnabled(extObj.extensionName, true);
+				continue; // internal extension overrides one saved in project
+			}
+
 			if (!('extensionName' in extObj) ||
 				(!('extensionPort' in extObj) && !('javascriptURL' in extObj)) ||
 				!('blockSpecs' in extObj)) {
 					continue;
-			}
-			if (extensionDict[extObj.extensionName] &&
-				extensionDict[extObj.extensionName].isInternal) {
-					setEnabled(extObj.extensionName, true);
-					continue; // internal extension overrides one saved in project
 			}
 
 			var ext:ScratchExtension = new ScratchExtension(extObj.extensionName, extObj.extensionPort || 0);
 			extensionDict[extObj.extensionName] = ext;
 			ext.blockSpecs = extObj.blockSpecs;
 			ext.showBlocks = true;
+			ext.isInternal = false; // For now?
 			ext.menus = extObj.menus;
 			if(extObj.javascriptURL) {
 				ext.javascriptURL = extObj.javascriptURL;
