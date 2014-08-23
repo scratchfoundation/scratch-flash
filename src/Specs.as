@@ -163,6 +163,8 @@ public class Specs {
 		["switch costume to %m.costume",		" ", 2, "lookLike:",				"costume1"],
 		["next costume",						" ", 2, "nextCostume"],
 		["switch backdrop to %m.backdrop",		" ", 2, "startScene", 				"backdrop1"],
+		["switch backdrop to %m.backdrop and wait", " ", 2, "startSceneAndWait",		"backdrop1"],
+		["next backdrop",							" ", 2, "nextScene"],
 		["-"],
 		["change %m.effect effect by %n",		" ", 2, "changeGraphicEffect:by:",	"color", 25],
 		["set %m.effect effect to %n",			" ", 2, "setGraphicEffect:to:",		"color", 0],
@@ -358,6 +360,10 @@ public class Specs {
 		["%n * %n",								"r", 8, "*",					"", ""],
 		["%n / %n",								"r", 8, "/",					"", ""],
 		["-"],
+		["%n mod %n",							"r", 8, "%",					"", ""],
+		["-"],
+		["%m.mathOp of %n",						"r", 8, "computeFunction:of:",	"round", ""],
+		["-"],
 		["pick random %n to %n",		"r", 8, "randomFrom:to:",		1, 10],
 		["-"],
 		["%s < %s",								"b", 8, "<",					"", ""],
@@ -371,10 +377,6 @@ public class Specs {
 		["join %s %s",							"r", 8, "concatenate:with:",	"hello ", "world"],
 		["letter %n of %s",						"r", 8, "letter:of:",			1, "world"],
 		["length of %s",						"r", 8, "stringLength:",		"world"],
-		["-"],
-		["%n mod %n",							"r", 8, "%",					"", ""],
-		["-"],
-		["%m.mathOp of %n",						"r", 8, "computeFunction:of:",	"round", ""],
 
 		// variables
 		["set %m.var to %s",								" ", 9, SET_VAR],
@@ -402,14 +404,17 @@ public class Specs {
 		["loud?",								"b", 98, "isLoud"], // loudness > 10 (30 in 1.4)
 
 		// obsolete blocks from Scratch 1.4 that are converted to new forms (so should never appear):
+		["forever if %b",						"cf", 98, "doForeverIf"],
+		["stop script",							"f", 98, "doReturn"],
+		["stop all",							"f", 98, "stopAll"],
 		["round %n",							"r", 98, "rounded"],
 		["abs %n",								"r", 98, "abs"],
 		["sqrt %n",								"r", 98, "sqrt"],
-		["stop script",							"f", 98, "doReturn"],
-		["stop all",							"f", 98, "stopAll"],
+		["turn %n degrees",			" ", 98, "turn:"],
+		["glide x: %n y: %n in %n secs",			" ", 98, "gotoX:y:duration:elapsed:from:"],
+		["point away from edge",		" ", 98, "turnAwayFromEdge"],
 		["switch to background %m.costume",		" ", 98, "showBackground:", "backdrop1"],
 		["next background",						" ", 98, "nextBackground"],
-		["forever if %b",						"cf", 98, "doForeverIf"],
 
 	];
 
