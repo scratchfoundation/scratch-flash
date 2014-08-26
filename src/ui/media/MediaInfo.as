@@ -66,8 +66,6 @@ public class MediaInfo extends Sprite {
 	private var info:TextField;
 	private var deleteButton:IconButton;
 
-	protected var loaders:Array = []; // list of URLLoaders for stopLoading()
-
 	public function MediaInfo(obj:*, owningObj:ScratchObj = null) {
 		owner = owningObj;
 		mycostume = obj as ScratchCostume;
