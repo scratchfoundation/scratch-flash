@@ -119,7 +119,7 @@ public class BlockMenus implements DragClient {
 			handler.listItem(evt, true);
 			handler.listItem(evt, false);
 			handler.mathOpMenu(evt);
-       		     	handler.bitwiseOpMenu(evt);
+			handler.bitwiseOpMenu(evt);
 			handler.motorDirectionMenu(evt);
 			handler.procMenu(evt);
 			handler.rotationStyleMenu(evt);

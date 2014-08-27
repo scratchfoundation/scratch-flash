@@ -144,9 +144,9 @@ public class Primitives {
 	}
     
 	private function primBitwiseFunction(b:Block):Number {
-       		var operand1:Number = interp.numarg(b, 0);
+		var operand1:Number = interp.numarg(b, 0);
         	var op:* = interp.arg(b, 1);
-       		var operand2:Number = interp.numarg(b, 2);
+		var operand2:Number = interp.numarg(b, 2);
         	switch(op) {
         	case "and": return operand1 & operand2;
         	case "or": return operand1 | operand2;
