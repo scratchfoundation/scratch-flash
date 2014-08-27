@@ -339,6 +339,8 @@ public class Specs {
 		["round %n",							"r", 8, "rounded", 				""],
 		["-"],
 		["%m.mathOp of %n",						"r", 8, "computeFunction:of:",	"sqrt", 9],
+       		["-"],
+        	["bitwise %n %m.bitwiseOp %n",   			  	"r", 8, "computeBitwiseFunction:of:", 5, "and", 3],
 
 		// variables
 		["set %m.var to %s",								" ", 9, SET_VAR],

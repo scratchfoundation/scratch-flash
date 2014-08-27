@@ -66,6 +66,8 @@ public class Primitives {
 		primTable["%"]					= primModulo;
 		primTable["rounded"]			= function(b:*):* { return Math.round(interp.numarg(b, 0)) };
 		primTable["computeFunction:of:"] = primMathFunction;
+        
+        	primTable["computeBitwiseFunction:of:"] = primBitwiseFunction;
 
 		// clone
 		primTable["createCloneOf"]		= primCreateCloneOf;
@@ -140,6 +142,20 @@ public class Primitives {
 		}
 		return 0;
 	}
+    
+	private function primBitwiseFunction(b:Block):Number {
+       		var operand1:Number = interp.numarg(b, 0);
+        	var op:* = interp.arg(b, 1);
+       		var operand2:Number = interp.numarg(b, 2);
+        	switch(op) {
+        	case "and": return operand1 & operand2;
+        	case "or": return operand1 | operand2;
+        	case "xor": return operand1 ^ operand2;
+        	case "shift left": return operand1 << operand2;
+        	case "shift right": return operand1 >> operand2;
+        	}
+        	return 0;
+    	}
 
 	private static var lcDict:Dictionary = new Dictionary();
 	public static function compare(a1:*, a2:*):int {
