@@ -359,11 +359,6 @@ package svgeditor {
 					ib.isMomentary = isImmediate;
 					toolButtonsLayer.addChild(ib);
 					ib.y = dy;
-					var ttText:String = Translator.map(tools[i].desc);
-					if (tools[i].shiftDesc) {
-						ttText += ' (' + Translator.map('Shift:') + ' ' + Translator.map(tools[i].shiftDesc) + ')';
-					}
-					SimpleTooltips.add(ib, {text: ttText, direction: ttDirection});
 
 					// Group and ungroup are in the same location
 					// Add data to the tools array to indicate this?
@@ -371,6 +366,20 @@ package svgeditor {
 						dy += ib.height + space;
 				}
 			}
+			updateTranslation();
+		}
+
+		public function updateTranslation():void {
+			var direction:String = (this is SVGEdit ? 'left' : 'right');
+			for each (var tool:* in getToolDefs()) {
+				if (!tool) continue;
+				var text:String = Translator.map(tool.desc);
+				if (tool.shiftDesc) {
+					text += ' (' + Translator.map('Shift:') + ' ' + Translator.map(tool.shiftDesc) + ')';
+				}
+				SimpleTooltips.add(toolButtons[tool.name], {text: text, direction: direction});
+			}
+			if (drawPropsUI) drawPropsUI.updateTranslation();
 		}
 
 		private function addDrawPropsUI():void {

@@ -109,7 +109,10 @@ public class DrawPropertyUI extends Sprite {
 			'Line width', 'Eraser width'];
 	}
 
+	public var w:int, h:int;
 	public function setWidthHeight(w:int, h:int):void {
+		this.w = w;
+		this.h = h;
 		var g:Graphics = bg.graphics;
 		g.clear();
 		g.lineStyle(1, CSS.borderColor);
@@ -124,9 +127,10 @@ public class DrawPropertyUI extends Sprite {
 		zoomButtons.x = w - zoomButtons.width - 5;
 		zoomButtons.y = 5;
 
-		modeLabel.x = w - 103;
+		var modeX:int = w - 5 - Math.max(modeLabel.width, modeButton.width) / 2;
+		modeLabel.x = modeX - modeLabel.width / 2;
 		modeLabel.y = h - 47;
-		modeButton.x = modeLabel.x + Math.round((modeLabel.width - modeButton.width) / 2);
+		modeButton.x = modeX - modeButton.width / 2;
 		modeButton.y = modeLabel.y + 22;
 
 		// hide in embedded editor???
@@ -335,6 +339,15 @@ public class DrawPropertyUI extends Sprite {
 		var offImg:Sprite = UIPart.makeButtonLabel(fontName, CSS.textColor, true);
 		fontMenuButton.setImage(onImg, offImg);
 		currentValues.fontName = fontName;
+	}
+
+	public function updateTranslation():void {
+		fontLabel.text = Translator.map('Font:');
+		smoothStrokeBtn.setLabel(Translator.map('Smooth'));
+		modeLabel.text = Translator.map(editor is SVGEdit ? 'Vector Mode' : 'Bitmap Mode');
+		modeButton.setLabel(Translator.map(editor is SVGEdit ? 'Convert to bitmap' : 'Convert to vector'));
+		SimpleTooltips.add(strokeWidthSlider.parent, {text: eraserStrokeMode ? 'Eraser width' : 'Line width', direction: 'top'});
+		fixLayout(w, h);
 	}
 
 	private function makeShapeUI():void {
