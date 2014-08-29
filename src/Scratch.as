@@ -734,6 +734,10 @@ public class Scratch extends Sprite {
 			m.addItem('Revert', revertToOriginalProject);
 		}
 
+		if (b.lastEvent.shiftKey) {
+			m.addLine();
+			m.addItem('Save Project Summary', saveSummary);
+		}
 		if (b.lastEvent.shiftKey && jsEnabled) {
 			m.addLine();
 			m.addItem('Import experimental extension', function():void {
@@ -847,6 +851,12 @@ public class Scratch extends Sprite {
 			result += (illegal.indexOf(ch) > -1) ? '-' : ch;
 		}
 		return result;
+	}
+
+	public function saveSummary():void {
+		var name:String = (projectName() || "project") + ".txt";
+		var file:FileReference = new FileReference();
+		file.save(stagePane.getSummary(), fixFileName(name));
 	}
 
 	public function toggleSmallStage():void {

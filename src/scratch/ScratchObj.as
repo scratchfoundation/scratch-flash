@@ -659,4 +659,53 @@ public class ScratchObj extends Sprite {
 		}
 	}
 
+	public function getSummary():String {
+		var s:Array = [];
+		s.push(h1(objName));
+		if (variables.length) {
+			s.push(h2(Translator.map("Variables")));
+			for each (var v:Variable in variables) {
+				s.push("- " + v.name + " = " + v.value);
+			}
+			s.push("");
+		}
+		if (lists.length) {
+			s.push(h2(Translator.map("Lists")));
+			for each (var list:ListWatcher in lists) {
+				s.push("- " + list.listName + (list.contents.length ? ":" : ""));
+				for each (var item:* in list.contents) {
+					s.push("    - " + item);
+				}
+			}
+			s.push("");
+		}
+		s.push(h2(Translator.map(isStage ? "Backdrops" : "Costumes")));
+		for each (var costume:ScratchCostume in costumes) {
+			s.push("- " + costume.costumeName);
+		}
+		s.push("");
+		if (sounds.length) {
+			s.push(h2(Translator.map("Sounds")));
+			for each (var sound:ScratchSound in sounds) {
+				s.push("- " + sound.soundName);
+			}
+			s.push("");
+		}
+		if (scripts.length) {
+			s.push(h2(Translator.map("Scripts")));
+			for each (var script:Block in scripts) {
+				s.push(script.getSummary());
+				s.push("")
+			}
+		}
+		return s.join("\n");
+	}
+
+	protected static function h1(s:String, ch:String = "="):String {
+		return s + "\n" + new Array(s.length + 1).join(ch) + "\n";
+	}
+	protected static function h2(s:String):String {
+		return h1(s, "-");
+	}
+
 }}
