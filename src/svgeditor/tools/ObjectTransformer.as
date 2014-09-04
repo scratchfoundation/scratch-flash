@@ -129,12 +129,21 @@ package svgeditor.tools  {
 			alpha = 0.65;
 		}
 
+		private function getStage():Stage {
+			if (editor && editor.stage) {
+				return editor.stage;
+			}
+			return stage;
+		}
+
 		override protected function shutdown():void {
+			var stageObject:Stage = getStage();
+
 			// Remove event handlers
 			removeSelectionEventHandlers();
 			editor.getWorkArea().removeEventListener(MouseEvent.MOUSE_DOWN, selectionBoxHandler);
-			stage.removeEventListener(MouseEvent.MOUSE_MOVE, selectionBoxHandler);
-			stage.removeEventListener(MouseEvent.MOUSE_UP, selectionBoxHandler);
+			stageObject.removeEventListener(MouseEvent.MOUSE_MOVE, selectionBoxHandler);
+			stageObject.removeEventListener(MouseEvent.MOUSE_UP, selectionBoxHandler);
 
 			select(null);
 			setActive(false);
@@ -334,14 +343,18 @@ package svgeditor.tools  {
 		}
 
 		private function removeSelectionEventHandlers():void {
-			stage.removeEventListener(MouseEvent.MOUSE_UP, moveHandler);
-			editor.removeEventListener(MouseEvent.MOUSE_MOVE, moveHandler);
+			var stageObject:Stage = getStage();
+			if (stageObject) {
+				stageObject.removeEventListener(MouseEvent.MOUSE_UP, moveHandler);
+				stageObject.removeEventListener(MouseEvent.MOUSE_UP, resizeHandler);
+				stageObject.removeEventListener(MouseEvent.MOUSE_UP, rotateHandler);
+				stageObject.removeEventListener(MouseEvent.MOUSE_MOVE, rotateHandler);
+			}
 
-			stage.removeEventListener(MouseEvent.MOUSE_UP, resizeHandler);
-			editor.removeEventListener(MouseEvent.MOUSE_MOVE, resizeHandler);
-
-			stage.removeEventListener(MouseEvent.MOUSE_UP, rotateHandler);
-			stage.removeEventListener(MouseEvent.MOUSE_MOVE, rotateHandler);
+			if (editor) {
+				editor.removeEventListener(MouseEvent.MOUSE_MOVE, moveHandler);
+				editor.removeEventListener(MouseEvent.MOUSE_MOVE, resizeHandler);
+			}
 		}
 
 		private function keyPressed(e:KeyboardEvent):void {
