@@ -472,7 +472,9 @@ public class ScratchRuntime {
 	public function hideAskPrompt(p:AskPrompter):void {
 		interp.askThread = null;
 		lastAnswer = p.answer();
-		p.parent.removeChild(p);
+		if (p.parent) {
+			p.parent.removeChild(p);
+		}
 		app.stage.focus = null;
 	}
 
