@@ -24,8 +24,6 @@
 
 package scratch {
 	import flash.display.*;
-	import flash.external.ExternalInterface;
-	import flash.filters.GlowFilter;
 	import flash.geom.*;
 	import flash.media.*;
 	import flash.events.*;
@@ -121,7 +119,7 @@ public class ScratchStage extends ScratchObj {
 	}
 
 	public function unusedSpriteName(baseName:String):String {
-		var existingNames:Array = [];
+		var existingNames:Array = ['_mouse_', '_stage_', '_edge_', '_myself_'];
 		for each (var s:ScratchSprite in sprites()) {
 			existingNames.push(s.objName.toLowerCase());
 		}
@@ -222,7 +220,7 @@ public class ScratchStage extends ScratchObj {
 	}
 
 	private function saveScreenshot():void {
-		var bitmapData:BitmapData = new BitmapData(480, 360, true, 0x0);
+		var bitmapData:BitmapData = new BitmapData(STAGEW, STAGEH, true, 0);
 		bitmapData.draw(this);
 		var pngData:ByteArray = PNG24Encoder.encode(bitmapData, PNGFilter.PAETH);
 		var file:FileReference = new FileReference();
@@ -276,11 +274,11 @@ public class ScratchStage extends ScratchObj {
 		if(Scratch.app.isIn3D)
 			Scratch.app.render3D.getUIContainer().transform.matrix = transform.matrix.clone();
 
-		return; // scrolling backround support is disabled; see note below
+		return; // scrolling background support is disabled; see note below
 
 		// NOTE: The following code supports the scrolling backgrounds
 		// feature, which was explored but removed before launch.
-		// This prototype implemenation renders SVG backdrops to a bitmap
+		// This prototype implementation renders SVG backdrops to a bitmap
 		// (to allow wrapping) but that causes pixelation in presentation mode.
 		// If the scrolling backgrounds feature is ever resurrected this code
 		// is a good starting point but the pixelation issue should be fixed.
@@ -367,8 +365,8 @@ public class ScratchStage extends ScratchObj {
 	public function stampSprite(s:ScratchSprite, stampAlpha:Number):void {
 		if(s == null) return;
 //		if(!testBM.parent) {
-//		    //testBM.filters = [new GlowFilter(0xFF00FF, 0.8)];
-//		    testBM.y = 360; testBM.x = 15;
+//			//testBM.filters = [new GlowFilter(0xFF00FF, 0.8)];
+//			testBM.y = 360; testBM.x = 15;
 //			stage.addChild(testBM);
 //		}
 
@@ -648,9 +646,20 @@ public class ScratchStage extends ScratchObj {
 		}
 
 		delete info.userAgent;
-		var userAgent:String;
-		if (Scratch.app.jsEnabled) userAgent = ExternalInterface.call('window.navigator.userAgent.toString');
-		if (userAgent) info.userAgent = userAgent;
+		if (Scratch.app.jsEnabled) {
+			Scratch.app.externalCall('window.navigator.userAgent.toString', function(userAgent:String):void {
+				if (userAgent) info.userAgent = userAgent;
+			});
+		}
+	}
+
+	public function updateListWatchers():void {
+		for (var i:int = 0; i < numChildren; i++) {
+			var c:DisplayObject = getChildAt(i);
+			if (c is ListWatcher) {
+				ListWatcher(c).updateContents();
+			}
+		}
 	}
 
 	public function scriptCount():int {
@@ -713,7 +722,7 @@ public class ScratchStage extends ScratchObj {
 				return true;
 			}
 			if (obj.objType == 'image') {
-				new ProjectIO(app).fetchImage(obj.md5, obj.objName, addSpriteForCostume);
+				new ProjectIO(app).fetchImage(obj.md5, obj.objName, obj.objWidth, addSpriteForCostume);
 				return true;
 			}
 		}

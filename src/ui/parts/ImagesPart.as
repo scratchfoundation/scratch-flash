@@ -85,7 +85,7 @@ public class ImagesPart extends UIPart {
 
 	public static function strings():Array {
 		return [
-			'Clear', 'Import', 'New backdrop:', 'New costume:', 'photo1',
+			'Clear', 'Add', 'Import', 'New backdrop:', 'New costume:', 'photo1',
 			'Undo', 'Redo', 'Flip left-right', 'Flip up-down', 'Set costume center',
 			'Choose backdrop from library', 'Choose costume from library',
 			'Paint new backdrop', 'Upload backdrop from file', 'New backdrop from camera',
@@ -95,7 +95,9 @@ public class ImagesPart extends UIPart {
 
 	public function updateTranslation():void {
 		clearButton.setLabel(Translator.map('Clear'));
+		libraryButton.setLabel(Translator.map('Add'));
 		editorImportButton.setLabel(Translator.map('Import'));
+		if (editor) editor.updateTranslation();
 		updateLabel();
 		fixlayout();
 	}
@@ -184,10 +186,12 @@ public class ImagesPart extends UIPart {
 		if (obj == null) return;
 		nameField.setContents(obj.currentCostume().costumeName);
 
+		var zoomAndScroll:Array = editor.getZoomAndScroll();
 		editor.shutdown();
 		var c:ScratchCostume = obj.currentCostume();
 		useBitmapEditor(c.isBitmap() && !c.text);
 		editor.editCostume(c, obj.isStage);
+		editor.setZoomAndScroll(zoomAndScroll);
 		if(changed) app.setSaveNeeded();
 	}
 
@@ -200,13 +204,9 @@ public class ImagesPart extends UIPart {
 	}
 
 	private function nameChanged():void {
-		var obj:ScratchObj = app.viewedObj();
-		if(!obj.isCostumeNameUsed(nameField.contents())) {
-			obj.currentCostume().costumeName = nameField.contents();
-			(listFrame.contents as MediaPane).refresh();
-		}
-		else
-			nameField.setContents(obj.currentCostume().costumeName);
+		app.runtime.renameCostume(nameField.contents());
+		nameField.setContents(app.viewedObj().currentCostume().costumeName);
+		(listFrame.contents as MediaPane).refresh();
 	}
 
 	private function addNewCostumeButtons():void {
@@ -351,17 +351,17 @@ public class ImagesPart extends UIPart {
 
 	private function importFromLibrary():void {
 		var type:String = isStage() ? 'backdrop' : 'costume';
-		var lib:MediaLibrary = new MediaLibrary(app, type, addCostume);
+		var lib:MediaLibrary = app.getMediaLibrary(type, addCostume);
 		lib.open();
 	}
 
 	private function importIntoEditor():void {
-		var lib:MediaLibrary = new MediaLibrary(app, '', addCostume);
+		var lib:MediaLibrary = app.getMediaLibrary('', addCostume);
 		lib.importFromDisk();
 	}
 
 	private function addCostume(c:ScratchCostume):void {
-		var p:Point = new Point(240 - (c.width() / 2), 180 - (c.height() / 2));
+		var p:Point = new Point(240, 180);
 		editor.addCostume(c, p);
 	}
 
@@ -432,7 +432,7 @@ public class ImagesPart extends UIPart {
 			}
 		}
 		var type:String = isStage() ? 'backdrop' : 'costume';
-		var lib:MediaLibrary = new MediaLibrary(app, type, addCostume);
+		var lib:MediaLibrary = app.getMediaLibrary(type, addCostume);
 		if (fromComputer) lib.importFromDisk();
 		else lib.open();
 	}
@@ -456,6 +456,7 @@ public class ImagesPart extends UIPart {
 			}
 			var c:ScratchCostume = new ScratchCostume(Translator.map('photo1'), photo);
 			addAndSelectCostume(c);
+			editor.getWorkArea().zoom();
 		}
 		app.openCameraDialog(savePhotoAsCostume);
 	}

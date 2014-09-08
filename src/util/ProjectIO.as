@@ -116,13 +116,14 @@ public class ProjectIO {
 		return decodeFromZipFile(zipData) as ScratchStage;
 	}
 
-	public function decodeSpriteFromZipFile(zipData:ByteArray, whenDone:Function):void {
+	public function decodeSpriteFromZipFile(zipData:ByteArray, whenDone:Function, fail:Function = null):void {
 		function imagesDecoded():void {
 			spr.showCostume(spr.currentCostumeIndex);
 			whenDone(spr);
 		}
 		var spr:ScratchSprite = decodeFromZipFile(zipData) as ScratchSprite;
-		if (spr) decodeAllImages([spr], imagesDecoded);
+		if (spr) decodeAllImages([spr], imagesDecoded, fail);
+		else if (fail != null) fail();
 	}
 
 	private function decodeFromZipFile(zipData:ByteArray):ScratchObj {
@@ -201,7 +202,7 @@ public class ProjectIO {
 		}
 	}
 
-	public function decodeAllImages(objList:Array, whenDone:Function):void {
+	public function decodeAllImages(objList:Array, whenDone:Function, fail:Function = null):void {
 		// Load all images in all costumes from their image data, then call whenDone.
 		function imageDecoded():void {
 			for each (var o:* in imageDict) {
@@ -209,7 +210,14 @@ public class ProjectIO {
 			}
 			allImagesLoaded();
 		}
+		var error:Boolean = false;
+		function decodeError():void {
+			if (error) return;
+			error = true;
+			if (fail != null) fail();
+		}
 		function allImagesLoaded():void {
+			if (error) return;
 			for each (c in allCostumes) {
 				if ((c.baseLayerData != null) && (c.baseLayerBitmap == null)) {
 					var img:* = imageDict[c.baseLayerData];
@@ -231,22 +239,26 @@ public class ProjectIO {
 		for each (c in allCostumes) {
 			if ((c.baseLayerData != null) && (c.baseLayerBitmap == null)) {
 				if (ScratchCostume.isSVGData(c.baseLayerData)) decodeSVG(c.baseLayerData, imageDict, imageDecoded);
-				else decodeImage(c.baseLayerData, imageDict, imageDecoded);
+				else decodeImage(c.baseLayerData, imageDict, imageDecoded, decodeError);
 			}
-			if ((c.textLayerData != null) && (c.textLayerBitmap == null)) decodeImage(c.textLayerData, imageDict, imageDecoded);
+			if ((c.textLayerData != null) && (c.textLayerBitmap == null)) decodeImage(c.textLayerData, imageDict, imageDecoded, decodeError);
 		}
 		imageDecoded(); // handles case when there were no images to load
 	}
 
-	private function decodeImage(imageData:ByteArray, imageDict:Dictionary, doneFunction:Function):void {
+	private function decodeImage(imageData:ByteArray, imageDict:Dictionary, doneFunction:Function, fail:Function):void {
 		function loadDone(e:Event):void {
 			imageDict[imageData] = e.target.content.bitmapData;
 			doneFunction();
+		}
+		function loadError(e:Event):void {
+			if (fail != null) fail();
 		}
 		if (imageDict[imageData] != null) return; // already loading or loaded
 		imageDict[imageData] = 'loading...';
 		var loader:Loader = new Loader();
 		loader.contentLoaderInfo.addEventListener(Event.COMPLETE, loadDone);
+		loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, loadError);
 		loader.loadBytes(imageData);
 	}
 
@@ -298,7 +310,7 @@ public class ProjectIO {
 	// Fetch a costume or sound from the server
 	//----------------------------
 
-	public function fetchImage(id:String, costumeName:String, whenDone:Function):URLLoader {
+	public function fetchImage(id:String, costumeName:String, width:int, whenDone:Function):URLLoader {
 		// Fetch an image asset from the server and call whenDone with the resulting ScratchCostume.
 		var c:ScratchCostume;
 		function gotCostumeData(data:ByteArray):void {
@@ -318,6 +330,7 @@ public class ProjectIO {
 		}
 		function imageLoaded(e:Event):void {
 			c = new ScratchCostume(costumeName, e.target.content.bitmapData);
+			if (width) c.bitmapResolution = c.baseLayerBitmap.width / width;
 			c.baseLayerMD5 = id;
 			whenDone(c);
 		}

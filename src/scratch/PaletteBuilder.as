@@ -50,7 +50,8 @@ public class PaletteBuilder {
 		return [
 			'Stage selected:', 'No motion blocks',
 			'Make a Block', 'Make a List', 'Make a Variable',
-			'New List', 'List name', 'New Variable', 'Variable name'];
+			'New List', 'List name', 'New Variable', 'Variable name',
+			'New Block', 'Add an Extension'];
 	}
 
 	public function showBlocksForCategory(selectedCategory:int, scrollToOrigin:Boolean, shiftKey:Boolean = false):void {
@@ -131,13 +132,20 @@ public class PaletteBuilder {
 			nextY += 5;
 		}
 
-		addItem(new Button(Translator.map('Add an Extension'), showAnExtension, false, '/help/studio/tips/blocks/add-an-extension/'));
+		addExtensionButtons();
 		for each (var ext:* in app.extensionManager.enabledExtensions()) {
 			addExtensionSeparator(ext);
 			addBlocksForExtension(ext);
 		}
 
 		updateCheckboxes();
+	}
+
+	protected function addExtensionButtons():void {
+	}
+
+	protected function addAddExtensionButton():void {
+		addItem(new Button(Translator.map('Add an Extension'), showAnExtension, false, '/help/studio/tips/blocks/add-an-extension/'));
 	}
 
 	private function showDataCategory():void {
@@ -247,10 +255,14 @@ public class PaletteBuilder {
 
 	private function showAnExtension():void {
 		function addExt(ext:ScratchExtension):void {
-			app.extensionManager.setEnabled(ext.name, true)
+			if (ext.isInternal) {
+				app.extensionManager.setEnabled(ext.name, true);
+			} else {
+				app.extensionManager.loadCustom(ext);
+			}
 			app.updatePalette();
 		}
-		var lib:MediaLibrary = new MediaLibrary(app, 'extension', addExt);
+		var lib:MediaLibrary = app.getMediaLibrary('extension', addExt);
 		lib.open();
 	}
 
@@ -338,23 +350,31 @@ public class PaletteBuilder {
 		}
 	}
 
-	private function addExtensionSeparator(ext:ScratchExtension):void {
-		function extensionMenu(ignore:*):void {
-			var m:Menu = new Menu();
-			m.addItem(Translator.map('About') + ' ' + ext.name + ' ' + Translator.map('extension') + '...', showAbout);
-			m.addItem('Remove extension blocks', hideExtension);
-			m.showOnStage(app.stage);
-		}
+	protected function getExtensionMenu(ext:ScratchExtension):Menu {
 		function showAbout():void {
 			// Open in the tips window if the URL starts with /info/ and another tab otherwise
 			if (ext.url) {
 				if (ext.url.indexOf('/info/') === 0) app.showTip(ext.url);
-				else navigateToURL(new URLRequest(ext.url));
+				else if(ext.url.indexOf('http') === 0) navigateToURL(new URLRequest(ext.url));
+				else DialogBox.notify('Extensions', 'Unable to load about page: the URL given for extension "' + ext.name + '" is not formatted correctly.');
 			}
 		}
 		function hideExtension():void {
 			app.extensionManager.setEnabled(ext.name, false);
 			app.updatePalette();
+		}
+
+		var m:Menu = new Menu();
+		m.addItem(Translator.map('About') + ' ' + ext.name + ' ' + Translator.map('extension') + '...', showAbout, !!ext.url);
+		m.addItem('Remove extension blocks', hideExtension);
+		return m;
+	}
+
+	protected const pwidth:int = 215;
+	protected function addExtensionSeparator(ext:ScratchExtension):void {
+		function extensionMenu(ignore:*):void {
+			var m:Menu = getExtensionMenu(ext);
+			m.showOnStage(app.stage);
 		}
 		nextY += 7;
 
@@ -363,17 +383,21 @@ public class PaletteBuilder {
 		titleButton.y = nextY;
 		app.palette.addChild(titleButton);
 
-		var x:int = titleButton.width + 12;
-		addLine(x, nextY + 9, app.palette.width - x - 38);
+		addLineForExtensionTitle(titleButton, ext);
 
 		var indicator:IndicatorLight = new IndicatorLight(ext);
 		indicator.addEventListener(MouseEvent.CLICK, function(e:Event):void {Scratch.app.showTip('extensions');}, false, 0, true);
 		app.extensionManager.updateIndicator(indicator, ext);
-		indicator.x = app.palette.width - 30;
+		indicator.x = pwidth - 30;
 		indicator.y = nextY + 2;
 		app.palette.addChild(indicator);
 
 		nextY += titleButton.height + 10;
+	}
+
+	protected function addLineForExtensionTitle(titleButton:IconButton, ext:ScratchExtension):void {
+		var x:int = titleButton.width + 12;
+		addLine(x, nextY + 9, pwidth - x - 38);
 	}
 
 	private function addBlocksForExtension(ext:ScratchExtension):void {
@@ -393,7 +417,7 @@ public class PaletteBuilder {
 		}
 	}
 
-	private function addLine(x:int, y:int, w:int):void {
+	protected function addLine(x:int, y:int, w:int):void {
 		const light:int = 0xF2F2F2;
 		const dark:int = CSS.borderColor - 0x141414;
 		var line:Shape = new Shape();
@@ -412,4 +436,3 @@ public class PaletteBuilder {
 	}
 
 }}
-

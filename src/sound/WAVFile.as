@@ -25,7 +25,7 @@ public class WAVFile {
 
 	public static function empty():ByteArray {
 		// Return sound containing a single zero-valued sample.
-		// Note: A totally empty WAV file is considered broken by Quicktime and perhaps other sound tools.
+		// Note: A totally empty WAV file is considered broken by QuickTime and perhaps other sound tools.
 		var data:ByteArray = new ByteArray();
 		data.writeShort(0);
 		return encode(data, 1, 22050, false);

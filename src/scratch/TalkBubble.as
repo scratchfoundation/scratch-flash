@@ -29,6 +29,7 @@ public class TalkBubble extends Sprite {
 	private var style:String; // 'say' or 'ask' or 'result'
 	private var shape:Shape;
 	private var text:TextField;
+	private var source:Object;
 	private static var textFormat:TextFormat = new TextFormat(CSS.font, 14, 0, true, null, null, null, null, TextFormatAlign.CENTER);
 	private static var resultFormat:TextFormat = new TextFormat(CSS.font, 12, CSS.textColor, null, null, null, null, null, TextFormatAlign.CENTER);
 	private var outlineColor:int = 0xA0A0A0;
@@ -42,9 +43,10 @@ public class TalkBubble extends Sprite {
 	private var pDropX:int = 8;
 	private var lineWidth:Number = 3;
 
-	public function TalkBubble(s:String, type:String, style:String) {
+	public function TalkBubble(s:String, type:String, style:String, source:Object) {
 		this.type = type;
 		this.style = style;
+		this.source = source;
 		if (style == 'ask') {
 			outlineColor = 0x4AADDE;
 		} else if (style == 'result') {
@@ -76,6 +78,8 @@ public class TalkBubble extends Sprite {
 	}
 
 	public function getText():String { return text.text }
+
+	public function getSource():Object { return source; }
 
 	private function setText(s:String):void {
 		var desiredWidth:int = 135;
@@ -169,7 +173,7 @@ public class TalkBubble extends Sprite {
 	}
 
 	private function arc(x:int, y:int):void {
-		// Draw a curve between two points. Compute control point by following an orthogal vector
+		// Draw a curve between two points. Compute control point by following an orthogonal vector
 		// from the midpoint of the L between p1 and p2 scaled by roundness * dist(p1, p2).
 		// If concave is true, invert the curvature.
 

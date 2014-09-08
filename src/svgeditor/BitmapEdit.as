@@ -23,7 +23,7 @@ John:
   [x] deactivate when media library showing (so cursor doesn't disappear)
   [ ] snap costume center to grid
   [ ] allow larger pens (make size slider be non-linear)
-  [ ] when converting stage from bm to vector, trim white area (?)
+  [ ] when converting stage from bitmap to vector, trim white area (?)
   [ ] minor: small shift when baking in after moving selection
   [ ] add readout for pen size
   [ ] add readout for zoom
@@ -103,7 +103,7 @@ public class BitmapEdit extends ImageEdit {
 		var toolsLayer:Sprite = getToolsLayer();
 		var contentLayer:Sprite = workArea.getContentLayer();
 		var p:Point = contentLayer.globalToLocal(toolsLayer.localToGlobal(toolsP));
-		var roundedP:Point = new Point(2 * Math.round(p.x / 2), 2 * Math.round(p.y / 2)); // round to nearest half pixel
+		var roundedP:Point = workArea.getScale() == 1 ? new Point(Math.round(p.x), Math.round(p.y)) : new Point(Math.round(p.x * 2) / 2, Math.round(p.y * 2) / 2);
 		return toolsLayer.globalToLocal(contentLayer.localToGlobal(roundedP));
 	}
 
@@ -112,7 +112,7 @@ public class BitmapEdit extends ImageEdit {
 		r = r.intersection(bm.rect); // constrain selection to bitmap content
 		if ((r.width < 1) || (r.height < 1)) return null; // empty rectangle
 
-		var selectionBM:BitmapData = new BitmapData(r.width, r.height, true, 0);;
+		var selectionBM:BitmapData = new BitmapData(r.width, r.height, true, 0);
 		selectionBM.copyPixels(bm, r, new Point(0, 0));
 		if (stampMode) {
 			highlightTool('bitmapSelect');
@@ -190,8 +190,8 @@ public class BitmapEdit extends ImageEdit {
 		var el:SVGElement = SVGElement.makeBitmapEl(c.bitmapForEditor(isScene), 0.5);
 		var sel:SVGBitmap = new SVGBitmap(el, el.bitmap);
 		sel.redraw();
-		sel.x = destP.x;
-		sel.y = destP.y;
+		sel.x = destP.x - c.width() / 2;
+		sel.y = destP.y - c.height() / 2;
 		workArea.getContentLayer().addChild(sel);
 
 		setToolMode('bitmapSelect');
@@ -219,10 +219,11 @@ public class BitmapEdit extends ImageEdit {
 			if (r.width >= 1 && r.height >= 1) {
 				newBM = new BitmapData(r.width, r.height, true, 0);
 				newBM.copyPixels(bm, r, new Point(0, 0));
+				c.setBitmapData(newBM, Math.floor(480 - r.x), Math.floor(360 - r.y));
 			} else {
 				newBM = new BitmapData(2, 2, true, 0); // empty bitmap
+				c.setBitmapData(newBM, 0, 0);
 			}
-			c.setBitmapData(newBM, Math.floor(480 - r.x), Math.floor(360 - r.y));
 		}
 		recordForUndo(c.baseLayerBitmap.clone(), c.rotationCenterX, c.rotationCenterY);
 		Scratch.app.setSaveNeeded();
@@ -345,7 +346,7 @@ public class BitmapEdit extends ImageEdit {
 	public override function translateContents(x:Number, y:Number):void {
 		var bm:BitmapData = workArea.getBitmap().bitmapData;
 		var newBM:BitmapData = new BitmapData(bm.width, bm.height, true, 0);
-		newBM.copyPixels(bm, bm.rect, new Point(2 * x, 2 * y));
+		newBM.copyPixels(bm, bm.rect, new Point(Math.round(2 * x), Math.round(2 * y)));
 		workArea.getBitmap().bitmapData = newBM;
 	}
 

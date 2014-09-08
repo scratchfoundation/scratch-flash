@@ -51,7 +51,7 @@ package {
 		/** Context to create textures on */
 		private var __context:Context3D;
 		private var program:Program3D;
-		private var indexBuffer:IndexBuffer3D; 
+		private var indexBuffer:IndexBuffer3D;
 		private var vertexBuffer:VertexBuffer3D;
 		private var fragmentShaderAssembler:AGALMiniAssembler;
 		private var vertexShaderAssembler:AGALMiniAssembler;
@@ -152,7 +152,7 @@ package {
 				boundsDict = new Dictionary();
 				cachedOtherRenderBitmaps = new Dictionary();
 				stampsByID = {};
-				cleanupUnusedBitmaps();
+				cleanUpUnusedBitmaps();
 			}
 
 			scratchStage = stage;
@@ -202,7 +202,7 @@ package {
 				requestContext3D();
 			}
 			else setRenderView();
-			
+
 			//childrenChanged = true;
 			tlPoint = scratchStage.localToGlobal(originPt);
 		}
@@ -223,7 +223,7 @@ package {
 
 			for(var o:Object in cachedOtherRenderBitmaps)
 				cachedOtherRenderBitmaps[o].dispose();
-			
+
 			cachedOtherRenderBitmaps = new Dictionary();
 
 			//trace('Dying!');
@@ -340,7 +340,7 @@ package {
 					indexData.writeShort(base);
 					base += 4;
 				}
-	
+
 				vertexData.length = ovStride * numChildren << 2;
 				resized = true;
 				//trace('indexData resized');
@@ -371,7 +371,7 @@ package {
 				vertexBufferUploaded = false;
 			}
 		}
-		
+
 		private var childrenDrawn:int = 0;
 		private var tlPoint:Point;
 		private function draw():void {
@@ -534,7 +534,7 @@ package {
 				var srcWidth:Number = dw * scale; // Is this right?
 				var srcHeight:Number = dh * scale;
 				hueShift = ((360.0 * effects["color"]) / 200.0) % 360.0;
-				
+
 				var n:Number = Math.max(0, Math.min(effects['ghost'], 100));
 				alpha = 1.0 - (n / 100.0);
 
@@ -558,13 +558,13 @@ package {
 				pixelX *= rect.width / srcWidth;
 				pixelY *= rect.height / srcHeight;
 			}
-			vertexData.writeFloat(TLx);			    // x
-			vertexData.writeFloat(TLy);			    // y
+			vertexData.writeFloat(TLx);				// x
+			vertexData.writeFloat(TLy);				// y
 			vertexData.writeFloat(0);				// z - use index?
 			vertexData.writeFloat(0);				// u
 			vertexData.writeFloat(0);				// v
 			vertexData.writeFloat(left);			// u0
-			vertexData.writeFloat(top);			    // v0
+			vertexData.writeFloat(top);				// v0
 			vertexData.writeFloat(right - left);	// w
 			vertexData.writeFloat(bottom - top); 	// h
 			vertexData.writeFloat(alpha);
@@ -577,13 +577,13 @@ package {
 			vertexData.writeFloat(brightnessShift);
 			vertexData.writeFloat(texIndex);
 
-			vertexData.writeFloat(BLx);			    // x
-			vertexData.writeFloat(BLy);			    // y
+			vertexData.writeFloat(BLx);				// x
+			vertexData.writeFloat(BLy);				// y
 			vertexData.writeFloat(0);
 			vertexData.writeFloat(0);				// u
 			vertexData.writeFloat(1);				// v
 			vertexData.writeFloat(left);			// u0
-			vertexData.writeFloat(top);			    // v0
+			vertexData.writeFloat(top);				// v0
 			vertexData.writeFloat(right - left);	// w
 			vertexData.writeFloat(bottom - top); 	// h
 			vertexData.writeFloat(alpha);
@@ -596,13 +596,13 @@ package {
 			vertexData.writeFloat(brightnessShift);
 			vertexData.writeFloat(texIndex);
 
-			vertexData.writeFloat(BRx);			    // x
-			vertexData.writeFloat(BRy);			    // y
+			vertexData.writeFloat(BRx);				// x
+			vertexData.writeFloat(BRy);				// y
 			vertexData.writeFloat(0);
 			vertexData.writeFloat(1);				// u
 			vertexData.writeFloat(1);				// v
 			vertexData.writeFloat(left);			// u0
-			vertexData.writeFloat(top);			    // v0
+			vertexData.writeFloat(top);				// v0
 			vertexData.writeFloat(right - left);	// w
 			vertexData.writeFloat(bottom - top); 	// h
 			vertexData.writeFloat(alpha);
@@ -615,13 +615,13 @@ package {
 			vertexData.writeFloat(brightnessShift);
 			vertexData.writeFloat(texIndex);
 
-			vertexData.writeFloat(TRx);			    // x
-			vertexData.writeFloat(TRy);			    // y
+			vertexData.writeFloat(TRx);				// x
+			vertexData.writeFloat(TRy);				// y
 			vertexData.writeFloat(0);
 			vertexData.writeFloat(1);				// u
 			vertexData.writeFloat(0);				// v
 			vertexData.writeFloat(left);			// u0
-			vertexData.writeFloat(top);			    // v0
+			vertexData.writeFloat(top);				// v0
 			vertexData.writeFloat(right - left);	// w
 			vertexData.writeFloat(bottom - top); 	// h
 			vertexData.writeFloat(alpha);
@@ -634,21 +634,21 @@ package {
 			vertexData.writeFloat(brightnessShift);
 			vertexData.writeFloat(texIndex);
 		}
-		
-		private function cleanupUnusedBitmaps():void {
-//trace('cleanupUnusedBitmaps()');
+
+		private function cleanUpUnusedBitmaps():void {
+//trace('cleanUpUnusedBitmaps()');
 			var deletedBMs:Array = [];
 			for (var k:Object in bitmapsByID) {
 				var bmID:String = k as String;
 				var isUsed:Boolean = false;
-				
+
 				for(var spr:Object in spriteBitmaps) {
 					if(spriteBitmaps[spr] == bmID) {
 						isUsed = true;
 						break;
 					}
 				}
-				
+
 				if(!isUsed) {
 //trace('Deleting bitmap '+bmID);
 					if(bitmapsByID[bmID] is ChildRender)
@@ -656,7 +656,7 @@ package {
 					deletedBMs.push(bmID);
 				}
 			}
-			
+
 			for each(bmID in deletedBMs)
 				delete bitmapsByID[bmID];
 		}
@@ -932,12 +932,12 @@ package {
 						unpackedBMs[k] = bitmapsByID[k];
 						++bmsToPack;
 					}
-	
+
 				//trace('pack textures! ('+bmsToPack+')');
 				for(var i:int=1; i<6 && bmsToPack > 0; ++i) {
 					if(i >= textures.length)
 						textures.push(new ScratchTextureBitmap(texSize, texSize));
-	
+
 					var newTex:ScratchTextureBitmap = textures[i];
 					var packedIDs:Array = newTex.packBitmaps(unpackedBMs);
 					for(var j:int=0; j<packedIDs.length; ++j) {
@@ -973,7 +973,7 @@ package {
 
 				if(bmsToPack > 0) {
 					if(!cleanedUnused) {
-						cleanupUnusedBitmaps();
+						cleanUpUnusedBitmaps();
 						cleanedUnused = true;
 					}
 					else {
@@ -1010,7 +1010,7 @@ package {
 			render(childrenDrawn);
 			__context.present();
 			++drawCount;
-			
+
 			// Invalidate cached renders
 			for(var o:Object in cachedOtherRenderBitmaps)
 				cachedOtherRenderBitmaps[o].inner_x = Number.NaN;
@@ -1203,7 +1203,7 @@ package {
 		{
 			// assign shader program
 			__context.setProgram(program);
-			
+
 			// assign texture to texture sampler 0
 			//__context.setScissorRectangle(getChildAt(0).getRect(stage));
 			for(var i:int=0; i<6; ++i) {
@@ -1245,7 +1245,7 @@ package {
 			__context.clear(0, 0, 0, 0);
 			__context.drawTriangles(indexBuffer, 0, quadCount*2);
 			//trace('finished drawing() - '+drawCount);
-			
+
 			//childrenChanged = false;
 			//movedChildren = new Dictionary();
 		}
@@ -1262,7 +1262,7 @@ package {
 
 			__context.setDepthTest(false, Context3DCompareMode.ALWAYS);
 			__context.enableErrorChecking = true;
-			
+
 			program = __context.createProgram();
 			setupShaders();
 			program.upload(vertexShaderAssembler.agalcode, fragmentShaderAssembler.agalcode);
@@ -1282,7 +1282,7 @@ package {
 				"mov v2, va3\n"+ // copy p_x, p_y, whirlRadians, (push fisheye here?)
 				"mov v3, va4\n" // copy hueShift, fisheye, brightness, texture index
 			);
-			
+
 			fragmentShaderAssembler.assemble( Context3DProgramType.FRAGMENT,
 				// FC0 = (1, 2, 0, 0.5)
 				/*** Mosaic effect ***/
@@ -1299,14 +1299,14 @@ package {
 				// Get the middle pixel
 				"div ft1.xyxy, v2.xyxy, fc0.yyyy\n"+
 				"add ft2.xyzw, ft2.xyxy, ft1.xyxy\n"+
-				
+
 				// Use the pixelated UV?
 				"sge ft1.x, v2.x, fc0.z\n"+ // is pixelate_x >= 0?
 				"mul ft2.xyzw, ft2.xyzw, ft1.xxxx\n"+ // then use the pixelated UV
 				"slt ft1.x, v2.x, fc0.z\n"+ // is pixelate_x < 0?
 				"mul ft0.xyzw, ft0.xyzw, ft1.xxxx\n"+ // then use the pixelated UV
 				"add ft0.xyzw, ft0.xyzw, ft2.xyzw\n"+ // Add them together
-				
+
 				/*** Whirl effect ***/
 				"mov ft0.zwzw, fc0.zzzz\n" +
 				"mov ft4.xyzw, ft0.xyzw\n" +
@@ -1315,83 +1315,83 @@ package {
 				"sqt ft1.x, ft1.y\n" + // ft.x = d, len(uv) from center of texture (0.5, 0.5)
 				"div ft1.y, ft1.x, fc0.w\n" + // radius = 0.5 (to the edge)
 				"sub ft1.y, fc0.x, ft1.y\n" + // ft1.y = factor
-				
+
 				"mul ft1.z, ft1.y, ft1.y\n" +
 				"mul ft1.z, ft1.z, v2.z\n" + // ft1.z = a, using v2.w for whirlRadians
 				"sin ft2.xyzw, ft1.zzzz\n" + // ft2.x = sinAngle
 				"cos ft2.yyyy, ft1.zzzz\n" + // ft2.y = cosAngle
-				
+
 				"mul ft2.z, ft0.x, ft2.y\n" + // ft2.z = vec.x * cosAngle
 				"mul ft2.w, ft0.y, ft2.x\n" + // ft2.w = vec.y * sinAngle
 				"sub ft3.xyzw, ft2.zzzz, ft2.wwww\n" +
-				
+
 				"mul ft2.z, ft0.x, ft2.x\n" + // ft2.z = vec.x * sinAngle
 				"mul ft2.w, ft0.y, ft2.y\n" + // ft2.w = vec.y * cosAngle
 				"add ft3.yyyy, ft2.zzzz, ft2.wwww\n" +
 				"add ft3.xy, ft3.xy, fc0.ww\n" + // ft3.y = p.y
-				
+
 				"sge ft1.y, ft1.x, fc0.w\n" +
 				"mul ft4.xy, ft4.xy, ft1.yy\n" +
 				"slt ft1.y, ft1.x, fc0.w\n" +
 				"mul ft0.xy, ft3.xy, ft1.yy\n" +
 				"add ft0.xy, ft4.xy, ft0.xy\n" +
-				
+
 				"sat ft0.xy, ft0.xy\n" +
-				
+
 				/*** Fisheye effect ***/ // fisheye = v3.y
 				"sub ft1.xy, ft0.xy, fc0.ww\n" + // ft0.xy = vec = (uv - [0.5,0.5])
 				"div ft2.xy, ft1.xy, fc0.ww\n" + // vec = vec / [0.5, 0.5]
 				"mov ft2.zw, fc0.zz\n" +
 				"dp3 ft1.yyy, ft2.xyz, ft2.xyz\n" + // ft1.y = length(vec)^2
 				"sqt ft1.x, ft1.y\n" + // ft.x = length(vec)
-				
+
 				// Prevent divide by zero
 				"seq ft3.y, ft1.x, fc0.z\n"+ //int len_eq_zero = (v == 0);
 				"mul ft3.x, fc3.w, ft3.y\n"+ //tiny = 0.000001 * len_eq_zero; = ft3.x
 				"add ft1.x, ft1.x, ft3.x\n"+ //len = len + tiny;
-				
+
 				"div ft2.xy, ft2.xy, ft1.xx\n" + // vec2 = vec / len;
 				"pow ft1.y, ft1.x, v3.y\n" + // r = pow(len, scaledPower);
 				"mul ft2.xy, ft2.xy, ft1.yy\n" + // coords = center + (r * vec2 * center);
 				"mul ft2.xy, ft2.xy, fc0.ww\n" +
 				"add ft2.xy, ft2.xy, fc0.ww\n" +
-				
+
 				"sge ft1.x, ft1.y, fc0.x\n" +
 				"mul ft0.xy, ft0.xy, ft1.xx\n" +
 				"slt ft1.y, ft1.y, fc0.x\n" +
 				"mul ft2.xy, ft2.xy, ft1.yy\n" +
 				"add ft0.xy, ft2.xy, ft0.xy\n" +
-				
-				/*** Move the texture coordinates into the sub-texture space ***/ 
+
+				/*** Move the texture coordinates into the sub-texture space ***/
 				"mul ft0.xyzw, ft0.xyzw, v1.xyxy\n" +
 				"add ft0.xy, ft0.xy, v0.zw\n" +
-				
-				/*** Select texture to use ***/ 
+
+				/*** Select texture to use ***/
 				// Get the texture pixel using ft0.xy as the coordinates
 				"seq ft5, v3.w, fc0.z\n"+	// Use texture 0?
 				"tex ft1, ft0, fs0 <2d,clamp,linear,nomip>\n"+
 				"mul ft1, ft1, ft5\n"+
-				
+
 				"seq ft5, v3.w, fc0.x\n"+	// Use texture 1?
 				"tex ft2, ft0, fs1 <2d,clamp,linear,nomip>\n"+
 				"mul ft2, ft2, ft5\n"+
 				"add ft1, ft1, ft2\n"+
-				
+
 				"seq ft5, v3.w, fc0.y\n"+	// Use texture 2?
 				"tex ft3, ft0, fs2 <2d,clamp,linear,nomip>\n"+
 				"mul ft3, ft3, ft5\n"+
 				"add ft1, ft1, ft3\n"+
-				
+
 				"seq ft5, v3.w, fc2.y\n"+	// Use texture 3?
 				"tex ft4, ft0, fs3 <2d,clamp,linear,nomip>\n"+
 				"mul ft4, ft4, ft5\n"+
 				"add ft1, ft1, ft4\n"+
-				
+
 				"seq ft5, v3.w, fc2.z\n"+	// Use texture 4?
 				"tex ft4, ft0, fs4 <2d,clamp,linear,nomip>\n"+
 				"mul ft4, ft4, ft5\n"+
 				"add ft1, ft1, ft4\n"+
-				
+
 				"seq ft5, v3.w, fc2.w\n"+	// Use texture 5?
 				"tex ft4, ft0, fs5 <2d,clamp,linear,nomip>\n"+
 				"mul ft4, ft4, ft5\n"+
@@ -1592,8 +1592,8 @@ package {
 				"sat ft1.xyz, ft7.xyz\n"+			// Move the shifted color into ft1
 
 				/*** Ghost effect ***/
-				"mul ft1.w, ft1.w, v1.z\n"+     // varying alpha in v1.z
-				"mov oc, ft1\n"   // fill ft0.x with v0.x and ft0.w with v0.w
+				"mul ft1.w, ft1.w, v1.z\n"+	// varying alpha in v1.z
+				"mov oc, ft1\n" // fill ft0.x with v0.x and ft0.w with v0.w
 			);
 		}
 
@@ -1687,8 +1687,8 @@ package {
 
 			if(!e) requestContext3D();
 		}
-		
-		private static var sRawData:Vector.<Number> = 
+
+		private static var sRawData:Vector.<Number> =
 			new <Number>[1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1];
 		private function createOrthographicProjectionMatrix(width:Number, height:Number, x:Number, y:Number):Matrix3D
 		{
@@ -1715,7 +1715,7 @@ internal final class Dbg
 	public static function printObj(obj:*):String
 	{
 		var memoryHash:String;
-		
+
 		try
 		{
 			FakeClass(obj);
@@ -1724,7 +1724,7 @@ internal final class Dbg
 		{
 			memoryHash = String(e).replace(/.*([@|\$].*?) to .*$/gi, '$1');
 		}
-		
+
 		return flash.utils.getQualifiedClassName(obj) + memoryHash;
 	}
 }

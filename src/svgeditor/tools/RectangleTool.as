@@ -21,11 +21,11 @@ package svgeditor.tools
 {
 	import flash.display.DisplayObject;
 	import flash.geom.Point;
-	
+
 	import svgeditor.ImageEdit;
 	import svgeditor.DrawProperties;
 	import svgeditor.objs.SVGShape;
-	
+
 	import svgutils.SVGElement;
 
 	public final class RectangleTool extends SVGCreateTool
@@ -58,7 +58,7 @@ package svgeditor.tools
 			newObject = new SVGShape(newElement);
 			contentLayer.addChild(newObject as DisplayObject);
 		}
-		
+
 		override protected function mouseMove(p:Point):void {
 			if(!createOrigin) return;
 
@@ -69,8 +69,8 @@ package svgeditor.tools
 			// Shift key makes a square
 			if(currentEvent.shiftKey) {
 				w = h = Math.max(w, h);
-				p.x = createOrigin.x + (ofs.x < 0 ? w : -w);  
-				p.y = createOrigin.y + (ofs.y < 0 ? h : -h);  
+				p.x = createOrigin.x + (ofs.x < 0 ? w : -w);
+				p.y = createOrigin.y + (ofs.y < 0 ? h : -h);
 			}
 
 			newElement.setAttribute('x', Math.min(p.x, createOrigin.x));

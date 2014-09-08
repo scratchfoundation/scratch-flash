@@ -76,15 +76,11 @@ public class Translator {
 	}
 
 	public static function importTranslationFromFile():void {
-		function fileSelected(e:Event):void {
-			var file:FileReference = FileReference(files.fileList[0]);
-			var i:int = file.name.lastIndexOf('.');
-			langName = file.name.slice(0, i);
-			file.addEventListener(Event.COMPLETE, fileLoaded);
-			file.load();
-		}
 		function fileLoaded(e:Event):void {
-			var data:ByteArray = FileReference(e.target).data;
+			var file:FileReference = FileReference(e.target);
+			var i:int = file.name.lastIndexOf('.');
+			var langName:String = file.name.slice(0, i);
+			var data:ByteArray = file.data;
 			if (data) {
 				dictionary = new Object(); // default to English
 				dictionary = parsePOData(data);
@@ -93,13 +89,8 @@ public class Translator {
 				Scratch.app.translationChanged();
 			}
 		}
-		var langName:String;
-		var files:FileReferenceList = new FileReferenceList();
-		files.addEventListener(Event.SELECT, fileSelected);
-		try {
-			// Ignore the exception that happens when you call browse() with the file browser open
-			files.browse();
-		} catch(e:*) {}
+
+		Scratch.loadSingleFile(fileLoaded);
 	}
 
 	private static function fontSizeMenu():void {
@@ -115,7 +106,7 @@ public class Translator {
 	}
 
 	private static function setFontsFor(lang:String):void {
-		// Set the rightToLeft flag and font sizes the given langauge.
+		// Set the rightToLeft flag and font sizes the given language.
 
 		currentLang = lang;
 		isEnglish = (lang == 'en');
@@ -258,6 +249,7 @@ public class Translator {
 
 	private static function checkBlockTranslations():void {
 		for each (var entry:Array in Specs.commands) checkBlockSpec(entry[0]);
+		for each (var spec:String in Specs.extensionSpecs) checkBlockSpec(spec);
 	}
 
 	private static function checkBlockSpec(spec:String):void {

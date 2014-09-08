@@ -153,7 +153,7 @@ public class Watcher extends Sprite implements DragClient {
 
 	public function step(runtime:ScratchRuntime):void {
 		var newValue:* = getValue(runtime);
-		if (newValue != lastValue) {
+		if (newValue !== lastValue) {
 			showValue(newValue);
 			runtime.interp.redraw();
 		}
@@ -392,11 +392,12 @@ public class Watcher extends Sprite implements DragClient {
 			sliderMax = Math.max(minVal, maxVal);
 			isDiscrete = (min.indexOf('.') < 0) && (max.indexOf('.') < 0);
 			setSliderValue(sliderMin);
+			Scratch.app.setSaveNeeded();
 		}
 		var d:DialogBox = new DialogBox(setMinMax);
 		d.addTitle('Slider Range');
-		d.addField('Min', 120);
-		d.addField('Max', 120);
+		d.addField('Min', 120, isDiscrete || int(sliderMin) != sliderMin ? sliderMin : int(sliderMin) + '.0');
+		d.addField('Max', 120, sliderMax);
 		d.addAcceptCancelButtons('OK');
 		d.showOnStage(stage);
 	}

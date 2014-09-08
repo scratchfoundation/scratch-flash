@@ -42,6 +42,7 @@ public class ScriptsPane extends ScrollFrameContents {
 	private const INSERT_WRAP:int = 4;
 
 	public var app:Scratch;
+	public var padding:int = 10;
 
 	private var viewedObj:ScratchObj;
 	private var commentLines:Shape;
@@ -125,6 +126,10 @@ public class ScriptsPane extends ScrollFrameContents {
 		nearestTarget = null;
 		b.scaleX = b.scaleY = scaleX;
 		addFeedbackShape();
+	}
+
+	public function prepareToDragComment(c:ScratchComment):void {
+		c.scaleX = c.scaleY = scaleX;
 	}
 
 	public function draggingDone():void {
@@ -428,12 +433,14 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 		var y:Number = mouseY;
 		function newComment():void { addComment(null, x, y) }
 		var m:Menu = new Menu();
-		m.addItem('cleanup', cleanup);
+		m.addItem('clean up', cleanUp);
 		m.addItem('add comment', newComment);
 		return m;
 	}
 
 	public function setScale(newScale:Number):void {
+		x *= newScale / scaleX;
+		y *= newScale / scaleY;
 		newScale = Math.max(1/6, Math.min(newScale, 6.0));
 		scaleX = scaleY = newScale;
 		updateSize();
@@ -485,29 +492,28 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 
 	/* Stack cleanup */
 
-	private function cleanup():void {
-		// Cleanup the layout of stacks and blocks in the scripts pane.
+	private function cleanUp():void {
+		// Clean up the layout of stacks and blocks in the scripts pane.
 		// Steps:
 		//	1. Collect stacks and sort by x
 		//	2. Assign stacks to columns such that the y-ranges of all stacks in a column do not overlap
 		//	3. Compute the column widths
 		//	4. Move stacks into place
 
-		var pad:int = 10;
 		var stacks:Array = stacksSortedByX();
 		var columns:Array = assignStacksToColumns(stacks);
 		var columnWidths:Array = computeColumnWidths(columns);
 
-		var nextX:int = pad;
+		var nextX:int = padding;
 		for (var i:int = 0; i < columns.length; i++) {
 			var col:Array = columns[i];
-			var nextY:int = pad;
+			var nextY:int = padding;
 			for each (var b:Block in col) {
 				b.x = nextX;
 				b.y = nextY;
-				nextY += b.height + pad;
+				nextY += b.height + padding;
 			}
-			nextX += columnWidths[i] + pad;
+			nextX += columnWidths[i] + padding;
 		}
 		saveScripts();
 	}

@@ -25,23 +25,23 @@
 
 package scratch {
 	import blocks.*;
-	
+
 	import filters.FilterPack;
-	
+
 	import flash.display.*;
 	import flash.events.MouseEvent;
 import flash.geom.ColorTransform;
 import flash.utils.*;
-	
+
 	import interpreter.*;
-	
+
 	import scratch.ScratchComment;
 import scratch.ScratchSprite;
 
 import translation.Translator;
-	
+
 	import util.*;
-	
+
 	import watchers.*;
 
 public class ScratchObj extends Sprite {
@@ -132,14 +132,6 @@ public class ScratchObj extends Sprite {
 		return currentCostumeIndex + 1;
 	}
 
-	public function isCostumeNameUsed(name:String):Boolean {
-		var existingNames:Array = [];
-		for each (var c:ScratchCostume in costumes) {
-			existingNames.push(c.costumeName.toLowerCase());
-		}
-		return (existingNames.indexOf(name.toLowerCase()) > -1);
-	}
-
 	public function unusedCostumeName(baseName:String = ''):String {
 		// Create a unique costume name by appending a number if necessary.
 		if (baseName == '') baseName = Translator.map(isStage ? 'backdrop1' : 'costume1');
@@ -228,7 +220,7 @@ public class ScratchObj extends Sprite {
 
 	protected function adjustForRotationCenter():void {
 		// Adjust the offset of img relative to it's parent. If this object is a
-		// ScratchSprite, then img is adusted based on the costume's rotation center.
+		// ScratchSprite, then img is adjusted based on the costume's rotation center.
 		// If it is a ScratchStage, img is centered on the stage.
 		var costumeObj:DisplayObject = img.getChildAt(0);
 		if (isStage) {
@@ -454,6 +446,7 @@ public class ScratchObj extends Sprite {
 		if (v == null) { // not found; create it
 			v = new Variable(varName, 0);
 			variables.push(v);
+			Scratch.app.updatePalette(false);
 		}
 		return v;
 	}
@@ -507,6 +500,7 @@ public class ScratchObj extends Sprite {
 		if (list == null) { // not found; create it
 			list = new ListWatcher(listName, [], this);
 			lists.push(list);
+			Scratch.app.updatePalette(false);
 		}
 		return list;
 	}
@@ -547,7 +541,7 @@ public class ScratchObj extends Sprite {
 		var now:uint = getTimer();
 		app.runtime.startClickedHats(this);
 		if ((now - lastClickTime) < DOUBLE_CLICK_MSECS) {
-			if (!isStage && ScratchSprite(this).isClone) return;
+			if (isStage || ScratchSprite(this).isClone) return;
 			app.selectSprite(this);
 			lastClickTime = 0;
 		} else {

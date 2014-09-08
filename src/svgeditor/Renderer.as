@@ -26,7 +26,7 @@ package svgeditor
 	import svgeditor.objs.SVGGroup;
 	import svgeditor.objs.SVGShape;
 	import svgeditor.objs.SVGTextField;
-	
+
 	public class Renderer
 	{
 

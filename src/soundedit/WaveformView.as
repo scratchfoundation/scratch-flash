@@ -63,7 +63,7 @@ public class WaveformView extends Sprite implements DragClient {
 	private var condensedSamples:Vector.<int> = new Vector.<int>();
 	private var samplesPerCondensedSample:int = 32;
 
-	private var scrollStart:int;		// first visible condensedSample
+	private var scrollStart:int;	// first visible condensedSample
 	private var selectionStart:int;	// first selected condensedSample
 	private var selectionEnd:int;	// last selected condensedSample
 
@@ -275,17 +275,19 @@ public class WaveformView extends Sprite implements DragClient {
 			stopRecording();
 		} else {
 			stopAll();
-			recordSamples = new Vector.<int>();
 			openMicrophone();
-			mic.addEventListener(SampleDataEvent.SAMPLE_DATA, recordData);
-		}	
+			if(mic) {
+				recordSamples = new Vector.<int>();
+				mic.addEventListener(SampleDataEvent.SAMPLE_DATA, recordData);
+			}
+		}
 		editor.updateIndicators();
 		drawWave();
 	}
 
 	public function isRecording():Boolean { return recordSamples != null }
 
-	private function stopRecording():void {	
+	private function stopRecording():void {
 		if (mic) mic.removeEventListener(SampleDataEvent.SAMPLE_DATA, recordData);
 		editor.levelMeter.clear();
 		if (recordSamples && (recordSamples.length > 0)) appendRecording(recordSamples);
@@ -317,6 +319,8 @@ public class WaveformView extends Sprite implements DragClient {
 
 	private function openMicrophone():void {
 		mic = Microphone.getMicrophone();
+		if (!mic) return;
+
 		mic.setSilenceLevel(0);
 		mic.setLoopBack(true);
 		mic.soundTransform = new SoundTransform(0, 0);
@@ -376,22 +380,22 @@ public class WaveformView extends Sprite implements DragClient {
 		// sample to convert from lower original sampling rates (11025 or 22050) and mono->stereo.
 		// Note: This "cheap trick" of duplicating samples can also approximate imported sounds
 		// at sampling rates of 16000 and 8000 (actual playback rates: 14700 and 8820).
-		// 
+		//
 		var max:int, i:int;
 		var dups:int = 2 * (44100 / samplingRate); // number of copies of each samples to write
 		if (dups & 1) dups++; // ensure that dups is even
 		var count:int = 6000 / dups;
-	    for (i = 0; i < count && (playIndex < playEndIndex); i++) {
+		for (i = 0; i < count && (playIndex < playEndIndex); i++) {
 			var sample:Number = samples[playIndex++] / 32767;
 			for (var j:int = 0; j < dups; j++) evt.data.writeFloat(sample);
-	    }
-	    if (playbackStarting) {
+		}
+		if (playbackStarting) {
 			if (i < count) {
 				// Very short sound or selection; pad with enough zeros so sound actually plays.
 				for (i = 0; i < 2048; i++) evt.data.writeFloat(0 / 32767);
 			}
 		playbackStarting = false;
-	    }
+		}
 	}
 
 	/* Editing Operations */
@@ -443,7 +447,7 @@ public class WaveformView extends Sprite implements DragClient {
 		var last:int = clipTo(condensedEnd * samplesPerCondensedSample, 0, samples.length);
 		return samples.slice(first, last);
 	}
-	
+
 	private function updateContents(newSamples:Vector.<int>, keepSelection:Boolean = false, newCondensation:int = -1):void {
 		// Replace my contents with the given sample buffer.
 		// Record change for undo.
@@ -567,7 +571,7 @@ public class WaveformView extends Sprite implements DragClient {
 	private var startOffset:int; // offset where drag started
 
 	public function mouseDown(evt:MouseEvent):void { Scratch(root).gh.setDragClient(this, evt) }
-	
+
 	public function dragBegin(evt:MouseEvent):void {
 		// Decide how to make or adjust the selection.
 		const close:int = 8;
@@ -577,7 +581,7 @@ public class WaveformView extends Sprite implements DragClient {
 			if (Math.abs(startOffset - selectionStart) < close) startOffset = selectionStart;
 			if (mousePastEnd()) startOffset = condensedSamples.length;
 		} else {
-			// Clicks close to start or end of slection adjust the selection.
+			// Clicking close to the start or end of a selection adjusts the selection.
 			if (Math.abs(startOffset - selectionStart) < close) selectMode = 'start';
 			else if (Math.abs(startOffset - selectionEnd) < close) selectMode = 'end';
 		}

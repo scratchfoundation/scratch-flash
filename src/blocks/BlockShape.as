@@ -335,7 +335,7 @@ public class BlockShape extends Shape {
 	}
 
 	private function curve(p1x:int, p1y:int, p2x:int, p2y:int, roundness:Number = 0.42):void {
-		// Compute the Bezier control point by following an orthogal vector from the midpoint
+		// Compute the Bezier control point by following an orthogonal vector from the midpoint
 		// of the line between p1 and p2 scaled by roundness * dist(p1, p2). The default roundness
 		// approximates a circular arc. Negative roundness gives a concave curve.
 

@@ -43,7 +43,8 @@ public class ScratchExtension {
 
 	public var name:String = '';
 	public var host:String = '127.0.0.1'; // most extensions run on the local host
-	public var port:int;
+	public var port:int = 0;
+	public var id:uint = 0;
 	public var blockSpecs:Array = [];
 	public var isInternal:Boolean;
 	public var useScratchPrimitives:Boolean; // true for extensions built into Scratch (WeDo, PicoBoard) that have custom primitives
@@ -51,7 +52,7 @@ public class ScratchExtension {
 	public var menus:Object = {};
 	public var thumbnailMD5:String = ''; // md5 has for extension image shown in extension library
 	public var url:String = ''; // URL for extension documentation page (with helper app download link, if appropriate)
-	public var javascriptURL:String = ''; // URL to load a javascript extension
+	public var javascriptURL:String = ''; // URL to load a JavaScript extension
 	public var tags:Array = []; // tags for the extension library filter
 
 	// Runtime state
@@ -68,11 +69,19 @@ public class ScratchExtension {
 		this.port = port;
 	}
 
+	private static function getExtensionURL(extensionName:String):String {
+		var path:String = Scratch.app.isOffline ? '' : '/scratchr2/';
+
+		path += 'static/js/scratch_extensions/' + extensionName;
+
+		return path;
+	}
+
 	public static function PicoBoard():ScratchExtension {
 		// Return a descriptor for the Scratch PicoBoard extension.
 		var result:ScratchExtension = new ScratchExtension('PicoBoard', 0);
 		result.isInternal = true;
-		result.javascriptURL = '/scratchr2/static/js/scratch_extensions/picoExtension.js';
+		result.javascriptURL = getExtensionURL('picoExtension.js');
 		result.thumbnailMD5 = '82318df0f682b1de33f64da8726660dc.png';
 		result.url = 'http://wiki.scratch.mit.edu/wiki/Sensor_Board_Blocks';
 		result.tags = ['hardware'];
@@ -83,7 +92,7 @@ public class ScratchExtension {
 		// Return a descriptor for the LEGO WeDo extension.
 		var result:ScratchExtension = new ScratchExtension(ExtensionManager.wedoExt, 0);
 		result.isInternal = true;
-		result.javascriptURL = '/scratchr2/static/js/scratch_extensions/wedoExtension.js';
+		result.javascriptURL = getExtensionURL('wedoExtension.js');
 		result.thumbnailMD5 = 'c4a6bfa4cb9f4d71b3d1e65db63cb761.png';
 		result.url = 'http://info.scratch.mit.edu/WeDo';
 		result.tags = ['hardware'];

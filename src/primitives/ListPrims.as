@@ -153,7 +153,7 @@ public class ListPrims {
 		var item:* = interp.arg(b, 1);
 		if (list.contents.indexOf(item) >= 0) return true;
 		for each (var el:* in list.contents) {
-			// use Scratch comparision operator (Scratch considers the string '123' equal to the number 123)
+			// use Scratch comparison operator (Scratch considers the string '123' equal to the number 123)
 			if (Primitives.compare(el, item) == 0) return true;
 		}
 		return false;
