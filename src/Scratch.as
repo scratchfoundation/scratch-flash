@@ -577,6 +577,7 @@ public class Scratch extends Sprite {
 		Menu.removeMenusFrom(stage);
 		editMode = newMode;
 		if (editMode) {
+			interp.showAllRunFeedback();
 			hide(playerBG);
 			show(topBarPart);
 			show(libraryPart);
