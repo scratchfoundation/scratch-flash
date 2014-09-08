@@ -18,18 +18,20 @@
  */
 
 package uiwidgets {
-import flash.display.Shape;
-import flash.display.Sprite;
-import flash.events.MouseEvent;
-import flash.events.Event;
-import flash.filters.BevelFilter;
+import flash.display.*;
+import flash.events.*;
+import flash.filters.*;
 import flash.geom.Point;
 import util.DragClient
 
 public class Scrollbar extends Sprite implements DragClient {
 
+	public static const STYLE_DEFAULT:int = 1;
+	public static const STYLE_LIGHT:int = 2;
+
 	public static var color:int = 0xCBCDCF;
 	public static var sliderColor:int = 0x424447;
+	public static var lightSliderColor:int = 0xF9F9F9;
 	public static var cornerRadius:int = 9;
 	public static var look3D:Boolean = false;
 
@@ -40,15 +42,24 @@ public class Scrollbar extends Sprite implements DragClient {
 	private var positionFraction:Number = 0;		// scroll amount (range: 0-1)
 	private var sliderSizeFraction:Number = 0.1;	// slider size, used to show fraction of docutment vislbe (range: 0-1)
 	private var isVertical:Boolean;
+	private var style:int;
 	private var dragOffset:int;
 	private var scrollFunction:Function;
 
-	public function Scrollbar(w:int, h:int, scrollFunction:Function = null) {
+	public function Scrollbar(w:int, h:int, scrollFunction:Function = null, style:int = STYLE_DEFAULT) {
+		this.style = style;
 		this.scrollFunction = scrollFunction;
 		base = new Shape();
 		slider = new Shape();
 		addChild(base);
 		addChild(slider);
+		if (style == STYLE_LIGHT) {
+			var f:GlowFilter = new GlowFilter();
+			f.blurX = f.blurY = 3;
+			f.alpha = .7;
+			f.color = 0x000000;
+			slider.filters = [f];
+		}
 		if (look3D) addFilters();
 		alpha = 0.7;
 		setWidthHeight(w, h);
@@ -75,8 +86,9 @@ public class Scrollbar extends Sprite implements DragClient {
 		this.w = w;
 		this.h = h;
 		base.graphics.clear();
-		base.graphics.beginFill(color);
-		base.graphics.drawRoundRect(0, 0, w, h, cornerRadius, cornerRadius);
+		base.graphics.beginFill(color, style == Scrollbar.STYLE_LIGHT ? 0 : 1);
+		var r:Number = Math.min(w, h, cornerRadius);
+		base.graphics.drawRoundRect(0, 0, w, h, r, r);
 		base.graphics.endFill();
 		drawSlider();
 	}
@@ -97,9 +109,10 @@ public class Scrollbar extends Sprite implements DragClient {
 			slider.x = positionFraction * (this.width - w);
 			slider.y = 0;
 		}
+		var r:Number = Math.min(w, h, cornerRadius);
 		slider.graphics.clear();
-		slider.graphics.beginFill(sliderColor);
-		slider.graphics.drawRoundRect(0, 0, w, h, cornerRadius, cornerRadius);
+		slider.graphics.beginFill(style == Scrollbar.STYLE_LIGHT ? lightSliderColor : sliderColor);
+		slider.graphics.drawRoundRect(0, 0, w, h, r, r);
 		slider.graphics.endFill();
 	}
 

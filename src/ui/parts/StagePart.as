@@ -28,7 +28,6 @@ package ui.parts {
 import flash.display.*;
 import flash.events.*;
 import flash.text.*;
-import flash.media.*;
 import assets.Resources;
 import scratch.*;
 import translation.Translator;
@@ -303,7 +302,7 @@ public class StagePart extends BaseStagePart {
 			hidePlayButton();
 	}
 
-	public function hidePlayButton():void {
+	override public function hidePlayButton():void {
 		if (playButton) removeChild(playButton);
 		playButton = null;
 	}

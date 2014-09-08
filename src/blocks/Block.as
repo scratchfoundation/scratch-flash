@@ -802,7 +802,7 @@ public class Block extends Sprite {
 	public function duplicateStack(deltaX:Number, deltaY:Number):void {
 		if (isProcDef() || op == 'proc_declaration') return; // don't duplicate procedure definition
 		var forStage:Boolean = Scratch.app.viewedObj() && Scratch.app.viewedObj().isStage;
-		var newStack:Block = Scratch.app.blockIO.stringToStack(Scratch.app.blockIO.stackToString(this), forStage);
+		var newStack:Block = BlockIO.stringToStack(Scratch.app.blockIO.stackToString(this), forStage);
 		newStack.x = x + deltaX;
 		newStack.y = y + deltaY;
 		parent.addChild(newStack);

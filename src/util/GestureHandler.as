@@ -288,18 +288,19 @@ public class GestureHandler {
 
 		var o:DisplayObject = evt.target as DisplayObject;
 		var mouseTarget:Boolean = false;
+		var appScale:Number = 1;
 		while (o != null) {
-			if (isMouseTarget(o, app.stage.mouseX / app.scaleX, app.stage.mouseY / app.scaleY)) {
+			if (isMouseTarget(o, app.stage.mouseX / appScale, app.stage.mouseY / appScale)) {
 				mouseTarget = true;
 				break;
 			}
 			o = o.parent;
 		}
 		var rect:Rectangle = app.stageObj().getRect(app.stage);
-		if(!mouseTarget && rect.contains(app.stage.mouseX, app.stage.mouseY)) return findMouseTargetOnStage(app.stage.mouseX / app.scaleX, app.stage.mouseY / app.scaleY);
+		if(!mouseTarget && rect.contains(app.stage.mouseX, app.stage.mouseY)) return findMouseTargetOnStage(app.stage.mouseX / appScale, app.stage.mouseY / appScale);
 		if (o == null) return null;
 		if ((o is Block) && Block(o).isEmbeddedInProcHat()) return o.parent;
-		if (o is ScratchObj) return findMouseTargetOnStage(app.stage.mouseX / app.scaleX, app.stage.mouseY / app.scaleY);
+		if (o is ScratchObj) return findMouseTargetOnStage(app.stage.mouseX / appScale, app.stage.mouseY / appScale);
 		return o;
 	}
 
@@ -310,7 +311,7 @@ public class GestureHandler {
 		// Return the stage if no other object is found.
 		if(app.isIn3D) app.stagePane.visible = true;
 		var uiLayer:Sprite = app.stagePane.getUILayer();
-		for (var i:int = uiLayer.numChildren - 1; i > 0; i--) {
+		for (var i:int = uiLayer.numChildren - 1; i > 0; --i) {
 			var o:DisplayObject = uiLayer.getChildAt(i) as DisplayObject;
 			if (o is Bitmap) break; // hit the paint layer of the stage; no more elments
 			if (o.visible && o.hitTestPoint(globalX, globalY, true)) {
@@ -319,7 +320,7 @@ public class GestureHandler {
 			}
 		}
 		if(app.stagePane != uiLayer) {
-			for (i = app.stagePane.numChildren - 1; i > 0; i--) {
+			for (i = app.stagePane.numChildren - 1; i > 0; --i) {
 				o = app.stagePane.getChildAt(i) as DisplayObject;
 				if (o is Bitmap) break; // hit the paint layer of the stage; no more elments
 				if (o.visible && o.hitTestPoint(globalX, globalY, true)) {
@@ -374,15 +375,17 @@ public class GestureHandler {
 		if (mouseTarget == null) return;
 		var menu:Menu;
 		try { menu = mouseTarget.menu(evt) } catch (e:Error) {}
-		if (menu) menu.showOnStage(stage, evt.stageX / app.scaleX, evt.stageY / app.scaleY);
+		var appScale:Number = app.scaleX * app.stage.contentsScaleFactor;
+		if (menu) menu.showOnStage(app.stage, evt.stageX / appScale, evt.stageY / appScale);
 	}
 
 	private var lastGrowShrinkSprite:Sprite;
 
 	private function handleTool(evt:MouseEvent):void {
 		var isGrowShrink:Boolean = ('grow' == CursorTool.tool) || ('shrink' == CursorTool.tool);
-		var t:* = findTargetFor('handleTool', app, evt.stageX / app.scaleX, evt.stageY / app.scaleY);
-		if(!t) t = findMouseTargetOnStage(evt.stageX / app.scaleX, evt.stageY / app.scaleY);
+		var appScale:Number = app.scaleX * app.stage.contentsScaleFactor;
+		var t:* = findTargetFor('handleTool', app, evt.stageX / appScale, evt.stageY / appScale);
+		if(!t) t = findMouseTargetOnStage(evt.stageX / appScale, evt.stageY / appScale);
 
 		if (isGrowShrink && (t is ScratchSprite)) {
 			function clearTool(e:MouseEvent):void {
@@ -417,6 +420,7 @@ public class GestureHandler {
 		originalParent = obj.parent; // parent is null if objToGrab() returns a new object
 		originalPosition = new Point(obj.x, obj.y);
 		originalScale = obj.scaleX;
+		var appScale:Number = app.stagePane.scaleX * app.scaleX;
 
 		if (obj is Block) {
 			var b:Block = Block(obj);
@@ -436,8 +440,8 @@ public class GestureHandler {
 
 				obj.parent.removeChild(obj);
 			}
-			if (inStage && (app.stagePane.scaleX != 1)) {
-				obj.scaleX = obj.scaleY = (obj.scaleX * app.stagePane.scaleX);
+			if (inStage && (appScale != 1)) {
+				obj.scaleX = obj.scaleY = (obj.scaleX * appScale);
 			}
 		}
 
@@ -458,7 +462,7 @@ public class GestureHandler {
 		// Search for an object to handle this drop and return true one is found.
 		// Note: Search from front to back, so the front-most object catches the dropped object.
 		if(app.isIn3D) app.stagePane.visible = true;
-		var possibleTargets:Array = stage.getObjectsUnderPoint(new Point(evt.stageX / app.scaleX, evt.stageY / app.scaleY));
+		var possibleTargets:Array = app.stage.getObjectsUnderPoint(new Point(app.stage.mouseX, app.stage.mouseY));
 		if(app.isIn3D) {
 			app.stagePane.visible = false;
 			if(possibleTargets.length == 0 && app.stagePane.scrollRect.contains(app.stagePane.mouseX, app.stagePane.mouseY))

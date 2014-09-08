@@ -239,7 +239,6 @@ public class Scratch extends Sprite {
 	public function logMessage(msg:String, extra_data:Object=null):void {}
 	public function loadProjectFailed():void {}
 
-	[Embed(source='../libs/RenderIn3D.swf', mimeType='application/octet-stream')]
 	public static const MySwfData:Class;
 	protected function checkFlashVersion():void {
 		if(Capabilities.playerType != "Desktop" || Capabilities.version.indexOf('IOS') === 0) {
@@ -478,6 +477,7 @@ public class Scratch extends Sprite {
 		runtime.stepRuntime();
 		Transition.step(null);
 		stagePart.step();
+		stagePane
 		libraryPart.step();
 		scriptsPart.step();
 		imagesPart.step();
@@ -535,6 +535,8 @@ public class Scratch extends Sprite {
 
 	public function installStage(newStage:ScratchStage):void {
 		var showGreenflagOverlay:Boolean = shouldShowGreenFlag();
+		newStage.costumes = [new ScratchCostume('blah',ScratchCostume.emptySVG())];
+		newStage.updateCostume();
 		stagePart.installStage(newStage, showGreenflagOverlay);
 		selectSprite(newStage);
 		libraryPart.refresh();
@@ -590,7 +592,6 @@ public class Scratch extends Sprite {
 			show(libraryPart as DisplayObject);
 			show(tabsPart);
 			setTab(lastTab);
-			stagePart.hidePlayButton();
 			runtime.edgeTriggersEnabled = true;
 		} else {
 			addChildAt(playerBG, 0); // behind everything

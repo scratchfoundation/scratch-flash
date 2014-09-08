@@ -43,8 +43,8 @@ public class PaletteSelector extends Sprite {
 		initCategories();
 	}
 
-	public static function strings():Array { return categories }
-	public function updateTranslation():void { initCategories() }
+	public static function strings():Array { return categories; }
+	public function updateTranslation():void { initCategories(); }
 
 	public function select(id:int, shiftKey:Boolean = false):void {
 		for (var i:int = 0; i < numChildren; i++) {
@@ -88,5 +88,4 @@ public class PaletteSelector extends Sprite {
 		g.beginFill(0xFFFF00, 0); // invisible (alpha = 0) rectangle used to set size
 		g.drawRect(0, 0, w, h);
 	}
-
 }}

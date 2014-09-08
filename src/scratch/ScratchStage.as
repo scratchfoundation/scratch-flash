@@ -677,9 +677,11 @@ public class ScratchStage extends ScratchObj {
 	/* Dropping */
 
 	public function handleDrop(obj:*):Boolean {
+		var app:Scratch = root as Scratch;
 		if ((obj is ScratchSprite) || (obj is Watcher) || (obj is ListWatcher)) {
-			if (scaleX != 1) {
-				obj.scaleX = obj.scaleY = obj.scaleX / scaleX; // revert to original scale
+			var appScale:Number = scaleX * app.scaleX;
+			if (appScale != 1) {
+				obj.scaleX = obj.scaleY = obj.scaleX / appScale; // revert to original scale
 			}
 			var p:Point = globalToLocal(new Point(obj.x, obj.y));
 			obj.x = p.x;
@@ -703,7 +705,6 @@ public class ScratchStage extends ScratchObj {
 				s.setInitialCostume(c.duplicate());
 				app.addNewSprite(s, false, true);
 			}
-			var app:Scratch = root as Scratch;
 			// Add sprites
 			if (obj.mysprite) {
 				app.addNewSprite(obj.mysprite.duplicate(), false, true);

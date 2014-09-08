@@ -89,7 +89,7 @@ public class MediaInfo extends Sprite {
 			// initialize script list from either a stack (Block) or an array of stacks already in array form
 			objType = 'script';
 			objName = '';
-			scripts = (obj is Block) ? [Scratch.app.blockIO.stackToArray(obj)] : obj;
+			scripts = (obj is Block) ? [BlockIO.stackToArray(obj)] : obj;
 			md5 = null; // scripts don't have an MD5 hash
 		} else {
 			// initialize from a JSON object
@@ -168,7 +168,7 @@ public class MediaInfo extends Sprite {
 
 	private function setScriptThumbnail():void {
 		if (!scripts || (scripts.length < 1)) return; // no scripts
-		var script:Block = Scratch.app.blockIO.arrayToStack(scripts[0]);
+		var script:Block = BlockIO.arrayToStack(scripts[0]);
 		var scale:Number = Math.min(thumbnailWidth / script.width, thumbnailHeight / script.height);
 		var bm:BitmapData = new BitmapData(thumbnailWidth, thumbnailHeight, true, 0);
 		var m:Matrix = new Matrix();

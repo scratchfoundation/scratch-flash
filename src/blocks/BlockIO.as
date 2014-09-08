@@ -45,11 +45,11 @@ public class BlockIO {
 		return util.JSON.stringify(stackToArray(b));
 	}
 
-	public function stringToStack(s:String, forStage:Boolean = false):Block {
+	public static function stringToStack(s:String, forStage:Boolean = false):Block {
 		return arrayToStack(util.JSON.parse(s) as Array, forStage);
 	}
 
-	public function stackToArray(b:Block):Array {
+	public static function stackToArray(b:Block):Array {
 		// Return an array structure representing this entire stack.
 		if (b == null) return null;
 		var result:Array = [];
@@ -60,7 +60,7 @@ public class BlockIO {
 		return result;
 	}
 
-	public function arrayToStack(cmdList:Array, forStage:Boolean = false):Block {
+	public static function arrayToStack(cmdList:Array, forStage:Boolean = false):Block {
 		// Return the stack represented by an array structure.
 		var topBlock:Block, lastBlock:Block;
 		for each (var cmd:Array in cmdList) {
@@ -73,7 +73,7 @@ public class BlockIO {
 		return topBlock;
 	}
 
-	private function blockToArray(b:Block):Array {
+	private static function blockToArray(b:Block):Array {
 		// Return an array structure for this block.
 		var result:Array = [b.op];
 		if (b.op == Specs.GET_VAR) return [Specs.GET_VAR, b.spec];		// variable reporter
@@ -99,7 +99,7 @@ public class BlockIO {
 		return result;
 	}
 
-	private function arrayToBlock(cmd:Array, undefinedBlockType:String, forStage:Boolean = false):Block {
+	private static function arrayToBlock(cmd:Array, undefinedBlockType:String, forStage:Boolean = false):Block {
 		// Make a block from an array of form: <op><arg>*
 
 		if (cmd[0] == 'getUserName') Scratch.app.usesUserNameBlock = true;
@@ -141,7 +141,7 @@ public class BlockIO {
 		return b;
 	}
 
-	public function specForCmd(cmd:Array, undefinedBlockType:String):Array {
+	public static function specForCmd(cmd:Array, undefinedBlockType:String):Array {
 		// Return the block specification for the given command.
 		var op:String = cmd[0];
 		if (op == '\\\\') op = '%'; // convert old Squeak modulo operator
@@ -156,7 +156,7 @@ public class BlockIO {
 		return [spec, undefinedBlockType, 0, op]; // no match found
 	}
 
-	private function argsForCmd(cmd:Array, reverseArgs:Boolean):Array {
+	private static function argsForCmd(cmd:Array, reverseArgs:Boolean):Array {
 		// Return an array of zero or more arguments for the given command.
 		// Skip substacks. Arguments may be literal values or reporter blocks (expressions).
 		var result:Array = [];
@@ -174,7 +174,7 @@ public class BlockIO {
 		return result;
 	}
 
-	private function substacksForCmd(cmd:Array):Array {
+	private static function substacksForCmd(cmd:Array):Array {
 		// Return an array of zero or more substacks for the given command.
 		var result:Array = [];
 		for (var i:int = 1; i < cmd.length; i++) {
@@ -186,9 +186,9 @@ public class BlockIO {
 		return result;
 	}
 
-	private const controlColor:int = Specs.blockColor(Specs.controlCategory);
+	private static const controlColor:int = Specs.blockColor(Specs.controlCategory);
 
-	private function specialCmd(cmd:Array, forStage:Boolean):Block {
+	private static function specialCmd(cmd:Array, forStage:Boolean):Block {
 		// If the given command is special (e.g. a reporter or old-style a hat blocK), return a block for it.
 		// Otherwise, return null.
 		var b:Block;
@@ -248,7 +248,7 @@ public class BlockIO {
 		return null;
 	}
 
-	private function convertOldCmd(cmd:Array):Block {
+	private static function convertOldCmd(cmd:Array):Block {
 		// If the given command is one of a handful of old Scratch blocks,
 		// covert it to it's new form and return it. Otherwise, return null.
 		var b:Block;
@@ -295,12 +295,12 @@ public class BlockIO {
 		return null;
 	}
 
-	private function convertArg(arg:*):* {
+	private static function convertArg(arg:*):* {
 		// If arg is an array, convert it to a block. Otherwise, return it unchanged.
 		return (arg is Array) ? arrayToBlock(arg, 'r') : arg;
 	}
 
-	private function fixMouseEdgeRefs(b:Block):void {
+	private static function fixMouseEdgeRefs(b:Block):void {
 		var refCmds:Array = [
 			'createCloneOf', 'distanceTo:', 'getAttribute:of:',
 			'gotoSpriteOrMouse:', 'pointTowards:', 'touching:'];

@@ -101,6 +101,8 @@ public class ScratchTextureBitmap extends BitmapData
 			rect.x = rect.y = 0;
 			bmd = bitmapsByID[bmID];
 //trace('Copying pixels from bitmap with id: '+bmID+' @ '+bmd.width+'x'+bmd.height+'  -  '+tmpPt);
+			lock();
+			fillRect(rect, 0x00000000);
 			draw(bmd, drawMatrix);
 
 			if(bmd is ChildRender) {

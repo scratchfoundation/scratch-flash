@@ -404,7 +404,7 @@ public class ScriptsPane extends ScrollFrameContents {
 			if (a.length < 1) continue;
 			var blockOrComment:* =
 				(a[0] is Array) ?
-					Scratch.app.blockIO.arrayToStack(a, forStage) :
+					BlockIO.arrayToStack(a, forStage) :
 					ScratchComment.fromArray(a);
 			blockOrComment.x = dropP.x;
 			blockOrComment.y = dropP.y;

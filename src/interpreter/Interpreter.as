@@ -297,10 +297,10 @@ public class Interpreter {
 		}
 
 		// TODO: Optimize this into a cached check if the args *could* block at all
-		if(b.args.length && checkBlockingArgs(b)) {
-			doYield();
-			return null;
-		}
+//		if(b.args.length && checkBlockingArgs(b)) {
+//			doYield();
+//			return null;
+//		}
 
 		// Debug code
 		if(debugFunc != null)
