@@ -535,8 +535,6 @@ public class Scratch extends Sprite {
 
 	public function installStage(newStage:ScratchStage):void {
 		var showGreenflagOverlay:Boolean = shouldShowGreenFlag();
-		newStage.costumes = [new ScratchCostume('blah',ScratchCostume.emptySVG())];
-		newStage.updateCostume();
 		stagePart.installStage(newStage, showGreenflagOverlay);
 		selectSprite(newStage);
 		libraryPart.refresh();

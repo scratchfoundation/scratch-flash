@@ -29,7 +29,6 @@ import flash.display3D.*;
 import flash.events.ErrorEvent;
 import flash.events.Event;
 import flash.events.KeyboardEvent;
-import flash.filters.GlowFilter;
 import flash.geom.ColorTransform;
 import flash.geom.Matrix;
 import flash.geom.Matrix3D;
@@ -63,8 +62,8 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 	private var textures:Array;
 	private var testBMs:Array;
 	private var textureIndexByID:Object;
-	private static var texSizeMax:int = 2048;
-	private static var texSize:int = 1024;
+	private static var texSizeMax:int = 4096;
+	private static var texSize:int = 2048;
 	private var penPacked:Boolean;
 
 	/** Triangle index data */
@@ -187,7 +186,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 		}
 		uiContainer.transform.matrix = scratchStage.transform.matrix.clone();
 		scratchStage.stage.addEventListener(Event.RESIZE, onStageResize, false, 0, true);
-//			scratchStage.stage.addEventListener(KeyboardEvent.KEY_DOWN, toggleTextureDebug, false, 0, true);
+//		scratchStage.stage.addEventListener(KeyboardEvent.KEY_DOWN, toggleTextureDebug, false, 0, true);
 		scratchStage.addEventListener(Event.ENTER_FRAME, onRender, false, 0, true);
 
 		penPacked = false;
@@ -383,7 +382,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 		if(childrenChanged) {
 			if(debugTexture) {
 				uiContainer.graphics.clear();
-				uiContainer.graphics.lineStyle(1);
+				uiContainer.graphics.lineStyle(2, 0xFFCCCC);
 			}
 			for(i=0; i<numChildren; ++i) {
 				dispObj = scratchStage.getChildAt(i);
@@ -396,9 +395,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 				if((child as DisplayObject).visible)
 					textureDirty = checkChildRender(child as DisplayObject) || textureDirty;
 
-//		scratchStage.visible = true;
 		if(textureDirty) {
-			// TODO: put the pen layer into a 512x512 texture to be resent each frame
 			packTextureBitmaps();
 		}
 
@@ -458,8 +455,6 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 		const bmID:String = spriteBitmaps[dispObj];
 		const renderOpts:Object = spriteRenderOpts[dispObj];
 		var roundLoc:Boolean = (rot % 90 == 0 && dispObj.scaleX == 1.0 && dispObj.scaleY == 1.0);
-//			var forcePixelate:Boolean = pixelateAll || (renderOpts && renderOpts.bitmap && rot % 90 == 0);
-
 		var boundsX:Number = bounds.left, boundsY:Number = bounds.top;
 		var childRender:ChildRender = bitmapsByID[bmID] as ChildRender;
 		if(childRender && childRender.isPartial()) {
@@ -514,8 +509,8 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 		}
 //if('objName' in dispObj && (dispObj as Object)['objName'] == 'delete_all') {
 //	trace('bmd.rect: '+rect+'    dispObj @ ('+dispObj.x+','+dispObj.y+')');
-//	trace('bounds: '+bounds);
-//	trace('raw bounds: '+renderOpts.raw_bounds);
+//	trace(dispObj.parent.getChildIndex(dispObj) + ' ('+left+','+top+') -> ('+right+','+bottom+')');
+//  trace('raw bounds: '+renderOpts.raw_bounds);
 //}
 
 		// Setup the shader data
@@ -575,7 +570,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 		vertexData.writeFloat(hueShift);
 		vertexData.writeFloat(fisheye);
 		vertexData.writeFloat(brightnessShift);
-		vertexData.writeFloat(texIndex + 0.01);
+		vertexData.writeFloat(texIndex);
 
 		vertexData.writeFloat(BLx);			    // x
 		vertexData.writeFloat(BLy);			    // y
@@ -594,7 +589,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 		vertexData.writeFloat(hueShift);
 		vertexData.writeFloat(fisheye);
 		vertexData.writeFloat(brightnessShift);
-		vertexData.writeFloat(texIndex + 0.02);
+		vertexData.writeFloat(texIndex);
 
 		vertexData.writeFloat(BRx);			    // x
 		vertexData.writeFloat(BRy);			    // y
@@ -613,7 +608,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 		vertexData.writeFloat(hueShift);
 		vertexData.writeFloat(fisheye);
 		vertexData.writeFloat(brightnessShift);
-		vertexData.writeFloat(texIndex + 0.03);
+		vertexData.writeFloat(texIndex);
 
 		vertexData.writeFloat(TRx);			    // x
 		vertexData.writeFloat(TRy);			    // y
@@ -632,7 +627,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 		vertexData.writeFloat(hueShift);
 		vertexData.writeFloat(fisheye);
 		vertexData.writeFloat(brightnessShift);
-		vertexData.writeFloat(texIndex + 0.04);
+		vertexData.writeFloat(texIndex);
 	}
 
 	private function cleanupUnusedBitmaps():void {
@@ -874,9 +869,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 			(dispObj as Object).setRotationStyle('left-right');
 
 		scratchStage.visible = false;
-//trace('Rendered bitmap with id '+id);
-
-//trace(Dbg.printObj(dispObj)+' Rendered '+Dbg.printObj(bmd)+' with id: '+id+' @ '+bmd.width+'x'+bmd.height);
+//trace(dispObj.parent.getChildIndex(dispObj)+' '+Dbg.printObj(dispObj)+' Rendered '+Dbg.printObj(bmd)+' with id: '+id+' @ '+bmd.width+'x'+bmd.height);
 //trace('Original render size was '+bounds2);
 		if(updateTexture && textureIndexByID.hasOwnProperty(id))
 			textures[textureIndexByID[id]].updateBitmap(id, bmd);
@@ -971,6 +964,8 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 			}
 			else {
 				if(debugTexture) {
+//					uiContainer.graphics.clear();
+//					uiContainer.graphics.lineStyle(1);
 					var offset:Number = 0;
 					for(i=0; i<textures.length; ++i) {
 						newTex = textures[i];
@@ -979,6 +974,9 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 						var testBM:Bitmap = testBMs[i];
 						testBM.scaleX = testBM.scaleY = 0.5;
 						testBM.x = 380 + offset;
+
+						var scale:Number = testBM.scaleX;
+						var X:Number = testBM.x * scratchStage.root.scaleX;
 //						trace('Debugging '+Dbg.printObj(newTex));
 						//testBM.y = -900;
 						testBM.bitmapData = newTex;
@@ -986,7 +984,8 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 						for (k in bitmapsByID) {
 							if(i == textureIndexByID[k]) {
 								var rect:Rectangle = newTex.getRect(k as String).clone();
-								uiContainer.graphics.drawRect(testBM.x + rect.x * testBM.scaleX, rect.y * testBM.scaleX, rect.width * testBM.scaleX, rect.height * testBM.scaleX);
+								trace(rect);
+//								uiContainer.graphics.drawRect(X + rect.x * scale, rect.y * scale, rect.width * scale, rect.height * scale);
 							}
 						}
 						offset += testBM.width;
@@ -1038,7 +1037,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 		__context.configureBackBuffer(bmd.width, bmd.height, 0, false);
 		render(childrenDrawn);
 		__context.drawToBitmapData(bmd);
-		__context.present();
+		//__context.present();
 		//bmd.draw(uiContainer);
 		scissorRect = null;
 		setRenderView();
@@ -1271,7 +1270,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 		//__context.addEventListener(Event.DEACTIVATE, onContextLoss);
 
 		__context.setDepthTest(false, Context3DCompareMode.ALWAYS);
-		//__context.enableErrorChecking = true;
+		__context.enableErrorChecking = true;
 
 		program = __context.createProgram();
 		setupShaders();
@@ -1377,32 +1376,32 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 						"add ft0.xy, ft0.xy, v0.zw\n" +
 
 				/*** Floor the texture index ***/
-						"frc ft3.xyzw, v3.wwww\n"+
-						"sub ft3.x, v3.w, ft3.x\n"+
+//						"frc ft3.xyzw, v3.wwww\n"+
+//						"sub ft3.x, v3.w, ft3.x\n"+
 
 				/*** Select texture to use (maxTextures is the most we can have) ***/
 					// Get the texture pixel using ft0.xy as the coordinates
-						"seq ft5, ft3.x, fc0.z\n"+	// Use texture 0?
+						"seq ft5, v3.w, fc0.z\n"+	// Use texture 0?
 						"tex ft2, ft0, fs0 <2d,clamp,linear,nomip>\n"+
 						"mul ft2, ft2, ft5\n"+
 						"mov ft1, ft2\n"+
 
-						"seq ft5, ft3.x, fc0.x\n"+	// Use texture 1?
+						"seq ft5, v3.w, fc0.x\n"+	// Use texture 1?
 						"tex ft2, ft0, fs1 <2d,clamp,linear,nomip>\n"+
 						"mul ft2, ft2, ft5\n"+
 						"add ft1, ft1, ft2\n"+
 
-						"seq ft5, ft3.x, fc0.y\n"+	// Use texture 2?
+						"seq ft5, v3.w, fc0.y\n"+	// Use texture 2?
 						"tex ft2, ft0, fs2 <2d,clamp,linear,nomip>\n"+
 						"mul ft2, ft2, ft5\n"+
 						"add ft1, ft1, ft2\n"+
 
-						"seq ft5, ft3.x, fc2.y\n"+	// Use texture 3?
+						"seq ft5, v3.w, fc2.y\n"+	// Use texture 3?
 						"tex ft2, ft0, fs3 <2d,clamp,linear,nomip>\n"+
 						"mul ft2, ft2, ft5\n"+
 						"add ft1, ft1, ft2\n"+
 
-						"seq ft5, ft3.x, fc2.z\n"+	// Use texture 4?
+						"seq ft5, v3.w, fc2.z\n"+	// Use texture 4?
 						"tex ft2, ft0, fs4 <2d,clamp,linear,nomip>\n"+
 						"mul ft2, ft2, ft5\n"+
 						"add ft1, ft1, ft2\n"+
@@ -1565,9 +1564,9 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 						"mov ft5.w, ft2.z\n"+ //mov ft5.w, v; // v
 
 				/*** FIX i to be an integer on Intel Graphics 3000 with Chrome Pepper Flash ***/
-						"add ft3.x, ft3.x, fc0.w\n"+ // fix i?
-						"frc ft3.y, ft3.x\n"+ // fix i?
-						"sub ft3.x, ft3.x, ft3.y\n"+ // fix i?
+//						"add ft3.x, ft3.x, fc0.w\n"+ // fix i?
+//						"frc ft3.y, ft3.x\n"+ // fix i?
+//						"sub ft3.x, ft3.x, ft3.y\n"+ // fix i?
 
 						"seq ft3.y, ft3.x, fc0.z\n"+ //int i_eq_0 = (i == 0);					i_eq_0	= ft3.y
 						"mul ft3.y, ft3.y, fc3.x\n"+ //i_eq_0 = i_eq_0 * 6;
@@ -1610,6 +1609,37 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 						"mul ft1.w, ft1.w, v1.z\n"+     // varying alpha in v1.z
 						"mov oc, ft1\n"   // fill ft0.x with v0.x and ft0.w with v0.w
 		);
+
+//		fragmentShaderAssembler.assemble( Context3DProgramType.FRAGMENT,
+//				/*** Move the texture coordinates into the sub-texture space ***/
+//						"mul ft0.xyzw, v0.xyxy, v1.xyxy\n" +
+//						"add ft0.xy, ft0.xy, v0.zw\n" +
+//						"seq ft5, v3.w, fc0.z\n"+	// Use texture 0?
+//						"tex ft2, ft0, fs0 <2d,clamp,linear,nomip>\n"+
+//						"mul ft2, ft2, ft5\n"+
+//						"mov ft1, ft2\n"+
+//
+//						"seq ft5, v3.w, fc0.x\n"+	// Use texture 1?
+//						"tex ft2, ft0, fs1 <2d,clamp,linear,nomip>\n"+
+//						"mul ft2, ft2, ft5\n"+
+//						"add ft1, ft1, ft2\n"+
+//
+//						"seq ft5, v3.w, fc0.y\n"+	// Use texture 2?
+//						"tex ft2, ft0, fs2 <2d,clamp,linear,nomip>\n"+
+//						"mul ft2, ft2, ft5\n"+
+//						"add ft1, ft1, ft2\n"+
+//
+//						"seq ft5, v3.w, fc2.y\n"+	// Use texture 3?
+//						"tex ft2, ft0, fs3 <2d,clamp,linear,nomip>\n"+
+//						"mul ft2, ft2, ft5\n"+
+//						"add ft1, ft1, ft2\n"+
+//
+//						"seq ft5, v3.w, fc2.z\n"+	// Use texture 4?
+//						"tex ft2, ft0, fs4 <2d,clamp,linear,nomip>\n"+
+//						"mul ft2, ft2, ft5\n"+
+//						"add oc, ft1, ft2\n"
+//						//"tex oc, ft0, fs0 <2d,clamp,linear,nomip>\n"
+//		);
 	}
 
 	private function context3DCreated(e:Event):void {

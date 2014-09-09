@@ -69,7 +69,7 @@ public class MenuItem extends Sprite {
 		setBaseColor(menu.color);
 	}
 
-	public function isLine():Boolean { return !label }
+	public function isLine():Boolean { return !label; }
 
 	public function getLabel():String { return label ? label.text : '' }
 	public function showCheckmark(flag:Boolean):void { if (checkmark) checkmark.visible = flag }

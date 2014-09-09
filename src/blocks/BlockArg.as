@@ -73,7 +73,7 @@ public class BlockArg extends Sprite {
 			if ((type == 'd') || (type == 'n')) isNumber = true;
 			return;
 		}
-		if (setType(type, color)) return;
+		if (setType(type, color, menuName)) return;
 
 		if (type == 'c') {
 			base.setWidthAndTopHeight(13, 13);
@@ -114,7 +114,7 @@ public class BlockArg extends Sprite {
 		}
 	}
 
-	protected function setType(type:String, color:int):Boolean {
+	protected function setType(type:String, color:int, menuName:String = ''):Boolean {
 		var c:int = Color.scaleBrightness(color, 0.92);
 		if (type == 'b') {
 			base = makeBlockShape(BlockShape.BooleanShape, c);

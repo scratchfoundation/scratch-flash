@@ -22,7 +22,6 @@ import flash.display.BitmapData;
 import flash.display3D.*;
 import flash.display3D.textures.Texture;
 import flash.geom.Matrix;
-import flash.geom.Point;
 import flash.geom.Rectangle;
 import org.villekoskela.utils.RectanglePacker;
 
@@ -85,7 +84,6 @@ public class ScratchTextureBitmap extends BitmapData
 		rectangles = {};
 		lock();
 		fillRect(this.rect, 0x00000000);
-		//fillRect(this.rect, 0xffff00ff);
 		var packedIDs:Array = [];
 		for (i=0; i<rectPacker.rectangleCount; ++i) {
 			var bmID:String = indexOfIDs[rectPacker.getRectangleId(i)];
@@ -101,8 +99,6 @@ public class ScratchTextureBitmap extends BitmapData
 			rect.x = rect.y = 0;
 			bmd = bitmapsByID[bmID];
 //trace('Copying pixels from bitmap with id: '+bmID+' @ '+bmd.width+'x'+bmd.height+'  -  '+tmpPt);
-			lock();
-			fillRect(rect, 0x00000000);
 			draw(bmd, drawMatrix);
 
 			if(bmd is ChildRender) {
