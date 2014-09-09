@@ -25,7 +25,7 @@ package {
 
 	public class ChildRender extends BitmapData {
 		private const allowPartial:Boolean = false;
-		private const maxSize:uint = 2046;
+		private const maxSize:uint = 1022;
 		private const halfSize:uint = maxSize >> 1;
 		private var orig_width:Number;
 		private var orig_height:Number;
@@ -34,16 +34,17 @@ package {
 		public var inner_y:Number;
 		public var inner_w:Number;
 		public var inner_h:Number;
-		public var scale:Number;
+		public var scaleX:Number;
+		public var scaleY:Number;
 		public function ChildRender(w:Number, h:Number, dispObj:DisplayObject, penLayer:DisplayObject, b:Rectangle) {
 			orig_width = w;
 			orig_height = h;
 			orig_bounds = b;
-			scale = 1;
-
-			reset(dispObj, penLayer);
+			scaleX = scaleY = 1;
 
 			super(Math.ceil(Math.min(w, maxSize)), Math.ceil(Math.min(h, maxSize)), true, 0);
+
+			reset(dispObj, penLayer);
 		}
 
 		public function reset(dispObj:DisplayObject, penLayer:DisplayObject):void {
@@ -51,8 +52,10 @@ package {
 			inner_w = inner_h = 1;
 
 			if(!allowPartial) {
-				if(orig_width > maxSize || orig_height > maxSize)
-					scale = maxSize / Math.max(orig_width, orig_height);
+				if(orig_width > maxSize || orig_height > maxSize) {
+					scaleX = width / orig_width;
+					scaleY = height / orig_height;
+				}
 
 				return;
 			}

@@ -41,7 +41,7 @@ package ui.media {
 public class MediaInfo extends Sprite {
 
 	public var frameWidth:int = 81;
-	private var frameHeight:int = 94;
+	public var frameHeight:int = 94;
 	protected var thumbnailWidth:int = 68;
 	protected var thumbnailHeight:int = 51;
 

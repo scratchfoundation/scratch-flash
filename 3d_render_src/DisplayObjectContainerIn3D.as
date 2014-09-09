@@ -63,7 +63,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 	private var testBMs:Array;
 	private var textureIndexByID:Object;
 	private static var texSizeMax:int = 4096;
-	private static var texSize:int = 2048;
+	private static var texSize:int = 1024;
 	private var penPacked:Boolean;
 
 	/** Triangle index data */
@@ -795,7 +795,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 		var bmd:BitmapData = bitmapsByID[id];
 		if(bmd) {
 			// If the bitmap changed or the sprite is now large than the stored render then re-render it
-			//trace(bounds2 + ' vs '+bmd.width+'x'+bmd.height);
+			//trace(width +'x'+ height + ' vs '+bmd.width+'x'+bmd.height);
 			if((id.indexOf('bm') != 0 || !unrenderedChildren[dispObj]) && bmd.width >= width && bmd.height >= height) {
 				//trace('USING existing bitmap');
 
@@ -836,13 +836,16 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 		if(!bmd) bmd = new ChildRender(width2, height2, dispObj, stagePenLayer, bounds);
 		else bmd.fillRect(bmd.rect, 0x00000000);
 
-		if(bmd is ChildRender)
-			scale *= (bmd as ChildRender).scale;
+		var sX:Number = scale, sY:Number = scale;
+		if(bmd is ChildRender) {
+			sX *= (bmd as ChildRender).scaleX;
+			sY *= (bmd as ChildRender).scaleY;
+		}
 
 		var drawMatrix:Matrix = new Matrix(1, 0, 0, 1, -bounds.x, -bounds.y);
 		if(bmd is ChildRender && (bmd as ChildRender).isPartial())
 			drawMatrix.translate(-(bmd as ChildRender).inner_x * bounds.width, -(bmd as ChildRender).inner_y * bounds.height);
-		drawMatrix.scale(dispObj.scaleX * scale * Math.min(maxScale, appScale * scratchStage.stage.contentsScaleFactor), dispObj.scaleY * scale * Math.min(maxScale, appScale * scratchStage.stage.contentsScaleFactor));
+		drawMatrix.scale(dispObj.scaleX * sX * Math.min(maxScale, appScale * scratchStage.stage.contentsScaleFactor), dispObj.scaleY * sY * Math.min(maxScale, appScale * scratchStage.stage.contentsScaleFactor));
 		var oldAlpha:Number = dispObj.alpha;
 		dispObj.alpha = 1;
 
@@ -952,9 +955,12 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 					}
 					textures.length = 1;
 
-					size = texSizeMax;
-					usedMaxTex = true;
-					trace('switching to large textures');
+					size <<= 1;
+					if(size >= texSizeMax) {
+						usedMaxTex = true;
+						size = texSizeMax;
+					}
+					trace('switching to larger textures ('+size+')');
 				}
 				else {
 					// Bail on 3D
@@ -1610,36 +1616,51 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 						"mov oc, ft1\n"   // fill ft0.x with v0.x and ft0.w with v0.w
 		);
 
-//		fragmentShaderAssembler.assemble( Context3DProgramType.FRAGMENT,
-//				/*** Move the texture coordinates into the sub-texture space ***/
-//						"mul ft0.xyzw, v0.xyxy, v1.xyxy\n" +
-//						"add ft0.xy, ft0.xy, v0.zw\n" +
-//						"seq ft5, v3.w, fc0.z\n"+	// Use texture 0?
-//						"tex ft2, ft0, fs0 <2d,clamp,linear,nomip>\n"+
-//						"mul ft2, ft2, ft5\n"+
-//						"mov ft1, ft2\n"+
-//
-//						"seq ft5, v3.w, fc0.x\n"+	// Use texture 1?
-//						"tex ft2, ft0, fs1 <2d,clamp,linear,nomip>\n"+
-//						"mul ft2, ft2, ft5\n"+
-//						"add ft1, ft1, ft2\n"+
-//
-//						"seq ft5, v3.w, fc0.y\n"+	// Use texture 2?
-//						"tex ft2, ft0, fs2 <2d,clamp,linear,nomip>\n"+
-//						"mul ft2, ft2, ft5\n"+
-//						"add ft1, ft1, ft2\n"+
-//
-//						"seq ft5, v3.w, fc2.y\n"+	// Use texture 3?
-//						"tex ft2, ft0, fs3 <2d,clamp,linear,nomip>\n"+
-//						"mul ft2, ft2, ft5\n"+
-//						"add ft1, ft1, ft2\n"+
-//
-//						"seq ft5, v3.w, fc2.z\n"+	// Use texture 4?
-//						"tex ft2, ft0, fs4 <2d,clamp,linear,nomip>\n"+
-//						"mul ft2, ft2, ft5\n"+
-//						"add oc, ft1, ft2\n"
-//						//"tex oc, ft0, fs0 <2d,clamp,linear,nomip>\n"
-//		);
+		fragmentShaderAssembler.assemble( Context3DProgramType.FRAGMENT,
+				/*** Move the texture coordinates into the sub-texture space ***/
+						"mul ft0.xyzw, v0.xyxy, v1.xyxy\n" +
+						"add ft0.xy, ft0.xy, v0.zw\n" +
+						"seq ft5, v3.w, fc0.z\n"+	// Use texture 0?
+						"tex ft2, ft0, fs0 <2d,clamp,linear,nomip>\n"+
+						"mul ft2, ft2, ft5\n"+
+						"mov ft1, ft2\n"+
+
+						"seq ft5, v3.w, fc0.x\n"+	// Use texture 1?
+						"tex ft2, ft0, fs1 <2d,clamp,linear,nomip>\n"+
+						"mul ft2, ft2, ft5\n"+
+						"add ft1, ft1, ft2\n"+
+
+						"seq ft5, v3.w, fc0.y\n"+	// Use texture 2?
+						"tex ft2, ft0, fs2 <2d,clamp,linear,nomip>\n"+
+						"mul ft2, ft2, ft5\n"+
+						"add ft1, ft1, ft2\n"+
+
+						"seq ft5, v3.w, fc2.y\n"+	// Use texture 3?
+						"tex ft2, ft0, fs3 <2d,clamp,linear,nomip>\n"+
+						"mul ft2, ft2, ft5\n"+
+						"add ft1, ft1, ft2\n"+
+
+						"seq ft5, v3.w, fc2.z\n"+	// Use texture 4?
+						"tex ft2, ft0, fs4 <2d,clamp,linear,nomip>\n"+
+						"mul ft2, ft2, ft5\n"+
+						"add ft1, ft1, ft2\n" +
+
+						// De-multiply the alpha
+						"seq ft3.y, ft1.w, fc0.z\n"+ //int alpha_eq_zero = (alpha == 0);	alpha_eq_zero	= ft3.y
+						"sne ft3.z, ft1.w, fc0.z\n"+ //int alpha_neq_zero = (alpha != 0);	alpha_neq_zero	= ft3.z
+						"mul ft3.x, fc3.w, ft3.y\n"+ //tiny = 0.000001 * alpha_eq_zero;		tiny		= ft3.x
+						"add ft1.w, ft1.w, ft3.x\n"+ //alpha = alpha + tiny;				Avoid division by zero, alpha != 0
+						"div ft2.xyz, ft1.xyz, ft1.www\n"+ //new_rgb = rgb / alpha
+						"mul ft2.xyz, ft2.xyz, ft3.zzz\n"+ //new_rgb = new_rgb * alpha_neq_zero
+
+						"mul ft1.xyz, ft1.xyz, ft3.yyy\n"+ //rgb = rgb * alpha_eq_zero
+						"add ft1.xyz, ft1.xyz, ft2.xyz\n"+ //rgb = rgb + new_rgb
+
+					// Clamp the color
+						"sat oc, ft1\n"
+
+				//"tex oc, ft0, fs0 <2d,clamp,linear,nomip>\n"
+		);
 	}
 
 	private function context3DCreated(e:Event):void {
