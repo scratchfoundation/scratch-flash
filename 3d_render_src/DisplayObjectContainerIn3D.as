@@ -570,7 +570,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 		vertexData.writeFloat(hueShift);
 		vertexData.writeFloat(fisheye);
 		vertexData.writeFloat(brightnessShift);
-		vertexData.writeFloat(texIndex);
+		vertexData.writeFloat(texIndex + 0.01);
 
 		vertexData.writeFloat(BLx);			    // x
 		vertexData.writeFloat(BLy);			    // y
@@ -589,7 +589,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 		vertexData.writeFloat(hueShift);
 		vertexData.writeFloat(fisheye);
 		vertexData.writeFloat(brightnessShift);
-		vertexData.writeFloat(texIndex);
+		vertexData.writeFloat(texIndex + 0.02);
 
 		vertexData.writeFloat(BRx);			    // x
 		vertexData.writeFloat(BRy);			    // y
@@ -608,7 +608,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 		vertexData.writeFloat(hueShift);
 		vertexData.writeFloat(fisheye);
 		vertexData.writeFloat(brightnessShift);
-		vertexData.writeFloat(texIndex);
+		vertexData.writeFloat(texIndex + 0.03);
 
 		vertexData.writeFloat(TRx);			    // x
 		vertexData.writeFloat(TRy);			    // y
@@ -627,7 +627,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 		vertexData.writeFloat(hueShift);
 		vertexData.writeFloat(fisheye);
 		vertexData.writeFloat(brightnessShift);
-		vertexData.writeFloat(texIndex);
+		vertexData.writeFloat(texIndex + 0.04);
 	}
 
 	private function cleanupUnusedBitmaps():void {
@@ -1295,7 +1295,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 						"mov v0, va1\n"+ // copy u,v, u0, v0
 						"mov v1, va2\n"+ // copy w, h, alpha, mosaic
 						"mov v2, va3\n"+ // copy p_x, p_y, whirlRadians, (push fisheye here?)
-						"mov v3, va4\n"  // copy hueShift, fisheye, brightness, texture index
+						"mov v3, va4\n" // copy hueShift, fisheye, brightness, texture index
 		);
 
 		fragmentShaderAssembler.assemble( Context3DProgramType.FRAGMENT,
@@ -1620,27 +1620,31 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 				/*** Move the texture coordinates into the sub-texture space ***/
 						"mul ft0.xyzw, v0.xyxy, v1.xyxy\n" +
 						"add ft0.xy, ft0.xy, v0.zw\n" +
-						"seq ft5, v3.w, fc0.z\n"+	// Use texture 0?
+
+						"frc ft3.xyzw, v3.wwww\n"+
+						"sub ft3.x, v3.w, ft3.x\n"+
+
+						"seq ft5, ft3.x, fc0.z\n"+	// Use texture 0?
 						"tex ft2, ft0, fs0 <2d,clamp,linear,nomip>\n"+
 						"mul ft2, ft2, ft5\n"+
 						"mov ft1, ft2\n"+
 
-						"seq ft5, v3.w, fc0.x\n"+	// Use texture 1?
+						"seq ft5, ft3.x, fc0.x\n"+	// Use texture 1?
 						"tex ft2, ft0, fs1 <2d,clamp,linear,nomip>\n"+
 						"mul ft2, ft2, ft5\n"+
 						"add ft1, ft1, ft2\n"+
 
-						"seq ft5, v3.w, fc0.y\n"+	// Use texture 2?
+						"seq ft5, ft3.x, fc0.y\n"+	// Use texture 2?
 						"tex ft2, ft0, fs2 <2d,clamp,linear,nomip>\n"+
 						"mul ft2, ft2, ft5\n"+
 						"add ft1, ft1, ft2\n"+
 
-						"seq ft5, v3.w, fc2.y\n"+	// Use texture 3?
+						"seq ft5, ft3.x, fc2.y\n"+	// Use texture 3?
 						"tex ft2, ft0, fs3 <2d,clamp,linear,nomip>\n"+
 						"mul ft2, ft2, ft5\n"+
 						"add ft1, ft1, ft2\n"+
 
-						"seq ft5, v3.w, fc2.z\n"+	// Use texture 4?
+						"seq ft5, ft3.x, fc2.z\n"+	// Use texture 4?
 						"tex ft2, ft0, fs4 <2d,clamp,linear,nomip>\n"+
 						"mul ft2, ft2, ft5\n"+
 						"add ft1, ft1, ft2\n" +
