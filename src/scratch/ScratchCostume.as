@@ -109,7 +109,7 @@ public class ScratchCostume {
 
 	public function set baseLayerData(data:ByteArray):void {
 		__baseLayerData = data;
-		baseLayerMD5 = data ? by.blooddy.crypto.MD5.hashBytes(data) + fileExtension(data) : null;
+		baseLayerMD5 = null;
 	}
 
 	public function get textLayerData():ByteArray {
@@ -118,7 +118,7 @@ public class ScratchCostume {
 
 	public function set textLayerData(data:ByteArray):void {
 		__textLayerData = data;
-		textLayerMD5 = data ? by.blooddy.crypto.MD5.hashBytes(data) + fileExtension(data) : null;
+		textLayerMD5 = null;
 	}
 
 	public static function scaleForScratch(bm:BitmapData):BitmapData {

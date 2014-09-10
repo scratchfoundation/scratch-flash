@@ -77,7 +77,7 @@ public class ScratchSound {
 
 	public function set soundData(data:ByteArray):void {
 		__soundData = data;
-		md5 = data ? by.blooddy.crypto.MD5.hashBytes(soundData) + '.wav' : null;
+		md5 = null;
 	}
 
 	private function reduceSizeIfNeeded(channels:int):void {
