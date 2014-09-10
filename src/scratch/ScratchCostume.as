@@ -59,7 +59,7 @@ public class ScratchCostume {
 	public var baseLayerBitmap:BitmapData;
 	public var baseLayerID:int = -1;
 	public var baseLayerMD5:String;
-	public var baseLayerData:ByteArray;
+	private var __baseLayerData:ByteArray;
 
 	public static const WasEdited:int = -10; // special baseLayerID used to indicate costumes that have been edited
 
@@ -74,7 +74,7 @@ public class ScratchCostume {
 	public var textLayerBitmap:BitmapData;
 	public var textLayerID:int = -1;
 	public var textLayerMD5:String;
-	public var textLayerData:ByteArray;
+	private var __textLayerData:ByteArray;
 
 	public var text:String;
 	public var textRect:Rectangle;
@@ -101,6 +101,24 @@ public class ScratchCostume {
 			setSVGData(data, (centerX == 99999));
 			prepareToSave();
 		}
+	}
+
+	public function get baseLayerData():ByteArray {
+		return __baseLayerData;
+	}
+
+	public function set baseLayerData(data:ByteArray):void {
+		__baseLayerData = data;
+		baseLayerMD5 = data ? by.blooddy.crypto.MD5.hashBytes(data) + fileExtension(data) : null;
+	}
+
+	public function get textLayerData():ByteArray {
+		return __textLayerData;
+	}
+
+	public function set textLayerData(data:ByteArray):void {
+		__textLayerData = data;
+		textLayerMD5 = data ? by.blooddy.crypto.MD5.hashBytes(data) + fileExtension(data) : null;
 	}
 
 	public static function scaleForScratch(bm:BitmapData):BitmapData {
