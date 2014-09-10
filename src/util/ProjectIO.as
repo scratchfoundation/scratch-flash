@@ -30,8 +30,6 @@ package util {
 import flash.display.*;
 import flash.events.*;
 import flash.net.URLLoader;
-import flash.net.URLLoaderDataFormat;
-import flash.net.URLRequest;
 import flash.utils.*;
 import scratch.*;
 
@@ -128,10 +126,11 @@ public class ProjectIO {
 
 	private function decodeFromZipFile(zipData:ByteArray):ScratchObj {
 		var jsonData:String;
+		var files:Array;
 		images = [];
 		sounds = [];
 		try {
-			var files:Array = new ZipIO().read(zipData);
+			files = new ZipIO().read(zipData);
 		} catch (e:*) {
 			app.log('Bad zip file; attempting to recover');
 			try {
@@ -158,7 +157,7 @@ public class ProjectIO {
 		if (jsonObj['children']) { // project JSON
 			var proj:ScratchStage = new ScratchStage();
 			proj.readJSON(jsonObj);
-			if (proj.penLayerID >= 0) proj.penLayerPNG = images[proj.penLayerID]
+			if (proj.penLayerID >= 0) proj.penLayerPNG = images[proj.penLayerID];
 			else if (proj.penLayerMD5) proj.penLayerPNG = images[0];
 			installImagesAndSounds(proj.allObjects());
 			return proj;
@@ -166,7 +165,7 @@ public class ProjectIO {
 		if (jsonObj['direction'] != null) { // sprite JSON
 			var sprite:ScratchSprite = new ScratchSprite();
 			sprite.readJSON(jsonObj);
-			sprite.instantiateFromJSON(app.stagePane)
+			sprite.instantiateFromJSON(app.stagePane);
 			installImagesAndSounds([sprite]);
 			return sprite;
 		}
@@ -301,7 +300,7 @@ public class ProjectIO {
 		var proj:ScratchStage = new ScratchStage();
 		proj.readJSON(projObject);
 		var assetsToFetch:Array = collectAssetsToFetch(proj.allObjects());
-		var assetDict:Object = new Object();
+		var assetDict:Object = {};
 		var assetCount:int = 0;
 		for each (var md5:String in assetsToFetch) fetchAsset(md5, assetReceived);
 	}
@@ -393,7 +392,7 @@ public class ProjectIO {
 			assetCount++;
 			if (assetCount == assetsToFetch.length) whenDone(assetDict);
 		}
-		var assetDict:Object = new Object();
+		var assetDict:Object = {};
 		var assetCount:int = 0;
 		var assetsToFetch:Array = collectAssetsToFetch(objList);
 		for each (var md5:String in assetsToFetch) fetchAsset(md5, assetReceived);
@@ -401,7 +400,7 @@ public class ProjectIO {
 
 	private function collectAssetsToFetch(objList:Array):Array {
 		// Return list of MD5's for all project assets.
-		var list:Array = new Array();
+		var list:Array = [];
 		for each (var obj:ScratchObj in objList) {
 			for each (var c:ScratchCostume in obj.costumes) {
 				if (list.indexOf(c.baseLayerMD5) < 0) list.push(c.baseLayerMD5);
@@ -424,6 +423,8 @@ public class ProjectIO {
 				if (data) c.baseLayerData = data;
 				else c.baseLayerData = ScratchCostume.emptySVG(); // missing asset data; use empty costume
 				if (c.textLayerMD5) c.textLayerData = assetDict[c.textLayerMD5];
+				// Don't trust the MD5s. Sometimes people edit files without changing their names, etc.
+				c.baseLayerMD5 = c.textLayerMD5 = null;
 			}
 			for each (var snd:ScratchSound in obj.sounds) {
 				data = assetDict[snd.md5];
@@ -433,6 +434,8 @@ public class ProjectIO {
 				} else {
 					snd.soundData = WAVFile.empty();
 				}
+				// Don't trust the MD5s. Sometimes people edit files without changing their names, etc.
+				snd.md5 = null;
 			}
 		}
 	}
