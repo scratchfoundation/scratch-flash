@@ -35,6 +35,8 @@ import flash.geom.Matrix3D;
 import flash.geom.Point;
 import flash.geom.Rectangle;
 import flash.geom.Vector3D;
+import flash.system.Capabilities;
+import flash.system.Capabilities;
 import flash.utils.ByteArray;
 import flash.utils.Dictionary;
 import flash.utils.Endian;
@@ -46,6 +48,7 @@ import flash.utils.Endian;
 public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 {
 	private var contextRequested:Boolean = false;
+	private static var isIOS:Boolean = Capabilities.os.indexOf('iPhone') != -1;
 
 	/** Context to create textures on */
 	private var __context:Context3D;
@@ -1106,6 +1109,14 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 		var oldScaleY:Number = dispObj.scaleY;
 		var bounds:Rectangle = boundsDict[dispObj];
 		var pScale:Number = appScale * scratchStage.stage.contentsScaleFactor;
+
+		var changeBackBuffer:Boolean = isIOS || (bmd.width > scissorRect.width || bmd.height > scissorRect.height);
+		if(changeBackBuffer) {
+			projMatrix = createOrthographicProjectionMatrix(bmd.width, bmd.height, 0, 0);
+			__context.configureBackBuffer(bmd.width, bmd.height, 0, false);
+			pScale = 1;
+		}
+
 		dispObj.scaleX = width / Math.floor(bounds.width * dispObj.scaleX * pScale);
 		dispObj.scaleY = height / Math.floor(bounds.height * dispObj.scaleY * pScale);
 
@@ -1127,12 +1138,6 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 		// TODO: Find out why the index buffer isn't uploaded sometimes
 		indexBufferUploaded = false;
 		uploadBuffers(1);
-
-		var changeBackBuffer:Boolean = (bmd.width > scissorRect.width || bmd.height > scissorRect.height);
-		if(changeBackBuffer) {
-			projMatrix = createOrthographicProjectionMatrix(bmd.width, bmd.height, 0, 0);
-			__context.configureBackBuffer(bmd.width, bmd.height, 0, false);
-		}
 
 		__context.setScissorRectangle(new Rectangle(0, 0, bmd.width+1, bmd.height+1));
 		render(1, false);
@@ -1382,32 +1387,32 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 						"add ft0.xy, ft0.xy, v0.zw\n" +
 
 				/*** Floor the texture index ***/
-//						"frc ft3.xyzw, v3.wwww\n"+
-//						"sub ft3.x, v3.w, ft3.x\n"+
+						"frc ft3.xyzw, v3.wwww\n"+
+						"sub ft3.x, v3.w, ft3.x\n"+
 
 				/*** Select texture to use (maxTextures is the most we can have) ***/
 					// Get the texture pixel using ft0.xy as the coordinates
-						"seq ft5, v3.w, fc0.z\n"+	// Use texture 0?
+						"seq ft5, ft3.x, fc0.z\n"+	// Use texture 0?
 						"tex ft2, ft0, fs0 <2d,clamp,linear,nomip>\n"+
 						"mul ft2, ft2, ft5\n"+
 						"mov ft1, ft2\n"+
 
-						"seq ft5, v3.w, fc0.x\n"+	// Use texture 1?
+						"seq ft5, ft3.x, fc0.x\n"+	// Use texture 1?
 						"tex ft2, ft0, fs1 <2d,clamp,linear,nomip>\n"+
 						"mul ft2, ft2, ft5\n"+
 						"add ft1, ft1, ft2\n"+
 
-						"seq ft5, v3.w, fc0.y\n"+	// Use texture 2?
+						"seq ft5, ft3.x, fc0.y\n"+	// Use texture 2?
 						"tex ft2, ft0, fs2 <2d,clamp,linear,nomip>\n"+
 						"mul ft2, ft2, ft5\n"+
 						"add ft1, ft1, ft2\n"+
 
-						"seq ft5, v3.w, fc2.y\n"+	// Use texture 3?
+						"seq ft5, ft3.x, fc2.y\n"+	// Use texture 3?
 						"tex ft2, ft0, fs3 <2d,clamp,linear,nomip>\n"+
 						"mul ft2, ft2, ft5\n"+
 						"add ft1, ft1, ft2\n"+
 
-						"seq ft5, v3.w, fc2.z\n"+	// Use texture 4?
+						"seq ft5, ft3.x, fc2.z\n"+	// Use texture 4?
 						"tex ft2, ft0, fs4 <2d,clamp,linear,nomip>\n"+
 						"mul ft2, ft2, ft5\n"+
 						"add ft1, ft1, ft2\n"+
@@ -1570,9 +1575,9 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 						"mov ft5.w, ft2.z\n"+ //mov ft5.w, v; // v
 
 				/*** FIX i to be an integer on Intel Graphics 3000 with Chrome Pepper Flash ***/
-//						"add ft3.x, ft3.x, fc0.w\n"+ // fix i?
-//						"frc ft3.y, ft3.x\n"+ // fix i?
-//						"sub ft3.x, ft3.x, ft3.y\n"+ // fix i?
+						"add ft3.x, ft3.x, fc0.w\n"+ // fix i?
+						"frc ft3.y, ft3.x\n"+ // fix i?
+						"sub ft3.x, ft3.x, ft3.y\n"+ // fix i?
 
 						"seq ft3.y, ft3.x, fc0.z\n"+ //int i_eq_0 = (i == 0);					i_eq_0	= ft3.y
 						"mul ft3.y, ft3.y, fc3.x\n"+ //i_eq_0 = i_eq_0 * 6;
@@ -1710,7 +1715,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 
 		stage3D.addEventListener(Event.CONTEXT3D_CREATE, context3DCreated, false, 0, true);
 		stage3D.addEventListener(ErrorEvent.ERROR, onStage3DError, false, 0, true);
-		stage3D.requestContext3D(Context3DRenderMode.AUTO, Context3DProfile.BASELINE_EXTENDED);
+		stage3D.requestContext3D(Context3DRenderMode.AUTO);
 		contextRequested = true;
 	}
 
