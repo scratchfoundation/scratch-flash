@@ -105,6 +105,7 @@ public class Scratch extends Sprite {
 	protected var scriptsPart:ScriptsPart;
 	public var imagesPart:ImagesPart;
 	public var soundsPart:SoundsPart;
+	public const tipsBarClosedWidth:int = 17;
 
 	public function Scratch() {
 		loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, uncaughtErrorHandler);
@@ -192,6 +193,7 @@ public class Scratch extends Sprite {
 	public function showTip(tipName:String):void {}
 	public function closeTips():void {}
 	public function reopenTips():void {}
+	public function tipsWidth():int { return 0; }
 
 	protected function startInEditMode():Boolean {
 		return isOffline;
@@ -660,6 +662,7 @@ public class Scratch extends Sprite {
 
 		// the content area shows the part associated with the currently selected tab:
 		var contentY:int = tabsPart.y + 27;
+		w -= tipsWidth();
 		updateContentArea(tabsPart.x, contentY, w - tabsPart.x - 6, h - contentY - 5, h);
 	}
 
