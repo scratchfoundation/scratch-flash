@@ -38,12 +38,16 @@ package ui.media {
 	import ui.parts.*;
 	import uiwidgets.*;
 
+	// TODO: Make MediaInfoTablet which implements the wiggling
+	// TODO: Make InteractiveItemList use MediaInfo instead of InteractiveItem
+	// When does the delete button get shown?
+	// Should the icons really wiggle when they are normally draggable? Wouldn't it be confusing to take away immediate dragging?
 public class MediaInfo extends Sprite {
 
-	public var frameWidth:int = 81;
-	public var frameHeight:int = 94;
-	protected var thumbnailWidth:int = 68;
-	protected var thumbnailHeight:int = 51;
+	public static var frameWidth:int = 81;
+	public static var frameHeight:int = 94;
+	protected static var thumbnailWidth:int = 68;
+	protected static var thumbnailHeight:int = 51;
 
 	// at most one of the following is non-null:
 	public var mycostume:ScratchCostume;
@@ -61,8 +65,8 @@ public class MediaInfo extends Sprite {
 	public var forBackpack:Boolean;
 
 	private var frame:Shape; // visible when selected
-	private var thumbnail:Bitmap;
-	private var label:TextField;
+	protected var thumbnail:Bitmap;
+	protected var label:TextField;
 	private var info:TextField;
 	private var deleteButton:IconButton;
 
@@ -111,6 +115,13 @@ public class MediaInfo extends Sprite {
 		return ['Backdrop', 'Costume', 'Script', 'Sound', 'Sprite', 'save to local file'];
 	}
 
+	public static function setFrameSize(w:int, h:int):void {
+		frameWidth = w;
+		frameHeight = h;
+		thumbnailWidth = w * 0.87;
+		thumbnailHeight = (h - 28) * 0.9;
+	}
+
 	// -----------------------------
 	// Highlighting (for MediaPane)
 	//------------------------------
@@ -123,7 +134,7 @@ public class MediaInfo extends Sprite {
 		if (frame.alpha != 0) { frame.alpha = 0; showDeleteButton(false) }
 	}
 
-	private function showDeleteButton(flag:Boolean):void {
+	protected function showDeleteButton(flag:Boolean):void {
 		if (deleteButton) {
 			deleteButton.visible = flag;
 			if (flag && mycostume && owner && (owner.costumes.length < 2)) deleteButton.visible = false;
@@ -150,14 +161,16 @@ public class MediaInfo extends Sprite {
 	private function setLocalCostumeThumbnail():void {
 		// Set the thumbnail for a costume local to this project (and not necessarily saved to the server).
 		var forStage:Boolean = owner && owner.isStage;
-		var bm:BitmapData = mycostume.thumbnail(thumbnailWidth, thumbnailHeight, forStage);
+		var bm:BitmapData = mycostume.thumbnail(thumbnailWidth * (forStage ? 1 : getScaleFactor()),
+						thumbnailHeight * (forStage ? 1 : getScaleFactor()), forStage);
 		isBackdrop = forStage;
 		setThumbnailBM(bm);
 	}
 
 	private function setLocalSpriteThumbnail():void {
 		// Set the thumbnail for a sprite local to this project (and not necessarily saved to the server).
-		setThumbnailBM(mysprite.currentCostume().thumbnail(thumbnailWidth, thumbnailHeight, false));
+		setThumbnailBM(mysprite.currentCostume().thumbnail(thumbnailWidth * getScaleFactor(),
+						thumbnailHeight * getScaleFactor(), false));
 	}
 
 	protected function fileType(s:String):String {
@@ -166,19 +179,36 @@ public class MediaInfo extends Sprite {
 		return (i < 0) ? '' : s.slice(i + 1);
 	}
 
+	protected function getScaleFactor():Number {
+		return Scratch.app.stage.contentsScaleFactor * Scratch.app.scaleX;
+	}
+
 	private function setScriptThumbnail():void {
 		if (!scripts || (scripts.length < 1)) return; // no scripts
 		var script:Block = BlockIO.arrayToStack(scripts[0]);
-		var scale:Number = Math.min(thumbnailWidth / script.width, thumbnailHeight / script.height);
-		var bm:BitmapData = new BitmapData(thumbnailWidth, thumbnailHeight, true, 0);
+		var r:Rectangle = script.getBounds(script);
+		var centerX:Number = r.x + (r.width / 2);
+		var centerY:Number = r.y + (r.height / 2);
+		var bm:BitmapData = new BitmapData(thumbnailWidth * getScaleFactor(), thumbnailHeight * getScaleFactor(), true, 0);
 		var m:Matrix = new Matrix();
+		var scale:Number = Math.min(bm.width / script.width, bm.height / script.height);
 		m.scale(scale, scale);
+		m.translate((bm.width / 2) - (scale * centerX), (bm.height / 2) - (scale * centerY));
 		bm.draw(script, m);
 		setThumbnailBM(bm);
 	}
 
 	protected function setThumbnailBM(bm:BitmapData):void {
+		var tAspect:Number = thumbnailWidth / thumbnailHeight;
+		var scale:Number;
+		if (bm.width / bm.height > tAspect)
+			scale = thumbnailWidth / bm.width;
+		else
+			scale = thumbnailHeight / bm.height;
+
+		thumbnail.scaleX = thumbnail.scaleY = scale;
 		thumbnail.bitmapData = bm;
+
 		thumbnail.x = (frameWidth - thumbnail.width) / 2;
 	}
 
@@ -260,7 +290,7 @@ public class MediaInfo extends Sprite {
 		if (scripts) result = Scratch.app.createMediaInfo(scripts);
 
 		result.removeDeleteButton();
-		if (thumbnail.bitmapData) result.thumbnail.bitmapData = thumbnail.bitmapData;
+		if (thumbnail.bitmapData) result.setThumbnailBM(thumbnail.bitmapData);
 		result.hideTextFields();
 		return result;
 	}
@@ -316,7 +346,7 @@ public class MediaInfo extends Sprite {
 		addChild(frame);
 	}
 
-	private function addThumbnail():void {
+	protected function addThumbnail():void {
 		if ('sound' == objType) {
 			thumbnail = Resources.createBmp('speakerOff');
 			thumbnail.x = 18;

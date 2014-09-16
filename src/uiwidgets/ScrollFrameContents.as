@@ -33,7 +33,7 @@ package uiwidgets {
 
 public class ScrollFrameContents extends Sprite {
 
-	public var color:int = 0xE0E0E0;
+	public var color:uint = 0xE0E0E0;
 	public var texture:BitmapData;
 
 	// extra padding using in updateSize

@@ -467,9 +467,10 @@ public class ScratchCostume {
 		var centerX:Number = r.x + (r.width / 2);
 		var centerY:Number = r.y + (r.height / 2);
 		var bm:BitmapData = new BitmapData(w, h, true, 0x00FFFFFF); // transparent fill color
-		var scale:Number = Math.min(1, w / r.width, h / r.height);
+		var scale:Number = Math.min(w / r.width, h / r.height);
+		if (bitmap) scale = Math.min(1, scale);
 		var m:Matrix = new Matrix();
-		if (scale < 1) m.scale(scale, scale); // scale down a large image
+		if (scale < 1 || !bitmap) m.scale(scale, scale); // don't scale up bitmaps
 		m.translate((w / 2) - (scale * centerX), (h / 2) - (scale * centerY));
 		bm.draw(dispObj, m);
 		return bm;

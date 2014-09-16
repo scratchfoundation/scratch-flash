@@ -48,14 +48,18 @@
 
 package util {
 	import flash.display.*;
-	import flash.events.MouseEvent;
+import flash.events.Event;
+import flash.events.MouseEvent;
 	import flash.filters.*;
 	import flash.geom.*;
 	import flash.text.*;
 	import flash.utils.getTimer;
 	import blocks.*;
 	import scratch.*;
-	import uiwidgets.*;
+
+import ui.DropTarget;
+
+import uiwidgets.*;
 	import svgeditor.*;
 	import watchers.*;
 
@@ -223,6 +227,7 @@ public class GestureHandler {
 			return;
 		}
 		if (gesture == "drag" && carriedObj) {
+			handleDragging(evt);
 			evt.stopImmediatePropagation();
 
 			if (carriedObj is Block) {
@@ -235,6 +240,9 @@ public class GestureHandler {
 				spr.scratchY = 180 - stageP.y;
 				spr.updateBubble();
 			}
+			else {
+
+			}
 		}
 		if (bubble) {
 			var dx:Number = bubbleStartX - stage.mouseX;
@@ -243,6 +251,38 @@ public class GestureHandler {
 				hideBubble();
 			}
 		}
+	}
+
+	private var currentDropTarget:DropTarget;
+	private function handleDragging(event:MouseEvent):void {
+		var dragMove:DragEvent = new DragEvent(DragEvent.DRAG_DROP, null);
+		event.target.dispatchEvent(dragMove);
+
+		var dropTarget:DropTarget = getCurrentDropTarget();
+		if (dropTarget != currentDropTarget) {
+			if (currentDropTarget) currentDropTarget.dispatchEvent(new DragEvent(DragEvent.DRAG_OUT, carriedObj));
+			currentDropTarget = dropTarget;
+			if (currentDropTarget) currentDropTarget.dispatchEvent(new DragEvent(DragEvent.DRAG_OVER, carriedObj));
+		}
+		else if(currentDropTarget) {
+			currentDropTarget.dispatchEvent(new DragEvent(DragEvent.DRAG_MOVE, carriedObj));
+		}
+	}
+
+	private function getCurrentDropTarget():DropTarget {
+		var possibleTargets:Array = app.stage.getObjectsUnderPoint(new Point(app.stage.mouseX, app.stage.mouseY));
+		possibleTargets.reverse();
+		for (var l:int=possibleTargets.length, i:int=l-1; i>-1; --i) {
+			var o:DisplayObject = possibleTargets[i];
+			while (o) { // see if some parent can handle the drop
+				if (o is DropTarget) {
+					return o as DropTarget;
+				}
+				o = o.parent;
+			}
+		}
+
+		return null;
 	}
 
 	public function mouseUp(evt:MouseEvent):void {
@@ -290,17 +330,17 @@ public class GestureHandler {
 		var mouseTarget:Boolean = false;
 		var appScale:Number = 1;
 		while (o != null) {
-			if (isMouseTarget(o, app.stage.mouseX / appScale, app.stage.mouseY / appScale)) {
+			if (isMouseTarget(o, stage.mouseX / appScale, stage.mouseY / appScale)) {
 				mouseTarget = true;
 				break;
 			}
 			o = o.parent;
 		}
-		var rect:Rectangle = app.stageObj().getRect(app.stage);
-		if(!mouseTarget && rect.contains(app.stage.mouseX, app.stage.mouseY)) return findMouseTargetOnStage(app.stage.mouseX / appScale, app.stage.mouseY / appScale);
+		var rect:Rectangle = app.stageObj().getRect(stage);
+		if(!mouseTarget && rect.contains(stage.mouseX, stage.mouseY)) return findMouseTargetOnStage(stage.mouseX / appScale, stage.mouseY / appScale);
 		if (o == null) return null;
 		if ((o is Block) && Block(o).isEmbeddedInProcHat()) return o.parent;
-		if (o is ScratchObj) return findMouseTargetOnStage(app.stage.mouseX / appScale, app.stage.mouseY / appScale);
+		if (o is ScratchObj) return findMouseTargetOnStage(stage.mouseX / appScale, stage.mouseY / appScale);
 		return o;
 	}
 
@@ -420,7 +460,7 @@ public class GestureHandler {
 		originalParent = obj.parent; // parent is null if objToGrab() returns a new object
 		originalPosition = new Point(obj.x, obj.y);
 		originalScale = obj.scaleX;
-		var appScale:Number = app.stagePane.scaleX * app.scaleX;
+		obj.scaleX = obj.scaleY = app.scaleX;
 
 		if (obj is Block) {
 			var b:Block = Block(obj);
@@ -440,8 +480,8 @@ public class GestureHandler {
 
 				obj.parent.removeChild(obj);
 			}
-			if (inStage && (appScale != 1)) {
-				obj.scaleX = obj.scaleY = (obj.scaleX * appScale);
+			if (inStage) {
+				obj.scaleX = obj.scaleY = (obj.scaleX * app.stagePane.scaleX);
 			}
 		}
 
@@ -454,8 +494,17 @@ public class GestureHandler {
 			obj.y += app.stage.mouseY - mouseDownY;
 		}
 		obj.startDrag();
+		//obj.mouseEnabled = obj.mouseChildren = false;
 		if(obj is DisplayObject) obj.cacheAsBitmap = true;
 		carriedObj = obj;
+	}
+
+	private function dragOver(evt:MouseEvent):void {
+		// Note: Search from front to back, so the front-most object catches the dropped object.
+		var dragEvent:DragEvent = new DragEvent(DragEvent.DRAG_OVER, carriedObj);
+		var possibleTargets:Array = app.stage.getObjectsUnderPoint(new Point(app.stage.mouseX, app.stage.mouseY));
+		possibleTargets.reverse();
+		possibleTargets[0].dispatchEvent(dragEvent);
 	}
 
 	private function dropHandled(droppedObj:*, evt:MouseEvent):Boolean {
@@ -486,16 +535,16 @@ public class GestureHandler {
 		if (carriedObj == null) return;
 		if(carriedObj is DisplayObject) carriedObj.cacheAsBitmap = false;
 		carriedObj.stopDrag();
+		//carriedObj.mouseEnabled = carriedObj.mouseChildren = true;
 		removeDropShadowFrom(carriedObj);
 		carriedObj.parent.removeChild(carriedObj);
-
+		carriedObj.scaleX = carriedObj.scaleY = originalScale;
 		if (!dropHandled(carriedObj, evt)) {
 			if (carriedObj is Block) {
 				Block(carriedObj).restoreOriginalState();
 			} else if (originalParent) { // put carriedObj back where it came from
 				carriedObj.x = originalPosition.x;
 				carriedObj.y = originalPosition.y;
-				carriedObj.scaleX = carriedObj.scaleY = originalScale;
 				originalParent.addChild(carriedObj);
 				if (carriedObj is ScratchSprite) {
 					var ss:ScratchSprite = carriedObj as ScratchSprite;
