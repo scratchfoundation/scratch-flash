@@ -64,6 +64,9 @@ import uiwidgets.*;
 	import watchers.*;
 
 public class GestureHandler {
+	public static const DROP_REJECTED:uint = 0;
+	public static const DROP_ACCEPTED:uint = 1;
+	public static const DROP_IGNORED:uint = 2;
 
 	private const DOUBLE_CLICK_MSECS:int = 400;
 	private const DEBUG:Boolean = false;
@@ -522,8 +525,12 @@ public class GestureHandler {
 		for each (var o:* in possibleTargets) {
 			while (o) { // see if some parent can handle the drop
 				if (tried.indexOf(o) == -1) {
-					if (('handleDrop' in o) && o.handleDrop(droppedObj)) return true;
 					tried.push(o);
+					if (('handleDrop' in o)) {
+						var dropStatus:uint = o.handleDrop(droppedObj);
+						if (dropStatus != DROP_IGNORED)
+							return dropStatus == DROP_ACCEPTED;
+					}
 				}
 				o = o.parent;
 			}

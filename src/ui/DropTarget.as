@@ -2,10 +2,8 @@
  * Created by shanemc on 9/15/14.
  */
 package ui {
-import flash.events.Event;
+import flash.events.IEventDispatcher;
 
-public interface DropTarget {
-	function handleDrop(obj:*):Boolean;
-	function dispatchEvent(event:Event):void;
-}
-}
+public interface DropTarget extends IEventDispatcher{
+	function handleDrop(obj:*):uint;
+}}

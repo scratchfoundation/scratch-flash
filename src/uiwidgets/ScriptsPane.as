@@ -31,9 +31,13 @@ import flash.geom.Point;
 import blocks.*;
 import scratch.*;
 import flash.geom.Rectangle;
+
+import ui.DropTarget;
 import ui.media.MediaInfo;
 
-public class ScriptsPane extends ScrollFrameContents {
+import util.GestureHandler;
+
+public class ScriptsPane extends ScrollFrameContents implements DropTarget {
 
 	protected const INSERT_NORMAL:int = 0;
 	protected const INSERT_ABOVE:int = 1;
@@ -367,21 +371,21 @@ public class ScriptsPane extends ScrollFrameContents {
 
 	/* Dropping */
 
-	public function handleDrop(obj:*):Boolean {
+	public function handleDrop(obj:*):uint {
 		var localP:Point = globalToLocal(new Point(obj.x, obj.y));
 
 		var info:MediaInfo = obj as MediaInfo;
 		if (info) {
-			if (!info.scripts) return false;
+			if (!info.scripts) return GestureHandler.DROP_REJECTED;
 			localP.x += info.thumbnailX();
 			localP.y += info.thumbnailY();
 			addStacksFromBackpack(info, localP);
-			return true;
+			return GestureHandler.DROP_ACCEPTED;
 		}
 
 		var b:Block = obj as Block;
 		var c:ScratchComment = obj as ScratchComment;
-		if (!b && !c) return false;
+		if (!b && !c) return GestureHandler.DROP_REJECTED;
 
 		obj.x = Math.max(5, localP.x);
 		obj.y = Math.max(5, localP.y);
@@ -394,7 +398,7 @@ public class ScriptsPane extends ScrollFrameContents {
 		saveScripts();
 		updateSize();
 		if (c) fixCommentLayout();
-		return true;
+		return GestureHandler.DROP_ACCEPTED;
 	}
 
 	private function addStacksFromBackpack(info:MediaInfo, dropP:Point):void {

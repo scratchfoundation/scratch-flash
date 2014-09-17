@@ -26,22 +26,20 @@
 //	* to drag between the backpack and the media pane
 
 package ui.media {
-	import flash.display.*;
-	import flash.events.*;
-	import flash.geom.*;
-	import flash.net.*;
-	import flash.text.*;
-	import assets.Resources;
-	import blocks.*;
-	import scratch.*;
-	import translation.Translator;
-	import ui.parts.*;
-	import uiwidgets.*;
+import by.blooddy.crypto.MD5;
+import util.JSON;
+import flash.display.*;
+import flash.events.*;
+import flash.geom.*;
+import flash.net.*;
+import flash.text.*;
+import assets.Resources;
+import blocks.*;
+import scratch.*;
+import translation.Translator;
+import ui.parts.*;
+import uiwidgets.*;
 
-	// TODO: Make MediaInfoTablet which implements the wiggling
-	// TODO: Make InteractiveItemList use MediaInfo instead of InteractiveItem
-	// When does the delete button get shown?
-	// Should the icons really wiggle when they are normally draggable? Wouldn't it be confusing to take away immediate dragging?
 public class MediaInfo extends Sprite {
 
 	public static var frameWidth:int = 81;
@@ -87,14 +85,16 @@ public class MediaInfo extends Sprite {
 		} else if (mysprite) {
 			objType = 'sprite';
 			objName = mysprite.objName;
-			md5 = null; // initially null
+			mysprite.setScratchXY(0, 0);
+			mysprite.setSize(100);
+			md5 = MD5.hash(util.JSON.stringify(mysprite));
 		} else if ((obj is Block) || (obj is Array)) {
 			// scripts holds an array of blocks, stacks, and comments in Array form
 			// initialize script list from either a stack (Block) or an array of stacks already in array form
 			objType = 'script';
 			objName = '';
 			scripts = (obj is Block) ? [BlockIO.stackToArray(obj)] : obj;
-			md5 = null; // scripts don't have an MD5 hash
+			md5 = MD5.hash(util.JSON.stringify(scripts));
 		} else {
 			// initialize from a JSON object
 			objType = obj.type ? obj.type : '';
@@ -424,7 +424,7 @@ public class MediaInfo extends Sprite {
 		}
 	}
 
-	protected function deleteMe(ignore:* = null):void {
+	protected function deleteMe(ib:IconButton = null):void {
 		if (owner) {
 			Scratch.app.runtime.recordForUndelete(this, 0, 0, 0, owner);
 			if (mycostume) {
@@ -435,6 +435,8 @@ public class MediaInfo extends Sprite {
 				owner.deleteSound(mysound);
 				Scratch.app.refreshSoundTab();
 			}
+
+			if(ib && ib.lastEvent) ib.lastEvent.stopImmediatePropagation();
 		}
 	}
 

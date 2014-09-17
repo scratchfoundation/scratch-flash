@@ -25,14 +25,14 @@
 // creates a copy of that block when it is dragged out of the palette.
 
 package ui {
-	import flash.geom.*;
-	import blocks.Block;
-	import interpreter.Interpreter;
-	import uiwidgets.*;
-	import scratch.ScratchObj;
-	import scratch.ScratchComment;
+import blocks.Block;
+import interpreter.Interpreter;
+import uiwidgets.*;
+import scratch.ScratchObj;
+import scratch.ScratchComment;
+import util.GestureHandler;
 
-public class BlockPalette extends ScrollFrameContents {
+public class BlockPalette extends ScrollFrameContents implements DropTarget {
 
 	public const isBlockPalette:Boolean = true;
 
@@ -52,19 +52,19 @@ public class BlockPalette extends ScrollFrameContents {
 		if (scrollToOrigin) x = y = 0;
 	}
 
-	public function handleDrop(obj:*):Boolean {
+	public function handleDrop(obj:*):uint {
 		// Delete blocks and stacks dropped onto the palette.
 		var c:ScratchComment = obj as ScratchComment;
 		if (c) {
 			c.x = c.y = 20; // position for undelete
 			c.deleteComment();
-			return true;
+			return GestureHandler.DROP_ACCEPTED;
 		}
 		var b:Block = obj as Block;
 		if (b) {
-			return b.deleteStack();
+			return b.deleteStack() ? GestureHandler.DROP_ACCEPTED : GestureHandler.DROP_REJECTED;
 		}
-		return false;
+		return GestureHandler.DROP_REJECTED;
 	}
 
 	public static function strings():Array {

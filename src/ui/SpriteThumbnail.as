@@ -30,7 +30,9 @@ import ui.media.MediaInfo;
 import ui.parts.LibraryPart;
 import uiwidgets.*;
 
-public class SpriteThumbnail extends Sprite {
+import util.GestureHandler;
+
+public class SpriteThumbnail extends Sprite implements DropTarget {
 
 	private const frameW:int = 73;
 	private const frameH:int = 73;
@@ -218,7 +220,7 @@ public class SpriteThumbnail extends Sprite {
 		return result;
 	}
 
-	public function handleDrop(obj:*):Boolean {
+	public function handleDrop(obj:*):uint {
 		function addCostume(c:ScratchCostume):void { app.addCostume(c, targetObj) }
 		function addSound(snd:ScratchSound):void { app.addSound(snd, targetObj) }
 		var item:MediaInfo = obj as MediaInfo;
@@ -226,23 +228,23 @@ public class SpriteThumbnail extends Sprite {
 			// accept dropped costumes and sounds from another sprite, but not yet from Backpack
 			if (item.mycostume) {
 				addCostume(item.mycostume.duplicate());
-				return true;
+				return GestureHandler.DROP_ACCEPTED;
 			}
 			if (item.mysound) {
 				addSound(item.mysound.duplicate());
-				return true;
+				return GestureHandler.DROP_ACCEPTED;
 			}
 		}
 		if (obj is Block) {
 			// copy a block/stack to this sprite
-			if (targetObj == app.viewedObj()) return false; // dropped on my own thumbnail; do nothing
+			if (targetObj == app.viewedObj()) return GestureHandler.DROP_REJECTED; // dropped on my own thumbnail; do nothing
 			var copy:Block = Block(obj).duplicate(false, targetObj.isStage);
 			copy.x = app.scriptsPane.padding;
 			copy.y = app.scriptsPane.padding;
 			targetObj.scripts.push(copy);
-			return false; // do not consume the original block
+			return GestureHandler.DROP_REJECTED; // do not consume the original block
 		}
-		return false;
+		return GestureHandler.DROP_REJECTED;
 	}
 
 	// -----------------------------

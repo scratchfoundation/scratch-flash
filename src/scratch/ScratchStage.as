@@ -23,25 +23,26 @@
 // A Scratch stage object. Supports a drawing surface for the pen commands.
 
 package scratch {
-	import flash.display.*;
-	import flash.geom.*;
-	import flash.media.*;
-	import flash.events.*;
-	import flash.system.Capabilities;
-	import flash.utils.ByteArray;
-	import flash.net.FileReference;
-	import blocks.Block;
-	import filters.FilterPack;
-	import translation.Translator;
-	import uiwidgets.Menu;
-	import ui.media.MediaInfo;
-	import util.*;
-	import watchers.*;
-	import by.blooddy.crypto.image.PNG24Encoder;
-	import by.blooddy.crypto.image.PNGFilter;
-	import by.blooddy.crypto.MD5;
+import flash.display.*;
+import flash.geom.*;
+import flash.media.*;
+import flash.events.*;
+import flash.system.Capabilities;
+import flash.utils.ByteArray;
+import flash.net.FileReference;
+import blocks.Block;
+import filters.FilterPack;
+import translation.Translator;
+import ui.DropTarget;
+import uiwidgets.Menu;
+import ui.media.MediaInfo;
+import util.*;
+import watchers.*;
+import by.blooddy.crypto.image.PNG24Encoder;
+import by.blooddy.crypto.image.PNGFilter;
+import by.blooddy.crypto.MD5;
 
-public class ScratchStage extends ScratchObj {
+public class ScratchStage extends ScratchObj implements DropTarget {
 
 	public var info:Object = new Object();
 	public var tempoBPM:Number = 60;
@@ -676,13 +677,9 @@ public class ScratchStage extends ScratchObj {
 
 	/* Dropping */
 
-	public function handleDrop(obj:*):Boolean {
+	public function handleDrop(obj:*):uint {
 		var app:Scratch = root as Scratch;
 		if ((obj is ScratchSprite) || (obj is Watcher) || (obj is ListWatcher)) {
-			var appScale:Number = scaleX * app.scaleX;
-			if (appScale != 1) {
-				obj.scaleX = obj.scaleY = obj.scaleX / appScale; // revert to original scale
-			}
 			var p:Point = globalToLocal(new Point(obj.x, obj.y));
 			obj.x = p.x;
 			obj.y = p.y;
@@ -696,7 +693,7 @@ public class ScratchStage extends ScratchObj {
 				(obj as ScratchObj).applyFilters();
 			}
 			if (!(obj is ScratchSprite) || Scratch.app.editMode) Scratch.app.setSaveNeeded();
-			return true;
+			return GestureHandler.DROP_ACCEPTED;
 		}
 		Scratch.app.setSaveNeeded();
 		if ((obj is MediaInfo) && obj.fromBackpack) {
@@ -708,7 +705,7 @@ public class ScratchStage extends ScratchObj {
 			// Add sprites
 			if (obj.mysprite) {
 				app.addNewSprite(obj.mysprite.duplicate(), false, true);
-				return true;
+				return GestureHandler.DROP_ACCEPTED;
 			}
 			if (obj.objType == 'sprite') {
 				function addDroppedSprite(spr:ScratchSprite):void {
@@ -716,18 +713,18 @@ public class ScratchStage extends ScratchObj {
 					app.addNewSprite(spr, false, true);
 				}
 				new ProjectIO(app).fetchSprite(obj.md5, addDroppedSprite);
-				return true;
+				return GestureHandler.DROP_ACCEPTED;
 			}
 			if (obj.mycostume) {
 				addSpriteForCostume(obj.mycostume);
-				return true;
+				return GestureHandler.DROP_ACCEPTED;
 			}
 			if (obj.objType == 'image') {
 				new ProjectIO(app).fetchImage(obj.md5, obj.objName, obj.objWidth, addSpriteForCostume);
-				return true;
+				return GestureHandler.DROP_ACCEPTED;
 			}
 		}
-		return false;
+		return GestureHandler.DROP_REJECTED;
 	}
 
 	/* Saving */
