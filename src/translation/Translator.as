@@ -18,12 +18,14 @@
  */
 
 package translation {
-	import flash.events.Event;
-	import flash.net.*;
-	import flash.utils.ByteArray;
-	import blocks.Block;
-	import uiwidgets.Menu;
-	import util.*;
+import com.adobe.utils.StringUtil;
+
+import flash.events.Event;
+import flash.net.*;
+import flash.utils.ByteArray;
+import blocks.Block;
+import uiwidgets.Menu;
+import util.*;
 
 public class Translator {
 
@@ -45,7 +47,7 @@ public class Translator {
 			for each (var line:String in data.split('\n')) {
 				var fields:Array = line.split(',');
 				if (fields.length >= 2) {
-					languages.push([trimWhitespace(fields[0]), trimWhitespace(fields[1])]);
+					languages.push([StringUtil.trim(fields[0]), StringUtil.trim(fields[1])]);
 				}
 			}
 		}
@@ -129,7 +131,7 @@ public class Translator {
 		skipBOM(bytes);
 		var lines:Array = [];
 		while (bytes.bytesAvailable > 0) {
-			var s:String = trimWhitespace(nextLine(bytes));
+			var s:String = StringUtil.trim(nextLine(bytes));
 			if ((s.length > 0) && (s.charAt(0) != '#')) lines.push(s);
 		}
 		return makeDictionary(lines);
@@ -144,17 +146,6 @@ public class Translator {
 		var b3:int = bytes.readUnsignedByte();
 		if ((b1 == 0xEF) && (b2 == 0xBB) && (b3 == 0xBF)) return; // found BOM
 		bytes.position = bytes.position - 3; // BOM not found; back up
-	}
-
-	private static function trimWhitespace(s:String):String {
-		// Remove leading and trailing whitespace characters.
-		if (s.length == 0) return ''; // empty
-		var i:int = 0;
-		while ((i < s.length) && (s.charCodeAt(i) <= 32)) i++;
-		if (i == s.length) return ''; // all whitespace
-		var j:int = s.length - 1;
-		while ((j > i) && (s.charCodeAt(j) <= 32)) j--;
-		return s.slice(i, j + 1);
 	}
 
 	private static function nextLine(bytes:ByteArray):String {
