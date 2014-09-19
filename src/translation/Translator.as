@@ -23,6 +23,7 @@ import com.adobe.utils.StringUtil;
 import flash.events.Event;
 import flash.net.*;
 import flash.utils.ByteArray;
+import flash.utils.Dictionary;
 import blocks.Block;
 import uiwidgets.Menu;
 import util.*;
@@ -117,12 +118,10 @@ public class Translator {
 		if (font13.indexOf(lang) > -1) Block.setFonts(13, 12, false, 0);
 	}
 
-	public static function map(s:String):String {
-//return TranslatableStrings.has(s) ? s.toUpperCase() : s;
-//return (s.indexOf('%') > -1) ? s : s.toUpperCase(); // xxx testing only
+	public static function map(s:String, context:Dictionary=null):String {
 		var result:* = dictionary[s];
-//if (!isEnglish && (s.indexOf('%') == -1)) return s.toUpperCase(); // xxx for testing only; comment out before pushing!
-		if ((result == null) || (result.length == 0)) return s;
+		if ((result == null) || (result.length == 0)) result = s;
+		if (context) result = StringUtils.substitute(result, context);
 		return result;
 	}
 
