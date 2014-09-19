@@ -34,6 +34,7 @@ public class DialogBox extends Sprite {
 	private var w:int, h:int;
 	public var leftJustify:Boolean;
 
+	private var context:Dictionary;
 	private var title:TextField;
 	protected var buttons:Array = [];
 	private var labelsAndFields:Array = [];
@@ -58,29 +59,48 @@ public class DialogBox extends Sprite {
 		addEventListener(FocusEvent.KEY_FOCUS_CHANGE, focusChange);
 	}
 
-	public static function ask(question:String, defaultAnswer:String, stage:Stage = null, resultFunction:Function = null):void {
+	public static function ask(question:String, defaultAnswer:String, stage:Stage = null, resultFunction:Function = null, context:Dictionary = null):void {
 		function done():void { if (resultFunction != null) resultFunction(d.fields['answer'].text) }
 		var d:DialogBox = new DialogBox(done);
 		d.addTitle(question);
 		d.addField('answer', 120, defaultAnswer, false);
 		d.addButton('OK', d.accept);
+		if (context) d.updateContext(context);
 		d.showOnStage(stage ? stage : Scratch.app.stage);
 	}
 
-	public static function confirm(question:String, stage:Stage = null, okFunction:Function = null, cancelFunction:Function = null):void {
+	public static function confirm(question:String, stage:Stage = null, okFunction:Function = null, cancelFunction:Function = null, context:Dictionary = null):void {
 		var d:DialogBox = new DialogBox(okFunction, cancelFunction);
 		d.addTitle(question);
 		d.addAcceptCancelButtons('OK');
+		if (context) d.updateContext(context);
 		d.showOnStage(stage ? stage : Scratch.app.stage);
 	}
 
-	public static function notify(title:String, msg:String, stage:Stage = null, leftJustify:Boolean = false, okFunction:Function = null, cancelFunction:Function = null):void {
+	public static function notify(title:String, msg:String, stage:Stage = null, leftJustify:Boolean = false, okFunction:Function = null, cancelFunction:Function = null, context:Dictionary = null):void {
 		var d:DialogBox = new DialogBox(okFunction, cancelFunction);
 		d.leftJustify = leftJustify;
 		d.addTitle(title);
 		d.addText(msg);
 		d.addButton('OK', d.accept);
+		if (context) d.updateContext(context);
 		d.showOnStage(stage ? stage : Scratch.app.stage);
+	}
+
+	// Updates the context for variable substitution in the dialog's text, or sets it if there was none before.
+	// Make sure any text values in the context are already translated: they will not be translated here.
+	// Calling this will update the text of the dialog immediately.
+	public function updateContext(c:Dictionary):void {
+		if (!context) context = new Dictionary();
+		for (var key:String in c) {
+			context[key] = c[key];
+		}
+		for (var i:int = 0; i < numChildren; ++i) {
+			var f:VariableTextField = getChildAt(i) as VariableTextField;
+			if (f) {
+				f.applyContext(context);
+			}
+		}
 	}
 
 	public function addTitle(s:String):void {
@@ -225,11 +245,11 @@ public class DialogBox extends Sprite {
 
 	private function makeLabel(s:String, forTitle:Boolean = false):TextField {
 		const normalFormat:TextFormat = new TextFormat(CSS.font, 14, CSS.textColor);
-		var result:TextField = new TextField();
+		var result:VariableTextField = new VariableTextField();
 		result.autoSize = TextFieldAutoSize.LEFT;
 		result.selectable = false;
 		result.background = false;
-		result.text = s;
+		result.setText(s, context);
 		result.setTextFormat(forTitle ? CSS.titleFormat : normalFormat);
 		return result;
 	}
