@@ -36,8 +36,7 @@ public class Translator {
 	private static const font12:Array = ['fa', 'he','ja','ja_HIRA', 'zh_CN'];
 	private static const font13:Array = ['ar'];
 
-	private static var dictionary:Object = new Object();
-	private static var isEnglish:Boolean = true;
+	private static var dictionary:Object = {};
 
 	public static function initializeLanguageList():void {
 		// Get a list of language names for the languages menu from the server.
@@ -66,8 +65,7 @@ public class Translator {
 		if ('import translation file' == lang) { importTranslationFromFile(); return; }
 		if ('set font size' == lang) { fontSizeMenu(); return; }
 
-		dictionary = new Object(); // default to English (empty dictionary) if there's no .po file
-		isEnglish = true;
+		dictionary = {}; // default to English (empty dictionary) if there's no .po file
 		setFontsFor('en');
 		if ('en' == lang) Scratch.app.translationChanged(); // there is no .po file English
 		else Scratch.app.server.getPOFile(lang, gotPOFile);
@@ -82,7 +80,6 @@ public class Translator {
 			var langName:String = file.name.slice(0, i);
 			var data:ByteArray = file.data;
 			if (data) {
-				dictionary = new Object(); // default to English
 				dictionary = parsePOData(data);
 				setFontsFor(langName);
 				checkBlockTranslations();
@@ -109,7 +106,6 @@ public class Translator {
 		// Set the rightToLeft flag and font sizes the given language.
 
 		currentLang = lang;
-		isEnglish = (lang == 'en');
 
 		const rtlLanguages:Array = ['ar', 'fa', 'he'];
 		rightToLeft = rtlLanguages.indexOf(lang) > -1;
@@ -165,14 +161,14 @@ public class Translator {
 		// Read the next line from the given ByteArray. A line ends with CR, LF, or CR-LF.
 		var buf:ByteArray = new ByteArray();
 		while (bytes.bytesAvailable > 0) {
-			var byte:int = bytes.readUnsignedByte();
-			if (byte == 13) { // CR
+			var nextByte:int = bytes.readUnsignedByte();
+			if (nextByte == 13) { // CR
 				// line could end in CR or CR-LF
 				if (bytes.readUnsignedByte() != 10) bytes.position--; // try to read LF, but backup if not LF
 				break;
 			}
-			if (byte == 10) break; // LF
-			buf.writeByte(byte); // append anything else
+			if (nextByte == 10) break; // LF
+			buf.writeByte(nextByte); // append anything else
 		}
 		buf.position = 0;
 		return buf.readUTFBytes(buf.length);
@@ -180,7 +176,7 @@ public class Translator {
 
 	private static function makeDictionary(lines:Array):Object {
 		// Return a dictionary mapping original strings to their translations.
-		var dict:Object = new Object();
+		var dict:Object = {};
 		var mode:String = 'none'; // none, key, val
 		var key:String = '';
 		var val:String = '';
@@ -219,34 +215,6 @@ public class Translator {
 		return result;
 	}
 
-	private static function recordPairIn(key:String, val:String, dict:Object):void {
-		// Handle some special cases where block specs changed for Scratch 2.0.
-		// Note: No longer needed now that translators are starting with current block specs.
-		switch (key) {
-		case '%a of %m':
-			val = val.replace('%a', '%m.attribute');
-			val = val.replace('%m', '%m.sprite');
-			dict['%m.attribute of %m.sprite'] = val;
-			break;
-		case 'stop all':
-			dict['@stop stop all'] = '@stop ' + val;
-			break;
-		case 'touching %m?':
-			dict['touching %m.touching?'] = val.replace('%m', '%m.touching');
-			break;
-		case 'turn %n degrees':
-			dict['turn @turnRight %n degrees'] = val.replace('%n', '@turnRight %n');
-			dict['turn @turnLeft %n degrees'] = val.replace('%n', '@turnLeft %n');
-			break;
-		case 'when %m clicked':
-			dict['when @greenFlag clicked'] = val.replace('%m', '@greenFlag');
-			dict['when I am clicked'] = val.replace('%m', 'I am');
-			break;
-		default:
-			dict[key] = val;
-		}
-	}
-
 	private static function checkBlockTranslations():void {
 		for each (var entry:Array in Specs.commands) checkBlockSpec(entry[0]);
 		for each (var spec:String in Specs.extensionSpecs) checkBlockSpec(spec);
@@ -255,7 +223,6 @@ public class Translator {
 	private static function checkBlockSpec(spec:String):void {
 		var translatedSpec:String = map(spec);
 		if (translatedSpec == spec) return; // not translated
-		var origArgs:Array = extractArgs(spec);
 		if (!argsMatch(extractArgs(spec), extractArgs(translatedSpec))) {
 			Scratch.app.log('Block argument mismatch:');
 			Scratch.app.log('    ' + spec);
