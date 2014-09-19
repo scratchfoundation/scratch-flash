@@ -383,8 +383,8 @@ public class Watcher extends Sprite implements DragClient {
 
 	private function sliderMinMaxDialog():void {
 		function setMinMax():void {
-			var min:String = d.fields['Min'].text;
-			var max:String = d.fields['Max'].text;
+			var min:String = d.getField('Min');
+			var max:String = d.getField('Max');
 			var minVal:Number = Number(min);
 			var maxVal:Number = Number(max);
 			if (isNaN(minVal) || isNaN(maxVal)) return;

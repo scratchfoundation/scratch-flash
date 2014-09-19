@@ -746,7 +746,7 @@ public class Scratch extends Sprite {
 			m.addLine();
 			m.addItem('Import experimental extension', function():void {
 				function loadJSExtension(dialog:DialogBox):void {
-					var url:String = dialog.fields['URL'].text.replace(/^\s+|\s+$/g, '');
+					var url:String = dialog.getField('URL').replace(/^\s+|\s+$/g, '');
 					if (url.length == 0) return;
 					externalCall('ScratchExtensions.loadExternalJS', null, url);
 				}
