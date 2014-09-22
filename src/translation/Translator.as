@@ -18,13 +18,14 @@
  */
 
 package translation {
-import com.adobe.utils.StringUtil;
-
 import flash.events.Event;
 import flash.net.*;
 import flash.utils.ByteArray;
 import flash.utils.Dictionary;
 import blocks.Block;
+
+import mx.utils.StringUtil;
+
 import uiwidgets.Menu;
 import util.*;
 
