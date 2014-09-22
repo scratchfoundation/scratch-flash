@@ -192,7 +192,7 @@ public class PaletteBuilder {
 
 	private function makeVariable():void {
 		function makeVar2():void {
-			var n:String = d.fields['Variable name'].text.replace(/^\s+|\s+$/g, '');
+			var n:String = d.getField('Variable name').replace(/^\s+|\s+$/g, '');
 			if (n.length == 0) return;
 
 			createVar(n, varSettings);
@@ -209,7 +209,7 @@ public class PaletteBuilder {
 
 	private function makeList():void {
 		function makeList2(d:DialogBox):void {
-			var n:String = d.fields['List name'].text.replace(/^\s+|\s+$/g, '');
+			var n:String = d.getField('List name').replace(/^\s+|\s+$/g, '');
 			if (n.length == 0) return;
 
 			createVar(n, varSettings);

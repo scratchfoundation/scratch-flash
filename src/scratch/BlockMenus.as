@@ -640,7 +640,7 @@ public class BlockMenus implements DragClient {
 
 	private function renameVar():void {
 		function doVarRename(dialog:DialogBox):void {
-			var newName:String = dialog.fields['New name'].text.replace(/^\s+|\s+$/g, '');
+			var newName:String = dialog.getField('New name').replace(/^\s+|\s+$/g, '');
 			if (newName.length == 0 || app.viewedObj().lookupVar(newName)) return;
 			if (block.op != Specs.GET_VAR) return;
 			var oldName:String = blockVarOrListName();
@@ -759,7 +759,7 @@ public class BlockMenus implements DragClient {
 
 	private function newBroadcast():void {
 		function changeBroadcast(dialog:DialogBox):void {
-			var newName:String = dialog.fields['Message Name'].text;
+			var newName:String = dialog.getField('Message Name');
 			if (newName.length == 0) return;
 			setBlockArg(newName);
 		}
