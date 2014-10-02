@@ -63,7 +63,7 @@ public class Specs {
 		[1,  "Motion",		0x4a6cd4],
 		[2,  "Looks",		0x8a55d7],
 		[3,  "Sound",		0xbb42c3],
-		[4,  "Pen",			0x0e9a6c], // Scratch 1.4: 0x009870
+		[4,  "Pen",		0x0e9a6c], // Scratch 1.4: 0x009870
 		[5,  "Events",		0xc88330],
 		[6,  "Control",		0xe1a91a],
 		[7,  "Sensing",		0x2ca5e2],
@@ -148,6 +148,8 @@ public class Specs {
 		["switch costume to %m.costume",		" ", 2, "lookLike:",				"costume1"],
 		["next costume",						" ", 2, "nextCostume"],
 		["switch backdrop to %m.backdrop",		" ", 2, "startScene", 				"backdrop1"],
+		["switch backdrop to %m.backdrop and wait", " ", 2, "startSceneAndWait",		"backdrop1"],
+		["next backdrop",							" ", 2, "nextScene"],
 		["-"],
 		["change %m.effect effect by %n",		" ", 2, "changeGraphicEffect:by:",	"color", 25],
 		["set %m.effect effect to %n",			" ", 2, "setGraphicEffect:to:",		"color", 0],
@@ -160,6 +162,8 @@ public class Specs {
 		["go back %n layers",					" ", 2, "goBackByLayers:", 			1],
 		["-"],
 		["costume #",							"r", 2, "costumeIndex"],
+		["costume name",							"r", 2, "costumeName"],
+		["backdrop #",							"r", 2, "backgroundIndex"],
 		["backdrop name",						"r", 2, "sceneName"],
 		["size",								"r", 2, "scale"],
 
@@ -172,8 +176,8 @@ public class Specs {
 		["set %m.effect effect to %n",			" ", 102, "setGraphicEffect:to:",		"color", 0],
 		["clear graphic effects",				" ", 102, "filterReset"],
 		["-"],
-		["backdrop name",						"r", 102, "sceneName"],
 		["backdrop #",							"r", 102, "backgroundIndex"],
+		["backdrop name",						"r", 102, "sceneName"],
 
 		// sound
 		["play sound %m.sound",					" ", 3, "playSound:",						"pop"],
@@ -185,7 +189,6 @@ public class Specs {
 		["-"],
 		["play note %d.note for %n beats",		" ", 3, "noteOn:duration:elapsed:from:",	60, 0.5],
 		["set instrument to %d.instrument",		" ", 3, "instrument:",						1],
-
 		["-"],
 		["change volume by %n",					" ", 3, "changeVolumeBy:",					-10],
 		["set volume to %n%",					" ", 3, "setVolumeTo:", 					100],
@@ -245,7 +248,6 @@ public class Specs {
 		["when I start as a clone",				"h", 6, "whenCloned"],
 		["create clone of %m.spriteOnly",		" ", 6, "createCloneOf"],
 		["delete this clone",					"f", 6, "deleteClone"],
-		["-"],
 
 		// control - stage
 		["wait %n secs",						" ", 106, "wait:elapsed:from:",	1],
@@ -362,8 +364,8 @@ public class Specs {
 
 		// obsolete blocks from Scratch 1.4 that may be used in older projects
 		["play drum %n for %n beats",			" ", 98, "drum:duration:elapsed:from:", 1, 0.25], // Scratch 1.4 MIDI drum
-		["set instrument to %n",				" ", 98, "midiInstrument:", 1],
-		["loud?",								"b", 98, "isLoud"],
+		["set instrument to %n",				" ", 98, "midiInstrument:", 1], // Scratch 1.4 MIDI instrument
+		["loud?",								"b", 98, "isLoud"], // loudness > 10 (30 in 1.4)
 
 		// obsolete blocks from Scratch 1.4 that are converted to new forms (so should never appear):
 		["abs %n",								"r", 98, "abs"],
@@ -375,25 +377,25 @@ public class Specs {
 		["forever if %b",						"cf",98, "doForeverIf"],
 
 		// testing and experimental control prims
-		["noop",								"r", 99, "COUNT"],
+		["noop",								"r", 99, "NOOP"],
 		["counter",								"r", 99, "COUNT"],
 		["clear counter",						" ", 99, "CLR_COUNT"],
 		["incr counter",						" ", 99, "INCR_COUNT"],
-		["for each %m.varName in %s",			"c", 99, "doForLoop", "v", 10],
+		["for each %m.var in %n",			"c", 99, "doForLoop", "variable", 10],
 		["while %b",							"c", 99, "doWhile"],
-		["all at once",							"c", 99, "warpSpeed"],
-
-		// stage motion (scrolling)
-		["scroll right %n",						" ", 99, "scrollRight",		10],
-		["scroll up %n",						" ", 99, "scrollUp",		10],
-		["align scene %m.scrollAlign",			" ", 99, "scrollAlign",		'bottom-left'],
-		["x scroll",							"r", 99, "xScroll"],
-		["y scroll",							"r", 99, "yScroll"],
 
 		// other obsolete blocks from alpha/beta
+		["all at once",							"c", 99, "warpSpeed"],
+		["scroll right %n",						" ", 99, "scrollRight",		10],
+		["scroll up %n",						" ", 99, "scrollUp",		10],
+		["align scene %m.scrollAlign",			" ", 99, "scrollAlign",		'middle'],
+		["x scroll",							"r", 99, "xScroll"],
+		["y scroll",							"r", 99, "yScroll"],
 		["hide all sprites",					" ", 99, "hideAll"],
-		["user id",								"r", 99, "getUserId"],
 
 	];
 
+	public static var extensionSpecs:Array = ["when %m.booleanSensor", "when %m.sensor %m.lessMore %n", "sensor %m.booleanSensor?", "%m.sensor sensor value", "turn %m.motor on for %n secs", "turn %m.motor on", "turn %m.motor off", "set %m.motor power to %n", "set %m.motor2 direction to %m.motorDirection", "when distance %m.lessMore %n", "when tilt %m.eNe %n", "distance", "tilt"];
+
 }}
+
