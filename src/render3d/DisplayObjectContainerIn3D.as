@@ -45,8 +45,7 @@ import flash.utils.Endian;
  *   A display object container which renders in 3D instead
  *   @author Shane M. Clements, shane.m.clements@gmail.com
  */
-public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
-{
+public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {
 	private var contextRequested:Boolean = false;
 	private static var isIOS:Boolean = Capabilities.os.indexOf('iPhone') != -1;
 
@@ -99,8 +98,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 	 *   @param sprite Sprite to use for the texture
 	 *   @param bgColor Background color of the texture
 	 */
-	public function DisplayObjectContainerIn3D()
-	{
+	public function DisplayObjectContainerIn3D() {
 		uiContainer = new StageUIContainer();
 		uiContainer.graphics.lineStyle(1);
 		spriteBitmaps = new Dictionary();
@@ -129,21 +127,21 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 	}
 
 	public function setStage(stage:Sprite, penLayer:DisplayObject):void {
-		if(scratchStage) {
+			if(scratchStage) {
 			scratchStage.removeEventListener(Event.ADDED_TO_STAGE, addedToStage);
 			scratchStage.removeEventListener(Event.ADDED, childAdded);
 			scratchStage.removeEventListener(Event.REMOVED, childRemoved);
 			scratchStage.removeEventListener(Event.REMOVED_FROM_STAGE, removedFromStage);
-			if(scratchStage.stage)
+				if(scratchStage.stage)
 				scratchStage.stage.removeEventListener(Event.RESIZE, onStageResize);
 			scratchStage.cacheAsBitmap = true;
 			(scratchStage as Object).img.cacheAsBitmap = true;
 			scratchStage.visible = true;
 
-			while(uiContainer.numChildren)
+				while(uiContainer.numChildren)
 				scratchStage.addChild(uiContainer.getChildAt(0));
 
-			for(var i:int=0; i<textures.length; ++i)
+				for(var i:int=0; i<textures.length; ++i)
 				textures[i].disposeTexture();
 			textures.length = 0;
 
@@ -152,19 +150,19 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 			boundsDict = new Dictionary();
 			cachedOtherRenderBitmaps = new Dictionary();
 			stampsByID = {};
-			cleanupUnusedBitmaps();
+				cleanUpUnusedBitmaps();
 		}
 
 		scratchStage = stage;
 		stagePenLayer = penLayer;
-		if(scratchStage) {
+			if(scratchStage) {
 			scratchStage.addEventListener(Event.ADDED_TO_STAGE, addedToStage, false, 0, true);
 			scratchStage.addEventListener(Event.ADDED, childAdded, false, 0, true);
 			scratchStage.addEventListener(Event.REMOVED, childRemoved, false, 0, true);
 			scratchStage.addEventListener(Event.REMOVED_FROM_STAGE, removedFromStage, false, 0, true);
-			if(scratchStage.stage)
+				if(scratchStage.stage)
 				scratchStage.stage.addEventListener(Event.RESIZE, onStageResize, false, 0, true);
-			if(__context) scratchStage.visible = false;
+				if(__context) scratchStage.visible = false;
 			scratchStage.cacheAsBitmap = false;
 			(scratchStage as Object).img.cacheAsBitmap = true;
 		}
@@ -174,15 +172,15 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 	}
 
 	private function addedToStage(e:Event = null):void {
-		if(e && e.target != scratchStage) return;
-		scratchStage.parent.addChildAt(uiContainer, scratchStage.parent.getChildIndex(scratchStage)+1);
-		for(var i:uint=0; i<scratchStage.numChildren; ++i) {
+			if(e && e.target != scratchStage) return;
+			scratchStage.parent.addChildAt(uiContainer, scratchStage.parent.getChildIndex(scratchStage)+1);
+			for(var i:uint=0; i<scratchStage.numChildren; ++i) {
 			var dispObj:DisplayObject = scratchStage.getChildAt(i);
-			if(isUI(dispObj)) {
+				if(isUI(dispObj)) {
 				uiContainer.addChild(dispObj);
 				--i;
 			}
-			else if(!('img' in dispObj)) {
+				else if(!('img' in dispObj)) {
 				// Set the bounds of any non-ScratchSprite display objects
 				boundsDict[dispObj] = dispObj.getBounds(dispObj);
 			}
@@ -193,7 +191,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 		scratchStage.addEventListener(Event.ENTER_FRAME, onRender, false, 0, true);
 
 		penPacked = false;
-		if(!__context) {
+			if(!__context) {
 			checkBuffers();
 			stage3D = scratchStage.stage.stage3Ds[0];
 			callbackCalled = false;
@@ -206,20 +204,20 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 	}
 
 	private function removedFromStage(e:Event):void {
-		if(e.target != scratchStage) return;
+			if(e.target != scratchStage) return;
 		uiContainer.parent.removeChild(uiContainer);
-		if(testBMs && testBMs.length) {
-			for(var i:int=0; i<testBMs.length; ++i)
+			if(testBMs && testBMs.length) {
+				for(var i:int=0; i<testBMs.length; ++i)
 				scratchStage.stage.removeChild(testBMs[i]);
 			testBMs = [];
 		}
 
-		for(var id:String in bitmapsByID)
-			if(bitmapsByID[id] is ChildRender)
+			for(var id:String in bitmapsByID)
+				if(bitmapsByID[id] is ChildRender)
 				bitmapsByID[id].dispose();
 		bitmapsByID = {};
 
-		for(var o:Object in cachedOtherRenderBitmaps)
+			for(var o:Object in cachedOtherRenderBitmaps)
 			cachedOtherRenderBitmaps[o].dispose();
 
 		cachedOtherRenderBitmaps = new Dictionary();
@@ -230,13 +228,14 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 		scratchStage.removeEventListener(Event.ENTER_FRAME, onRender);
 
 		onContextLoss(e);
-		if(__context) {
+			if(__context) {
 			__context.dispose();
 			__context = null;
 		}
 	}
 
 	private static var originPt:Point = new Point();
+
 	public function onStageResize(e:Event = null):void {
 		scissorRect = null;
 		if(scratchStage) {
@@ -245,12 +244,13 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 						scratchStage.root.scaleX * scratchStage.scaleX;
 
 			if(uiContainer)
-				uiContainer.transform.matrix = scratchStage.transform.matrix.clone();
+			uiContainer.transform.matrix = scratchStage.transform.matrix.clone();
 		}
 		setRenderView();
 	}
 
 	private var scissorRect:Rectangle;
+
 	public function setRenderView():void {
 		var p:Point = scratchStage.localToGlobal(originPt);
 		stage3D.x = p.x;
@@ -258,7 +258,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 		var width:uint = Math.ceil(480*appScale),
 				height:uint = Math.ceil(360*appScale);
 		var rect:Rectangle = new Rectangle(0, 0, width, height);
-		if(stage3D.context3D && (!scissorRect || !scissorRect.equals(rect))) {
+			if(stage3D.context3D && (!scissorRect || !scissorRect.equals(rect))) {
 			scissorRect = rect;
 			projMatrix = createOrthographicProjectionMatrix(480, 360, 0, 0);
 			stage3D.context3D.setScissorRectangle(scissorRect);
@@ -273,19 +273,20 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 	// 9 for alpha, mosaic, pixelation x, pixelation y, whirlRadians, hue, saturation, brightness, texture index
 	private var vStride:uint = 18;
 	private var ovStride:uint = 4 * vStride;
+
 	private function childAdded(e:Event):void {
-		if(e.target.parent != scratchStage) return;
+			if(e.target.parent != scratchStage) return;
 
 		// Check special properties to determine if the child is UI or not
 		var dispObj:DisplayObject = e.target as DisplayObject;
-		if(isUI(dispObj)) {
+			if(isUI(dispObj)) {
 			uiContainer.addChild(dispObj);
 			//trace(Dbg.printObj(this)+': Child '+Dbg.printObj(e.target)+' ADDED to ui layer');
 			return;
 		}
 
 		childrenChanged = true;
-		if(!('img' in dispObj)) {
+			if(!('img' in dispObj)) {
 			// Set the bounds of any non-ScratchSprite display objects
 			boundsDict[dispObj] = dispObj.getBounds(dispObj);
 		}
@@ -297,27 +298,27 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 	}
 
 	private function childRemoved(e:Event):void {
-		if(e.target.parent != scratchStage) return;
+			if(e.target.parent != scratchStage) return;
 		childrenChanged = true;
 //trace(Dbg.printObj(this)+': Child '+Dbg.printObj(e.target)+' REMOVED');
 
 		var bmID:String = spriteBitmaps[e.target];
-		if(bmID) {
+			if(bmID) {
 			delete spriteBitmaps[e.target];
 
-//				if(bitmapsByID[bmID]) {
-//					if(bitmapsByID[bmID] is ChildRender)
-//						bitmapsByID[bmID].dispose();
-//					delete bitmapsByID[bmID];
-//				}
+//			if(bitmapsByID[bmID]) {
+//				if(bitmapsByID[bmID] is ChildRender)
+//					bitmapsByID[bmID].dispose();
+//				delete bitmapsByID[bmID];
+//			}
 		}
 
-		if(cachedOtherRenderBitmaps[e.target]) {
+			if(cachedOtherRenderBitmaps[e.target]) {
 			cachedOtherRenderBitmaps[e.target].dispose();
 			delete cachedOtherRenderBitmaps[e.target];
 		}
 
-		if(boundsDict[e.target])
+			if(boundsDict[e.target])
 			delete boundsDict[e.target];
 	}
 
@@ -325,19 +326,19 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 		var resized:Boolean = false;
 		var numChildren:uint = scratchStage.numChildren;
 		var vertexDataMinSize:int = numChildren * ovStride << 2;
-		if(vertexDataMinSize > vertexData.length) {
+			if(vertexDataMinSize > vertexData.length) {
 			// Increase and fill in the index buffer
 			var index:uint = indexData.length;
-			var base:int = (index/12)*4;
+				var base:int = (index/12)*4;
 			indexData.length = numChildren * 12;
 			indexData.position = index;
 			var numAdded:int = (indexData.length - index) / 12;
-			for(var i:int=0; i<numAdded; ++i) {
+				for(var i:int=0; i<numAdded; ++i) {
 				indexData.writeShort(base);
-				indexData.writeShort(base+1);
-				indexData.writeShort(base+2);
-				indexData.writeShort(base+2);
-				indexData.writeShort(base+3);
+					indexData.writeShort(base+1);
+					indexData.writeShort(base+2);
+					indexData.writeShort(base+2);
+					indexData.writeShort(base+3);
 				indexData.writeShort(base);
 				base += 4;
 			}
@@ -347,8 +348,8 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 			//trace('indexData resized');
 		}
 
-		if(__context) {
-			if(resized || indexBuffer == null) {
+			if(__context) {
+				if(resized || indexBuffer == null) {
 				if (vertexBuffer) {
 					vertexBuffer.dispose();
 					vertexBuffer = null;
@@ -363,7 +364,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 				indexBufferUploaded = true;
 				//trace('indexBuffer uploaded');
 
-				vertexBuffer = __context.createVertexBuffer((indexData.length/12)*4, vStride);
+					vertexBuffer = __context.createVertexBuffer((indexData.length/12)*4, vStride);
 				vertexBufferUploaded = false;
 			}
 		}
@@ -375,6 +376,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 
 	private var childrenDrawn:int = 0;
 	private var tlPoint:Point;
+
 	private function draw():void {
 		checkBuffers();
 
@@ -382,33 +384,33 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 		var numChildren:uint = scratchStage.numChildren;
 		var i:int;
 		var dispObj:DisplayObject;
-		if(childrenChanged) {
-			if(debugTexture) {
+			if(childrenChanged) {
+				if(debugTexture) {
 				uiContainer.graphics.clear();
 				uiContainer.graphics.lineStyle(2, 0xFFCCCC);
 			}
-			for(i=0; i<numChildren; ++i) {
+				for(i=0; i<numChildren; ++i) {
 				dispObj = scratchStage.getChildAt(i);
-				if(dispObj.visible)
+					if(dispObj.visible)
 					textureDirty = checkChildRender(dispObj) || textureDirty;
 			}
 		}
 		else
-			for(var child:Object in unrenderedChildren)
-				if((child as DisplayObject).visible)
+				for(var child:Object in unrenderedChildren)
+					if((child as DisplayObject).visible)
 					textureDirty = checkChildRender(child as DisplayObject) || textureDirty;
 
-		if(textureDirty) {
+			if(textureDirty) {
 			packTextureBitmaps();
 		}
 
-		if(childrenChanged) {
+			if(childrenChanged) {
 			vertexData.position = 0;
 			childrenDrawn = 0;
 			var skipped:uint = 0;
-			for(i=0; i<numChildren; ++i) {
+				for(i=0; i<numChildren; ++i) {
 				dispObj = scratchStage.getChildAt(i);
-				if(!dispObj.visible) {
+					if(!dispObj.visible) {
 					//trace('Skipping hidden '+Dbg.printObj(dispObj));
 					++skipped;
 					continue;
@@ -422,32 +424,33 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 
 		uploadBuffers(childrenDrawn);
 
-//			if(childrenChanged) {
-//				trace(indexData);
-//				trace(vertexData);
-//			}
+//		if(childrenChanged) {
+//			trace(indexData);
+//			trace(vertexData);
+//		}
 		//childrenChanged = false;
 		for (var key:Object in unrenderedChildren)
 			delete unrenderedChildren[key];
 	}
 
 	private function uploadBuffers(quadCount:uint):void {
-		if(!indexBufferUploaded) {
+			if(!indexBufferUploaded) {
 			indexBuffer.uploadFromByteArray(indexData, 0, 0, indexData.length >> 1);
 			//trace('indexBuffer uploaded');
 			indexBufferUploaded = true;
 		}
 //			trace('Uploading buffers for '+quadCount+' children');
-		vertexBuffer.uploadFromByteArray(vertexData, 0, 0, (indexData.length/12)*4);//quadCount*4);
+			vertexBuffer.uploadFromByteArray(vertexData, 0, 0, (indexData.length/12)*4);//quadCount*4);
 		vertexBufferUploaded = true;
 	}
 
 	private var boundsDict:Dictionary = new Dictionary();
+
 	private function drawChild(dispObj:DisplayObject):void {
 		// Setup the geometry data
 		var rot:Number = dispObj.rotation;
 		const bounds:Rectangle = boundsDict[dispObj];
-		if(!bounds)
+			if(!bounds)
 			return;
 
 		var dw:Number = bounds.width * dispObj.scaleX;
@@ -460,14 +463,14 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 		var roundLoc:Boolean = (rot % 90 == 0 && dispObj.scaleX == 1.0 && dispObj.scaleY == 1.0);
 		var boundsX:Number = bounds.left, boundsY:Number = bounds.top;
 		var childRender:ChildRender = bitmapsByID[bmID] as ChildRender;
-		if(childRender && childRender.isPartial()) {
+			if(childRender && childRender.isPartial()) {
 			boundsX += childRender.inner_x * bounds.width;
 			boundsY += childRender.inner_y * bounds.height;
 			w *= childRender.inner_w;
 			h *= childRender.inner_h;
 		}
 
-		rot *= Math.PI/180;
+			rot *= Math.PI/180;
 		var cos:Number = Math.cos(rot);
 		var sin:Number = Math.sin(rot);
 		var TLx:Number = dispObj.x + (boundsX * cos - boundsY * sin) * dispObj.scaleX;
@@ -478,7 +481,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 		var cosH:Number = cos * h;
 		var sinH:Number = sin * h;
 
-		if(roundLoc) {
+			if(roundLoc) {
 			TLx = Math.round(TLx);
 			TLy = Math.round(TLy);
 		}
@@ -498,12 +501,12 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 		const texIndex:int = textureIndexByID[bmID];
 		const texture:ScratchTextureBitmap = textures[texIndex];
 		const rect:Rectangle = texture.getRect(bmID);
-		var forcePixelate:Boolean = pixelateAll || (renderOpts && rot % 90 == 0 && (w == rect.width || renderOpts.bitmap!=null));
+			var forcePixelate:Boolean = pixelateAll || (renderOpts && rot % 90 == 0 && (w == rect.width || renderOpts.bitmap!=null));
 		var left:Number = rect.left / texture.width;
 		var right:Number = rect.right / texture.width;
 		var top:Number = rect.top / texture.height;
 		var bottom:Number = rect.bottom / texture.height;
-		if(debugTexture) {
+			if(debugTexture) {
 			uiContainer.graphics.moveTo(TLx, TLy);
 			uiContainer.graphics.lineTo(TRx, TRy);
 			uiContainer.graphics.lineTo(BRx, BRy);
@@ -527,7 +530,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 		var fisheye:Number = 1;
 		//trace('dispObj = '+Dbg.printObj(dispObj));
 		const effects:Object = (renderOpts ? renderOpts.effects : null);
-		if(effects) {
+			if(effects) {
 			var scale:Number = ('isStage' in dispObj && dispObj['isStage'] ? 1 : appScale);
 			var srcWidth:Number = dw * scale; // Is this right?
 			var srcHeight:Number = dh * scale;
@@ -544,7 +547,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 			brightnessShift = Math.max(-100, Math.min(effects["brightness"], 100)) / 100;
 		}
 
-		if(renderOpts && renderOpts.costumeFlipped) {
+			if(renderOpts && renderOpts.costumeFlipped) {
 			var tmp:Number = right;
 			right = left;
 			left = tmp;
@@ -552,17 +555,17 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 
 		var pixelX:Number = (pixelate > 1 || forcePixelate ? pixelate / rect.width : -1);
 		var pixelY:Number = (pixelate > 1 || forcePixelate ? pixelate / rect.height : -1);
-		if(pixelate > 1) {
+			if(pixelate > 1) {
 			pixelX *= rect.width / srcWidth;
 			pixelY *= rect.height / srcHeight;
 		}
-		vertexData.writeFloat(TLx);			    // x
-		vertexData.writeFloat(TLy);			    // y
+			vertexData.writeFloat(TLx);				// x
+			vertexData.writeFloat(TLy);				// y
 		vertexData.writeFloat(0);				// z - use index?
 		vertexData.writeFloat(0);				// u
 		vertexData.writeFloat(0);				// v
 		vertexData.writeFloat(left);			// u0
-		vertexData.writeFloat(top);			    // v0
+			vertexData.writeFloat(top);				// v0
 		vertexData.writeFloat(right - left);	// w
 		vertexData.writeFloat(bottom - top); 	// h
 		vertexData.writeFloat(alpha);
@@ -575,13 +578,13 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 		vertexData.writeFloat(brightnessShift);
 		vertexData.writeFloat(texIndex + 0.01);
 
-		vertexData.writeFloat(BLx);			    // x
-		vertexData.writeFloat(BLy);			    // y
+			vertexData.writeFloat(BLx);				// x
+			vertexData.writeFloat(BLy);				// y
 		vertexData.writeFloat(0);
 		vertexData.writeFloat(0);				// u
 		vertexData.writeFloat(1);				// v
 		vertexData.writeFloat(left);			// u0
-		vertexData.writeFloat(top);			    // v0
+			vertexData.writeFloat(top);				// v0
 		vertexData.writeFloat(right - left);	// w
 		vertexData.writeFloat(bottom - top); 	// h
 		vertexData.writeFloat(alpha);
@@ -594,13 +597,13 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 		vertexData.writeFloat(brightnessShift);
 		vertexData.writeFloat(texIndex + 0.02);
 
-		vertexData.writeFloat(BRx);			    // x
-		vertexData.writeFloat(BRy);			    // y
+			vertexData.writeFloat(BRx);				// x
+			vertexData.writeFloat(BRy);				// y
 		vertexData.writeFloat(0);
 		vertexData.writeFloat(1);				// u
 		vertexData.writeFloat(1);				// v
 		vertexData.writeFloat(left);			// u0
-		vertexData.writeFloat(top);			    // v0
+			vertexData.writeFloat(top);				// v0
 		vertexData.writeFloat(right - left);	// w
 		vertexData.writeFloat(bottom - top); 	// h
 		vertexData.writeFloat(alpha);
@@ -613,13 +616,13 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 		vertexData.writeFloat(brightnessShift);
 		vertexData.writeFloat(texIndex + 0.03);
 
-		vertexData.writeFloat(TRx);			    // x
-		vertexData.writeFloat(TRy);			    // y
+			vertexData.writeFloat(TRx);				// x
+			vertexData.writeFloat(TRy);				// y
 		vertexData.writeFloat(0);
 		vertexData.writeFloat(1);				// u
 		vertexData.writeFloat(0);				// v
 		vertexData.writeFloat(left);			// u0
-		vertexData.writeFloat(top);			    // v0
+			vertexData.writeFloat(top);				// v0
 		vertexData.writeFloat(right - left);	// w
 		vertexData.writeFloat(bottom - top); 	// h
 		vertexData.writeFloat(alpha);
@@ -633,23 +636,23 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 		vertexData.writeFloat(texIndex + 0.04);
 	}
 
-	private function cleanupUnusedBitmaps():void {
+		private function cleanUpUnusedBitmaps():void {
 //trace('cleanupUnusedBitmaps()');
 		var deletedBMs:Array = [];
 		for (var k:Object in bitmapsByID) {
 			var bmID:String = k as String;
 			var isUsed:Boolean = false;
 
-			for(var spr:Object in spriteBitmaps) {
-				if(spriteBitmaps[spr] == bmID) {
+				for(var spr:Object in spriteBitmaps) {
+					if(spriteBitmaps[spr] == bmID) {
 					isUsed = true;
 					break;
 				}
 			}
 
-			if(!isUsed) {
+				if(!isUsed) {
 //trace('Deleting bitmap '+bmID);
-				if(bitmapsByID[bmID] is ChildRender)
+					if(bitmapsByID[bmID] is ChildRender)
 					bitmapsByID[bmID].dispose();
 				deletedBMs.push(bmID);
 			}
@@ -661,57 +664,57 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 
 	public function updateRender(dispObj:DisplayObject, renderID:String = null, renderOpts:Object = null):void {
 		var setBounds:Boolean = false;
-		if(renderID && spriteBitmaps[dispObj] != renderID) {
+			if(renderID && spriteBitmaps[dispObj] != renderID) {
 			spriteBitmaps[dispObj] = renderID;
 
 			setBounds = true;
 			unrenderedChildren[dispObj] = !bitmapsByID[renderID];
 		}
-		if(renderOpts) {
+			if(renderOpts) {
 			var oldEffects:Object = spriteRenderOpts[dispObj] ? spriteRenderOpts[dispObj].effects : null;
 //				var oldBM:BitmapData = spriteRenderOpts[dispObj] ? spriteRenderOpts[dispObj].bitmap : null;
 			var opts:Object = spriteRenderOpts[dispObj] || (spriteRenderOpts[dispObj] = {});
 
-			if(renderOpts.bounds) {
+				if(renderOpts.bounds) {
 				boundsDict[dispObj] = (renderOpts.raw_bounds && renderOpts.bitmap ? renderOpts.raw_bounds : renderOpts.bounds);
 				// Handle bitmaps that need cropping
-//					if(renderOpts.raw_bounds) {
-//						var bm:BitmapData = renderOpts.bitmap;
-//						var oldBM:BitmapData = opts.sub_bitmap;
-//						if(bm) {
-//							var w:int = Math.ceil(b.width), h:int = Math.ceil(b.height);
-//							if(oldBM && oldBM != bm && (w != oldBM.width || h != oldBM.height)) {
-//								oldBM.dispose();
-//								oldBM = opts.sub_bitmap = null;
-//							}
-//
-//							if(!oldBM && (w < bm.width || h < bm.height)) {
-//								var cropR:Rectangle = b.clone();
-//								var rawBounds:Rectangle = renderOpts.raw_bounds;
-//								cropR.offset(-rawBounds.x, -rawBounds.y);
-//
-//								var cropped:BitmapData = new BitmapData(w, h, true, 0);
-//								cropped.copyPixels(bm, cropR, new Point(0, 0));
-//								opts.sub_bitmap = cropped;
-//							}
-//						}
-//						else if(oldBM) {
+//				if(renderOpts.raw_bounds) {
+//					var bm:BitmapData = renderOpts.bitmap;
+//					var oldBM:BitmapData = opts.sub_bitmap;
+//					if(bm) {
+//						var w:int = Math.ceil(b.width), h:int = Math.ceil(b.height);
+//						if(oldBM && oldBM != bm && (w != oldBM.width || h != oldBM.height)) {
 //							oldBM.dispose();
-//							opts.sub_bitmap = null;
+//							oldBM = opts.sub_bitmap = null;
+//						}
+//
+//						if(!oldBM && (w < bm.width || h < bm.height)) {
+//							var cropR:Rectangle = b.clone();
+//							var rawBounds:Rectangle = renderOpts.raw_bounds;
+//							cropR.offset(-rawBounds.x, -rawBounds.y);
+//
+//							var cropped:BitmapData = new BitmapData(w, h, true, 0);
+//							cropped.copyPixels(bm, cropR, new Point(0, 0));
+//							opts.sub_bitmap = cropped;
 //						}
 //					}
+//					else if(oldBM) {
+//						oldBM.dispose();
+//						opts.sub_bitmap = null;
+//					}
+//				}
 			}
 
-			for(var prop:String in renderOpts)
+				for(var prop:String in renderOpts)
 				opts[prop] = renderOpts[prop];
 		}
 
-//			if(renderOpts && renderOpts.costume) {
-//				getB
-//			}
+//		if(renderOpts && renderOpts.costume) {
+//			getB
+//		}
 
 		// Bitmaps can update their renders
-		if(dispObj is Bitmap)
+			if(dispObj is Bitmap)
 			unrenderedChildren[dispObj] = true;
 	}
 
@@ -723,32 +726,33 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 		var boundsOffset:Point = bounds.topLeft.subtract(rawBounds.topLeft);
 	}
 
-//		private var costumeBounds:Object = {};
-//		private function getBoundsFromCostume(costume:DisplayObject):void {
-//			var c:Object = costume as Object;
-//			if(!costumeBounds[c.baseLayerMD5]) {
-//				var rawBounds:Rectangle = costume.getBounds(costume);
-//				var s:Shape = c.getShape();
-//				var bounds:Rectangle = s.getBounds(s);
-//				var boundsOffset:Point = bounds.topLeft.subtract(rawBounds.topLeft);
+//	private var costumeBounds:Object = {};
+//	private function getBoundsFromCostume(costume:DisplayObject):void {
+//		var c:Object = costume as Object;
+//		if(!costumeBounds[c.baseLayerMD5]) {
+//			var rawBounds:Rectangle = costume.getBounds(costume);
+//			var s:Shape = c.getShape();
+//			var bounds:Rectangle = s.getBounds(s);
+//			var boundsOffset:Point = bounds.topLeft.subtract(rawBounds.topLeft);
 //
-//			}
 //		}
+//	}
 
 	public function updateFilters(dispObj:DisplayObject, effects:Object):void {
-		if(spriteRenderOpts[dispObj]) spriteRenderOpts[dispObj].effects = effects;
+			if(spriteRenderOpts[dispObj]) spriteRenderOpts[dispObj].effects = effects;
 		else spriteRenderOpts[dispObj] = {effects: effects};
 	}
 
 	// TODO: store multiple sizes of bitmaps?
 	private static const maxScale:uint = 4;
 	private static var noTrans:ColorTransform = new ColorTransform();
+
 	private function checkChildRender(dispObj:DisplayObject):Boolean {
 		// TODO: Have updateRender send the new id instead of using ScratchSprite's internals
 		var id:String = spriteBitmaps[dispObj];
-		if(!id) {
-			if('img' in dispObj) return false;
-			id = spriteBitmaps[dispObj] = 'bm'+Math.random();
+			if(!id) {
+				if('img' in dispObj) return false;
+				id = spriteBitmaps[dispObj] = 'bm'+Math.random();
 		}
 
 //trace('checkChildRender() '+Dbg.printObj(dispObj)+' with id: '+id);
@@ -762,27 +766,27 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 		var mosaic:uint;
 		var scale:Number = 1;
 		var isNew:Boolean = false;
-		if(renderOpts) {
+			if(renderOpts) {
 			effects = renderOpts.effects;
-			if(renderOpts.bitmap != null) {
+				if(renderOpts.bitmap != null) {
 				isNew = !bitmapsByID[id];
 				bitmapsByID[id] = renderOpts.bitmap;//renderOpts.sub_bitmap ? renderOpts.sub_bitmap : renderOpts.bitmap;
 
 				return (isNew || unrenderedChildren[dispObj]);
 			}
-			else if(effects && 'mosaic' in effects) {
+				else if(effects && 'mosaic' in effects) {
 				s = renderOpts.isStage ? 1 : appScale;
 				srcWidth = dw * s;
-				srcHeight =  dh * s;
+					srcHeight =  dh * s;
 				mosaic = Math.round((Math.abs(effects["mosaic"]) + 10) / 10);
 				mosaic = Math.max(1, Math.min(mosaic, Math.min(srcWidth, srcHeight)));
 				scale = 1 / mosaic;
 			}
 		}
-		else if(dispObj is Bitmap) { // Remove else to allow graphics effects on video layer
+			else if(dispObj is Bitmap) { // Remove else to allow graphics effects on video layer
 			isNew = !bitmapsByID[id];
 			bitmapsByID[id] = (dispObj as Bitmap).bitmapData;
-			if(unrenderedChildren[dispObj] && textureIndexByID.hasOwnProperty(id)) {
+				if(unrenderedChildren[dispObj] && textureIndexByID.hasOwnProperty(id)) {
 //trace('Should re-render '+Dbg.printObj(dispObj)+' with id '+id);
 				var texture:ScratchTextureBitmap = textures[textureIndexByID[id]];
 				texture.updateBitmap(id, bitmapsByID[id]);
@@ -796,26 +800,26 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 		var width:Number = dw * scale;
 		var height:Number = dh * scale;
 		var bmd:BitmapData = bitmapsByID[id];
-		if(bmd) {
+			if(bmd) {
 			// If the bitmap changed or the sprite is now large than the stored render then re-render it
 			//trace(width +'x'+ height + ' vs '+bmd.width+'x'+bmd.height);
-			if((id.indexOf('bm') != 0 || !unrenderedChildren[dispObj]) && bmd.width >= width && bmd.height >= height) {
+				if((id.indexOf('bm') != 0 || !unrenderedChildren[dispObj]) && bmd.width >= width && bmd.height >= height) {
 				//trace('USING existing bitmap');
 
 				scratchStage.visible = false;
 				return false;
 			}
-			else if(bmd is ChildRender) {
-				if((bmd as ChildRender).needsResize(width, height)) {
+				else if(bmd is ChildRender) {
+					if((bmd as ChildRender).needsResize(width, height)) {
 					bmd.dispose();
 					bmd = null;
 				}
-				else if((bmd as ChildRender).needsRender(dispObj, width, height, stagePenLayer)) {
+					else if((bmd as ChildRender).needsRender(dispObj, width, height, stagePenLayer)) {
 					(bmd as ChildRender).reset(dispObj, stagePenLayer);
-					if('clearCachedBitmap' in dispObj)
+						if('clearCachedBitmap' in dispObj)
 						(dispObj as Object).clearCachedBitmap();
 
-					trace('Re-rendering part of large sprite! '+Dbg.printObj(dispObj));
+						trace('Re-rendering part of large sprite! '+Dbg.printObj(dispObj));
 				}
 				else {
 					scratchStage.visible = false;
@@ -828,7 +832,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 		// TODO: Remove ability to use sub-renders because it breaks image effects like whirls, mosaic, and fisheye
 		// OR disable whirl, mosaic, and fisheye for subrendered sprites
 		var flipped:Boolean = renderOpts && renderOpts.costumeFlipped;
-		if(flipped) {
+			if(flipped) {
 			(dispObj as Object).setRotationStyle("don't rotate");
 			bounds = (dispObj as Object).getVisibleBounds(dispObj);
 		}
@@ -836,7 +840,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 		var width2:Number = Math.max(1, width);
 		var height2:Number = Math.max(1, height);
 		var updateTexture:Boolean = !!bmd;
-		if(!bmd) bmd = new ChildRender(width2, height2, dispObj, stagePenLayer, bounds);
+			if(!bmd) bmd = new ChildRender(width2, height2, dispObj, stagePenLayer, bounds);
 		else bmd.fillRect(bmd.rect, 0x00000000);
 
 		var sX:Number = scale, sY:Number = scale;
@@ -846,14 +850,14 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 		}
 
 		var drawMatrix:Matrix = new Matrix(1, 0, 0, 1, -bounds.x, -bounds.y);
-		if(bmd is ChildRender && (bmd as ChildRender).isPartial())
+			if(bmd is ChildRender && (bmd as ChildRender).isPartial())
 			drawMatrix.translate(-(bmd as ChildRender).inner_x * bounds.width, -(bmd as ChildRender).inner_y * bounds.height);
 		drawMatrix.scale(dispObj.scaleX * sX * Math.min(maxScale, appScale * scratchStage.stage.contentsScaleFactor), dispObj.scaleY * sY * Math.min(maxScale, appScale * scratchStage.stage.contentsScaleFactor));
 		var oldAlpha:Number = dispObj.alpha;
 		dispObj.alpha = 1;
 
 		var oldImgTrans:ColorTransform = null;
-		if('img' in dispObj) {
+			if('img' in dispObj) {
 			oldImgTrans = (dispObj as Object).img.transform.colorTransform;
 			(dispObj as Object).img.transform.colorTransform = noTrans;
 		}
@@ -868,16 +872,16 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 
 		dispObj.visible = oldVis;
 		dispObj.alpha = oldAlpha;
-		if('img' in dispObj)
+			if('img' in dispObj)
 			(dispObj as Object).img.transform.colorTransform = oldImgTrans;
 
-		if(flipped)
+			if(flipped)
 			(dispObj as Object).setRotationStyle('left-right');
 
 		scratchStage.visible = false;
 //trace(dispObj.parent.getChildIndex(dispObj)+' '+Dbg.printObj(dispObj)+' Rendered '+Dbg.printObj(bmd)+' with id: '+id+' @ '+bmd.width+'x'+bmd.height);
 //trace('Original render size was '+bounds2);
-		if(updateTexture && textureIndexByID.hasOwnProperty(id))
+			if(updateTexture && textureIndexByID.hasOwnProperty(id))
 			textures[textureIndexByID[id]].updateBitmap(id, bmd);
 		bitmapsByID[id] = bmd;
 
@@ -888,26 +892,26 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 
 	public function spriteIsLarge(dispObj:DisplayObject):Boolean {
 		var id:String = spriteBitmaps[dispObj];
-		if(!id) return false;
+			if(!id) return false;
 		var cr:ChildRender = bitmapsByID[id];
 		return (cr && cr.isPartial());
 	}
 
 	public var debugTexture:Boolean = false;
+
 	private function toggleTextureDebug(evt:KeyboardEvent):void {
-		if(evt.ctrlKey && evt.charCode == 108) {
+			if(evt.ctrlKey && evt.charCode == 108) {
 			debugTexture = !debugTexture;
 		}
 	}
 
 	private var maxTextures:uint = 5;
-	private function packTextureBitmaps():void
-	{
+	private function packTextureBitmaps():void {
 		var penID:String = spriteBitmaps[stagePenLayer];
-		if(textures.length < 1)
+			if(textures.length < 1)
 			textures.push(new ScratchTextureBitmap(512, 512));
 
-		if(!penPacked && penID != null) {
+			if(!penPacked && penID != null) {
 			var bmList:Object = {};
 			bmList[penID] = bitmapsByID[penID];
 
@@ -920,24 +924,24 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 		var cleanedUnused:Boolean = false;
 		var usedMaxTex:Boolean = false;
 		var size:uint = texSize;
-		while(true) {
+			while(true) {
 			var unpackedBMs:Object = {};
 			var bmsToPack:int = 0;
 
 			for (var k:Object in bitmapsByID)
-				if(k != penID) {// && (!textureIndexByID.hasOwnProperty(k) || textureIndexByID[k] < 0)) {
+					if(k != penID) {// && (!textureIndexByID.hasOwnProperty(k) || textureIndexByID[k] < 0)) {
 					unpackedBMs[k] = bitmapsByID[k];
 					++bmsToPack;
 				}
 
 			//trace('pack textures! ('+bmsToPack+')');
 			for(var i:int=1; i<maxTextures && bmsToPack > 0; ++i) {
-				if(i >= textures.length)
+					if(i >= textures.length)
 					textures.push(new ScratchTextureBitmap(size, size));
 
 				var newTex:ScratchTextureBitmap = textures[i];
 				var packedIDs:Array = newTex.packBitmaps(unpackedBMs);
-				for(var j:int=0; j<packedIDs.length; ++j) {
+					for(var j:int=0; j<packedIDs.length; ++j) {
 					//trace('packed bitmap '+packedIDs[j]+': '+bitmapsByID[packedIDs[j]].rect);
 					textureIndexByID[packedIDs[j]] = i;
 					delete unpackedBMs[packedIDs[j]];
@@ -945,9 +949,9 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 				bmsToPack -= packedIDs.length;
 			}
 
-			if(bmsToPack > 0) {
-				if(!cleanedUnused) {
-					cleanupUnusedBitmaps();
+				if(bmsToPack > 0) {
+					if(!cleanedUnused) {
+						cleanUpUnusedBitmaps();
 					cleanedUnused = true;
 				}
 				else if(!usedMaxTex) {
@@ -1008,40 +1012,38 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 
 	private var drawCount:uint = 0;
 	//private var lastTime:int = 0;
-	private function onRender(e:Event):void
-	{
-		if(!scratchStage) return;
+	private function onRender(e:Event):void {
+			if(!scratchStage) return;
 		//trace('frame was '+(getTimer() - lastTime)+'ms.');
 		//lastTime = getTimer();
 
-		if(scratchStage.stage.stage3Ds[0] == null || __context == null ||
+			if(scratchStage.stage.stage3Ds[0] == null || __context == null ||
 				__context.driverInfo == "Disposed") {
-			if(__context) __context.dispose();
+				if(__context) __context.dispose();
 			__context = null;
 			onContextLoss();
 			return;
 		}
 
 		//trace('Drawing!');
-		if(!indexBuffer) checkBuffers();
+			if(!indexBuffer) checkBuffers();
 		draw();
 		render(childrenDrawn);
 		__context.present();
 		++drawCount;
 
 		// Invalidate cached renders
-		for(var o:Object in cachedOtherRenderBitmaps)
+			for(var o:Object in cachedOtherRenderBitmaps)
 			cachedOtherRenderBitmaps[o].inner_x = Number.NaN;
 	}
 
-	public function getRender(bmd:BitmapData):void
-	{
+	public function getRender(bmd:BitmapData):void {
 		if (scratchStage.stage.stage3Ds[0] == null || __context == null ||
 				__context.driverInfo == "Disposed") {
 			return;
 		}
 
-		if(!indexBuffer) checkBuffers();
+			if(!indexBuffer) checkBuffers();
 		draw();
 		__context.configureBackBuffer(bmd.width, bmd.height, 0, false);
 		render(childrenDrawn);
@@ -1053,12 +1055,13 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 	}
 
 	private var emptyStamp:BitmapData = new BitmapData(1, 1, true, 0);
+
 	public function getRenderedChild(dispObj:DisplayObject, width:Number, height:Number, for_carry:Boolean = false):BitmapData {
-		if(dispObj.parent != scratchStage || !__context)
+			if(dispObj.parent != scratchStage || !__context)
 			return emptyStamp;
 
-		if(!spriteBitmaps[dispObj] || unrenderedChildren[dispObj] || !bitmapsByID[spriteBitmaps[dispObj]]) {
-			if(checkChildRender(dispObj)) {
+			if(!spriteBitmaps[dispObj] || unrenderedChildren[dispObj] || !bitmapsByID[spriteBitmaps[dispObj]]) {
+				if(checkChildRender(dispObj)) {
 				packTextureBitmaps();
 				checkBuffers();
 			}
@@ -1070,27 +1073,27 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 		var id:String = spriteBitmaps[dispObj];
 		var iw:int = Math.ceil(Math.round(width * 100) / 100);
 		var ih:int = Math.ceil(Math.round(height * 100) / 100);
-		if(iw<1 || ih<1) return emptyStamp;
+			if(iw<1 || ih<1) return emptyStamp;
 
-		if(stampsByID[id] && !for_carry) {
+			if(stampsByID[id] && !for_carry) {
 			var changed:Boolean = (stampsByID[id].width != iw || stampsByID[id].height != ih);
-			if(!changed) {
+				if(!changed) {
 				var old_fx:Object = stampsByID[id].effects;
 				var prop:String;
-				if(old_fx) {
-					for(prop in old_fx) {
-						if(prop == 'ghost') continue;
-						if(old_fx[prop] == 0 && !effects) continue;
-						if(!effects || old_fx[prop] != effects[prop]) {
+					if(old_fx) {
+						for(prop in old_fx) {
+							if(prop == 'ghost') continue;
+							if(old_fx[prop] == 0 && !effects) continue;
+							if(!effects || old_fx[prop] != effects[prop]) {
 							changed = true;
 							break;
 						}
 					}
 				}
 				else {
-					for(prop in effects) {
-						if(prop == 'ghost') continue;
-						if(effects[prop] != 0) {
+						for(prop in effects) {
+							if(prop == 'ghost') continue;
+							if(effects[prop] != 0) {
 							changed = true;
 							break;
 						}
@@ -1098,7 +1101,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 				}
 			}
 
-			if(!changed)
+				if(!changed)
 				return stampsByID[id];
 		}
 
@@ -1132,18 +1135,18 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 		dispObj.scaleY = oldScaleY;
 		dispObj.rotation = rot;
 
-		if(vertexData.position == 0)
+			if(vertexData.position == 0)
 			return bmd;
 
 		// TODO: Find out why the index buffer isn't uploaded sometimes
 		indexBufferUploaded = false;
 		uploadBuffers(1);
 
-		__context.setScissorRectangle(new Rectangle(0, 0, bmd.width+1, bmd.height+1));
+			__context.setScissorRectangle(new Rectangle(0, 0, bmd.width+1, bmd.height+1));
 		render(1, false);
 		__context.drawToBitmapData(bmd);
 
-		if(changeBackBuffer) {
+			if(changeBackBuffer) {
 			scissorRect = null;
 			// Reset scissorRect and framebuffer size
 			setupContext3D();
@@ -1152,29 +1155,30 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 			__context.setScissorRectangle(scissorRect);
 		}
 
-		if(!for_carry) stampsByID[id] = bmd;
+			if(!for_carry) stampsByID[id] = bmd;
 		return bmd;
 	}
 
-//		private var testTouchBM:Bitmap;
+//	private var testTouchBM:Bitmap;
 	private var cachedOtherRenderBitmaps:Dictionary;
+
 	public function getOtherRenderedChildren(skipObj:DisplayObject, scale:Number):BitmapData {
-		if(skipObj.parent != scratchStage)
+			if(skipObj.parent != scratchStage)
 			return null;
 
 		var bounds:Rectangle = boundsDict[skipObj];
-		var width:uint = Math.ceil(bounds.width  * skipObj.scaleX * scale);
-		var height:uint = Math.ceil(bounds.height  * skipObj.scaleY * scale);
+			var width:uint = Math.ceil(bounds.width  * skipObj.scaleX * scale);
+			var height:uint = Math.ceil(bounds.height  * skipObj.scaleY * scale);
 		var cr:ChildRender = cachedOtherRenderBitmaps[skipObj];
-		if(cr && cr.width == width && cr.height == height) {
+			if(cr && cr.width == width && cr.height == height) {
 			// TODO: Can we efficiently cache this?  we'd have to check every other position / effect / etc
-			if(cr.inner_x == skipObj.x && cr.inner_y == skipObj.y && cr.inner_w == skipObj.rotation)
+				if(cr.inner_x == skipObj.x && cr.inner_y == skipObj.y && cr.inner_w == skipObj.rotation)
 				return cr;
 			else
 				cr.fillRect(cr.rect, 0x00000000);  // Is this necessary?
 		}
 		else {
-			if(cr) cr.dispose();
+				if(cr) cr.dispose();
 			cr = cachedOtherRenderBitmaps[skipObj] = new ChildRender(width, height, skipObj, stagePenLayer, bounds);
 		}
 
@@ -1202,11 +1206,11 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 		projMatrix = oldProj;
 		__context.drawToBitmapData(cr);
 		__context.setScissorRectangle(scissorRect);
-//			if(!testTouchBM) {
-//				testTouchBM = new Bitmap(cr);
-//				scratchStage.stage.addChild(testTouchBM);
-//			}
-//			testTouchBM.bitmapData = cr;
+//		if(!testTouchBM) {
+//			testTouchBM = new Bitmap(cr);
+//			scratchStage.stage.addChild(testTouchBM);
+//		}
+//		testTouchBM.bitmapData = cr;
 		cr.inner_x = skipObj.x;
 		cr.inner_y = skipObj.y;
 		cr.inner_w = skipObj.rotation;
@@ -1219,8 +1223,8 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 	private const FC2:Vector.<Number> = Vector.<Number>([240, 3, 4, 5]);
 	private const FC3:Vector.<Number> = Vector.<Number>([6, 0.11, 0.09, 0.001]);
 	private const FC4:Vector.<Number> = Vector.<Number>([360, 0, 0, 0]);
-	public function render(quadCount:uint, blend:Boolean = true):void
-	{
+
+	public function render(quadCount:uint, blend:Boolean = true):void {
 		// assign shader program
 		__context.setProgram(program);
 		__context.clear(0, 0, 0, 0);
@@ -1256,14 +1260,14 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 		// hueShift, saturation, brightness, texture index
 		__context.setVertexBufferAt(4, vertexBuffer, 14, Context3DVertexBufferFormat.FLOAT_4);
 
-		if(blend)
+			if(blend)
 			__context.setBlendFactors(Context3DBlendFactor.SOURCE_ALPHA, Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA);
 		else
 			__context.setBlendFactors(Context3DBlendFactor.SOURCE_ALPHA, Context3DBlendFactor.ZERO);
 
 		// draw all sprites
 		//trace('Drawing '+quadCount+' children');
-		__context.drawTriangles(indexBuffer, 0, quadCount*2);
+			__context.drawTriangles(indexBuffer, 0, quadCount*2);
 		//trace('finished drawing() - '+drawCount);
 
 		//childrenChanged = false;
@@ -1271,7 +1275,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 	}
 
 	private function setupContext3D(e:Event = null):void {
-		if(!__context) {
+			if(!__context) {
 			requestContext3D();
 			return;
 		}
@@ -1289,118 +1293,118 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 		indexBuffer = __context.createIndexBuffer(indexData.length >> 1);
 		//trace('indexBuffer created');
 		indexBufferUploaded = false;
-		vertexBuffer = __context.createVertexBuffer((indexData.length/12)*4, vStride);
+			vertexBuffer = __context.createVertexBuffer((indexData.length/12)*4, vStride);
 		vertexBufferUploaded = false;
 		tlPoint = scratchStage.localToGlobal(originPt);
 	}
 
 	private function setupShaders():void {
-		vertexShaderAssembler.assemble( Context3DProgramType.VERTEX,
-						"m44 op, va0, vc0\n"+ // pos to clipspace
-						"mov v0, va1\n"+ // copy u,v, u0, v0
-						"mov v1, va2\n"+ // copy w, h, alpha, mosaic
-						"mov v2, va3\n"+ // copy p_x, p_y, whirlRadians, (push fisheye here?)
+			vertexShaderAssembler.assemble( Context3DProgramType.VERTEX,
+				"m44 op, va0, vc0\n"+ // pos to clipspace
+				"mov v0, va1\n"+ // copy u,v, u0, v0
+				"mov v1, va2\n"+ // copy w, h, alpha, mosaic
+				"mov v2, va3\n"+ // copy p_x, p_y, whirlRadians, (push fisheye here?)
 						"mov v3, va4\n" // copy hueShift, fisheye, brightness, texture index
 		);
 
-		fragmentShaderAssembler.assemble( Context3DProgramType.FRAGMENT,
-				// FC0 = (1, 2, 0, 0.5)
-				/*** Mosaic effect ***/
-						"mul ft0.xyzw, v0.xyxy, v1.wwww\n" +
-						"frc ft0.xyzw, ft0.xyzw\n" +
+			fragmentShaderAssembler.assemble( Context3DProgramType.FRAGMENT,
+			// FC0 = (1, 2, 0, 0.5)
+			/*** Mosaic effect ***/
+				"mul ft0.xyzw, v0.xyxy, v1.wwww\n" +
+				"frc ft0.xyzw, ft0.xyzw\n" +
 
-				/*** Pixelate effect ***/
-					// Do xy = int(xy / pixels) * pixels
-						"div ft2.xyzw, ft0.xyxy, v2.xyxy\n" +
-						"frc ft1.xyzw, ft2.xyzw\n" +
-						"sub ft2.xyzw, ft2.xyzw, ft1.xyzw\n" +
-						"mul ft2.xyzw, ft2.xyzw, v2.xyxy\n" +
+			/*** Pixelate effect ***/
+				// Do xy = int(xy / pixels) * pixels
+				"div ft2.xyzw, ft0.xyxy, v2.xyxy\n" +
+				"frc ft1.xyzw, ft2.xyzw\n" +
+				"sub ft2.xyzw, ft2.xyzw, ft1.xyzw\n" +
+				"mul ft2.xyzw, ft2.xyzw, v2.xyxy\n" +
 
-					// Get the middle pixel
-						"div ft1.xyxy, v2.xyxy, fc0.yyyy\n"+
-						"add ft2.xyzw, ft2.xyxy, ft1.xyxy\n"+
+				// Get the middle pixel
+				"div ft1.xyxy, v2.xyxy, fc0.yyyy\n"+
+				"add ft2.xyzw, ft2.xyxy, ft1.xyxy\n"+
 
-					// Use the pixelated UV?
-						"sge ft1.x, v2.x, fc0.z\n"+ // is pixelate_x >= 0?
-						"mul ft2.xyzw, ft2.xyzw, ft1.xxxx\n"+ // then use the pixelated UV
-						"slt ft1.x, v2.x, fc0.z\n"+ // is pixelate_x < 0?
-						"mul ft0.xyzw, ft0.xyzw, ft1.xxxx\n"+ // then use the pixelated UV
-						"add ft0.xyzw, ft0.xyzw, ft2.xyzw\n"+ // Add them together
+				// Use the pixelated UV?
+				"sge ft1.x, v2.x, fc0.z\n"+ // is pixelate_x >= 0?
+				"mul ft2.xyzw, ft2.xyzw, ft1.xxxx\n"+ // then use the pixelated UV
+				"slt ft1.x, v2.x, fc0.z\n"+ // is pixelate_x < 0?
+				"mul ft0.xyzw, ft0.xyzw, ft1.xxxx\n"+ // then use the pixelated UV
+				"add ft0.xyzw, ft0.xyzw, ft2.xyzw\n"+ // Add them together
 
-				/*** Whirl effect ***/
-						"mov ft0.zwzw, fc0.zzzz\n" +
-						"mov ft4.xyzw, ft0.xyzw\n" +
-						"sub ft0.xy, ft0.xy, fc0.ww\n" + // ft0.xy = vec
-						"dp3 ft1.yyy, ft0.xyz, ft0.xyz\n" +
-						"sqt ft1.x, ft1.y\n" + // ft.x = d, len(uv) from center of texture (0.5, 0.5)
-						"div ft1.y, ft1.x, fc0.w\n" + // radius = 0.5 (to the edge)
-						"sub ft1.y, fc0.x, ft1.y\n" + // ft1.y = factor
+			/*** Whirl effect ***/
+				"mov ft0.zwzw, fc0.zzzz\n" +
+				"mov ft4.xyzw, ft0.xyzw\n" +
+				"sub ft0.xy, ft0.xy, fc0.ww\n" + // ft0.xy = vec
+				"dp3 ft1.yyy, ft0.xyz, ft0.xyz\n" +
+				"sqt ft1.x, ft1.y\n" + // ft.x = d, len(uv) from center of texture (0.5, 0.5)
+				"div ft1.y, ft1.x, fc0.w\n" + // radius = 0.5 (to the edge)
+				"sub ft1.y, fc0.x, ft1.y\n" + // ft1.y = factor
 
-						"mul ft1.z, ft1.y, ft1.y\n" +
-						"mul ft1.z, ft1.z, v2.z\n" + // ft1.z = a, using v2.w for whirlRadians
-						"sin ft2.xyzw, ft1.zzzz\n" + // ft2.x = sinAngle
-						"cos ft2.yyyy, ft1.zzzz\n" + // ft2.y = cosAngle
+				"mul ft1.z, ft1.y, ft1.y\n" +
+				"mul ft1.z, ft1.z, v2.z\n" + // ft1.z = a, using v2.w for whirlRadians
+				"sin ft2.xyzw, ft1.zzzz\n" + // ft2.x = sinAngle
+				"cos ft2.yyyy, ft1.zzzz\n" + // ft2.y = cosAngle
 
-						"mul ft2.z, ft0.x, ft2.y\n" + // ft2.z = vec.x * cosAngle
-						"mul ft2.w, ft0.y, ft2.x\n" + // ft2.w = vec.y * sinAngle
-						"sub ft3.xyzw, ft2.zzzz, ft2.wwww\n" +
+				"mul ft2.z, ft0.x, ft2.y\n" + // ft2.z = vec.x * cosAngle
+				"mul ft2.w, ft0.y, ft2.x\n" + // ft2.w = vec.y * sinAngle
+				"sub ft3.xyzw, ft2.zzzz, ft2.wwww\n" +
 
-						"mul ft2.z, ft0.x, ft2.x\n" + // ft2.z = vec.x * sinAngle
-						"mul ft2.w, ft0.y, ft2.y\n" + // ft2.w = vec.y * cosAngle
-						"add ft3.yyyy, ft2.zzzz, ft2.wwww\n" +
-						"add ft3.xy, ft3.xy, fc0.ww\n" + // ft3.y = p.y
+				"mul ft2.z, ft0.x, ft2.x\n" + // ft2.z = vec.x * sinAngle
+				"mul ft2.w, ft0.y, ft2.y\n" + // ft2.w = vec.y * cosAngle
+				"add ft3.yyyy, ft2.zzzz, ft2.wwww\n" +
+				"add ft3.xy, ft3.xy, fc0.ww\n" + // ft3.y = p.y
 
-						"sge ft1.y, ft1.x, fc0.w\n" +
-						"mul ft4.xy, ft4.xy, ft1.yy\n" +
-						"slt ft1.y, ft1.x, fc0.w\n" +
-						"mul ft0.xy, ft3.xy, ft1.yy\n" +
-						"add ft0.xy, ft4.xy, ft0.xy\n" +
+				"sge ft1.y, ft1.x, fc0.w\n" +
+				"mul ft4.xy, ft4.xy, ft1.yy\n" +
+				"slt ft1.y, ft1.x, fc0.w\n" +
+				"mul ft0.xy, ft3.xy, ft1.yy\n" +
+				"add ft0.xy, ft4.xy, ft0.xy\n" +
 
-						"sat ft0.xy, ft0.xy\n" +
+				"sat ft0.xy, ft0.xy\n" +
 
-				/*** Fisheye effect ***/ // fisheye = v3.y
-						"sub ft1.xy, ft0.xy, fc0.ww\n" + // ft0.xy = vec = (uv - [0.5,0.5])
-						"div ft2.xy, ft1.xy, fc0.ww\n" + // vec = vec / [0.5, 0.5]
-						"mov ft2.zw, fc0.zz\n" +
-						"dp3 ft1.yyy, ft2.xyz, ft2.xyz\n" + // ft1.y = length(vec)^2
-						"sqt ft1.x, ft1.y\n" + // ft.x = length(vec)
+			/*** Fisheye effect ***/ // fisheye = v3.y
+				"sub ft1.xy, ft0.xy, fc0.ww\n" + // ft0.xy = vec = (uv - [0.5,0.5])
+				"div ft2.xy, ft1.xy, fc0.ww\n" + // vec = vec / [0.5, 0.5]
+				"mov ft2.zw, fc0.zz\n" +
+				"dp3 ft1.yyy, ft2.xyz, ft2.xyz\n" + // ft1.y = length(vec)^2
+				"sqt ft1.x, ft1.y\n" + // ft.x = length(vec)
 
-					// Prevent divide by zero
-						"seq ft3.y, ft1.x, fc0.z\n"+ //int len_eq_zero = (v == 0);
-						"mul ft3.x, fc3.w, ft3.y\n"+ //tiny = 0.000001 * len_eq_zero; = ft3.x
-						"add ft1.x, ft1.x, ft3.x\n"+ //len = len + tiny;
+				// Prevent divide by zero
+				"seq ft3.y, ft1.x, fc0.z\n"+ //int len_eq_zero = (v == 0);
+				"mul ft3.x, fc3.w, ft3.y\n"+ //tiny = 0.000001 * len_eq_zero; = ft3.x
+				"add ft1.x, ft1.x, ft3.x\n"+ //len = len + tiny;
 
-						"div ft2.xy, ft2.xy, ft1.xx\n" + // vec2 = vec / len;
-						"pow ft1.y, ft1.x, v3.y\n" + // r = pow(len, scaledPower);
-						"mul ft2.xy, ft2.xy, ft1.yy\n" + // coords = center + (r * vec2 * center);
-						"mul ft2.xy, ft2.xy, fc0.ww\n" +
-						"add ft2.xy, ft2.xy, fc0.ww\n" +
+				"div ft2.xy, ft2.xy, ft1.xx\n" + // vec2 = vec / len;
+				"pow ft1.y, ft1.x, v3.y\n" + // r = pow(len, scaledPower);
+				"mul ft2.xy, ft2.xy, ft1.yy\n" + // coords = center + (r * vec2 * center);
+				"mul ft2.xy, ft2.xy, fc0.ww\n" +
+				"add ft2.xy, ft2.xy, fc0.ww\n" +
 
-						"sge ft1.x, ft1.y, fc0.x\n" +
-						"mul ft0.xy, ft0.xy, ft1.xx\n" +
-						"slt ft1.y, ft1.y, fc0.x\n" +
-						"mul ft2.xy, ft2.xy, ft1.yy\n" +
-						"add ft0.xy, ft2.xy, ft0.xy\n" +
+				"sge ft1.x, ft1.y, fc0.x\n" +
+				"mul ft0.xy, ft0.xy, ft1.xx\n" +
+				"slt ft1.y, ft1.y, fc0.x\n" +
+				"mul ft2.xy, ft2.xy, ft1.yy\n" +
+				"add ft0.xy, ft2.xy, ft0.xy\n" +
 
-				/*** Move the texture coordinates into the sub-texture space ***/
-						"mul ft0.xyzw, ft0.xyzw, v1.xyxy\n" +
-						"add ft0.xy, ft0.xy, v0.zw\n" +
+			/*** Move the texture coordinates into the sub-texture space ***/
+				"mul ft0.xyzw, ft0.xyzw, v1.xyxy\n" +
+				"add ft0.xy, ft0.xy, v0.zw\n" +
 
 				/*** Floor the texture index ***/
 						"frc ft3.xyzw, v3.wwww\n"+
 						"sub ft3.x, v3.w, ft3.x\n"+
 
 				/*** Select texture to use (maxTextures is the most we can have) ***/
-					// Get the texture pixel using ft0.xy as the coordinates
+				// Get the texture pixel using ft0.xy as the coordinates
 						"seq ft5, ft3.x, fc0.z\n"+	// Use texture 0?
 						"tex ft2, ft0, fs0 <2d,clamp,linear,nomip>\n"+
 						"mul ft2, ft2, ft5\n"+
 						"mov ft1, ft2\n"+
 
 						"seq ft5, ft3.x, fc0.x\n"+	// Use texture 1?
-						"tex ft2, ft0, fs1 <2d,clamp,linear,nomip>\n"+
-						"mul ft2, ft2, ft5\n"+
-						"add ft1, ft1, ft2\n"+
+				"tex ft2, ft0, fs1 <2d,clamp,linear,nomip>\n"+
+				"mul ft2, ft2, ft5\n"+
+				"add ft1, ft1, ft2\n"+
 
 						"seq ft5, ft3.x, fc0.y\n"+	// Use texture 2?
 						"tex ft2, ft0, fs2 <2d,clamp,linear,nomip>\n"+
@@ -1422,203 +1426,203 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 //				"mul ft2, ft2, ft5\n"+
 //				"add ft1, ft1, ft2\n"+
 
-				/*** ft1 == (r, g, b, a) ***/
-					// Now de-multiply the color values that Flash pre-multiplied
-					// TODO: De-multiply the color values BEFORE texture atlasing
-						"seq ft3.y, ft1.w, fc0.z\n"+ //int alpha_eq_zero = (alpha == 0);	alpha_eq_zero	= ft3.y
-						"sne ft3.z, ft1.w, fc0.z\n"+ //int alpha_neq_zero = (alpha != 0);	alpha_neq_zero	= ft3.z
-						"mul ft3.x, fc3.w, ft3.y\n"+ //tiny = 0.000001 * alpha_eq_zero;		tiny		= ft3.x
-						"add ft1.w, ft1.w, ft3.x\n"+ //alpha = alpha + tiny;				Avoid division by zero, alpha != 0
-						"div ft2.xyz, ft1.xyz, ft1.www\n"+ //new_rgb = rgb / alpha
-						"mul ft2.xyz, ft2.xyz, ft3.zzz\n"+ //new_rgb = new_rgb * alpha_neq_zero
+			/*** ft1 == (r, g, b, a) ***/
+				// Now de-multiply the color values that Flash pre-multiplied
+				// TODO: De-multiply the color values BEFORE texture atlasing
+				"seq ft3.y, ft1.w, fc0.z\n"+ //int alpha_eq_zero = (alpha == 0);	alpha_eq_zero	= ft3.y
+				"sne ft3.z, ft1.w, fc0.z\n"+ //int alpha_neq_zero = (alpha != 0);	alpha_neq_zero	= ft3.z
+				"mul ft3.x, fc3.w, ft3.y\n"+ //tiny = 0.000001 * alpha_eq_zero;		tiny		= ft3.x
+				"add ft1.w, ft1.w, ft3.x\n"+ //alpha = alpha + tiny;				Avoid division by zero, alpha != 0
+				"div ft2.xyz, ft1.xyz, ft1.www\n"+ //new_rgb = rgb / alpha
+				"mul ft2.xyz, ft2.xyz, ft3.zzz\n"+ //new_rgb = new_rgb * alpha_neq_zero
 
-						"mul ft1.xyz, ft1.xyz, ft3.yyy\n"+ //rgb = rgb * alpha_eq_zero
-						"add ft1.xyz, ft1.xyz, ft2.xyz\n"+ //rgb = rgb + new_rgb
+				"mul ft1.xyz, ft1.xyz, ft3.yyy\n"+ //rgb = rgb * alpha_eq_zero
+				"add ft1.xyz, ft1.xyz, ft2.xyz\n"+ //rgb = rgb + new_rgb
 
-					// Clamp the color
-						"sat ft1, ft1\n" +
+				// Clamp the color
+				"sat ft1, ft1\n" +
 
-				/*** Color effect ***/
-					// compute h, s, v														dst		= ft1
-					//				float v = max(r, max(g, b));
-						"max ft2.z, ft1.y, ft1.z\n"+ //float v = max(dst.g, dst.b);				v		= ft2.z
-						"max ft2.z, ft1.x, ft2.z\n"+ //v = max(dst.r, v);
+			/*** Color effect ***/
+				// compute h, s, v														dst		= ft1
+				//				float v = max(r, max(g, b));
+				"max ft2.z, ft1.y, ft1.z\n"+ //float v = max(dst.g, dst.b);				v		= ft2.z
+				"max ft2.z, ft1.x, ft2.z\n"+ //v = max(dst.r, v);
 
-					//				float span = v - min(r, min(g, b));
-						"min ft2.w, ft1.y, ft1.z\n"+ //float span =  min(dst.g, dst.b);			span	= ft2.w
-						"min ft2.w, ft1.x, ft2.w\n"+ //span = min(dst.r, span);
-						"sub ft2.w, ft2.z, ft2.w\n"+ //span = v - span;
+				//				float span = v - min(r, min(g, b));
+				"min ft2.w, ft1.y, ft1.z\n"+ //float span =  min(dst.g, dst.b);			span	= ft2.w
+				"min ft2.w, ft1.x, ft2.w\n"+ //span = min(dst.r, span);
+				"sub ft2.w, ft2.z, ft2.w\n"+ //span = v - span;
 
-					//				if (span == 0.0) {
-					//					h = s = 0.0;
-					//				} else {
-					//					if (r == v) h = 60.0 * ((g - b) / span);
-					//					else if (g == v) h = 120.0 + (60.0 * ((b - r) / span));
-					//					else if (b == v) h = 240.0 + (60.0 * ((r - g) / span));
-					//					s = span / v;
-					//				}
-						"seq ft3.y, ft2.z, fc0.z\n"+ //int v_eq_zero = (v == 0);
-						"mul ft3.x, fc3.w, ft3.y\n"+ //tiny = 0.000001 * v_eq_zero;				tiny	= ft3.x
-						"add ft2.z, ft2.z, ft3.x\n"+ //v = v + tiny;					Avoid division by zero, v != 0
+				//				if (span == 0.0) {
+				//					h = s = 0.0;
+				//				} else {
+				//					if (r == v) h = 60.0 * ((g - b) / span);
+				//					else if (g == v) h = 120.0 + (60.0 * ((b - r) / span));
+				//					else if (b == v) h = 240.0 + (60.0 * ((r - g) / span));
+				//					s = span / v;
+				//				}
+				"seq ft3.y, ft2.z, fc0.z\n"+ //int v_eq_zero = (v == 0);
+				"mul ft3.x, fc3.w, ft3.y\n"+ //tiny = 0.000001 * v_eq_zero;				tiny	= ft3.x
+				"add ft2.z, ft2.z, ft3.x\n"+ //v = v + tiny;					Avoid division by zero, v != 0
 
-						"seq ft3.y, ft2.w, fc0.z\n"+ //int span_eq_zero = (span == 0);		span_eq_zero= ft3.y
-						"sne ft2.y, ft2.w, fc0.z\n"+ //int span_not_zero = (span != 0.0); span_not_zero	= ft2.y
-						"seq ft3.y, ft1.x, ft2.z\n"+ //int r_eq_v = (dst.r == v);				r_eq_v	= ft3.y
-						"sne ft4.x, ft1.x, ft2.z\n"+ //int r_not_v = (dst.r != v);				r_not_v	= ft4.x
-						"seq ft3.z, ft1.y, ft2.z\n"+ //int g_eq_v = (dst.g == v);				g_eq_v	= ft3.z
-						"mul ft3.z, ft3.z, ft4.x\n"+ //g_eq_v = g_eq_v * r_not_v
-						"seq ft3.w, ft1.z, ft2.z\n"+ //int b_eq_v = (dst.b == v);				b_eq_v	= ft3.w
-						"add ft4.y, ft3.y, ft3.z\n"+ //int not_g_eq_v_or_r_eq_v = r_eq_v + g_eq_v	not_g_eq_v_or_r_eq_v	= ft4.y
-						"seq ft4.y, ft4.y, fc0.z\n"+ //not_g_eq_v_or_r_eq_v = (not_g_eq_v_or_r_eq_v == 0)
-						"mul ft3.w, ft3.w, ft4.y\n"+ //b_eq_v = b_eq_v * not_g_eq_v_or_r_eq_v	// (b==v) is only valid when the other two are not
+				"seq ft3.y, ft2.w, fc0.z\n"+ //int span_eq_zero = (span == 0);		span_eq_zero= ft3.y
+				"sne ft2.y, ft2.w, fc0.z\n"+ //int span_not_zero = (span != 0.0); span_not_zero	= ft2.y
+				"seq ft3.y, ft1.x, ft2.z\n"+ //int r_eq_v = (dst.r == v);				r_eq_v	= ft3.y
+				"sne ft4.x, ft1.x, ft2.z\n"+ //int r_not_v = (dst.r != v);				r_not_v	= ft4.x
+				"seq ft3.z, ft1.y, ft2.z\n"+ //int g_eq_v = (dst.g == v);				g_eq_v	= ft3.z
+				"mul ft3.z, ft3.z, ft4.x\n"+ //g_eq_v = g_eq_v * r_not_v
+				"seq ft3.w, ft1.z, ft2.z\n"+ //int b_eq_v = (dst.b == v);				b_eq_v	= ft3.w
+				"add ft4.y, ft3.y, ft3.z\n"+ //int not_g_eq_v_or_r_eq_v = r_eq_v + g_eq_v	not_g_eq_v_or_r_eq_v	= ft4.y
+				"seq ft4.y, ft4.y, fc0.z\n"+ //not_g_eq_v_or_r_eq_v = (not_g_eq_v_or_r_eq_v == 0)
+				"mul ft3.w, ft3.w, ft4.y\n"+ //b_eq_v = b_eq_v * not_g_eq_v_or_r_eq_v	// (b==v) is only valid when the other two are not
 
-						"mul ft3.x, fc3.w, ft3.y\n"+ //tiny = 0.000001 * span_eq_zero;			tiny	= ft3.x
-						"add ft2.w, ft2.w, ft3.x\n"+ //span = span + tiny;					Avoid division by zero, span != 0
+				"mul ft3.x, fc3.w, ft3.y\n"+ //tiny = 0.000001 * span_eq_zero;			tiny	= ft3.x
+				"add ft2.w, ft2.w, ft3.x\n"+ //span = span + tiny;					Avoid division by zero, span != 0
 
-						"mul ft3.y, ft3.y, ft2.y\n"+ //r_eq_v = r_eq_v * span_not_zero;
-						"mul ft3.z, ft3.z, ft2.y\n"+ //g_eq_v = g_eq_v * span_not_zero;
-						"mul ft3.w, ft3.w, ft2.y\n"+ //b_eq_v = b_eq_v * span_not_zero;
+				"mul ft3.y, ft3.y, ft2.y\n"+ //r_eq_v = r_eq_v * span_not_zero;
+				"mul ft3.z, ft3.z, ft2.y\n"+ //g_eq_v = g_eq_v * span_not_zero;
+				"mul ft3.w, ft3.w, ft2.y\n"+ //b_eq_v = b_eq_v * span_not_zero;
 
-						"div ft4.x, fc1.z, ft2.w\n"+ //float 60_div_span = 60 / span;		60_div_span	= ft4.x
-						"sub ft4.y, ft1.y, ft1.z\n"+ //float h_r_eq_v = dst.g - dst.b;		h_r_eq_v	= ft4.y
-						"mul ft4.y, ft4.y, ft4.x\n"+ //h_r_eq_v = h_r_eq_v * 60_div_span;
-						"mul ft4.y, ft4.y, ft3.y\n"+ //h_r_eq_v = h_r_eq_v * r_eq_v;
+				"div ft4.x, fc1.z, ft2.w\n"+ //float 60_div_span = 60 / span;		60_div_span	= ft4.x
+				"sub ft4.y, ft1.y, ft1.z\n"+ //float h_r_eq_v = dst.g - dst.b;		h_r_eq_v	= ft4.y
+				"mul ft4.y, ft4.y, ft4.x\n"+ //h_r_eq_v = h_r_eq_v * 60_div_span;
+				"mul ft4.y, ft4.y, ft3.y\n"+ //h_r_eq_v = h_r_eq_v * r_eq_v;
 
-						"sub ft4.z, ft1.z, ft1.x\n"+ //float h_g_eq_v = dst.b - dst.r;		h_g_eq_v	= ft4.z
-						"mul ft4.z, ft4.z, ft4.x\n"+ //h_g_eq_v = h_g_eq_v * 60_div_span;
-						"add ft4.z, ft4.z, fc1.w\n"+ //h_g_eq_v = h_g_eq_v + 120;
-						"mul ft4.z, ft4.z, ft3.z\n"+ //h_g_eq_v = h_g_eq_v * g_eq_v;
+				"sub ft4.z, ft1.z, ft1.x\n"+ //float h_g_eq_v = dst.b - dst.r;		h_g_eq_v	= ft4.z
+				"mul ft4.z, ft4.z, ft4.x\n"+ //h_g_eq_v = h_g_eq_v * 60_div_span;
+				"add ft4.z, ft4.z, fc1.w\n"+ //h_g_eq_v = h_g_eq_v + 120;
+				"mul ft4.z, ft4.z, ft3.z\n"+ //h_g_eq_v = h_g_eq_v * g_eq_v;
 
-						"sub ft4.w, ft1.x, ft1.y\n"+ //float h_b_eq_v = dst.r - dst.g;		h_b_eq_v	= ft4.w
-						"mul ft4.w, ft4.w, ft4.x\n"+ //h_b_eq_v = h_b_eq_v * 60_div_span;
-						"add ft4.w, ft4.w, fc2.x\n"+ //h_b_eq_v = h_b_eq_v + 240;
-						"mul ft4.w, ft4.w, ft3.w\n"+ //h_b_eq_v = h_b_eq_v * b_eq_v;
+				"sub ft4.w, ft1.x, ft1.y\n"+ //float h_b_eq_v = dst.r - dst.g;		h_b_eq_v	= ft4.w
+				"mul ft4.w, ft4.w, ft4.x\n"+ //h_b_eq_v = h_b_eq_v * 60_div_span;
+				"add ft4.w, ft4.w, fc2.x\n"+ //h_b_eq_v = h_b_eq_v + 240;
+				"mul ft4.w, ft4.w, ft3.w\n"+ //h_b_eq_v = h_b_eq_v * b_eq_v;
 
-				/*** ft2 == (h, s, v) ***/
-						"mov ft2.x, ft4.y\n"+		 //float h = h_r_eq_v;							h	= ft2.x
-						"add ft2.x, ft2.x, ft4.z\n"+ //h = h + h_g_eq_v;
-						"add ft2.x, ft2.x, ft4.w\n"+ //h = h + h_b_eq_v;
+			/*** ft2 == (h, s, v) ***/
+				"mov ft2.x, ft4.y\n"+		 //float h = h_r_eq_v;							h	= ft2.x
+				"add ft2.x, ft2.x, ft4.z\n"+ //h = h + h_g_eq_v;
+				"add ft2.x, ft2.x, ft4.w\n"+ //h = h + h_b_eq_v;
 
-						"div ft3.z, ft2.w, ft2.z\n"+ //float s_span_not_zero = span / v; s_span_not_zero= ft3.z
-						"mul ft2.y, ft3.z, ft2.y\n"+ //float s = s_span_not_zero * span_not_zero;	s	= ft2.y
+				"div ft3.z, ft2.w, ft2.z\n"+ //float s_span_not_zero = span / v; s_span_not_zero= ft3.z
+				"mul ft2.y, ft3.z, ft2.y\n"+ //float s = s_span_not_zero * span_not_zero;	s	= ft2.y
 
-					//				if (hueShift != 0.0 && v < 0.11) { v = 0.11; s = 1.0; }
-				/*** ft3 is now free ***/  // Check this section for accuracy / mistakes
-						"sne ft3.y, v3.x, fc0.z\n"+ //int hs_not_zero = (hueShift != 0.0);	hs_not_zero	= ft3.y
-						"slt ft3.z, ft2.z, fc3.y\n"+ //int v_lt_0_11 = (v < 0.11);			v_lt_0_11	= ft3.z
-						"mul ft3.z, ft3.z, ft3.y\n"+ //v_lt_0_11 = v_lt_0_11 * hs_not_zero;
-						"seq ft3.w, ft3.z, fc0.z\n"+ //int !v_lt_0_11						!v_lt_0_11	= ft3.w
+				//				if (hueShift != 0.0 && v < 0.11) { v = 0.11; s = 1.0; }
+			/*** ft3 is now free ***/  // Check this section for accuracy / mistakes
+				"sne ft3.y, v3.x, fc0.z\n"+ //int hs_not_zero = (hueShift != 0.0);	hs_not_zero	= ft3.y
+				"slt ft3.z, ft2.z, fc3.y\n"+ //int v_lt_0_11 = (v < 0.11);			v_lt_0_11	= ft3.z
+				"mul ft3.z, ft3.z, ft3.y\n"+ //v_lt_0_11 = v_lt_0_11 * hs_not_zero;
+				"seq ft3.w, ft3.z, fc0.z\n"+ //int !v_lt_0_11						!v_lt_0_11	= ft3.w
 
-						"mul ft2.z, ft2.z, ft3.w\n"+ //v  = v * !v_lt_0_11
-						"mul ft3.x, fc3.y, ft3.z\n"+ //float vv = 0.11 * v_lt_0_11;					vv	= ft3.x
-						"add ft2.z, ft2.z, ft3.x\n"+ //v = v + vv;
+				"mul ft2.z, ft2.z, ft3.w\n"+ //v  = v * !v_lt_0_11
+				"mul ft3.x, fc3.y, ft3.z\n"+ //float vv = 0.11 * v_lt_0_11;					vv	= ft3.x
+				"add ft2.z, ft2.z, ft3.x\n"+ //v = v + vv;
 
-						"mul ft2.y, ft2.y, ft3.w\n"+ //s  = s * !v_lt_0_11
-						"add ft2.y, ft2.y, ft3.z\n"+ //s = s + v_lt_0_11;
+				"mul ft2.y, ft2.y, ft3.w\n"+ //s  = s * !v_lt_0_11
+				"add ft2.y, ft2.y, ft3.z\n"+ //s = s + v_lt_0_11;
 
-					//				if (hueShift != 0.0 && s < 0.09) s = 0.09;
-						"slt ft3.w, ft2.y, fc3.z\n"+ //int s_lt_0_09 = (s < 0.09);			s_lt_0_09	= ft3.w
-						"mul ft3.w, ft3.w, ft3.y\n"+ //s_lt_0_09 = s_lt_0_09 * hs_not_zero;
-						"seq ft3.z, ft3.w, fc0.z\n"+ //int !s_lt_0_09						!s_lt_0_09	= ft3.z
+				//				if (hueShift != 0.0 && s < 0.09) s = 0.09;
+				"slt ft3.w, ft2.y, fc3.z\n"+ //int s_lt_0_09 = (s < 0.09);			s_lt_0_09	= ft3.w
+				"mul ft3.w, ft3.w, ft3.y\n"+ //s_lt_0_09 = s_lt_0_09 * hs_not_zero;
+				"seq ft3.z, ft3.w, fc0.z\n"+ //int !s_lt_0_09						!s_lt_0_09	= ft3.z
 
-						"mul ft2.y, ft2.y, ft3.z\n"+ //s  = s * !s_lt_0_09
-						"mul ft3.x, fc3.z, ft3.w\n"+ //float ss = 0.09 * s_lt_0_09;					ss	= ft3.x
-						"add ft2.y, ft2.y, ft3.x\n"+ //s = s + ss;
+				"mul ft2.y, ft2.y, ft3.z\n"+ //s  = s * !s_lt_0_09
+				"mul ft3.x, fc3.z, ft3.w\n"+ //float ss = 0.09 * s_lt_0_09;					ss	= ft3.x
+				"add ft2.y, ft2.y, ft3.x\n"+ //s = s + ss;
 
-					//				if (hueShift != 0.0 && (v == 0.11 || s == 0.09)) h = 0.0;
-						"seq ft4.x, ft2.z, fc3.y\n"+ //int v_eq_0_11 = (v == 0.11);			v_eq_0_11	= ft4.x
-						"seq ft4.y, ft2.y, fc3.z\n"+ //int s_eq_0_09 = (s == 0.09);			s_eq_0_09	= ft4.y
-						"add ft4.z, ft4.x, ft4.y\n"+ //int v_eq_0_11_or_s_eq_0_09 = v_eq_0_11 + s_eq_0_09;	v_eq_0_11_or_s_eq_0_09 = ft4.z
-						"mul ft4.z, ft4.z, ft3.y\n"+ //v_eq_0_11_or_s_eq_0_09 = v_eq_0_11_or_s_eq_0_09 * hs_not_zero;
+				//				if (hueShift != 0.0 && (v == 0.11 || s == 0.09)) h = 0.0;
+				"seq ft4.x, ft2.z, fc3.y\n"+ //int v_eq_0_11 = (v == 0.11);			v_eq_0_11	= ft4.x
+				"seq ft4.y, ft2.y, fc3.z\n"+ //int s_eq_0_09 = (s == 0.09);			s_eq_0_09	= ft4.y
+				"add ft4.z, ft4.x, ft4.y\n"+ //int v_eq_0_11_or_s_eq_0_09 = v_eq_0_11 + s_eq_0_09;	v_eq_0_11_or_s_eq_0_09 = ft4.z
+				"mul ft4.z, ft4.z, ft3.y\n"+ //v_eq_0_11_or_s_eq_0_09 = v_eq_0_11_or_s_eq_0_09 * hs_not_zero;
 
-					// Multiply h by !v_eq_0_11_or_s_eq_0_09. if v_eq_0_11_or_s_eq_0_09 is true, then h=0, otherwise it's untouched.
-						"seq ft4.z, ft4.z, fc0.z\n"+ //v_eq_0_11_or_s_eq_0_09 = !v_eq_0_11_or_s_eq_0_09
-						"mul ft2.x, ft2.x, ft4.z\n"+ //h = h * (!v_eq_0_11_or_s_eq_0_09);
+				// Multiply h by !v_eq_0_11_or_s_eq_0_09. if v_eq_0_11_or_s_eq_0_09 is true, then h=0, otherwise it's untouched.
+				"seq ft4.z, ft4.z, fc0.z\n"+ //v_eq_0_11_or_s_eq_0_09 = !v_eq_0_11_or_s_eq_0_09
+				"mul ft2.x, ft2.x, ft4.z\n"+ //h = h * (!v_eq_0_11_or_s_eq_0_09);
 
-					//				h = mod(h + hueShift, 360.0);
-						"add ft2.x, ft2.x, v3.x\n"+ //h = h + hueShift;
-						"div ft2.x, ft2.x, fc4.x\n"+ //h = h / 360;
-						"frc ft2.x, ft2.x\n"+ //h = frc h;
-						"mul ft2.x, ft2.x, fc4.x\n"+ //h = h * 360;
+				//				h = mod(h + hueShift, 360.0);
+				"add ft2.x, ft2.x, v3.x\n"+ //h = h + hueShift;
+				"div ft2.x, ft2.x, fc4.x\n"+ //h = h / 360;
+				"frc ft2.x, ft2.x\n"+ //h = frc h;
+				"mul ft2.x, ft2.x, fc4.x\n"+ //h = h * 360;
 
-					//				if (h < 0.0) h += 360.0;
-						"slt ft4.y, ft2.x, fc0.z\n"+ //int h_lt_0 = (h < 0.0);					h_lt_0	= ft4.y
-						"mul ft4.x, fc4.x, ft4.y\n"+ //float hh = 360 * h_lt_0;						hh	= ft4.x
-						"add ft2.x, ft2.x, ft4.x\n"+ //h = h + hh;
+				//				if (h < 0.0) h += 360.0;
+				"slt ft4.y, ft2.x, fc0.z\n"+ //int h_lt_0 = (h < 0.0);					h_lt_0	= ft4.y
+				"mul ft4.x, fc4.x, ft4.y\n"+ //float hh = 360 * h_lt_0;						hh	= ft4.x
+				"add ft2.x, ft2.x, ft4.x\n"+ //h = h + hh;
 
-					//				s = max(0.0, min(s, 1.0));
-						"sat ft2.y, ft2.y\n"+ //s = sat(s);
+				//				s = max(0.0, min(s, 1.0));
+				"sat ft2.y, ft2.y\n"+ //s = sat(s);
 
-					//				v = max(0.0, min(v + brightnessShift, 1.0));
-						"add ft2.z, ft2.z, v3.z\n"+ //v = v + brightnessShift;
-						"sat ft2.z, ft2.z\n"+ //v = sat(v);
+				//				v = max(0.0, min(v + brightnessShift, 1.0));
+				"add ft2.z, ft2.z, v3.z\n"+ //v = v + brightnessShift;
+				"sat ft2.z, ft2.z\n"+ //v = sat(v);
 
-					//				int i = int(floor(h / 60.0));
-					//				float f = (h / 60.0) - float(i);
-						"div ft3.x, ft2.x, fc1.z\n"+ //float h_div_60 =  h / 60;			h_div_60	= ft3.x
-						"frc ft3.y, ft3.x\n"+ //float f = frc(h_div_60);							f	= ft3.y
-						"sub ft3.x, ft3.x, ft3.y\n"+ //float i = h_div_60 - f;						i	= ft3.x
+				//				int i = int(floor(h / 60.0));
+				//				float f = (h / 60.0) - float(i);
+				"div ft3.x, ft2.x, fc1.z\n"+ //float h_div_60 =  h / 60;			h_div_60	= ft3.x
+				"frc ft3.y, ft3.x\n"+ //float f = frc(h_div_60);							f	= ft3.y
+				"sub ft3.x, ft3.x, ft3.y\n"+ //float i = h_div_60 - f;						i	= ft3.x
 
-					//				float p = v * (1.0 - s);
-					//				float q = v * (1.0 - (s * f));
-					//				float t = v * (1.0 - (s * (1.0 - f)));
-				/*** ft5 = [p, q, t, v] ***/
-						"sub ft5.x, fc0.x, ft2.y\n"+ //ft5.x = 1.0 - s; // p
-						"mul ft5.x, ft5.x, ft2.z\n"+ //ft5.x = ft5.x * v;
-						"mul ft5.y, ft2.y, ft3.y\n"+ //ft5.y = (s * f); // q
-						"sub ft5.y, fc0.x, ft5.y\n"+ //ft5.y = 1.0 - ft5.y;
-						"mul ft5.y, ft5.y, ft2.z\n"+ //ft5.y = ft5.y * v;
-						"sub ft5.z, fc0.x, ft3.y\n"+ //ft5.z = 1.0 - f; // t
-						"mul ft5.z, ft2.y, ft5.z\n"+ //ft5.z = s * ft5.z;
-						"sub ft5.z, fc0.x, ft5.z\n"+ //ft5.z = 1.0 - ft5.z;
-						"mul ft5.z, ft5.z, ft2.z\n"+ //ft5.z = ft5.z * v;
-						"mov ft5.w, ft2.z\n"+ //mov ft5.w, v; // v
+				//				float p = v * (1.0 - s);
+				//				float q = v * (1.0 - (s * f));
+				//				float t = v * (1.0 - (s * (1.0 - f)));
+			/*** ft5 = [p, q, t, v] ***/
+				"sub ft5.x, fc0.x, ft2.y\n"+ //ft5.x = 1.0 - s; // p
+				"mul ft5.x, ft5.x, ft2.z\n"+ //ft5.x = ft5.x * v;
+				"mul ft5.y, ft2.y, ft3.y\n"+ //ft5.y = (s * f); // q
+				"sub ft5.y, fc0.x, ft5.y\n"+ //ft5.y = 1.0 - ft5.y;
+				"mul ft5.y, ft5.y, ft2.z\n"+ //ft5.y = ft5.y * v;
+				"sub ft5.z, fc0.x, ft3.y\n"+ //ft5.z = 1.0 - f; // t
+				"mul ft5.z, ft2.y, ft5.z\n"+ //ft5.z = s * ft5.z;
+				"sub ft5.z, fc0.x, ft5.z\n"+ //ft5.z = 1.0 - ft5.z;
+				"mul ft5.z, ft5.z, ft2.z\n"+ //ft5.z = ft5.z * v;
+				"mov ft5.w, ft2.z\n"+ //mov ft5.w, v; // v
 
-				/*** FIX i to be an integer on Intel Graphics 3000 with Chrome Pepper Flash ***/
-						"add ft3.x, ft3.x, fc0.w\n"+ // fix i?
-						"frc ft3.y, ft3.x\n"+ // fix i?
-						"sub ft3.x, ft3.x, ft3.y\n"+ // fix i?
+			/*** FIX i to be an integer on Intel Graphics 3000 with Chrome Pepper Flash ***/
+				"add ft3.x, ft3.x, fc0.w\n"+ // fix i?
+				"frc ft3.y, ft3.x\n"+ // fix i?
+				"sub ft3.x, ft3.x, ft3.y\n"+ // fix i?
 
-						"seq ft3.y, ft3.x, fc0.z\n"+ //int i_eq_0 = (i == 0);					i_eq_0	= ft3.y
-						"mul ft3.y, ft3.y, fc3.x\n"+ //i_eq_0 = i_eq_0 * 6;
-						"add ft3.x, ft3.x, ft3.y\n"+ //i = i + i_eq_0;  -- Now i is only 1,2,3,4,5, or 6
+				"seq ft3.y, ft3.x, fc0.z\n"+ //int i_eq_0 = (i == 0);					i_eq_0	= ft3.y
+				"mul ft3.y, ft3.y, fc3.x\n"+ //i_eq_0 = i_eq_0 * 6;
+				"add ft3.x, ft3.x, ft3.y\n"+ //i = i + i_eq_0;  -- Now i is only 1,2,3,4,5, or 6
 
-						"seq ft3.y, ft3.x, fc0.x\n"+ //int i_eq_1 = (i == 1);					i_eq_1	= ft3.y
-						"seq ft3.z, ft3.x, fc0.y\n"+ //int i_eq_2 = (i == 2);					i_eq_2	= ft3.z
-						"seq ft3.w, ft3.x, fc2.y\n"+ //int i_eq_3 = (i == 3);					i_eq_3	= ft3.w
-						"seq ft4.x, ft3.x, fc2.z\n"+ //int i_eq_4 = (i == 4);					i_eq_4	= ft4.x
-						"seq ft4.y, ft3.x, fc2.w\n"+ //int i_eq_5 = (i == 5);					i_eq_5	= ft4.y
-						"seq ft4.z, ft3.x, fc3.x\n"+ //int i_eq_6 = (i == 6);					i_eq_6	= ft4.z
+				"seq ft3.y, ft3.x, fc0.x\n"+ //int i_eq_1 = (i == 1);					i_eq_1	= ft3.y
+				"seq ft3.z, ft3.x, fc0.y\n"+ //int i_eq_2 = (i == 2);					i_eq_2	= ft3.z
+				"seq ft3.w, ft3.x, fc2.y\n"+ //int i_eq_3 = (i == 3);					i_eq_3	= ft3.w
+				"seq ft4.x, ft3.x, fc2.z\n"+ //int i_eq_4 = (i == 4);					i_eq_4	= ft4.x
+				"seq ft4.y, ft3.x, fc2.w\n"+ //int i_eq_5 = (i == 5);					i_eq_5	= ft4.y
+				"seq ft4.z, ft3.x, fc3.x\n"+ //int i_eq_6 = (i == 6);					i_eq_6	= ft4.z
 
-					// Write to ft7.w ?
-					//				if ((i == 0) || (i == 6)) dst.rgb = float3(v, t, p);
-						"mul ft7.xyz, ft4.zzz, ft5.wzx\n"+ //ft7 = i_eq_6 * ft5.wzx
+				// Write to ft7.w ?
+				//				if ((i == 0) || (i == 6)) dst.rgb = float3(v, t, p);
+				"mul ft7.xyz, ft4.zzz, ft5.wzx\n"+ //ft7 = i_eq_6 * ft5.wzx
 
-					//				else if (i == 1) dst.rgb = float3(q, v, p);
-						"mul ft6.xyz, ft3.yyy, ft5.ywx\n"+ //ft6 = i_eq_1 * ft5.ywx
-						"add ft7.xyz, ft7.xyz, ft6.xyz\n"+ //ft7 = ft7 + ft6
+				//				else if (i == 1) dst.rgb = float3(q, v, p);
+				"mul ft6.xyz, ft3.yyy, ft5.ywx\n"+ //ft6 = i_eq_1 * ft5.ywx
+				"add ft7.xyz, ft7.xyz, ft6.xyz\n"+ //ft7 = ft7 + ft6
 
-					//				else if (i == 2) dst.rgb = float3(p, v, t);
-						"mul ft6.xyz, ft3.zzz, ft5.xwz\n"+ //ft6 = i_eq_2 * ft5.xwz
-						"add ft7.xyz, ft7.xyz, ft6.xyz\n"+ //ft7 = ft7 + ft6
+				//				else if (i == 2) dst.rgb = float3(p, v, t);
+				"mul ft6.xyz, ft3.zzz, ft5.xwz\n"+ //ft6 = i_eq_2 * ft5.xwz
+				"add ft7.xyz, ft7.xyz, ft6.xyz\n"+ //ft7 = ft7 + ft6
 
-					//				else if (i == 3) dst.rgb = float3(p, q, v);
-						"mul ft6.xyz, ft3.www, ft5.xyw\n"+ //ft6 = i_eq_3 * ft5.xyw
-						"add ft7.xyz, ft7.xyz, ft6.xyz\n"+ //ft7 = ft7 + ft6
+				//				else if (i == 3) dst.rgb = float3(p, q, v);
+				"mul ft6.xyz, ft3.www, ft5.xyw\n"+ //ft6 = i_eq_3 * ft5.xyw
+				"add ft7.xyz, ft7.xyz, ft6.xyz\n"+ //ft7 = ft7 + ft6
 
-					//				else if (i == 4) dst.rgb = float3(t, p, v);
-						"mul ft6.xyz, ft4.xxx, ft5.zxw\n"+ //ft6 = i_eq_4 * ft5.zxw
-						"add ft7.xyz, ft7.xyz, ft6.xyz\n"+ //ft7 = ft7 + ft6
+				//				else if (i == 4) dst.rgb = float3(t, p, v);
+				"mul ft6.xyz, ft4.xxx, ft5.zxw\n"+ //ft6 = i_eq_4 * ft5.zxw
+				"add ft7.xyz, ft7.xyz, ft6.xyz\n"+ //ft7 = ft7 + ft6
 
-					//				else if (i == 5) dst.rgb = float3(v, p, q);
-						"mul ft6.xyz, ft4.yyy, ft5.wxy\n"+ //ft6 = i_eq_5 * ft5.wxy
-						"add ft7.xyz, ft7.xyz, ft6.xyz\n"+ //ft7 = ft7 + ft6
+				//				else if (i == 5) dst.rgb = float3(v, p, q);
+				"mul ft6.xyz, ft4.yyy, ft5.wxy\n"+ //ft6 = i_eq_5 * ft5.wxy
+				"add ft7.xyz, ft7.xyz, ft6.xyz\n"+ //ft7 = ft7 + ft6
 
-						"sat ft1.xyz, ft7.xyz\n"+			// Move the shifted color into ft1
+				"sat ft1.xyz, ft7.xyz\n"+			// Move the shifted color into ft1
 
-				/*** Ghost effect ***/
-						"mul ft1.w, ft1.w, v1.z\n"+     // varying alpha in v1.z
-						"mov oc, ft1\n"   // fill ft0.x with v0.x and ft0.w with v0.w
+			/*** Ghost effect ***/
+				"mul ft1.w, ft1.w, v1.z\n"+	// varying alpha in v1.z
+				"mov oc, ft1\n" // fill ft0.x with v0.x and ft0.w with v0.w
 		);
 /*
 		fragmentShaderAssembler.assemble( Context3DProgramType.FRAGMENT,
@@ -1674,12 +1678,12 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 	}
 
 	private function context3DCreated(e:Event):void {
-		if(!contextRequested) {
+			if(!contextRequested) {
 			onContextLoss(e);
 		}
 
 		contextRequested = false;
-		if(!scratchStage) {
+			if(!scratchStage) {
 			__context = null;
 			(e.currentTarget as Stage3D).context3D.dispose();
 			return;
@@ -1688,8 +1692,8 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 			scratchStage.visible = false;
 
 		__context = (e.currentTarget as Stage3D).context3D;
-		if(__context.driverInfo.toLowerCase().indexOf('software') > -1) {
-			if(!callbackCalled) {
+			if(__context.driverInfo.toLowerCase().indexOf('software') > -1) {
+				if(!callbackCalled) {
 				callbackCalled = true;
 				statusCallback(false);
 			}
@@ -1699,20 +1703,20 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 		}
 
 		setupContext3D();
-		if(scratchStage.visible)
+			if(scratchStage.visible)
 			scratchStage.visible = false;
 
-		if(!callbackCalled) {
+			if(!callbackCalled) {
 			callbackCalled = true;
 			statusCallback(true);
 		}
 	}
+
 	private var callbackCalled:Boolean;
 
 
-	private function requestContext3D():void
-	{
-		if(contextRequested || !stage3D) return;
+	private function requestContext3D():void {
+			if(contextRequested || !stage3D) return;
 
 		stage3D.addEventListener(Event.CONTEXT3D_CREATE, context3DCreated, false, 0, true);
 		stage3D.addEventListener(ErrorEvent.ERROR, onStage3DError, false, 0, true);
@@ -1722,7 +1726,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 
 	private function onStage3DError(e:Event):void {
 		scratchStage.visible = true;
-		if(!callbackCalled) {
+			if(!callbackCalled) {
 			callbackCalled = true;
 			statusCallback(false);
 		}
@@ -1730,27 +1734,27 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 	}
 
 	private function onContextLoss(e:Event = null):void {
-		for(var i:int=0; i<textures.length; ++i)
+			for(var i:int=0; i<textures.length; ++i)
 			(textures[i] as ScratchTextureBitmap).disposeTexture();
 
-		if(vertexBuffer) {
+			if(vertexBuffer) {
 			vertexBuffer.dispose();
 			vertexBuffer = null;
 		}
 
-		if(indexBuffer) {
+			if(indexBuffer) {
 			//trace('disposing of indexBuffer!');
 			indexBuffer.dispose();
 			//trace('indexBuffer disposed');
 			indexBuffer = null;
 		}
 
-		for(var id:String in bitmapsByID)
-			if(bitmapsByID[id] is ChildRender)
+			for(var id:String in bitmapsByID)
+				if(bitmapsByID[id] is ChildRender)
 				bitmapsByID[id].dispose();
 		bitmapsByID = {};
 
-		for(id in stampsByID)
+			for(id in stampsByID)
 			stampsByID[id].dispose();
 		stampsByID = {};
 
@@ -1758,25 +1762,25 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 		vertexBufferUploaded = false;
 		scissorRect = null;
 
-		if(!e) requestContext3D();
+			if(!e) requestContext3D();
 	}
 
 	private static var sRawData:Vector.<Number> =
-			new <Number>[1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1];
-	private function createOrthographicProjectionMatrix(width:Number, height:Number, x:Number, y:Number):Matrix3D
-	{
+			new <Number>[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+
+	private function createOrthographicProjectionMatrix(width:Number, height:Number, x:Number, y:Number):Matrix3D {
 		// this is a projection matrix that gives us an orthographic view of the world (meaning there's no perspective effect)
 		// the view is defined with (0,0) being in the middle,
 		//	(-viewWidth / 2, -viewHeight / 2) at the top left,
 		// 	(viewWidth / 2, viewHeight / 2) at the bottom right,
 		//	and 'near' and 'far' giving limits to the range of z values for objects to appear.
 		var m:Matrix3D = new Matrix3D();
-		sRawData[0] = 2.0/width;
+			sRawData[0] = 2.0/width;
 		sRawData[1] = 0;
 		sRawData[4] = 0;
-		sRawData[5] = -2.0/height;
-		sRawData[12] = -(2*x + width) / width;
-		sRawData[13] = (2*y + height) / height;
+			sRawData[5] = -2.0/height;
+			sRawData[12] = -(2*x + width) / width;
+			sRawData[13] = (2*y + height) / height;
 		m.copyRawDataFrom(sRawData);
 		return m;
 	}
@@ -1788,18 +1792,14 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 }
 
 import flash.utils.getQualifiedClassName;
-internal final class Dbg
-{
-	public static function printObj(obj:*):String
-	{
+internal final class Dbg {
+	public static function printObj(obj:*):String {
 		var memoryHash:String;
 
-		try
-		{
+		try {
 			FakeClass(obj);
 		}
-		catch (e:Error)
-		{
+		catch (e:Error) {
 			memoryHash = String(e).replace(/.*([@|\$].*?) to .*$/gi, '$1');
 		}
 
@@ -1807,4 +1807,5 @@ internal final class Dbg
 	}
 }
 
-internal final class FakeClass { }
+internal final class FakeClass {
+}
