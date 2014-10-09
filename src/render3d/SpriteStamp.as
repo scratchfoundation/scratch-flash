@@ -17,19 +17,28 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package {
-	import flash.display.Sprite;
+package render3d {
+	import flash.display.BitmapData;
 
-	public class StageUIContainer extends Sprite
-	{
-		public function step(runtime:Object):void {
-			for (var i:int = 0; i < numChildren; i++) {
-				var c:Object = getChildAt(i);
-				if (c.visible == true && c.hasOwnProperty('step')) {
-					if ('listName' in c) c.step();
-					else c.step(runtime);
-				}
+	public class SpriteStamp extends BitmapData {
+		private var fx:Object;
+		public function SpriteStamp(width:int, height:int, fx:Object) {
+			super(width, height, true, 0x00ffffff);
+			effects = fx;
+		}
+
+		public function set effects(o:Object):void {
+			fx = null;
+
+			if(o) {
+				fx = {};
+				for(var prop:String in o)
+					fx[prop] = o[prop];
 			}
+		}
+
+		public function get effects():Object {
+			return fx;
 		}
 	}
 }
