@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package {
+package render3d {
 	import com.adobe.utils.*;
 
 	import flash.display.Bitmap;
