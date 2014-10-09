@@ -23,7 +23,10 @@
 // This is the top-level application.
 
 package {
+import blocks.*;
+
 import extensions.ExtensionManager;
+
 import flash.display.*;
 import flash.errors.IllegalOperationError;
 import flash.events.*;
@@ -32,20 +35,26 @@ import flash.net.*;
 import flash.system.*;
 import flash.text.*;
 import flash.utils.*;
+
 import interpreter.*;
-import blocks.*;
+
+import render3d.DisplayObjectContainerIn3D;
+
 import scratch.*;
 
-import ui.dragdrop.DragAndDropMgr;
-
-import watchers.ListWatcher;
 import translation.*;
+
 import ui.*;
+import ui.dragdrop.DragAndDropMgr;
 import ui.media.*;
 import ui.parts.*;
 import ui.parts.base.*;
+
 import uiwidgets.*;
+
 import util.*;
+
+import watchers.ListWatcher;
 
 public class Scratch extends Sprite {
 	// Version
@@ -244,7 +253,6 @@ public class Scratch extends Sprite {
 	public function logMessage(msg:String, extra_data:Object=null):void {}
 	public function loadProjectFailed():void {}
 
-	public static const MySwfData:Class;
 	protected function checkFlashVersion():void {
 		if(Capabilities.playerType != "Desktop" || Capabilities.version.indexOf('IOS') === 0) {
 			var versionString:String = Capabilities.version.substr(Capabilities.version.indexOf(' ')+1);
@@ -252,7 +260,8 @@ public class Scratch extends Sprite {
 			var majorVersion:int = parseInt(versionParts[0]);
 			var minorVersion:int = parseInt(versionParts[1]);
 			if((majorVersion > 11 || (majorVersion == 11 && minorVersion >=1)) && !isArmCPU && Capabilities.cpuArchitecture == 'x86') {
-				loadRenderLibrary();
+				render3D = (new DisplayObjectContainerIn3D() as IRenderIn3D);
+				render3D.setStatusCallback(handleRenderCallback);
 				return;
 			}
 		}
@@ -260,22 +269,7 @@ public class Scratch extends Sprite {
 		render3D = null;
 	}
 
-	protected var loading3DLib:Boolean = false;
-	protected function loadRenderLibrary():void
-	{
-		var loader:Loader = new Loader();
-		loader.contentLoaderInfo.addEventListener(Event.COMPLETE, onSwfLoaded);
-		// we need the loaded code to be in the same (main) application domain
-		var ctx:LoaderContext = new LoaderContext(false, loaderInfo.applicationDomain);
-		ctx.allowCodeImport = true;
-		loader.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, uncaughtErrorHandler);
-		loader.loadBytes(new MySwfData() as ByteArray, ctx);
-		loading3DLib = true;
-	}
-
 	protected function handleRenderCallback(enabled:Boolean):void {
-		loading3DLib = false;
-
 		if(!enabled) {
 			go2D();
 			render3D = null;
@@ -293,13 +287,6 @@ public class Scratch extends Sprite {
 			stagePane.updateCostume();
 			stagePane.applyFilters();
 		}
-	}
-
-	protected function onSwfLoaded(e:Event):void {
-		var info:LoaderInfo = LoaderInfo(e.target);
-		var r3dClass:Class = info.applicationDomain.getDefinition("DisplayObjectContainerIn3D") as Class;
-		render3D = (new r3dClass() as IRenderIn3D);
-		render3D.setStatusCallback(handleRenderCallback);
 	}
 
 	public function clearCachedBitmaps():void {
