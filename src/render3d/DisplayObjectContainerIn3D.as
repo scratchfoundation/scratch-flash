@@ -21,7 +21,12 @@ package render3d {
 
 import flash.display.Sprite;
 
-SCRATCH::allow3d {
+/**
+ *   A display object container which renders in 3D instead
+ *   @author Shane M. Clements, shane.m.clements@gmail.com
+ */
+public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {SCRATCH::allow3d{
+
 	import com.adobe.utils.*;
 
 	import flash.display.Bitmap;
@@ -42,13 +47,7 @@ SCRATCH::allow3d {
 	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
 	import flash.utils.Endian;
-}
 
-/**
- *   A display object container which renders in 3D instead
- *   @author Shane M. Clements, shane.m.clements@gmail.com
- */
-public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {SCRATCH::allow3d{
 	private var contextRequested:Boolean = false;
 
 	/** Context to create textures on */
