@@ -20,16 +20,15 @@
 package render3d {
 import flash.display.BitmapData;
 
-SCRATCH::allow3d {
+public class ScratchTextureBitmap extends BitmapData
+{SCRATCH::allow3d{
+
 	import flash.display3D.*;
 	import flash.display3D.textures.Texture;
 	import flash.geom.Matrix;
 	import flash.geom.Rectangle;
 	import org.villekoskela.utils.RectanglePacker;
-}
 
-public class ScratchTextureBitmap extends BitmapData
-{SCRATCH::allow3d{
 	private static var indexOfIDs:Array;
 
 	private var rectPacker:RectanglePacker;
