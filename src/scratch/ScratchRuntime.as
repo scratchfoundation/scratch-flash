@@ -246,6 +246,7 @@ public class ScratchRuntime {
 		return !app.extensionManager.isInternal(extName);
 	}
 
+	SCRATCH::allow3d
 	public function hasGraphicEffects():Boolean {
 		var found:Boolean = false;
 		allStacksAndOwnersDo(function (stack:Block, target:ScratchObj):void {
@@ -259,6 +260,7 @@ public class ScratchRuntime {
 		return found;
 	}
 
+	SCRATCH::allow3d
 	private function isGraphicEffectBlock(b:Block):Boolean {
 		return ('op' in b && (b.op == 'changeGraphicEffect:by:' || b.op == 'setGraphicEffect:to:') &&
 				('argValue' in b.args[0]) && b.args[0].argValue != 'ghost' && b.args[0].argValue != 'brightness');
@@ -331,9 +333,11 @@ public class ScratchRuntime {
 					app.libraryPart.showVideoButton();
 			}
 
-			// Should we go 3D?
-			if(isGraphicEffectBlock(b))
-				app.go3D();
+			SCRATCH::allow3d {
+				// Should we go 3D?
+				if(isGraphicEffectBlock(b))
+					app.go3D();
+			}
 		});
 	}
 
@@ -425,7 +429,7 @@ public class ScratchRuntime {
 		if (app.stagePane != null) stopAll();
 		if (app.scriptsPane) app.scriptsPane.viewScriptsFor(null);
 
-		if(app.isIn3D) app.render3D.setStage(project, project.penLayer);
+		SCRATCH::allow3d { if(app.isIn3D) app.render3D.setStage(project, project.penLayer); }
 
 		for each (var obj:ScratchObj in project.allObjects()) {
 			obj.showCostume(obj.currentCostumeIndex);
@@ -448,9 +452,10 @@ public class ScratchRuntime {
 		}
 		app.extensionManager.step();
 		app.projectLoaded();
-		checkForGraphicEffects();
+		SCRATCH::allow3d { checkForGraphicEffects(); }
 	}
 
+	SCRATCH::allow3d
 	public function checkForGraphicEffects():void {
 		if(hasGraphicEffects()) app.go3D();
 		else app.go2D();
