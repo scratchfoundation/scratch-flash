@@ -620,7 +620,7 @@ public class Block extends Sprite {
 				b.requestLoader.close();
 		}
 		topBlock().fixStackLayout();
-		Scratch.app.runtime.checkForGraphicEffects();
+		SCRATCH::allow3d { Scratch.app.runtime.checkForGraphicEffects(); }
 	}
 
 	public function insertBlock(b:Block):void {
@@ -835,7 +835,7 @@ public class Block extends Sprite {
 		if (top != this) x += top.width + 5;
 		app.runtime.recordForUndelete(this, x, y, 0, app.viewedObj());
 		app.scriptsPane.saveScripts();
-		app.runtime.checkForGraphicEffects();
+		SCRATCH::allow3d { app.runtime.checkForGraphicEffects(); }
 		app.updatePalette();
 		return true;
 	}

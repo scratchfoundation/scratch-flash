@@ -18,34 +18,38 @@
  */
 
 package render3d {
-import com.adobe.utils.*;
-import flash.display.Bitmap;
-import flash.display.BitmapData;
-import flash.display.DisplayObject;
-import flash.display.Shape;
+
 import flash.display.Sprite;
-import flash.display.Stage3D;
-import flash.display3D.*;
-import flash.events.ErrorEvent;
-import flash.events.Event;
-import flash.events.KeyboardEvent;
-import flash.geom.ColorTransform;
-import flash.geom.Matrix;
-import flash.geom.Matrix3D;
-import flash.geom.Point;
-import flash.geom.Rectangle;
-import flash.geom.Vector3D;
+
+SCRATCH::allow3d {
+	import com.adobe.utils.*;
+	import flash.display.Bitmap;
+	import flash.display.BitmapData;
+	import flash.display.DisplayObject;
+	import flash.display.Shape;
+	import flash.display.Stage3D;
+	import flash.display3D.*;
+	import flash.events.ErrorEvent;
+	import flash.events.Event;
+	import flash.events.KeyboardEvent;
+	import flash.geom.ColorTransform;
+	import flash.geom.Matrix;
+	import flash.geom.Matrix3D;
+	import flash.geom.Point;
+	import flash.geom.Rectangle;
+	import flash.geom.Vector3D;
 import flash.system.Capabilities;
 import flash.system.Capabilities;
-import flash.utils.ByteArray;
-import flash.utils.Dictionary;
-import flash.utils.Endian;
+	import flash.utils.ByteArray;
+	import flash.utils.Dictionary;
+	import flash.utils.Endian;
+}
 
 /**
  *   A display object container which renders in 3D instead
  *   @author Shane M. Clements, shane.m.clements@gmail.com
  */
-public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {
+public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {SCRATCH::allow3d{
 	private var contextRequested:Boolean = false;
 	private static var isIOS:Boolean = Capabilities.os.indexOf('iPhone') != -1;
 
@@ -1788,7 +1792,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {
 	public function getUIContainer():Sprite {
 		return uiContainer;
 	}
-}
+}}
 }
 
 import flash.utils.getQualifiedClassName;

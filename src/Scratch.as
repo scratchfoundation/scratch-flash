@@ -166,9 +166,9 @@ public class Scratch extends Sprite {
 		else runtime.installEmptyProject();
 
 		fixLayout();
-//Analyze.collectAssets(0, 119110);
-//Analyze.checkProjects(56086, 64220);
-//Analyze.countMissingAssets();
+		//Analyze.collectAssets(0, 119110);
+		//Analyze.checkProjects(56086, 64220);
+		//Analyze.countMissingAssets();
 	}
 
 	protected function initBlockIO():void {
@@ -254,21 +254,24 @@ public class Scratch extends Sprite {
 	public function loadProjectFailed():void {}
 
 	protected function checkFlashVersion():void {
-		if(Capabilities.playerType != "Desktop" || Capabilities.version.indexOf('IOS') === 0) {
-			var versionString:String = Capabilities.version.substr(Capabilities.version.indexOf(' ')+1);
-			var versionParts:Array = versionString.split(',');
-			var majorVersion:int = parseInt(versionParts[0]);
-			var minorVersion:int = parseInt(versionParts[1]);
+		SCRATCH::allow3d {
+			if (Capabilities.playerType != "Desktop" || Capabilities.version.indexOf('IOS') === 0) {
+				var versionString:String = Capabilities.version.substr(Capabilities.version.indexOf(' ') + 1);
+				var versionParts:Array = versionString.split(',');
+				var majorVersion:int = parseInt(versionParts[0]);
+				var minorVersion:int = parseInt(versionParts[1]);
 			if((majorVersion > 11 || (majorVersion == 11 && minorVersion >=1)) && !isArmCPU && Capabilities.cpuArchitecture == 'x86') {
-				render3D = (new DisplayObjectContainerIn3D() as IRenderIn3D);
-				render3D.setStatusCallback(handleRenderCallback);
-				return;
+					render3D = (new DisplayObjectContainerIn3D() as IRenderIn3D);
+					render3D.setStatusCallback(handleRenderCallback);
+					return;
+				}
 			}
 		}
 
 		render3D = null;
 	}
 
+	SCRATCH::allow3d
 	protected function handleRenderCallback(enabled:Boolean):void {
 		if(!enabled) {
 			go2D();
@@ -303,6 +306,7 @@ public class Scratch extends Sprite {
 		} catch (e:Error) {}
 	}
 
+	SCRATCH::allow3d
 	public function go3D():void {
 		if(!render3D || isIn3D) return;
 
@@ -313,6 +317,7 @@ public class Scratch extends Sprite {
 		isIn3D = true;
 	}
 
+	SCRATCH::allow3d
 	public function go2D():void {
 		if(!render3D || !isIn3D) return;
 
@@ -418,7 +423,7 @@ public class Scratch extends Sprite {
 
 		if (lp) fixLoadProgressLayout();
 		stagePane.updateCostume();
-		if(isIn3D) render3D.onStageResize();
+		SCRATCH::allow3d { if(isIn3D) render3D.onStageResize(); }
 	}
 
 	private function keyDown(evt:KeyboardEvent):void {
@@ -435,7 +440,7 @@ public class Scratch extends Sprite {
 //		}
 		// Handle ctrl-m and toggle 2d/3d mode
 		else if(evt.ctrlKey && evt.charCode == 109) {
-			isIn3D ? go2D() : go3D();
+			SCRATCH::allow3d { isIn3D ? go2D() : go3D(); }
 			evt.preventDefault();
 			evt.stopImmediatePropagation();
 		}
@@ -682,7 +687,7 @@ public class Scratch extends Sprite {
 			addChild(frameRateGraph); // put in front
 		}
 
-		if(isIn3D) render3D.onStageResize();
+		SCRATCH::allow3d { if (isIn3D) render3D.onStageResize(); }
 	}
 
 	protected function drawBG():void {
