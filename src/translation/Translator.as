@@ -57,7 +57,7 @@ public class Translator {
 		Scratch.app.server.getLanguageList(saveLanguageList);
 	}
 
-	public static function setLanguage(lang:String):void {
+	public static function setLanguageValue(lang:String):void {
 		function gotPOFile(data:ByteArray):void {
 			if (data) {
 				dictionary = parsePOData(data);
@@ -66,14 +66,19 @@ public class Translator {
 			}
 			Scratch.app.translationChanged();
 		}
-		if ('import translation file' == lang) { importTranslationFromFile(); return; }
-		if ('set font size' == lang) { fontSizeMenu(); return; }
-
+		
 		dictionary = {}; // default to English (empty dictionary) if there's no .po file
 		setFontsFor('en');
 		if ('en' == lang) Scratch.app.translationChanged(); // there is no .po file English
 		else Scratch.app.server.getPOFile(lang, gotPOFile);
 
+	}
+	
+	public static function setLanguage(lang:String):void {
+		if ('import translation file' == lang) { importTranslationFromFile(); return; }
+		if ('set font size' == lang) { fontSizeMenu(); return; }
+		
+		setLanguageValue(lang);
 		Scratch.app.server.setSelectedLang(lang);
 	}
 

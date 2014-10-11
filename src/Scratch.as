@@ -138,6 +138,9 @@ public class Scratch extends Sprite {
 
 		playerBG = new Shape(); // create, but don't add
 		addParts();
+		
+		server.getSelectedLang(Translator.setLanguageValue);
+		
 
 		stage.addEventListener(MouseEvent.MOUSE_DOWN, gh.mouseDown);
 		stage.addEventListener(MouseEvent.MOUSE_MOVE, gh.mouseMove);
