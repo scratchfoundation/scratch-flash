@@ -349,6 +349,7 @@ public class ScratchSprite extends ScratchObj {
 		var r:Rectangle = transformedBounds(b, m);
 
 		// returns true if caller should immediately return cachedBitmap
+		var self:ScratchSprite = this;
 		function bitmap2d():Boolean {
 			if ((r.width == 0) || (r.height == 0)) { // empty costume: use an invisible 1x1 bitmap
 				cachedBitmap = new BitmapData(1, 1, true, 0);
@@ -360,7 +361,7 @@ public class ScratchSprite extends ScratchObj {
 			img.transform.colorTransform = new ColorTransform(1, 1, 1, 1, oldTrans.redOffset, oldTrans.greenOffset, oldTrans.blueOffset, 0);
 			cachedBitmap = new BitmapData(Math.max(int(r.width), 1), Math.max(int(r.height), 1), true, 0);
 			m.translate(-r.left, -r.top);
-			cachedBitmap.draw(this, m);
+			cachedBitmap.draw(self, m);
 			img.transform.colorTransform = oldTrans;
 			return false;
 		}
