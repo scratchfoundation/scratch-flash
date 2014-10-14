@@ -245,7 +245,7 @@ public class Scratch extends Sprite {
 			var versionParts:Array = versionString.split(',');
 			var majorVersion:int = parseInt(versionParts[0]);
 			var minorVersion:int = parseInt(versionParts[1]);
-			if((majorVersion > 11 || (majorVersion == 11 && minorVersion >=1)) && !isArmCPU && Capabilities.cpuArchitecture == 'x86') {
+			if((majorVersion > 11 || (majorVersion == 11 && minorVersion >= 7)) && !isArmCPU && Capabilities.cpuArchitecture == 'x86') {
 				loadRenderLibrary();
 				return;
 			}
