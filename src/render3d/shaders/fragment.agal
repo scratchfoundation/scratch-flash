@@ -1,0 +1,315 @@
+// FC0 = (1, 2, 0, 0.5)
+/*** Mosaic effect ***/
+mul ft0.xyzw, v0.xyxy, v1.wwww
+frc ft0.xyzw, ft0.xyzw
+
+/*** Pixelate effect ***/
+// Do xy = int(xy / pixels) * pixels
+div ft2.xyzw, ft0.xyxy, v2.xyxy
+frc ft1.xyzw, ft2.xyzw
+sub ft2.xyzw, ft2.xyzw, ft1.xyzw
+mul ft2.xyzw, ft2.xyzw, v2.xyxy
+
+// Get the middle pixel
+div ft1.xyxy, v2.xyxy, fc0.yyyy
+add ft2.xyzw, ft2.xyxy, ft1.xyxy
+
+// Use the pixelated UV?
+sge ft1.x, v2.x, fc0.z // is pixelate_x >= 0?
+mul ft2.xyzw, ft2.xyzw, ft1.xxxx // then use the pixelated UV
+slt ft1.x, v2.x, fc0.z // is pixelate_x < 0?
+mul ft0.xyzw, ft0.xyzw, ft1.xxxx // then use the pixelated UV
+add ft0.xyzw, ft0.xyzw, ft2.xyzw // Add them together
+
+/*** Whirl effect ***/
+mov ft0.zwzw, fc0.zzzz
+mov ft4.xyzw, ft0.xyzw
+sub ft0.xy, ft0.xy, fc0.ww // ft0.xy = vec
+dp3 ft1.yyy, ft0.xyz, ft0.xyz
+sqt ft1.x, ft1.y // ft.x = d, len(uv) from center of texture (0.5, 0.5)
+div ft1.y, ft1.x, fc0.w // radius = 0.5 (to the edge)
+sub ft1.y, fc0.x, ft1.y // ft1.y = factor
+
+mul ft1.z, ft1.y, ft1.y
+mul ft1.z, ft1.z, v2.z // ft1.z = a, using v2.w for whirlRadians
+sin ft2.xyzw, ft1.zzzz // ft2.x = sinAngle
+cos ft2.yyyy, ft1.zzzz // ft2.y = cosAngle
+
+mul ft2.z, ft0.x, ft2.y // ft2.z = vec.x * cosAngle
+mul ft2.w, ft0.y, ft2.x // ft2.w = vec.y * sinAngle
+sub ft3.xyzw, ft2.zzzz, ft2.wwww
+
+mul ft2.z, ft0.x, ft2.x // ft2.z = vec.x * sinAngle
+mul ft2.w, ft0.y, ft2.y // ft2.w = vec.y * cosAngle
+add ft3.yyyy, ft2.zzzz, ft2.wwww
+add ft3.xy, ft3.xy, fc0.ww // ft3.y = p.y
+
+sge ft1.y, ft1.x, fc0.w
+mul ft4.xy, ft4.xy, ft1.yy
+slt ft1.y, ft1.x, fc0.w
+mul ft0.xy, ft3.xy, ft1.yy
+add ft0.xy, ft4.xy, ft0.xy
+
+sat ft0.xy, ft0.xy
+
+/*** Fisheye effect ***/ // fisheye = v3.y
+sub ft1.xy, ft0.xy, fc0.ww // ft0.xy = vec = (uv - [0.5,0.5])
+div ft2.xy, ft1.xy, fc0.ww // vec = vec / [0.5, 0.5]
+mov ft2.zw, fc0.zz
+dp3 ft1.yyy, ft2.xyz, ft2.xyz // ft1.y = length(vec)^2
+sqt ft1.x, ft1.y // ft.x = length(vec)
+
+// Prevent divide by zero
+seq ft3.y, ft1.x, fc0.z //int len_eq_zero = (v == 0);
+mul ft3.x, fc3.w, ft3.y //tiny = 0.000001 * len_eq_zero; = ft3.x
+add ft1.x, ft1.x, ft3.x //len = len + tiny;
+
+div ft2.xy, ft2.xy, ft1.xx // vec2 = vec / len;
+pow ft1.y, ft1.x, v3.y // r = pow(len, scaledPower);
+mul ft2.xy, ft2.xy, ft1.yy // coords = center + (r * vec2 * center);
+mul ft2.xy, ft2.xy, fc0.ww
+add ft2.xy, ft2.xy, fc0.ww
+
+sge ft1.x, ft1.y, fc0.x
+mul ft0.xy, ft0.xy, ft1.xx
+slt ft1.y, ft1.y, fc0.x
+mul ft2.xy, ft2.xy, ft1.yy
+add ft0.xy, ft2.xy, ft0.xy
+
+/*** Move the texture coordinates into the sub-texture space ***/
+mul ft0.xyzw, ft0.xyzw, v1.xyxy
+add ft0.xy, ft0.xy, v0.zw
+
+/*** Floor the texture index ***/
+frc ft3.xyzw, v3.wwww\n
+sub ft3.x, v3.w, ft3.x\n
+
+/*** Select texture to use ***/
+// Get the texture pixel using ft0.xy as the coordinates
+seq ft5, ft3.x, fc0.z	// Use texture 0?
+tex ft2, ft0, fs0 <2d,clamp,linear,nomip>
+mul ft2, ft2, ft5
+mov ft1, ft2
+
+seq ft5, ft3.x, fc0.x	// Use texture 1?
+tex ft2, ft0, fs1 <2d,clamp,linear,nomip>
+mul ft2, ft2, ft5
+add ft1, ft1, ft2
+
+seq ft5, ft3.x, fc0.y	// Use texture 2?
+tex ft2, ft0, fs2 <2d,clamp,linear,nomip>
+mul ft2, ft2, ft5
+add ft1, ft1, ft2
+
+seq ft5, ft3.x, fc2.y	// Use texture 3?
+tex ft2, ft0, fs3 <2d,clamp,linear,nomip>
+mul ft2, ft2, ft5
+add ft1, ft1, ft2
+
+seq ft5, ft3.x, fc2.z	// Use texture 4?
+tex ft2, ft0, fs4 <2d,clamp,linear,nomip>
+mul ft2, ft2, ft5
+add ft1, ft1, ft2
+
+//seq ft5, ft3.x, fc2.w	// Use texture 5?
+//tex ft2, ft0, fs5 <2d,clamp,linear,nomip>
+//mul ft2, ft2, ft5
+//add ft1, ft1, ft2
+
+/*** ft1 == (r, g, b, a) ***/
+// Now de-multiply the color values that Flash pre-multiplied
+// TODO: De-multiply the color values BEFORE texture atlasing
+seq ft3.y, ft1.w, fc0.z //int alpha_eq_zero = (alpha == 0);	alpha_eq_zero	= ft3.y
+sne ft3.z, ft1.w, fc0.z //int alpha_neq_zero = (alpha != 0);	alpha_neq_zero	= ft3.z
+mul ft3.x, fc3.w, ft3.y //tiny = 0.000001 * alpha_eq_zero;		tiny		= ft3.x
+add ft1.w, ft1.w, ft3.x //alpha = alpha + tiny;				Avoid division by zero, alpha != 0
+div ft2.xyz, ft1.xyz, ft1.www //new_rgb = rgb / alpha
+mul ft2.xyz, ft2.xyz, ft3.zzz //new_rgb = new_rgb * alpha_neq_zero
+
+mul ft1.xyz, ft1.xyz, ft3.yyy //rgb = rgb * alpha_eq_zero
+add ft1.xyz, ft1.xyz, ft2.xyz //rgb = rgb + new_rgb
+
+// Clamp the color
+sat ft1, ft1
+
+/*** Color effect ***/
+// compute h, s, v														dst		= ft1
+//				float v = max(r, max(g, b));
+max ft2.z, ft1.y, ft1.z //float v = max(dst.g, dst.b);				v		= ft2.z
+max ft2.z, ft1.x, ft2.z //v = max(dst.r, v);
+
+//				float span = v - min(r, min(g, b));
+min ft2.w, ft1.y, ft1.z //float span =  min(dst.g, dst.b);			span	= ft2.w
+min ft2.w, ft1.x, ft2.w //span = min(dst.r, span);
+sub ft2.w, ft2.z, ft2.w //span = v - span;
+
+//				if (span == 0.0) {
+//					h = s = 0.0;
+//				} else {
+//					if (r == v) h = 60.0 * ((g - b) / span);
+//					else if (g == v) h = 120.0 + (60.0 * ((b - r) / span));
+//					else if (b == v) h = 240.0 + (60.0 * ((r - g) / span));
+//					s = span / v;
+//				}
+seq ft3.y, ft2.z, fc0.z //int v_eq_zero = (v == 0);
+mul ft3.x, fc3.w, ft3.y //tiny = 0.000001 * v_eq_zero;				tiny	= ft3.x
+add ft2.z, ft2.z, ft3.x //v = v + tiny;					Avoid division by zero, v != 0
+
+seq ft3.y, ft2.w, fc0.z //int span_eq_zero = (span == 0);		span_eq_zero= ft3.y
+sne ft2.y, ft2.w, fc0.z //int span_not_zero = (span != 0.0); span_not_zero	= ft2.y
+seq ft3.y, ft1.x, ft2.z //int r_eq_v = (dst.r == v);				r_eq_v	= ft3.y
+sne ft4.x, ft1.x, ft2.z //int r_not_v = (dst.r != v);				r_not_v	= ft4.x
+seq ft3.z, ft1.y, ft2.z //int g_eq_v = (dst.g == v);				g_eq_v	= ft3.z
+mul ft3.z, ft3.z, ft4.x //g_eq_v = g_eq_v * r_not_v
+seq ft3.w, ft1.z, ft2.z //int b_eq_v = (dst.b == v);				b_eq_v	= ft3.w
+add ft4.y, ft3.y, ft3.z //int not_g_eq_v_or_r_eq_v = r_eq_v + g_eq_v	not_g_eq_v_or_r_eq_v	= ft4.y
+seq ft4.y, ft4.y, fc0.z //not_g_eq_v_or_r_eq_v = (not_g_eq_v_or_r_eq_v == 0)
+mul ft3.w, ft3.w, ft4.y //b_eq_v = b_eq_v * not_g_eq_v_or_r_eq_v	// (b==v) is only valid when the other two are not
+
+mul ft3.x, fc3.w, ft3.y //tiny = 0.000001 * span_eq_zero;			tiny	= ft3.x
+add ft2.w, ft2.w, ft3.x //span = span + tiny;					Avoid division by zero, span != 0
+
+mul ft3.y, ft3.y, ft2.y //r_eq_v = r_eq_v * span_not_zero;
+mul ft3.z, ft3.z, ft2.y //g_eq_v = g_eq_v * span_not_zero;
+mul ft3.w, ft3.w, ft2.y //b_eq_v = b_eq_v * span_not_zero;
+
+div ft4.x, fc1.z, ft2.w //float 60_div_span = 60 / span;		60_div_span	= ft4.x
+sub ft4.y, ft1.y, ft1.z //float h_r_eq_v = dst.g - dst.b;		h_r_eq_v	= ft4.y
+mul ft4.y, ft4.y, ft4.x //h_r_eq_v = h_r_eq_v * 60_div_span;
+mul ft4.y, ft4.y, ft3.y //h_r_eq_v = h_r_eq_v * r_eq_v;
+
+sub ft4.z, ft1.z, ft1.x //float h_g_eq_v = dst.b - dst.r;		h_g_eq_v	= ft4.z
+mul ft4.z, ft4.z, ft4.x //h_g_eq_v = h_g_eq_v * 60_div_span;
+add ft4.z, ft4.z, fc1.w //h_g_eq_v = h_g_eq_v + 120;
+mul ft4.z, ft4.z, ft3.z //h_g_eq_v = h_g_eq_v * g_eq_v;
+
+sub ft4.w, ft1.x, ft1.y //float h_b_eq_v = dst.r - dst.g;		h_b_eq_v	= ft4.w
+mul ft4.w, ft4.w, ft4.x //h_b_eq_v = h_b_eq_v * 60_div_span;
+add ft4.w, ft4.w, fc2.x //h_b_eq_v = h_b_eq_v + 240;
+mul ft4.w, ft4.w, ft3.w //h_b_eq_v = h_b_eq_v * b_eq_v;
+
+/*** ft2 == (h, s, v) ***/
+mov ft2.x, ft4.y		 //float h = h_r_eq_v;							h	= ft2.x
+add ft2.x, ft2.x, ft4.z //h = h + h_g_eq_v;
+add ft2.x, ft2.x, ft4.w //h = h + h_b_eq_v;
+
+div ft3.z, ft2.w, ft2.z //float s_span_not_zero = span / v; s_span_not_zero= ft3.z
+mul ft2.y, ft3.z, ft2.y //float s = s_span_not_zero * span_not_zero;	s	= ft2.y
+
+//				if (hueShift != 0.0 && v < 0.11) { v = 0.11; s = 1.0; }
+/*** ft3 is now free ***/  // Check this section for accuracy / mistakes
+sne ft3.y, v3.x, fc0.z //int hs_not_zero = (hueShift != 0.0);	hs_not_zero	= ft3.y
+slt ft3.z, ft2.z, fc3.y //int v_lt_0_11 = (v < 0.11);			v_lt_0_11	= ft3.z
+mul ft3.z, ft3.z, ft3.y //v_lt_0_11 = v_lt_0_11 * hs_not_zero;
+seq ft3.w, ft3.z, fc0.z //int !v_lt_0_11						!v_lt_0_11	= ft3.w
+
+mul ft2.z, ft2.z, ft3.w //v  = v * !v_lt_0_11
+mul ft3.x, fc3.y, ft3.z //float vv = 0.11 * v_lt_0_11;					vv	= ft3.x
+add ft2.z, ft2.z, ft3.x //v = v + vv;
+
+mul ft2.y, ft2.y, ft3.w //s  = s * !v_lt_0_11
+add ft2.y, ft2.y, ft3.z //s = s + v_lt_0_11;
+
+//				if (hueShift != 0.0 && s < 0.09) s = 0.09;
+slt ft3.w, ft2.y, fc3.z //int s_lt_0_09 = (s < 0.09);			s_lt_0_09	= ft3.w
+mul ft3.w, ft3.w, ft3.y //s_lt_0_09 = s_lt_0_09 * hs_not_zero;
+seq ft3.z, ft3.w, fc0.z //int !s_lt_0_09						!s_lt_0_09	= ft3.z
+
+mul ft2.y, ft2.y, ft3.z //s  = s * !s_lt_0_09
+mul ft3.x, fc3.z, ft3.w //float ss = 0.09 * s_lt_0_09;					ss	= ft3.x
+add ft2.y, ft2.y, ft3.x //s = s + ss;
+
+//				if (hueShift != 0.0 && (v == 0.11 || s == 0.09)) h = 0.0;
+seq ft4.x, ft2.z, fc3.y //int v_eq_0_11 = (v == 0.11);			v_eq_0_11	= ft4.x
+seq ft4.y, ft2.y, fc3.z //int s_eq_0_09 = (s == 0.09);			s_eq_0_09	= ft4.y
+add ft4.z, ft4.x, ft4.y //int v_eq_0_11_or_s_eq_0_09 = v_eq_0_11 + s_eq_0_09;	v_eq_0_11_or_s_eq_0_09 = ft4.z
+mul ft4.z, ft4.z, ft3.y //v_eq_0_11_or_s_eq_0_09 = v_eq_0_11_or_s_eq_0_09 * hs_not_zero;
+
+// Multiply h by !v_eq_0_11_or_s_eq_0_09. if v_eq_0_11_or_s_eq_0_09 is true, then h=0, otherwise it's untouched.
+seq ft4.z, ft4.z, fc0.z //v_eq_0_11_or_s_eq_0_09 = !v_eq_0_11_or_s_eq_0_09
+mul ft2.x, ft2.x, ft4.z //h = h * (!v_eq_0_11_or_s_eq_0_09);
+
+//				h = mod(h + hueShift, 360.0);
+add ft2.x, ft2.x, v3.x //h = h + hueShift;
+div ft2.x, ft2.x, fc4.x //h = h / 360;
+frc ft2.x, ft2.x //h = frc h;
+mul ft2.x, ft2.x, fc4.x //h = h * 360;
+
+//				if (h < 0.0) h += 360.0;
+slt ft4.y, ft2.x, fc0.z //int h_lt_0 = (h < 0.0);					h_lt_0	= ft4.y
+mul ft4.x, fc4.x, ft4.y //float hh = 360 * h_lt_0;						hh	= ft4.x
+add ft2.x, ft2.x, ft4.x //h = h + hh;
+
+//				s = max(0.0, min(s, 1.0));
+sat ft2.y, ft2.y //s = sat(s);
+
+//				v = max(0.0, min(v + brightnessShift, 1.0));
+add ft2.z, ft2.z, v3.z //v = v + brightnessShift;
+sat ft2.z, ft2.z //v = sat(v);
+
+//				int i = int(floor(h / 60.0));
+//				float f = (h / 60.0) - float(i);
+div ft3.x, ft2.x, fc1.z //float h_div_60 =  h / 60;			h_div_60	= ft3.x
+frc ft3.y, ft3.x //float f = frc(h_div_60);							f	= ft3.y
+sub ft3.x, ft3.x, ft3.y //float i = h_div_60 - f;						i	= ft3.x
+
+//				float p = v * (1.0 - s);
+//				float q = v * (1.0 - (s * f));
+//				float t = v * (1.0 - (s * (1.0 - f)));
+/*** ft5 = [p, q, t, v] ***/
+sub ft5.x, fc0.x, ft2.y //ft5.x = 1.0 - s; // p
+mul ft5.x, ft5.x, ft2.z //ft5.x = ft5.x * v;
+mul ft5.y, ft2.y, ft3.y //ft5.y = (s * f); // q
+sub ft5.y, fc0.x, ft5.y //ft5.y = 1.0 - ft5.y;
+mul ft5.y, ft5.y, ft2.z //ft5.y = ft5.y * v;
+sub ft5.z, fc0.x, ft3.y //ft5.z = 1.0 - f; // t
+mul ft5.z, ft2.y, ft5.z //ft5.z = s * ft5.z;
+sub ft5.z, fc0.x, ft5.z //ft5.z = 1.0 - ft5.z;
+mul ft5.z, ft5.z, ft2.z //ft5.z = ft5.z * v;
+mov ft5.w, ft2.z //mov ft5.w, v; // v
+
+/*** FIX i to be an integer on Intel Graphics 3000 with Chrome Pepper Flash ***/
+add ft3.x, ft3.x, fc0.w // fix i?
+frc ft3.y, ft3.x // fix i?
+sub ft3.x, ft3.x, ft3.y // fix i?
+
+seq ft3.y, ft3.x, fc0.z //int i_eq_0 = (i == 0);					i_eq_0	= ft3.y
+mul ft3.y, ft3.y, fc3.x //i_eq_0 = i_eq_0 * 6;
+add ft3.x, ft3.x, ft3.y //i = i + i_eq_0;  -- Now i is only 1,2,3,4,5, or 6
+
+seq ft3.y, ft3.x, fc0.x //int i_eq_1 = (i == 1);					i_eq_1	= ft3.y
+seq ft3.z, ft3.x, fc0.y //int i_eq_2 = (i == 2);					i_eq_2	= ft3.z
+seq ft3.w, ft3.x, fc2.y //int i_eq_3 = (i == 3);					i_eq_3	= ft3.w
+seq ft4.x, ft3.x, fc2.z //int i_eq_4 = (i == 4);					i_eq_4	= ft4.x
+seq ft4.y, ft3.x, fc2.w //int i_eq_5 = (i == 5);					i_eq_5	= ft4.y
+seq ft4.z, ft3.x, fc3.x //int i_eq_6 = (i == 6);					i_eq_6	= ft4.z
+
+// Write to ft7.w ?
+//				if ((i == 0) || (i == 6)) dst.rgb = float3(v, t, p);
+mul ft7.xyz, ft4.zzz, ft5.wzx //ft7 = i_eq_6 * ft5.wzx
+
+//				else if (i == 1) dst.rgb = float3(q, v, p);
+mul ft6.xyz, ft3.yyy, ft5.ywx //ft6 = i_eq_1 * ft5.ywx
+add ft7.xyz, ft7.xyz, ft6.xyz //ft7 = ft7 + ft6
+
+//				else if (i == 2) dst.rgb = float3(p, v, t);
+mul ft6.xyz, ft3.zzz, ft5.xwz //ft6 = i_eq_2 * ft5.xwz
+add ft7.xyz, ft7.xyz, ft6.xyz //ft7 = ft7 + ft6
+
+//				else if (i == 3) dst.rgb = float3(p, q, v);
+mul ft6.xyz, ft3.www, ft5.xyw //ft6 = i_eq_3 * ft5.xyw
+add ft7.xyz, ft7.xyz, ft6.xyz //ft7 = ft7 + ft6
+
+//				else if (i == 4) dst.rgb = float3(t, p, v);
+mul ft6.xyz, ft4.xxx, ft5.zxw //ft6 = i_eq_4 * ft5.zxw
+add ft7.xyz, ft7.xyz, ft6.xyz //ft7 = ft7 + ft6
+
+//				else if (i == 5) dst.rgb = float3(v, p, q);
+mul ft6.xyz, ft4.yyy, ft5.wxy //ft6 = i_eq_5 * ft5.wxy
+add ft7.xyz, ft7.xyz, ft6.xyz //ft7 = ft7 + ft6
+
+sat ft1.xyz, ft7.xyz			// Move the shifted color into ft1
+
+/*** Ghost effect ***/
+mul ft1.w, ft1.w, v1.z	// varying alpha in v1.z
+mov oc, ft1 // fill ft0.x with v0.x and ft0.w with v0.w
