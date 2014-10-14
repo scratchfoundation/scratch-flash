@@ -336,8 +336,8 @@ public class ScratchSprite extends ScratchObj {
 
 //	private var testBM:Bitmap = new Bitmap();
 //	private var testSpr:Sprite = new Sprite();
-	public function bitmap(forColorTest:Boolean = false):BitmapData {
-		if (cachedBitmap != null && (!forColorTest || !Scratch.app.isIn3D))
+	public function bitmap(forTest:Boolean = false):BitmapData {
+		if (cachedBitmap != null && (!forTest || !Scratch.app.isIn3D))
 			return cachedBitmap;
 
 		// compute cachedBitmap
@@ -368,8 +368,6 @@ public class ScratchSprite extends ScratchObj {
 //				testSpr.graphics.drawRect(testBM.x, testBM.y, bm.width * testBM.scaleX, bm.height * testBM.scaleY);
 //				testBM.bitmapData = bm;
 //			}
-
-			if(forColorTest) return bm;
 
 			if(rotation != 0) {
 				m = new Matrix();
