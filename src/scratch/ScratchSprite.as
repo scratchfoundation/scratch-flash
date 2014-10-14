@@ -336,8 +336,8 @@ public class ScratchSprite extends ScratchObj {
 
 //	private var testBM:Bitmap = new Bitmap();
 //	private var testSpr:Sprite = new Sprite();
-	public function bitmap(forColorTest:Boolean = false):BitmapData {
-		if (cachedBitmap != null && (!forColorTest || !Scratch.app.isIn3D))
+	public function bitmap(forTest:Boolean = false):BitmapData {
+		if (cachedBitmap != null && (!forTest || !Scratch.app.isIn3D))
 			return cachedBitmap;
 
 		// compute cachedBitmap
@@ -349,7 +349,7 @@ public class ScratchSprite extends ScratchObj {
 		var r:Rectangle = transformedBounds(b, m);
 
 		// returns true if caller should immediately return cachedBitmap
-		function bitmap2d():Boolean {
+		function bitmap2d(self:IBitmapDrawable):Boolean {
 			if ((r.width == 0) || (r.height == 0)) { // empty costume: use an invisible 1x1 bitmap
 				cachedBitmap = new BitmapData(1, 1, true, 0);
 				cachedBounds = cachedBitmap.rect;
@@ -360,7 +360,7 @@ public class ScratchSprite extends ScratchObj {
 			img.transform.colorTransform = new ColorTransform(1, 1, 1, 1, oldTrans.redOffset, oldTrans.greenOffset, oldTrans.blueOffset, 0);
 			cachedBitmap = new BitmapData(Math.max(int(r.width), 1), Math.max(int(r.height), 1), true, 0);
 			m.translate(-r.left, -r.top);
-			cachedBitmap.draw(this, m);
+			cachedBitmap.draw(self, m);
 			img.transform.colorTransform = oldTrans;
 			return false;
 		}
@@ -388,8 +388,6 @@ public class ScratchSprite extends ScratchObj {
 //		    		testBM.bitmapData = bm;
 //			    }
 
-				if (forColorTest) return bm;
-
 				if (rotation != 0) {
 					m = new Matrix();
 					m.rotate((Math.PI * rotation) / 180);
@@ -403,11 +401,11 @@ public class ScratchSprite extends ScratchObj {
 				}
 			}
 			else {
-				if (bitmap2d()) return cachedBitmap;
+				if (bitmap2d(this)) return cachedBitmap;
 			}
 		}
 		else {
-			if (bitmap2d()) return cachedBitmap;
+			if (bitmap2d(this)) return cachedBitmap;
 		}
 
 		cachedBounds = cachedBitmap.rect;
