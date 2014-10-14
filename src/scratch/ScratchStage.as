@@ -687,8 +687,8 @@ public class ScratchStage extends ScratchObj {
 			if (obj.parent) obj.parent.removeChild(obj); // force redisplay
 			addChild(obj);
 			if (obj is ScratchSprite) {
-				obj.setScratchXY(p.x - 240, 180 - p.y);
 				(obj as ScratchSprite).updateCostume();
+				obj.setScratchXY(p.x - 240, 180 - p.y);
 				Scratch.app.selectSprite(obj);
 				obj.setScratchXY(p.x - 240, 180 - p.y); // needed because selectSprite() moves sprite back if costumes tab is open
 				(obj as ScratchObj).applyFilters();

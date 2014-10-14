@@ -121,10 +121,10 @@ public class ScratchObj extends Sprite {
 		updateImage();
 	}
 
-	public function updateCostume():void { updateImage() }
+	public function updateCostume():void { updateImage(); }
 
 	public function currentCostume():ScratchCostume {
-		return costumes[Math.round(currentCostumeIndex) % costumes.length]
+		return costumes[Math.round(currentCostumeIndex) % costumes.length];
 	}
 
 	public function costumeNumber():int {
