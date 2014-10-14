@@ -313,7 +313,7 @@ public class ScratchSprite extends ScratchObj {
 		var p:Point = parent.globalToLocal(new Point(globalX, globalY));
 		var myRect:Rectangle = bounds();
 		if (!myRect.containsPoint(p)) return false;
-		return shapeFlag ? bitmap().hitTest(myRect.topLeft, 1, p) : true;
+		return shapeFlag ? bitmap(true).hitTest(myRect.topLeft, 1, p) : true;
 	}
 
 	public override function getBounds(space:DisplayObject):Rectangle {
