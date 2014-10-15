@@ -30,9 +30,8 @@ package util {
 import flash.display.*;
 import flash.events.*;
 import flash.net.URLLoader;
-import flash.net.URLLoaderDataFormat;
-import flash.net.URLRequest;
 import flash.utils.*;
+
 import scratch.*;
 
 import sound.WAVFile;
@@ -325,8 +324,12 @@ public class ProjectIO {
 			} else {
 				var loader:Loader = new Loader();
 				loader.contentLoaderInfo.addEventListener(Event.COMPLETE, imageLoaded);
+				loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, imageError);
 				loader.loadBytes(data);
 			}
+		}
+		function imageError(event:IOErrorEvent):void {
+			app.log('ProjectIO failed to load: ' + id);
 		}
 		function imageLoaded(e:Event):void {
 			c = new ScratchCostume(costumeName, e.target.content.bitmapData);
