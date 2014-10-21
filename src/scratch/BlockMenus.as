@@ -199,7 +199,7 @@ public class BlockMenus implements DragClient {
 	private function setBlockArg(selection:*):void {
 		if (blockArg != null) blockArg.setArgValue(selection);
 		Scratch.app.setSaveNeeded();
-		Scratch.app.runtime.checkForGraphicEffects();
+		SCRATCH::allow3d { Scratch.app.runtime.checkForGraphicEffects(); }
 	}
 
 	private function attributeMenu(evt:MouseEvent):void {
