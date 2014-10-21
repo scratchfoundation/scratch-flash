@@ -68,7 +68,11 @@ function compileWithout3D(callback) {
 }
 
 compileWith3D(
-    errorCheckThen(
+    errorCheckThen(function() {
         compileWithout3D(
-            errorCheckThen(
-                function() { process.exit(0); }))));
+            errorCheckThen(function() {
+                process.exit(0);
+            })
+        )
+    })
+);
