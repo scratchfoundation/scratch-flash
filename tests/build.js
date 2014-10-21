@@ -14,36 +14,20 @@ var libs_dir = path.join(proj_dir, 'libs');
 // Where to put the built SWF
 var deploy_dir = path.join(proj_dir, 'bin');
 
-// Build the 3D code
-compile(path.join(src_dir_3d, 'DisplayObjectContainerIn3D.as'),
-        path.join(libs_dir, 'RenderIn3D.swf'),
-        function(err, stdout, stderr) {
-            if (err) {
-                console.log(err);
-                process.exit(1);
-            } else {
-                // Build Scratch
-                compile(path.join(src_dir, 'Scratch.as'),
-                        path.join(deploy_dir, 'Scratch.swf'),
-                        function(err, stdout, stderr) {
-                            if (err) {
-                                console.log(err);
-                                process.exit(1);
-                            } else {
-                                process.exit(0);
-                            }
-                        },
-                        [path.join(libs_dir, 'blooddy_crypto.swc')]
-                );
-            }
+function errorCheckThen(nextCall) {
+    return function(err, stdout, stderr) {
+        if (err) {
+            console.log(err);
+            process.exit(1);
+        } else {
+            nextCall();
         }
-);
+    };
+}
 
-function compile(src, dest, callback, lib_paths) {
+function compile(src, dest, callback, lib_paths, extra_args) {
     var args = [
         '-output', dest,
-        '-target-player=11.4',
-        '-swf-version=17',
         '-debug=false'
     ];
 
@@ -54,5 +38,37 @@ function compile(src, dest, callback, lib_paths) {
     }
 
     args.push(src);
+
+    if(extra_args) {
+        args = args.concat(extra_args);
+    }
+
     childProcess.execFile(binPath, args, callback);
 }
+
+var src = path.join(src_dir, 'Scratch.as');
+var libs = [
+    path.join(libs_dir, 'blooddy_crypto.swc')
+];
+
+function compileWith3D(callback) {
+    compile(src, path.join(deploy_dir, 'Scratch.swf'), callback, libs, [
+        '-target-player=11.4',
+        '-swf-version=17',
+        '-define=SCRATCH::allow3d,true'
+    ]);
+}
+
+function compileWithout3D(callback) {
+    compile(src, path.join(deploy_dir, 'ScratchFor10.2.swf'), callback, libs, [
+        '-target-player=10.2',
+        '-swf-version=11',
+        '-define=SCRATCH::allow3d,false'
+    ]);
+}
+
+compileWith3D(
+    errorCheckThen(
+        compileWithout3D(
+            errorCheckThen(
+                function() { process.exit(0); }))));
