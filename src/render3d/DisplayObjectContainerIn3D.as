@@ -19,6 +19,8 @@
 
 package render3d {
 
+import filters.FilterPack;
+
 import flash.display.Sprite;
 
 /**
@@ -55,8 +57,9 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 	private var program:Program3D;
 	private var indexBuffer:IndexBuffer3D;
 	private var vertexBuffer:VertexBuffer3D;
-	private var fragmentShaderAssembler:AGALMiniAssembler;
+	private var fragmentShaderAssembler:AGALMacroAssembler;
 	private var vertexShaderAssembler:AGALMiniAssembler;
+	private var fragmentShaderCode:String;
 	private var spriteBitmaps:Dictionary;
 	private var spriteRenderOpts:Dictionary;
 	private var bitmapsByID:Object;
@@ -104,7 +107,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		uiContainer.graphics.lineStyle(1);
 		spriteBitmaps = new Dictionary();
 		spriteRenderOpts = new Dictionary();
-		fragmentShaderAssembler = new AGALMiniAssembler();
+		fragmentShaderAssembler = new AGALMacroAssembler();
 		vertexShaderAssembler = new AGALMiniAssembler();
 		bitmapsByID = {};
 		textureIndexByID = {};
@@ -123,6 +126,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		vertexData.endian = Endian.LITTLE_ENDIAN;
 		indexBufferUploaded = false;
 		vertexBufferUploaded = false;
+		loadShaders();
 	}
 
 	public function setStatusCallback(callback:Function):void {
@@ -1269,9 +1273,8 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		__context.setDepthTest(false, Context3DCompareMode.ALWAYS);
 		__context.enableErrorChecking = true;
 
-		program = __context.createProgram();
-		setupShaders();
-		program.upload(vertexShaderAssembler.agalcode, fragmentShaderAssembler.agalcode);
+		buildShaders();
+
 		indexBuffer = __context.createIndexBuffer(indexData.length >> 1);
 		//trace('indexBuffer created');
 		indexBufferUploaded = false;
@@ -1280,7 +1283,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		tlPoint = scratchStage.localToGlobal(originPt);
 	}
 
-	private function setupShaders():void {
+	private function loadShaders():void {
 		[Embed(source='shaders/vertex.agal', mimeType='application/octet-stream')] const VertexShader:Class;
 		[Embed(source='shaders/fragment.agal', mimeType='application/octet-stream')] const FragmentShader:Class;
 
@@ -1289,7 +1292,32 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		}
 
 		vertexShaderAssembler.assemble(Context3DProgramType.VERTEX, getUTF(new VertexShader()));
-		fragmentShaderAssembler.assemble(Context3DProgramType.FRAGMENT, getUTF(new FragmentShader()));
+		fragmentShaderCode = getUTF(new FragmentShader());
+	}
+
+	private function buildShaders():void {
+
+		// TODO: Track which parts of the shader are actually needed
+		function isEnabled(effect:String):Boolean { return true; }
+
+		// TODO: Bind the minimal number of textures and track the count. The shader must use every bound sampler.
+		const maxTextureNum:int = 5; // index of the last texture in use
+
+		var shaderParts:Array = ['#define MAXTEXTURE ' + maxTextureNum];
+
+		for (var i:int = 0; i < FilterPack.filterNames.length; ++i) {
+			var effect:String = FilterPack.filterNames[i];
+			shaderParts.push('#define EFFECT_'+effect+' ' + (isEnabled(effect)?'1':'0'));
+		}
+		shaderParts.push(fragmentShaderCode);
+
+		var completeShaderCode:String = shaderParts.join('\n');
+
+		// TODO: Consider caching previous assembler results in case we switch back to previous configurations.
+		fragmentShaderAssembler.assemble(Context3DProgramType.FRAGMENT, completeShaderCode);
+
+		program = __context.createProgram();
+		program.upload(vertexShaderAssembler.agalcode, fragmentShaderAssembler.agalcode);
 	}
 
 	private function context3DCreated(e:Event):void {
