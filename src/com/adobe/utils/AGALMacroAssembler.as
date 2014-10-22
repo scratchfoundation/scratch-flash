@@ -170,8 +170,8 @@ package com.adobe.utils
 				start = source.indexOf( "/*" );
 			}
 			
+			source = source.replace( COMMENT, "\n" );
 			source = source.replace( REGEXP_LINE_BREAKER, "\n" );
-			source = source.replace( COMMENT, "" );
 			return source;
 		}
 			
@@ -692,10 +692,12 @@ package com.adobe.utils
 			// Matrix multiply 4x5
 			"macro mul4x4( vec, mat ) {" +
 			"	m44 out, vec, mat; " +
-			"}"
+			"}\n"
 	}
 		
 }
+
+import com.adobe.utils.AGALMacroAssembler;
 
 
 internal class Macro 
