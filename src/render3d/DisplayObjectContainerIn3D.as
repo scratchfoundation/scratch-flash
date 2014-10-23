@@ -19,8 +19,6 @@
 
 package render3d {
 
-import filters.FilterPack;
-
 import flash.display.Sprite;
 
 /**
@@ -30,6 +28,8 @@ import flash.display.Sprite;
 public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {SCRATCH::allow3d{
 
 	import com.adobe.utils.*;
+
+	import filters.FilterPack;
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.DisplayObject;
@@ -98,6 +98,9 @@ import flash.system.Capabilities;
 	private var statusCallback:Function;
 	private var appScale:Number = 1;
 
+	private var effectRefs:Object;
+	private var oldEffectRefs:Object;
+
 	/**
 	 *   Make the texture
 	 *   @param context Context to create textures on
@@ -126,6 +129,8 @@ import flash.system.Capabilities;
 		vertexData.endian = Endian.LITTLE_ENDIAN;
 		indexBufferUploaded = false;
 		vertexBufferUploaded = false;
+		effectRefs = {};
+		oldEffectRefs = {};
 		loadShaders();
 	}
 
@@ -172,6 +177,9 @@ import flash.system.Capabilities;
 				if(__context) scratchStage.visible = false;
 			scratchStage.cacheAsBitmap = false;
 			(scratchStage as Object).img.cacheAsBitmap = true;
+			forEachEffect(function(effectName:String): void {
+				effectRefs[effectName] = oldEffectRefs[effectName] = 0;
+			});
 		}
 		else {
 			stage3D.removeEventListener(Event.CONTEXT3D_CREATE, context3DCreated);
@@ -327,6 +335,12 @@ import flash.system.Capabilities;
 
 			if(boundsDict[e.target])
 			delete boundsDict[e.target];
+
+		var displayObject = e.target as DisplayObject;
+		if (displayObject) {
+			updateFilters(displayObject, {});
+			delete spriteRenderOpts[displayObject];
+		}
 	}
 
 	private function checkBuffers():void {
@@ -438,6 +452,15 @@ import flash.system.Capabilities;
 		//childrenChanged = false;
 		for (var key:Object in unrenderedChildren)
 			delete unrenderedChildren[key];
+
+		var rebuildShader:Boolean = false;
+		forEachEffect(function(effectName:String): void {
+			if (!!oldEffectRefs[effectName] != !!effectRefs[effectName]) rebuildShader = true;
+			oldEffectRefs[effectName] = effectRefs[effectName];
+		});
+		if (rebuildShader) {
+			buildShaders();
+		}
 	}
 
 	private function uploadBuffers(quadCount:uint):void {
@@ -745,9 +768,31 @@ import flash.system.Capabilities;
 //		}
 //	}
 
+	// Calls perEffect(effectName:String) for each supported effect name.
+	private function forEachEffect(perEffect:Function): void {
+		for (var i:int = 0; i < FilterPack.filterNames.length; ++i) {
+			var effectName:String = FilterPack.filterNames[i];
+			perEffect(effectName);
+		}
+	}
+
 	public function updateFilters(dispObj:DisplayObject, effects:Object):void {
-			if(spriteRenderOpts[dispObj]) spriteRenderOpts[dispObj].effects = effects;
-		else spriteRenderOpts[dispObj] = {effects: effects};
+		var spriteOpts:Object = spriteRenderOpts[dispObj] || (spriteRenderOpts[dispObj] = {});
+		var spriteEffects:Object = spriteOpts.effects || (spriteOpts.effects = {});
+
+		forEachEffect(function(effectName:String):void {
+			if (spriteEffects[effectName]) effectRefs[effectName] -= 1;
+			spriteEffects[effectName] = (effects && effectName in effects) ? effects[effectName] : 0;
+			if (spriteEffects[effectName]) effectRefs[effectName] += 1;
+
+			var newCount:int = effectRefs[effectName];
+			if (newCount < 0) {
+				trace('Reference count negative for effect ' + effectName);
+			}
+			else if (newCount > spriteRenderOpts.length) {
+				trace('Reference count too high for effect ' + effectName);
+			}
+		});
 	}
 
 	// TODO: store multiple sizes of bitmaps?
@@ -1318,24 +1363,21 @@ import flash.system.Capabilities;
 
 	private function buildShaders():void {
 
-		// TODO: Track which parts of the shader are actually needed
-		function isEnabled(effect:String):Boolean { return true; }
-
 		// TODO: Bind the minimal number of textures and track the count. The shader must use every bound sampler.
 		const maxTextureNum:int = 5; // index of the last texture in use
 
 		var shaderParts:Array = ['#define MAXTEXTURE ' + maxTextureNum];
 
-		for (var i:int = 0; i < FilterPack.filterNames.length; ++i) {
-			var effect:String = FilterPack.filterNames[i];
-			shaderParts.push('#define EFFECT_'+effect+' ' + (isEnabled(effect)?'1':'0'));
-		}
+		forEachEffect(function(effectName:String): void {
+			shaderParts.push(['#define EFFECT_', effectName, ' ', (effectRefs[effectName] > 0 ? '1' : '0')].join(''));
+		});
 		shaderParts.push(fragmentShaderCode);
 
 		var completeShaderCode:String = shaderParts.join('\n');
 
 		// TODO: Consider caching previous assembler results in case we switch back to previous configurations.
 		fragmentShaderAssembler.assemble(Context3DProgramType.FRAGMENT, completeShaderCode);
+		trace('New shader is ' + fragmentShaderAssembler.agalcode.length + ' bytes long.');
 
 		program = __context.createProgram();
 		program.upload(vertexShaderAssembler.agalcode, fragmentShaderAssembler.agalcode);
