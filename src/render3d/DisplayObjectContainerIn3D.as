@@ -59,6 +59,7 @@ import flash.system.Capabilities;
 	private var program:Program3D;
 	private var indexBuffer:IndexBuffer3D;
 	private var vertexBuffer:VertexBuffer3D;
+	private var shaderCache:Object; // mapping of shader config -> Program3D
 	private var fragmentShaderAssembler:AGALMacroAssembler;
 	private var vertexShaderAssembler:AGALMiniAssembler;
 	private var fragmentShaderCode:String;
@@ -112,6 +113,7 @@ import flash.system.Capabilities;
 		uiContainer.graphics.lineStyle(1);
 		spriteBitmaps = new Dictionary();
 		spriteRenderOpts = new Dictionary();
+		shaderCache = {};
 		fragmentShaderAssembler = new AGALMacroAssembler();
 		vertexShaderAssembler = new AGALMiniAssembler();
 		bitmapsByID = {};
@@ -336,7 +338,7 @@ import flash.system.Capabilities;
 			if(boundsDict[e.target])
 			delete boundsDict[e.target];
 
-		var displayObject = e.target as DisplayObject;
+		var displayObject:DisplayObject = e.target as DisplayObject;
 		if (displayObject) {
 			updateFilters(displayObject, {});
 			delete spriteRenderOpts[displayObject];
@@ -1366,21 +1368,27 @@ import flash.system.Capabilities;
 		// TODO: Bind the minimal number of textures and track the count. The shader must use every bound sampler.
 		const maxTextureNum:int = 5; // index of the last texture in use
 
-		var shaderParts:Array = ['#define MAXTEXTURE ' + maxTextureNum];
-
+		var shaderID:int = maxTextureNum;
 		forEachEffect(function(effectName:String): void {
-			shaderParts.push(['#define EFFECT_', effectName, ' ', (effectRefs[effectName] > 0 ? '1' : '0')].join(''));
+			shaderID = (shaderID << 1) | (effectRefs[effectName] > 0 ? 1 : 0);
 		});
-		shaderParts.push(fragmentShaderCode);
 
-		var completeShaderCode:String = shaderParts.join('\n');
+		program = shaderCache[shaderID];
+		if (!program) {
+			var shaderParts:Array = ['#define MAXTEXTURE ' + maxTextureNum];
 
-		// TODO: Consider caching previous assembler results in case we switch back to previous configurations.
-		fragmentShaderAssembler.assemble(Context3DProgramType.FRAGMENT, completeShaderCode);
-		trace('New shader is ' + fragmentShaderAssembler.agalcode.length + ' bytes long.');
+			forEachEffect(function(effectName:String): void {
+				shaderParts.push(['#define EFFECT_', effectName, ' ', (effectRefs[effectName] > 0 ? '1' : '0')].join(''));
+			});
 
-		program = __context.createProgram();
-		program.upload(vertexShaderAssembler.agalcode, fragmentShaderAssembler.agalcode);
+			shaderParts.push(fragmentShaderCode);
+
+			var completeFragmentShaderCode:String = shaderParts.join('\n');
+
+			fragmentShaderAssembler.assemble(Context3DProgramType.FRAGMENT, completeFragmentShaderCode);
+			program = shaderCache[shaderID] = __context.createProgram();
+			program.upload(vertexShaderAssembler.agalcode, fragmentShaderAssembler.agalcode);
+		}
 /*
 		fragmentShaderAssembler.assemble( Context3DProgramType.FRAGMENT,
 				// Move the texture coordinates into the sub-texture space
@@ -1491,6 +1499,11 @@ import flash.system.Capabilities;
 	}
 
 	private function onContextLoss(e:Event = null):void {
+		for (var config:Object in shaderCache) {
+			shaderCache[config].dispose();
+		}
+		shaderCache = {};
+
 			for(var i:int=0; i<textures.length; ++i)
 			(textures[i] as ScratchTextureBitmap).disposeTexture();
 
