@@ -560,28 +560,31 @@ public class ExtensionManager {
 		var i:int;
 		var lines:Array = response.split('\n');
 		for each (var line:String in lines) {
-			var tokens:Array = line.split(/\s+/);
-			if (tokens.length > 1) {
-				var key:String = tokens[0];
-				if (key.indexOf('_') == 0) { // internal status update or response
-					if ('_busy' == key) {
-						for (i = 1; i < tokens.length; i++) {
-							var id:int = parseInt(tokens[i]);
-							if (ext.busy.indexOf(id) == -1) ext.busy.push(id);
-						}
-					}
-					if ('_problem' == key) ext.problem = line.slice(9);
-					if ('_success' == key) ext.success = line.slice(9);
-				} else { // sensor value
-					var val:String = decodeURIComponent(tokens[1]);
-					var n:Number = Number(val);
-					var path:Array = key.split('/');
-					for (i = 0; i < path.length; i++) {
-						 // normalize URL encoding for each path segment
-						path[i] = encodeURIComponent(decodeURIComponent(path[i]));
-					}
-					ext.stateVars[path.join('/')] = isNaN(n) ? val : n;
+			i = line.indexOf(' ');
+			if (i == -1) i = line.length;
+			var key:String = line.slice(0, i);
+			var value:String = decodeURIComponent(line.slice(i + 1));
+			switch (key) {
+			case '_busy':
+				for each (var token:String in value.split(' ')) {
+					var id:int = parseInt(token);
+					if (ext.busy.indexOf(id) == -1) ext.busy.push(id);
 				}
+				break;
+			case '_problem':
+				ext.problem = value;
+				break;
+			case '_success':
+				ext.success = value;
+				break;
+			default:
+				var n:Number = Interpreter.asNumber(value);
+				var path:Array = key.split('/');
+				for (i = 0; i < path.length; i++) {
+					// normalize URL encoding for each path segment
+					path[i] = encodeURIComponent(decodeURIComponent(path[i]));
+				}
+				ext.stateVars[path.join('/')] = n == n ? n : value;
 			}
 		}
 	}
