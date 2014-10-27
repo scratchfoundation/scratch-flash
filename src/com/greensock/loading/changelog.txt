@@ -1,0 +1,1037 @@
+CHANGE LOG : GREENSOCK LOADERMAX SYSTEM
+----------------------------------------
+2012-08-09
+----------------------------------------
+VideoLoader			1.921
+LoaderItem			1.921
+	- Fixed issue that could prevent the BUFFER_EMPTY event from being dispatched if bufferMode is true
+	- Implemented logic that causes a loader's "auditedSize" property to get reset when its "url" is changed.
+
+2012-04-26
+----------------------------------------
+VideoLoader			1.901
+	- Fixed issue that could cause an error to be thrown if you dispose() a VideoLoader the moment it finishes playing (inside an event handler that is handling the VideoLoader.VIDEO_COMPLETE event).
+
+2012-04-16
+----------------------------------------
+LoaderMax			1.9
+VideoLoader			1.9
+	- Added "stageVideo" special property to VideoLoader to accommodate StageVideo
+
+2012-02-24
+----------------------------------------
+LoaderMax			1.8993
+LoaderCore			1.8993
+VideoLoader			1.8993
+	- Fixed issue that caused loaders to incorrectly report their bytesLoaded as non-zero after unload() was called (after having loaded of course)
+	- Fixed issue that could cause a VideoLoader not to dispatch its VIDEO_BUFFER_FULL event if the video is seeked to a time that is closer to the end of the video than the bufferTime.
+
+2012-02-23
+----------------------------------------
+LoaderMax			1.8992
+VideoLoader			1.8992
+	- Fixed issue in VideoLoader that could cause cuePoints to be triggered when gotoVideoTime() was called even though the skipCuePoints parameter was set to true.
+
+2012-02-15
+----------------------------------------
+LoaderMax			1.8991
+VideoLoader			1.8991
+LoaderItem			1.8991
+	- Previously, VideoLoader would only dispatch one INIT event (the first time it received metaData from the NetStream). However, due to an inconsistency in Flash/NetStream, metaData is sometimes received more than once, and subsequent times carry more data. For example, the metaData may not contain cuePoints the first time, but it does the second time (this is often the case for F4V files). Therefore, VideoLoader now dispatches an INIT event every time it receives metaData. If you're looking for cuePoints, you can check the VideoLoader's metaData.cuePoints array.
+	- Fixed issue that could cause a loader to throw an error if it has an alternateURL defined and it fails and its dispose() method is called directly inside an onError handler (VERY uncommon) :)
+
+2012-01-25
+----------------------------------------
+LoaderMax			1.899
+VideoLoader			1.899
+	- Fixed issue in VideoLoader that could cause an error during its auditing process (if estimatedBytes isn't defined and auditSize in the parent LoaderMax isn't set to false). 
+
+2012-01-19
+----------------------------------------
+LoaderMax			1.898
+DisplayObjectLoader	1.898
+	- Fixed issue that could cause an ImageLoader or SWFLoader to fail during the auditing process inside a LoaderMax if the URL is from another domain and there is no crossdomain.xml policy file in place. Now it simply tries again with a higher security threshold (script access will be denied of course due to Flash's security policies).
+
+2012-01-14
+----------------------------------------
+LoaderMax			1.897
+ImageLoader			1.897
+	- Fixed issue that could cause an error if an ImageLoader with an identical url is loaded after the other has finished loading which encountered a security error (thus its rawContent was a Loader instead of a Bitmap, making it impossible to copy the BitmapData). Only happens if noCache is false.
+
+2012-01-10
+----------------------------------------
+LoaderMax			1.896
+	- Fixed issue that could cause a null object reference and/or a loader to be skipped in a LoaderMax queue in a very rare scenario where an ImageLoader is loaded after another ImageLoader with an identical URL has finished loading (and noCache is false). 
+
+2011-11-27
+----------------------------------------
+LoaderMax			1.895
+ContentDisplay		1.895
+FlexContentDisplay	1.895
+	- Fixed issue introduced in version 1.892 that caused videos not to scale correctly when using a scaleMode other than "none" or "stretch"
+
+2011-11-26
+----------------------------------------
+LoaderMax			1.894
+VideoLoader			1.894
+DisplayObjectLoader	1.894
+	- Fixed issue that could cause VideoLoader not to dispatch PLAY_PROGRESS events if you called gotoVideoTime() on every frame
+	- SWFLoaders and ImageLoaders now do not force garbage collection when dispose(false) is called (or autoDispose is set to true). 
+	- Added a DisplayObjectLoader.defaultAutoForceGC static property that you can set to false to prevent it from forcing GC whenever a SWFLoader or ImageLoader is unloaded (or dispose(true)). 
+	- Added "autoForceGC" special property recognition for SWFLoader and ImageLoader (default is true). 
+
+2011-11-17
+----------------------------------------
+LoaderMax			1.893
+VideoLoader			1.893
+ContentDisplay		1.892
+FlexContentDisplay	1.892
+	- Fixed issue that could cause a VIDEO_BUFFER_FULL event to be dispatched from VideoLoader after the video finishes playing
+	- Changed behavior of VideoLoader so that it only dispatches a PLAY_PROGRESS event after the NetStream renders its new frame (which can take a brief moment after you alter the videoProgress or gotoVideoTime()).
+	- Fixed an issue that caused ContentDisplay and FlexContentDisplay to use the wrong aspect ratio on the rawContent if the scaleMode is set to "stretch" and then either "proportionalInside" or "proportionalOutside". Again, it would ONLY happen after it was changed from "stretch". 
+	- Changed behavior of VideoLoader so that it dispatches a VIDEO_BUFFER_EMPTY event whenever the playhead is moved (like with gotoVideoTime() or changing the videoProgress) which is essentially what happens with the NetStream - it empties the buffer when the playhead moves and then dispatches a VIDEO_BUFFER_FULL event when the buffer fills from the new spot. 
+
+2011-11-03
+----------------------------------------
+LoaderMax			1.891
+XMLLoader			1.891
+VideoLoader			1.891
+	- Changed the default value of VideoLoader's autoDetachNetStream from true to false because Adobe's NetStream and/or Video classes exhibit some buggy/inconsistent behavior when trying to attach the NetStream at very particular times during the load when the Video object isn't in the display list yet. In most cases, autoDetachNetStream will work great, but it shouldn't be toggled on when the content isn't in the display list yet. 
+	- XMLLoader now recognizes the "autoDetachNetStream" property of <VideoLoader> nodes. 
+
+2011-10-20
+----------------------------------------
+LoaderMax			1.89
+ImageLoader			1.89
+	- Added new performance- and memory-enhancing behavior to ImageLoader: when you load() an ImageLoader, it will automatically check to see if another ImageLoader exists with a matching url that has already finished loading. If it finds one, it will copy that BitmapData to use in its own Bitmap in order to maximize performance and minimize memory usage. After all, why load the file again if you've already loaded it? (The exception, of course, is when the ImageLoader's noCache is set to true.)
+
+2011-10-06
+----------------------------------------
+LoaderItem			1.884
+LoaderMax			1.884
+	- When a loader with an alternateURL defined fails to load the original url, the LoaderEvent.ERROR event gets dispatched BEFORE the url is changed to the alternateURL now (previously the event was dispatched after the url was changed). 
+
+2011-09-13
+-----------------------------------------
+LoaderMax			1.883
+VideoLoader			1.883
+	- VideoLoader now correctly implements noCache:true (previously the cache-busting data wasn't added to the URL)
+	- Fixed an issue that caused a VideoLoader that was unloaded to not respect autoPlay:true when reloaded AFTER it was already completely finished playing the first time. 
+	- Worked around a bug in NetStream that could cause a VideoLoader's video not to pause quickly enough when autoDetachNetStream was set to true and it wasn't in the display list and autoPlay was set to false. 
+	- Fixed issue that could (in rare situations) cause a video to render as blank/transparent for a VERY brief moment when it was first added to the display list even though autoDetachNetStream was set to false.
+
+2011-08-19
+-----------------------------------------
+LoaderMax			1.882
+VideoLoader			1.882
+	- Fixed issue in VideoLoader that could cause a video not to display correctly if autoDetachNetStream was set to false and the video loaded in a particular way and had a particular type of encoding.
+
+2011-08-15
+-----------------------------------------
+LoaderMax			1.881
+MP3Loader			1.881
+	- Fixed issue that could cause MP3Loader to repeat from the incorrect position after it is paused during playback and then resumed (it would repeat starting from the position at which it was when playback was resumed due to a bug in Adobe's Sound class).
+
+2011-08-09
+-----------------------------------------
+LoaderMax			1.88
+XMLLoader			1.88
+	- Added the capability for XMLLoader to recognize a new "childrenVars" attribute of a <LoaderMax> node so that you can apply a common set of special properties to all its children. For example: <LoaderMax name="mainQueue" childrenVars="width:200,height:100,scaleMode:proportionalOutside,crop:true">
+
+2011-08-06
+------------------------------------------
+LoaderMax			1.872
+VideoLoader			1.872
+	- Fixed issue that could cause a VideoLoader to dispatch its VIDEO_PLAY event twice if autoPlay was initially set to false and then load() and playVideo() were called immediately.
+
+2011-08-03
+------------------------------------------
+LoaderMax			1.871
+ContentDisplay		1.871
+FlexContentDisplay	1.871
+	- Fixed issue that could cause a VideoLoader's content not to be added to the ContentDisplay (or FlexContentDisplay) properly if crop was set to true and autoDetatchNetStream was true.
+
+2011-07-30
+------------------------------------------
+LoaderMax			1.87
+SWFLoader			1.87
+LoaderCore			1.87
+DisplayObjectLoader	1.87
+LoaderEvent			1.87
+SWFLoaderVars		1.23
+	- Added UNCAUGHT_ERROR event handling for SWFLoader (FP 10.1 and later only)
+	- Added onUncaughtError and suppressUncaughtErrors special properties to SWFLoader (FP 10.1 and later only)
+	- Added new methods to SWFLoaderVars for onUncaughtError and suppressUncaughtErrors
+
+2011-07-27
+------------------------------------------
+LoaderMax			1.86
+VideoLoader			1.86
+ContentDisplay		1.86
+FlexContentDisplay	1.86
+VideoLoaderVars		1.23
+	- Added getChildAt() method to LoaderMax
+	- Added an "autoDetachNetStream" property to VideoLoader (and VideoLoaderVars) that allows you to choose whether or not it automatically attached/detaches the NetStream to/from the Video object in order to conserve memory (it is true by default)
+	- Updated VideoLoader to work around a newly discovered bug in NetStream that could cause a paused NetStream (VideoLoader) to act as though it isn't paused if it isn't attached to a Video object in the display list
+	- Made a small change to ContentDisplay and FlexContentDisplay so that they could be used independently (without a loader) if necessary, although it isn't generally recommended.
+	- Updated ASDocs
+
+2011-07-05
+------------------------------------------
+VideoLoader			1.856
+LoaderMax			1.856
+	- Fixed issue that could cause a VideoLoader's videoTime to report as non-zero initially even though autoPlay was set to false (it's actually a bug in Adobe's NetStream that was worked around)
+
+2011-06-27
+-------------------------------------------
+LoaderMax			1.855
+LoaderItem			1.855
+	- Now if you define a URLRequest with a method of "POST" for a loader, that will be honored in the file size audit too (previously audits always used "GET" as the method). 
+	- Now if you define a URLRequest that has a data value that isn't a URLVariables, it won't cause problems with file size audits. 
+
+2011-06-19
+-------------------------------------------
+LoaderMax			1.854
+VideoLoader			1.854
+MP3Loader			1.854
+LoaderItem			1.854
+	- Previously, if the playback device didn't have sound capabilities, MP3Loader would throw an error when playSound() was called. Implemented a workaround. 
+	- VideoLoader now delays attaching the NetStream to its Video object (the rawContent) until it is added to the stage in order to minimize memory usage. Flash doesn't fully decode the video content until it is attached, thus this technique improves memory usage especially for videos that are loading in the background (not in the display list).
+	- When a loader's url property is changed, the old content is now unloaded immediately (previously the loader was only canceled). 
+
+2011-05-11
+-------------------------------------------
+LoaderMax			1.853
+VideoLoader			1.853
+	- Minor fix that appends "purpose=audit&gsCacheID=someRandomNumber" to the file audit URL of VideoLoader which was accidentally dropped off in version 1.852 (less than 24 hours ago)
+
+2011-05-10
+-------------------------------------------
+LoaderMax			1.852
+VideoLoader			1.852
+	- Worked around a Flash bug/inconsistency that could cause a VideoLoader's file size audit to fail (only for relative URLs, not absolute). Unlike all other loaders (URLLoader, Loader, URLStream), Adobe's NetStream loads relative URLs as though they are relative to the swf file's location rather than the HTML page in which it is embedded. Another workaround is to set the "base" attribute in the object/embed code (http://kb2.adobe.com/cps/041/tn_04157.html) 
+
+2011-05-05
+--------------------------------------------
+LoaderMax			1.851
+VideoLoader			1.851
+ContentDisplay		1.851
+FlexContentDisplay	1.851
+SWFLoaderVars		1.22
+ImageLoaderVars		1.22
+VideoLoaderVars		1.22
+	- Added ability for ContentDisplay/FlexContentDisplay to recognize 3D properties z, rotationX, rotationY, and rotationZ. 
+	- Minor improvement to VideoLoader that prevents an extremely unlikely/rare issue when a VideoLoader is destroyed before it renders for the first time
+
+2011-04-26
+--------------------------------------------
+LoaderMax			1.85
+XMLLoader			1.85
+	- Added new "autoLoad" feature to LoaderMax that automatically calls load() when a new loader is appended/inserted/prepended whose status is LoaderStatus.READY.
+	- Added ability for XMLLoader to recognize skipFailed and skipPaused special properties in its vars parameter. 
+
+2011-04-20
+--------------------------------------------
+LoaderMax			1.843
+XMLLoader			1.843
+	- Added a new "maxConnections" special property to XMLLoader that controls the number of child loaders that load simultaneously (the default is 2). 
+
+2011-04-14
+--------------------------------------------
+LoaderMax			1.842
+VideoLoader			1.842
+	- Fixed issue with VideoLoader that could cause an error if an instance is disposed almost immediately after it starts loading.
+
+2011-03-26
+--------------------------------------------
+LoaderMax			1.841
+VideoLoader			1.841
+	- Fixed issue with VideoLoader that could cause a video not to display properly if autoPlay was set to false and the video file loaded in a very particular way/speed. 
+
+2011-03-23
+--------------------------------------------
+LoaderMax			1.84
+XMLLoader			1.84
+LoaderItem			1.84
+	- Added ability for XMLLoader to recognize a root LoaderMax-related node. Previously, the XML document's root couldn't be a <LoaderMax> (or other LoaderMax-related tag). Well, it could be but that node wouldn't be parsed.
+	- Added new "allowMalformedURL" Boolean special property to all loaders which accommodates URLs that are technically not valid, like if they have multiple values defined for the same variable in the query string (like ?c=S&c=SE&c=SW). By default, allowMalformedURL is false which means LoaderMax will parse the query string and translate it into a URLVariables which gets attached to the URLRequest - this avoids 2 particular bugs in Flash. It is very unlikely that you'll ever need to set allowMalformedURL:true
+	- A LoaderMax's rawProgress value will factor in any nested LoaderMax instances' rawProgress (previously it factored in the progress instead). It is very unlikely you'd run into situations where this matters, but it can prevent jerky progress reporting.
+
+2011-02-16
+--------------------------------------------
+LoaderMax			1.831
+SWFLoader			1.831
+	- Very minor enhancement to SWFLoader's getClass() method that prevents an error if you try to find a class definition that doesn't exist in the subloaded swf. 
+
+2011-02-15
+--------------------------------------------
+LoaderMax			1.83
+SWFLoader			1.83
+DisplayObjectLoader	1.83
+DataLoader			1.83
+LoaderCore			1.83
+BinaryDataLoader	1.83
+	- Added a new BinaryDataLoader class that's essentially the same as using a DataLoader with its "format" special property set to "binary". The reason for having a BinaryDataLoader class is to allow certain file extensions (like ".zip") to be associated with it so that the LoaderMax.parse() method can accurately parse URLs with those file extensions.
+	- Added a new registerFileType() method to LoaderMax so that you can associate unrecognized file types (like "pdf") with particular loader types (like BinaryDataLoader) so that LoaderMax.parse() can correctly identify them.
+	- Improved the garbage collection routines in SWFLoader so that there is a greater likelihood that even sub-swfs that use non-weak listeners on the stage will be garbage collected after dispose(true) is called. 
+	- Updated ASDocs 
+
+2011-02-11
+--------------------------------------------
+LoaderMax			1.821
+VideoLoader			1.821
+	- Worked around issue on a Mac that could cause VideoLoader to report its videoTime incorrectly if autoPlay was set to false. This could also lead to cue points that were added with addASCuePoint() not getting triggered as a result of the videoTime being reported incorrectly. 
+
+2011-02-09
+--------------------------------------------
+LoaderMax			1.82
+VideoLoader			1.82
+	- Fixed issue that could cause VideoLoader to act as though it ignored the "skipCuePoints" parameter of the gotoVideoTime() method. This would only happen when the frame rate was high enough in the swf and it was caused by problems in Adobe's NetStream class incorrectly reporting its time for a brief moment after its seek() method was called.
+
+2011-02-03
+--------------------------------------------
+LoaderMax			1.81
+LoaderCore			1.81
+	- Fixed issue that caused the "paused" property to not be reported correctly if set directly through the "paused" setter when the loader wasn't in the process of loading. 
+
+2011-01-21
+--------------------------------------------
+LoaderMax			1.8
+XMLLoader			1.8
+SWFLoader			1.8
+LoaderCore			1.8
+	- Added new feature to XMLLoader that causes it to attach a "rawXML" property to the vars object of any loader parsed in the XML document. For example, if this node is found in the XML: <VideoLoader url="video.flv" name="video1" description="Hidden dangers of steel wool" autoPlay="false"><link url="http://www.greensock.com" /></VideoLoader>, you could get the "description" data in the resulting VideoLoader's vars like this: myVideoLoader.vars.description. And the full XML node (including children) could be accessed with myVideoLoader.vars.rawXML. 
+	- Fixed a few issues with the order of bubbling events and one particular scenario that could cause an extra FAIL event to be dispatched (two in a row).
+	- Fixed issue that could cause a loader with requireWithRoot not to be integrated a parent SWFLoader's progress if that loader was nested inside another LoaderMax instance in the child swf. 
+	- Altered SWFLoader's behavior so that if the swf loads fine but a child loader inside that swf fails (one that has their requireWithRoot set to that swf's root), it will dispatch a FAIL event but it will not reset the progress to 0 or clear the subloading queue. This way, it's still possible to getChildren() on the SWFLoader.
+	- Fixed a problem introduced in version 1.79 (2 days ago) that caused XMLLoader not to parse the "prependURLs" attribute on <LoaderMax> nodes inside the XML.
+
+2011-01-20
+--------------------------------------------
+LoaderMax			1.791
+VideoLoader			1.791
+LoaderCore			1.79
+	- Fixed issue that would cause a VideoLoader to not dispatch its PROGRESS and COMPLETE events if its bufferMode was initially set to true and then in its onComplete handler it was set to false.
+
+2011-01-19
+--------------------------------------------
+LoaderMax			1.79
+XMLLoader			1.79
+XMLLoaderVars		1.2
+	- Added a new "prependURLs" special property to XMLLoader that allows you to prepend all of the URLs of LoaderMax-related loaders parsed in the XML.
+	- Added a new "recursivePrependURLs" special property to XMLLoader that allows you to prepend all of the URLs of LoaderMax-related loaders parsed in the XML and all of the other XML files that it loads too (infinitely deep). For example, if you load doc1.xml that has an <XMLLoader> that loads doc2.xml that has an <XMLLoader> that loads doc3.xml, recursivePrependURLs would prepend the URLs of LoaderMax-related loaders in all of those documents.
+	- Fixed issue that could cause an "error" or "fail" event to dispatch and bubble in a way that would flow up the chain of any anscestor LoaderMax instances BEFORE an onError/onFail handler you added directly to the loader. Basically, the order in which the handlers were called was unintuitive in that particular case. 
+	- Exposed the getChildren() methods in SWFLoader's and XMLLoader's ASDocs
+
+2011-01-18
+--------------------------------------------
+LoaderMax			1.781
+SWFLoader			1.781
+LoaderCore			1.781
+	- Fixed issue that could cause nested loaders discovered in a SWFLoader that had requireWithRoot set to that swf's root to prevent the parent LoaderMax from dispatching a COMPLETE or FAIL event if on of those nested loaders failed. 
+	- Fixed issue that could cause the auditing process to stall on a LoaderMax when it had a nested LoaderMax as a child that failed during its auditing process.
+
+2011-01-17
+--------------------------------------------
+LoaderMax			1.78
+LoaderCore			1.78
+	- Fixed issue that could cause an error if "requireWithRoot" was set to a DisplayObject that wasn't actually a root and was not in the display list
+
+2011-01-15
+--------------------------------------------
+LoaderMax			1.777
+LoaderItem			1.777
+	- Fixed issue that could cause part of the URL query string to be lost if more than one "=" sign was used in a single value pair (extremely rare), like http://www.greensock.com/?prop1=value1=extraValue&prop2=value2 - the extraValue would be dropped in some previous versions (that's fixed now obviously). 
+	- Fixed typo in ASDocs that mentioned LoaderStatus.COMPLETE instead of LoaderStatus.COMPLETED (missing the "D").
+	
+2011-01-11
+--------------------------------------------
+LoaderMax			1.776
+VideoLoader			1.776
+	- Fixed issue that could cause VERY short videos whose duration is equal to or less than the bufferTime (defaults to 5 seconds) not to play correctly. This would only happen if the duration reported in the metaData was slightly inflated which sometimes happens when videos are encoded.
+
+2011-01-10
+--------------------------------------------
+LoaderMax			1.775
+VideoLoader			1.775
+	- Fixed issue that could cause a LoaderMax instance to dispatch a PROGRESS event after being disposed
+	- Fixed issue in VideoLoader that could cause it to report its "progress" as 1 before the metaData has been received (very rare, and only in situations where the file is already completely cached).
+
+2011-01-06
+--------------------------------------------
+LoaderMax			1.773
+VideoLoader			1.773
+DisplayObjectLoader	1.773
+	- Fixed an issue that could cause a LoaderMax not to dispatch its COMPLETE event if it has a VideoLoader that changes its bufferMode from true to false upon its completion while the LoaderMax is loading
+	- Fixed issue that would cause a LoaderMax to dispatch a PROGRESS event when a child loader is appended/inserted. 
+	- Added a very small amount of code to DisplayObjectLoader to make it easier to use it in a standalone fashion (typically it is used only as a base class for SWFLoader and ImageLoader). Again, it isn't recommended to use DisplayObjectLoader on its own, but if you need absolute minimum file size and can do without the bells & whistles of SWFLoader and ImageLoader, you could do it. 
+
+2010-12-28
+--------------------------------------------
+SWFLoader			1.772
+LoaderMax			1.772
+SWFLoaderVars		1.12
+	- Changed the default suppressInitReparentEvents value in SWFLoader to true instead of false because some users had coded their swfs in a way that required ADDED_TO_STAGE to fire which shouldn't be necessary when the swf is run on its own or in a Loader that has already been added to the stage before it started loading, but nevertheless after mulling it over it did seem better not to suppress events unless specifically requested.
+
+2010-12-23
+--------------------------------------------
+SWFLoader			1.771
+LoaderMax			1.771
+DisplayObjectLoader		1.771
+	- Fixed issue introduced in version 1.77 that could cause a Type Coercion failure with SecurityDomains
+
+2010-12-21
+--------------------------------------------
+LoaderMax			1.77
+SWFLoader			1.77
+DisplayObjectLoader	1.77
+LoaderCore			1.77
+LoaderEvent			1.77
+	- Added new LoaderEvent.UNLOAD event dispatching which can be very convenient for notifying a child swf about when it should run disposal/cleanup code. For example, if you create stage event listeners or start sounds or NetStreams, etc. inside the child swf, those should be cleaned up when the SWFLoader is asked to unload (otherwise your listeners/NetStreams/Sounds might interfere with garbage collection and never go away). So in the child swf, you could run this code at start:
+		
+		var curParent:DisplayObjectContainer = this.parent;
+		while (curParent) {
+			if (curParent.hasOwnProperty("loader")) {
+			    Object(curParent).loader.addEventListener("unload", dispose, false, 0, true); 
+			}
+			curParent = curParent.parent;
+		}
+		
+		function dispose(event:Event):void {
+			//cleanup code here...
+		}
+		
+	- Corrected an issue that prevented the LoaderMax.defaultContext from taking effect when the swf was run locally
+
+2010-12-19
+--------------------------------------------
+SWFLoader			1.769
+LoaderMax			1.769
+XMLLoader			1.769
+SWFLoaderVars		1.11
+	- Added a new suppressInitReparentEvents special property to SWFLoader that suppresses the ADDED_TO_STAGE and REMOVED_FROM_STAGE events that are normally dispatched when the rawContent is reparented from the internal Loader to the ContentDisplay object. By default, the value is true but you can set it to false if you prefer. See the ASDocs for more details
+
+2010-12-17
+---------------------------------------------
+ContentDisplay		1.768
+FlexContentDisplay	1.768
+LoaderMax			1.768
+	- Fixed issue that could cause a SWFLoader's rawContent to not scale/position properly if script access was denied (like if the subloaded swf was AS2 or cross-loaded from another domain that didn't have the appropriate crossdomain.xml file in place) and a width/height was defined in the SWFLoader's vars parameter. 
+
+2010-12-17
+---------------------------------------------
+VideoLoader			1.767
+LoaderMax			1.767
+	- Added gotoVideoCuePoint() method to VideoLoader
+	- Added getCuePointTime() method to VideoLoader
+	- Minor internal optimizations in VideoLoader
+
+2010-12-16
+---------------------------------------------
+LoaderMax			1.766
+SWFLoader			1.766
+VideoLoader			1.765
+	- Fixed issue that could allow a VideoLoader to dispatch a CUE_POINT event if the cue point is very early in the video and autoPlay was set to false.
+	- Changed the way SWFLoader handles the Loader internally so that it temporarily adds it to the ContentDisplay object's display list while it loads initially so that any code that references "stage" in the child swf doesn't throw null object reference errors (as long as you've added the ContentDisplay to the display list, like by defining a "container" in the vars parameter). As soon as the swf inits (and as long as no script access denied errors occur), the swf's root is added to the ContentDisplay instead.
+	- Fixed a small gc issue with SWFLoader - if there were sub-loaders inside the SWFLoader that had requireWithRoot set to that swf's root and then the SWFLoader was disposed, a LoaderMax instance could remain behind (it wouldn't hurt anything, but it would consume a small amount of memory)
+
+2010-12-15
+---------------------------------------------
+LoaderMax			1.764
+SWFLoader			1.764
+	- Fixed issue that could cause a SWFLoader to not switch to its alternateURL properly when the initial url fails.
+	- Enhanced SWFLoader so that if you change the url between the time load() is called and when it inits or fails, that new URL will attempt to load as soon as possible (when the old url either fails or inits - we must wait for that in order to avoid garbage collection issues in Flash).
+
+2010-12-14
+---------------------------------------------
+LoaderMax			1.763
+	- Fixed issue that could cause an error in a LoaderMax instance if dispose() is called more than once on the last child loader as it completes and autoDispose is true on the LoaderMax instance.
+
+2010-12-13
+---------------------------------------------
+LoaderMax			1.762
+SWFLoader			1.762
+XMLLoader			1.762
+LoaderCore			1.762
+	- Fixed issue that could cause a SWFLoader's or XMLLoader's "progress" property to report incorrectly as 1 after unload() was called
+	- Forced a refresh of a LoaderMax instance's progress/bytesLoaded/bytesTotal values after one of its children is disposed
+
+2010-12-07
+---------------------------------------------
+VideoLoader			1.761
+LoaderMax			1.761
+	- Fixed an issue that could cause a VideoLoader's "rawContent" to become null after unload() was called and then load() was called again on the same instance.
+
+2010-12-03
+---------------------------------------------
+LoaderMax			1.76
+VideoLoader			1.76
+	- Worked around Flash bug that could cause VideoLoaders not to dispatch a COMPLETE event when the swf is compiled with CS3 or CS4 (very odd, I know). Apparently when you publish with CS3 or CS4, NetStreams don't consistently dispatch a NetStreamEvent for code "NetStream.Buffer.Full" and if you seek() a NetStream before about 50 millseconds after it finishes buffering (even if it has COMPLETELY loaded!) it can lose its audio, so VideoLoader works around that as well now. 
+
+2010-12-02
+---------------------------------------------
+LoaderMax			1.75
+XMLLoader			1.75
+LoaderCore			1.75
+XMLLoaderVars		1.02
+	- Added a new event to XMLLoader (RAW_LOAD) that gets dispatched when the XML has finished loading but has NOT been parsed yet so that you can alter the XML if necessary before it gets parsed for LoaderMax-related data. There is also a new onRawLoad event listener shortcut. 
+
+2010-11-29
+---------------------------------------------
+VideoLoader			1.742
+LoaderMax			1.742
+	- Very minor adjustment to VideoLoader that could help avoid a very rare scenario where it wouldn't dispatch its COMPLETE event 
+
+2010-11-22
+---------------------------------------------
+VideoLoader			1.741
+LoaderMax			1.741
+	- Fixed issue that was introduced in version 1.73 that could cause a VideoLoader to not properly dispatch PLAY_PROGRESS events after gotoVideoTime() was called or the videoTime was set to a particular value.
+
+2010-11-21
+---------------------------------------------
+VideoLoader			1.74
+LoaderMax			1.74
+	- Fixed issue with VideoLoader not dispatching its COMPLETE event in a file that was published for Flash Player 9. This issue was introduced in version 1.73.
+	- Changed "cacheBusterID" URL variable to "gsCacheBusterID" in order to make it more unique and avoid a potential conflict with a particular CDN.
+
+2010-11-19
+---------------------------------------------
+VideoLoader			1.731
+LoaderMax			1.731
+	- Fixed a minor cleanup issue in VideoLoader related to removing an event listener internally
+
+2010-11-18
+---------------------------------------------
+VideoLoader			1.73
+LoaderMax			1.73
+	- Worked around a bug in the NetStream class that could cause a video to lose its audio if it was loaded/buffered even before the NetStream rendered a single frame. 
+	- Streamlined a few things internally in the VideoLoader class
+
+2010-11-17
+---------------------------------------------
+LoaderMax			1.72
+VideoLoader			1.72
+ContentDisplay		1.72
+FlexContentDisplay	1.72
+(all vars classes) 	1.01
+	- Added "data" property to ContentDisplay and FlexContentDisplay to store arbitrary data (optional of course)
+	- Added prop() method to all vars data classes so that you can add arbitrary properties to the vars object.
+	- Fixed issue with VideoLoader that could cause PLAY_PROGRESS events to be dispatched even when there wasn't a change in the video time. 
+
+2010-11-16
+---------------------------------------------
+VideoLoader			1.71
+LoaderMax			1.71
+	- Fixed issue with VideoLoader that could cause cue points that were added with addASCuePoint() to be triggered when goToVideoTime() is called even if its skipCuePoints parameter was true.
+
+2010-11-13
+---------------------------------------------
+(all LoaderMax classes)	1.7
+	- Rewrote all the vars classes (CSSLoaderVars, DataLoaderVars, ImageLoaderVars, SWFLoaderVars, LoaderMaxVars, MP3LoaderVars, VideoLoaderVars, XMLLoaderVars) to facilitate method chaining like new ImageLoaderVars().name("image1").estimatedBytes(12420).width(200).height(100). This makes it possible to do things inline, greatly reducing the number of lines necessary to accomplish the same task. 
+	- Consolidated virtually all of the old vars-related classes like BlurFilterVars, ColorMatrixFilterVars, etc. into the TweenLiteVars and TweenMaxVars classes (so the old ones were deleted).
+	- Fixed an issue that could cause a subloaded swf that uses TLF to not properly recognize LoaderMax-related loaders with their requireWithRoot set to that swf's root. This was caused by the bug in Adobe's Loader.
+	- Updated ASDocs
+
+2010-11-03
+---------------------------------------------
+LoaderMax			1.652
+XMLLoader			1.652
+	- Fixed issue that would cause an error to be thrown if an SWFLoader was created through XML that was loaded with XMLLoader and its "context" property was defined in the XML and the swf was running locally.
+
+2010-11-01
+---------------------------------------------
+LoaderMax			1.651
+VideoLoader			1.651
+ContentDisplay		1.651
+FlexContentDisplay	1.651
+	- Fixed issue that could cause a video to briefly display at 320x160 before being resized to the width/height defined in the vars parameter of the constructor.
+
+2010-10-29
+---------------------------------------------
+LoaderMax			1.65
+LoaderCore			1.65
+LoaderItem			1.65
+DisplayObjectLoader	1.65
+	- Added a static defaultContext property to LoaderMax for defining a default LoaderContext.
+	- Worked around a VERY strange bug in certain older versions of the Flash Player (like 10.0.12.36 in Firefox) that omitted the "?" when GET parameters are appended to the URL of a loader. This only happened when the URL contained a "?" character already to begin with.
+
+2010-10-23
+---------------------------------------------
+LoaderMax			1.642
+LoaderItem			1.642
+	- Fixed issue that could cause alternateURL not to function properly on children of a LoaderMax that had auditSize set to true
+
+2010-10-21
+---------------------------------------------
+LoaderMax			1.641
+LoaderItem			1.641
+	- Worked around an issue with Flash's URLRequest not correctly appending URLVariables to the end of a URL that already contained GET variables (it would neglect to add the "&" separator). (The fix that was applied in version 1.62 didn't fully resolve the issue)
+	
+2010-10-20
+---------------------------------------------
+LoaderMax			1.64
+ContentDisplay		1.64
+FlexContentDisplay	1.64
+	- Worked around bug in Flash that incorrectly reports getBounds() on objects with a scrollRect which caused ContentDisplay/FlexContentDisplay objects not to properly crop the rawContent when crop was true and any of the custom properties like fitWidth/fitHeight/crop/bgAlpha/bgColor/etc. was altered more than once.
+	- Fixed an issue that could cause a SWFLoader's content not to be cropped properly if crop was set to true and one of the special properties was changed more then once. 
+
+2010-10-13
+---------------------------------------------
+LoaderMax			1.631
+SelfLoader			1.631
+	- Fixed issue that could cause SelfLoader not to fire its COMPLETE event inside a LoaderMax if the SelfLoader is created AFTER the swf has already fully loaded (very unlikely, but possible)
+
+2010-10-08
+---------------------------------------------
+XMLLoader			1.63
+LoaderMax			1.63
+	- Fixed problem that prevented XMLLoader from recognizing the "context" special attribute inside <SWFLoader> nodes. 
+
+2010-10-07
+---------------------------------------------
+LoaderMax			1.62
+XMLLoader			1.62
+LoaderItem			1.62
+LoaderCore			1.62
+	- Worked around an issue with Flash's URLRequest not correctly appending URLVariables to the end of a URL that already contained GET variables (it would neglect to add the "&" separator). This only happened on loaders that were originally created by passing a URLRequest into the contstructor that had URLVariables set as its "data" property. Well, that's the only time you'd see the symptom, but the problem appears to be in Adobe's URLRequest class and is unrelated to LoaderMax.
+	- Enhanced XMLLoader so that LoaderMax-related tag recognition (like <ImageLoader>, <SWFLoader>, <LoaderMax>, etc.) is no longer case sensitive.  
+
+2010-10-05
+---------------------------------------------
+LoaderMax			1.61
+LoaderItem			1.61
+	- Worked around a bug in the way some browsers (like Chrome and Firefox) occasionally use partially-loaded audit files in the cache instead of loading them normally - the workaround simply involves appending the cacheBusterID to the end of the URL (like when noCache:true is passed in) but only during the auditing process (it doesn't force the cacheBusterID to be appended to the normal/full load). 
+	- Fixed issue that caused the cacheBusterID to remain on the url from the auditing process even on loaders that didn't have noCache set to true (introduced in v1.6)
+
+2010-10-02
+---------------------------------------------
+VideoLoader			1.62
+LoaderMax			1.6
+LoaderItem			1.6
+XMLLoader			1.6
+	- Added "autoAdjustBuffer" property to VideoLoader (and VideoLoaderVars) that will automatically adjust the buffer if/when the initial buffer empties. It will base the new bufferTime on the rate at which the file has been loading (the user's bandwidth up to that point) so that the buffer most likely won't empty again.
+	- Fixed issue that could cause a VideoLoader not to receive metaData if gotoAndPlay() was called before the metaData was received or if load() was called and then immediately playVideo() was called.
+	- Added the dispatch of an ERROR event when the metaData timeout occurs.
+	- Improved the handling of multiple calls to gotoVideoTime() or playVideo() in quick succession.
+
+2010-10-01
+---------------------------------------------
+VideoLoader			1.61
+LoaderMax			1.53
+LoaderCore			1.53
+	- Fixed issue that could cause a LoaderMax queue to not proceed with its loading if an audit is occuring on a child VideoLoader at the same time as load() is called on the VideoLoader (very rare).
+	- Fixed issue that could cause the VIDEO_BUFFER_FULL not to fire after the video has finished playing and is restarted
+
+2010-09-29
+---------------------------------------------
+VideoLoader				1.6
+LoaderMax				1.52
+	- Added new addASCuePoint() and removeASCuePoint() methods to VideoLoader for dynamically adding cue points instead of embedding them in the video file.
+
+2010-09-28
+---------------------------------------------
+LoaderMax				1.51
+LoaderCore				1.51
+VideoLoader				1.51
+	- Fixed problem that caused VideoLoader to dispatch its VIDEO_BUFFER_FULL event before the buffer was full (only when autoPlay was true)
+	- Prevented LoaderMax from dispatching an OPEN event when it has no children.
+
+2010-09-27
+---------------------------------------------
+ContentDisplay			1.5
+FlexContentDisplay		1.5
+	- Simply changed the order that properties are applied to the ContentDisplay/FlexContentDisplay so that the size is determined BEFORE being added to the container (if "container" is defined). 
+
+2010-09-22
+---------------------------------------------
+LoaderMax				1.5
+ContentDisplay			1.472
+FlexContentDisplay		1.472
+	- Added a "childrenVars" parameter to LoaderMax.parse() that allows you to define a vars object that should be passed to all child loaders that are created when an array of urls is parsed. For example, if you have 20 video urls to parse() and autoPlay should be false for all of them, you'd do LoaderMax.parse(myVideoUrlArray, null, {autoPlay:false});
+	- Fixed problem that caused the background rectangle drawn in ContentDisplay and FlexContentDisplay not to be redrawn properly when special properties like fitWidth/fitHeight were set more than once (the old rectangle remained - it needed a graphics.clear()) 
+	- Updated ASDocs
+
+2010-09-18
+---------------------------------------------
+LoaderMax				1.471
+SWFLoader				1.47
+LoaderCore				1.47
+	- Worked around a Flash bug that caused SWFLoaders to incorrectly report their loading progress in a very particular scenario
+	- Worked around Flash bug that cause LoaderMax loaders with their name set to exactly "0" (the Number) through the vars parameter to use the default name instead (like "loader1"). When vars.name was 0, Boolean(vars.name == "") would return true which is what caused the problem.
+
+2010-09-15
+---------------------------------------------
+LoaderMax				1.46
+ContentDisplay			1.46
+FlexContentDisplay		1.46
+	- Fixed issue with ContentDisplay and FlexContentDisplay that could cause a Video to be displayed in the wrong proportions (this bug was introduced in version 1.43)
+	- Worked around bug in Flex that caused FlexContentDisplay's width and height properties to always report as 0. 
+
+2010-09-14
+---------------------------------------------
+SWFLoader				1.4
+LoaderMax				1.45
+	- Fixed issue that could cause a SWFLoader's internal Loader to not get closed if cancel() or unload() or dispose() is called before the swf has loaded enough to initialize its first frame. 
+
+2010-09-10
+---------------------------------------------
+MP3Loader				1.4
+	- Improved handing of the "duration" property so that it constantly updates its estimated value (the real duration cannot be determined with 100% accuracy until the file is fully loaded - that's just a limitatin of Flash). 
+	- Added "initThreshold" special property to MP3Loader that allows you to specify a minimum bytesLoaded that must be reached before the INIT event gets dispatched which means you can set it to larger numbers to ensure a more accurate "duration" property when INIT is dispatched. The default is 102400 bytes (100k)
+
+2010-09-09
+---------------------------------------------
+LoaderMax				1.43
+ContentDisplay			1.43
+FlexContentDisplay		1.43
+VideoLoader				1.4
+	- Added scaleMode, centerRegistration, hAlign, vAlign, crop, fitWidth, fitHeight, bgColor, and bgAlpha properties to ContentDisplay and FlexContentDisplay so that you can set all of those properties even AFTER creating the associated ImageLoader/SWFLoader/VideoLoader. Previously, the only way to set those properties was through the vars object of the loader.
+	- Fixed issue in VideoLoader that could cause very short (in duration) videos to not be sized correctly (and may be invisible) when autoPlay was set to false.
+	
+2010-09-06
+---------------------------------------------
+LoaderMax				1.42
+	- Changed data type of the return value of LoaderMax.parse() to "*" to avoid compiler errors when developers forget to cast their variable, like var image:ImageLoader = LoaderMax.parse("photo.jpg") as ImageLoader
+
+2010-09-05
+---------------------------------------------
+LoaderMax				1.41
+	- Changed the name of the new LoaderMax "steppedProgress" property to "rawProgress" and improved its accuracy inbetween loads so that it is updated each time there's a PROGRESS event instead of only when a child loader fully completes.
+
+2010-09-01
+---------------------------------------------
+LoaderMax				1.4
+DisplayObjectLoader		1.31
+	- Added a new "steppedProgress" property to LoaderMax that is based solely on the ratio of child loaders that have completed loading compared to those that haven't - this calculation does not concern itself whatsoever with bytesLoaded and bytesTotal. See docs for details.
+	- Changed the data type that the static getLoader() method returns to "*" instead of LoaderCore in order to make it easier on developers. Previously, for example, playing a VideoLoader would need to be done like (LoaderMax.getLoader("myVideoLoader") as VideoLoader).playVideo() but now it can simply be LoaderMax.getLoader("myVideoLoader").playVideo()
+	- Fixed minor problem with the forced garbage collection routine in SWFLoader and ImageLoader that gets called after unload() and dispose(true).
+
+2010-08-30
+---------------------------------------------
+LoaderMax			1.31
+	- Fixed problem in LoaderMax.prependURLs() and LoaderMax.replaceURLText() that could cause an error if the includeNested parameter was set to true and there were nested child loaders.
+
+2010-08-12
+---------------------------------------------
+VideoLoader				1.32
+	- Fixed VideoLoader's default autoPlay to be true instead of false (the documentation said the default was true but the actual behavior indicated false)
+	- Worked around bug in Flash that prevented metaData from being received by a NetStream (in VideoLoader) if pause() was called before the client's onMetaData callback was called. So in very rare circumstances (depending on how the flv was encoded), metaData simply wasn't received by VideoLoader, causing the INIT event to never be dispatched in that case.
+
+2010-08-09
+----------------------------------------------
+(all LoaderMax classes) 1.3
+	- Added new com.greensock.loading.data package with classes for defining vars objects for each type of loader which enables strict data typing and code hinting. For example, XMLoaderVars, LoaderMaxVars, SWFLoaderVars, etc.
+	- Made all LoaderMax classes compatible with the new "vars" objects
+	- Changed default MP3Loader autoPlay value from false to true in order to make it consistent with VideoLoader and SWFLoader
+	- Prevented parsed loaders that an XMLLoader finds inside XML from having their size audited automatically when their "load" attribute was set to "false". 
+	- Fixed missing removeEventListener() inside LoaderMax that was listening for "dispose" events which could cause an error to be thrown if autoDispose was set to true on both a LoaderMax and its child.
+
+2010-08-07
+----------------------------------------------
+VideoLoader			1.24
+MP3Loader			1.24
+LoaderMax			1.24
+	- Added a bunch of capabilities to MP3Loader for controlling playback, like playSound(), pauseSound(), gotoSoundTime(), volume, playProgress, duration, soundTime, soundPaused, and some extra event dispatching like SOUND_PLAY, SOUND_PAUSE, SOUND_COMPLETE, and PLAY_PROGRESS
+	- Added dispatching of VIDEO_PROGRESS events from VideoLoader
+	- Worked around a bug in Adobe's NetStream class that prevented the proper loading of a video file after the loader was either canceled or unloaded (after the NetStream's close() method was called, no subsequent files could be played properly). 
+	- Updated ASDocs
+
+2010-08-05
+----------------------------------------------
+SWFLoader			1.23
+XMLLoader			1.23
+	- Fixed issue that could cause a SWFLoader or XMLLoader to prematurely dispatch its COMPLETE event in a very rare scenario, like if a nested loader inside a swf dynamically inserted a new (more deeply) nested loader right before it would normally dispatch its COMPLETE event. 
+
+2010-08-04
+----------------------------------------------
+LoaderMax			1.23
+	- Fixed issue that could cause a LoaderMax instance not to fire its COMPLETE event if new child loaders were added to it while it was in the process of loading its children.
+
+2010-07-31
+----------------------------------------------
+SWFLoader			1.22
+	- Worked around bug in Firefox version of Flash Player that could cause Adobe's Loader class not to report bytesLoaded and bytesTotal properly on swfs that are a particular size and gzip is enabled on the server (VERY rare). It could prevent SWFLoader from dispatching its COMPLETE event.
+
+2010-07-30
+----------------------------------------------
+SWFLoader			1.21
+XMLLoader			1.21
+	- Changed the default ApplicationDomain in SWFLoader to child (new ApplicationDomain(ApplicationDomain.currentDomain)) whereas previously it was same (ApplicationDomain.currentDomain) because several users were loading multiple swfs that used the same class/package which caused conflicts. Of course they could define a custom LoaderContext using the "context" special property, but the typical user doesn't understand what a LoaderContext is really, so it seemed safest to change the default to the safer "child" option. 
+	- Updated ASDocs
+	
+2010-07-28
+----------------------------------------------
+(all LoaderMax classes)	1.2
+	- Added "defaultAuditSize" static property to LoaderMax to give developers control of the default auditSize special vars property for LoaderMax instances. 
+	- Added "data" property to the LoaderEvent class to store variable data like for VideoLoader's VIDEO_CUE_POINT event's cue point info. 
+	- Added conditional logic so that Security.allowDomain() isn't called from an AIR app (AIR apps will burp on Security.allowDomain())
+	- Updated ASDocs
+
+2010-07-23
+----------------------------------------------
+LoaderMax			1.195
+SWFLoader			1.195
+XMLLoader			1.195
+	- Changed the data type that getLoader() returns to "*" instead of LoaderCore in order to make it easier on developers. Previously, for example, playing a VideoLoader would need to be done like (LoaderMax.getLoader("myVideoLoader") as VideoLoader).playVideo() but now it can simply be LoaderMax.getLoader("myVideoLoader").playVideo()
+
+2010-07-17
+----------------------------------------------
+LoaderMax			1.194
+DisplayObjectLoader	1.194
+	- Significantly reduced brief RAM usage when loading images and/or swfs. Previously, BitmapData.draw() was used to check security restrictions in loaded assets which caused a temporary spike in RAM usage even though the BitmapData object was only 1 pixel tall and 1 pixel wide.
+
+2010-07-15
+----------------------------------------------
+LoaderMax			1.193
+XMLLoader			1.192
+	- Fixed issue that could cause a LoaderMax instance to cancel and start reloading a file unnecessarily when prioritize() is called on a child loader that has already completed loading.
+	- Worked around bug in Flash Player for Firefox that caused Adobe's URLLoader to incorrectly report its bytesLoaded as less than bytesTotal (only on very small files) even after its COMPLETE event had been dispatched, causing XMLLoader not to dispatch its COMPLETE event properly.
+
+2010-07-14
+----------------------------------------------
+VideoLoader			1.192
+LoaderMax			1.192
+DisplayObjectLoader	1.192
+	- Worked around Flash bug that prevented the VIDEO_BUFFER_FULL from being dispatched in VideoLoader when autoPlay was set to false. 
+	- Fixed issue that could cause an ImageLoader or SWFLoader not to properly cancel() (it could still load in the background in very specific rare situations)
+
+2010-07-09
+----------------------------------------------
+MP3Loader			1.141
+	- Fixed problem where an MP3Loader's content could be null after its loading was canceled.
+
+2010-07-08
+----------------------------------------------
+XMLLoader			1.191
+	- Fixed issue that could cause an XMLLoader not to dispatch its COMPLETE event if the XML file was completely empty (bytesTotal of 0)
+	- Worked around a bug in the Flash Player for Chrome that caused Adobe's URLLoader to always report a bytesTotal of zero for very large XML files that were loaded with gzip enabled on the server (it only affected very large XML files)
+
+2010-06-30
+----------------------------------------------
+XMLLoader				1.19
+LoaderMax				1.19
+SelfLoader				1.0
+	- Worked around a bug in Flash Builder that caused it not to recognize XMLLoader for code hinting, etc.
+	- Added SelfLoader for tracking the current swf's loading progress
+
+2010-06-28
+----------------------------------------------
+VideoLoader				1.18
+	- Fixed issue that could cause a video to autoPlay even if autoPlay was set to false. This only happened in rare scenarios.
+
+2010-06-24
+----------------------------------------------
+ContentDisplay			1.17
+FlexContentDisplay		1.17
+VideoLoader				1.17
+	- Fixed crop feature that could incorrectly scale a video or an swf that had scriptAccessDenied = true.
+
+2010-06-23
+----------------------------------------------
+ImageLoader				1.15
+SWFLoader				1.15
+VideoLoader				1.15
+XMLLoader				1.15
+ContentDisplay				1.15
+FlexContentDisplay			1.15
+	- Added a new "crop" special property for SWFLoader, ImageLoader, and VideoLoader.
+	- Adjusted SWFLoader so that the swf's native size is what is factored into the scaleMode and alignement rather than its getBounds().
+
+2010-06-22
+----------------------------------------------
+(all LoaderMax classes)	1.14
+	- Added ability to change a loader's url on the fly
+	- When a loader's url changes, it now resets its status to READY (unless it is paused in which case it will remain PAUSED).
+	- Implemented unloadAndStop() internally in SWFLoader and ImageLoader for swfs that are published to Flash Player 10 and later. This is just an added layer of protection against gc issues.
+
+2010-06-21
+----------------------------------------------
+LoaderCore				1.12
+LoaderItem				1.12
+	- Prevented PROGRESS event from being dispatched when a loader is disposed
+	- Added the dispatch of an ERROR LoaderEvent when an alternateURL is defined and the initial url fails
+
+2010-06-18
+----------------------------------------------
+(all LoaderMax classes)	1.11
+	- Added "alternateURL" property to all LoaderItems that allows you to define an alternate URL to load from if the original URL fails.
+	- VideoLoader now dispatches a VIDEO_PLAY event when autoPlay is true and the video initially loads and plays.
+
+2010-06-17
+----------------------------------------------
+(all LoaderMax classes)	1.1
+	- Added new "loadTime" property to all loaders which reports the number of seconds elapsed during the load.
+	- Fixed issue in SWFLoader that could cause it to stall if canceled before the swf had dispatched its INIT event.
+	- Altered VideoLoader to better handle a situation where metaData isn't received from the video being loaded.
+	- When XMLLoader encounters malformed XML it will now dispatch a LoaderEvent.ERROR. The "text" property of the LoaderEvent will describe the error.
+	- Added automatic trace() of all errors to make debugging easier.
+	
+2010-06-17
+----------------------------------------------
+LoaderMax		1.02
+LoaderCore		1.02
+	- Improved status recognition in LoaderMax instances so that if a child was paused and the LoaderMax completed, when load() is called it will check again to see if any children were unpaused or failed and act accordingly, loading them if they're unpaused at that point. 
+
+2010-06-16
+----------------------------------------------
+LoaderMax		1.01
+VideoLoader		1.01
+	- Fixed issue that could cause a LoaderMax not to dispatch its final PROGRESS event if it's not in the process of loading and its children have independently loaded fully.
+	- Fixed issue that could cause a video that doesn't have autoPlay:true to briefly play audio just as its buffer is filled (very brief).
+
+2010-06-16 (version 1.0)
+----------------------------------------------
+	- Added "paused" property to VideoLoader
+	- Changed data type of SWFLoader's, ImageLoader's, VideoLoader's, ContentDisplay's, and FlexContentDisplay's rawContent property to * in order to reduce questions about compile-time errors when developers don't understand the concept of casting.
+	- Added "bufferMode" to VideoLoader
+	- Changed "loops" property in MP3Loader and "loop" property in VideoLoader to "repeat" to be consistent with TweenMax/TimelineMax (and with each other). 
+	- Fixed problem that could cause a SWF to deny script access if it had NetStreams that hadn't started yet
+
+2010-06-04 (version 0.993)
+----------------------------------------------
+	- Added "flushContent" parameter to the dispose() method so that if you want to completely destroy an instance, you can dispose(true) instead of unload() and dispose(). dispose(true) also destroys the ContentDisplay associated with any ImageLoaders, SWFLoaders, or VideoLoaders (removing them from the display list if necessary). 
+	- Eliminated error that could be thrown if you use LoaderMax.getLoader() or LoaderMax.getContent() before any loaders are created. 
+	- Added dispose() method to ContentDisplay and FlexContentDisplay
+
+2010-06-12 (version 0.992)
+----------------------------------------------
+	- Fixed bug that could cause a SWFLoader or XMLLoader not to fire its COMPLETE event if it had an estimatedBytes defined and recognized sub-LoaderMax instances didn't have estimatedBytes defined and didn't load quickly enough.
+
+2010-06-10 (version 0.99)
+----------------------------------------------
+	- Introduced new LoaderEvent class for easier event management
+	- Many of the LoaderEvents essentially bubble through Loaders, so the LoaderEvent's "target" is always the originating loader and the "currentTarget" can be the LoaderMax instance. For example, if you nest an ImageLoader in a LoaderMax and listen for LoaderEvent.ERROR events on that LoaderMax and the ImageLoader throws an error, your listener will receive a LoaderEvent whose target points to the ImageLoader and currentTarget points to the LoaderMax.
+	- Revamped most of the event architecture in the system, making it more robust
+	- Introduced FAIL, CHILD_OPEN, CHILD_PROGRESS, CHILD_COMPLETE, CHILD_CANCEL, and CHILD_FAIL events.
+	- You can listen for CHILD_* events on XMLLoaders and SWFLoaders too in order to get information about any nested loaders that are discovered in the XML/SWF. 
+	- Added "httpStatus" property to LoaderItems
+	- Changed VideoLoader's resumeVideo() to playVideo()
+	- Changed VideoLoader's seekVideo() to gotoVideoTime()
+
+2010-06-09 (version 0.98)
+----------------------------------------------
+	- Changed "prependChildrenURLs()" to "prependURLs()" in LoaderMax
+	- Added LoaderMax.parse() method for automatically creating the appropriate type of loader based on a url's file extension (you may pass an array as well in which case it will create a LoaderMax containing the necessary children)
+	- Added replaceURLText() method to LoaderMax
+	- Added ability for XMLLoader to recognize replaceURLText="" attribute
+	- Added "deblocking" and "loop" special properties to VideoLoader
+	- Eliminated unhandled error notifications
+	- Improved error reporting and identification of various types of loaders in trace() statements and toString().
+	- Improved performance slightly
+
+2010-06-09 (version 0.972)
+----------------------------------------------
+	- Added "smoothing" property to VideoLoader (enabled by default)
+	- Added "duration" property to VideoLoader
+
+2010-06-08 (version 0.971)
+----------------------------------------------
+	- Fixed problem that could cause a SWFLoader or XMLLoader not to fire its COMPLETE event
+
+2010-06-08 (version 0.97)
+----------------------------------------------
+	- Added VideoLoader
+	- Added ContentDisplay and FlexContentDisplay classes. 
+	- Now ImageLoaders, SWFLoaders, and VideoLoaders will all return a ContentDisplay instance (a Sprite) as their content. The nice thing about ContentDisplay instances is that they have a "loader" property that gives you a way to reference the loader object that populated it. So if you need to unload() it or reload it or find out the loading progress, etc., that's all possible. 
+	- Added a LoaderMax.contentDisplayClass property which you can set to FlexContentDisplay in order to make LoaderMax Flex-friendly. FlexContentDisplay extends UIComponent, fulfilling the Flex requirement.
+	- Reworked the cancel(), unload(), and dispose() logic internally
+	- Reduced file size slightly
+	- Changed the default "auditSize" special property to true in LoaderMax instances. Previously it was false, but it seems as though it will be a very useful feature that most developers will use and it will prevent some confusion with LoaderMax instances' progress and bytesTotal values being jumpy when estimatedBytes isn't used. Remember, whenever an estimatedBytes property is defined, it will be used instead of auditing the size with a URLStream (to improve performance).
+	- Prevented a ProgressEvent from being fired where the bytesLoaded == bytesTotal until any parsing and/or setting of the "content" property was completed.
+	- Prevented redundant ProgressEvents from being dispatched from a LoaderMax. 
+	- Minor fixes
+	- Updated docs
+
+2010-06-04 (version 0.96)
+----------------------------------------------
+	- Fixed issue with SWFLoader and XMLLoader that could cause the bytesLoaded to exceed bytesTotal if an estimatedBytes was defined that was too low and the swf/xml hadn't initted yet.
+
+2010-06-03 (version 0.95)
+----------------------------------------------
+	- Added getSWFChild() to SWFLoader for finding DisplayObjects at the root of subloaded swfs
+	- Fixed problem that could cause XMLLoader not to fire its COMPLETE event in a certain situation
+	- Fixed bug in prepend() that replaced the first element instead of pushing it back
+
+2010-06-03 (version 0.93)
+----------------------------------------------
+	- Fixed issue where the COMPLETE event could fire before the INIT event in an XMLLoader that found an empty <LoaderMax> node in the XML (and no other loaders)
+	- Fixed issue where an empty LoaderMax could report a progress of NaN instead of 0.
+
+2010-06-02 (version 0.92)
+----------------------------------------------
+	- Enhanced SWFLoader to work around an Adobe bug in swfs that have TLF content which would mislabel content and fire INIT/COMPLETE events inappropriately.
+
+2010-06-02 (version 0.91)
+----------------------------------------------
+	- Added "rawContent" property to ImageLoader and SWFLoader for retrieving raw content instead of the Sprite into which it was loaded. For example, an ImageLoader's "content" would be a Sprite whereas its rawContent would be a Bitmap (or a Loader if script access was denied).
+	- Removed "bitmap" property from ImageLoader because the generic "rawContent" property makes it redundant.
+	- Renamed CommonLoader to DisplayObjectLoader (you'd never use the class directly anyway)
+
+2010-06-01 (version 0.9)
+----------------------------------------------
+	- Added prependChildrenURLs() to LoaderMax
+	- Added ability for XMLLoader to recognize prependChildrenURLs attribute in <LoaderMax> XML nodes
+	- Eliminated redundant ProgressEvent dispatching from XMLLoaders that found LoaderMax data inside XML.
+
+2010-06-01 (version 0.81)
+----------------------------------------------
+	- Improved unload() and dispose() performance in ImageLoader and SWFLoader
+	- Images and swfs are now added at index 0 to the content Sprite instead of the top level
+	- Removed "offsetRegX" and "offsetRegY" special properties from ImageLoader and SWFLoader to reduce file size (they didn't seem super useful anyway).
+	- Fixed issue where a completed LoaderMax that was paused after having completed and then unload() is called would not load() again (refusing to unpause).
+	- Updated docs
+
+2010-06-01 (version 0.8)
+----------------------------------------------
+	- Changed behavior of ImageLoader and SWFLoader so that their "content" property always returns a Sprite which serves as a container for the remote content. This Sprite is immediately available, making development tasks easier.
+	- Added the ability to have images and swfs scale to fit inside the width/height defined for the ImageLoader or SWFLoader with various scaleModes like "proportionalInside", "proportionalOutside", "stretch", "widthOnly", "heightOnly", and "none"
+	- Added hAlign, vAlign, bgColor, bgAlpha, offsetRegX, and offsetRegY special properties for ImageLoader and SWFLoader
+	- Updated XMLLoader so that it recognizes the various new special properties available in ImageLoader and SWFLoader
+
+2010-05-29 (version 0.71)
+----------------------------------------------
+	- When XMLLoader finds LoaderMax-related data inside the XML, it will now audit the size of any that don't have an estimatedSize defined.
+	- Fixed issue that could cause auditedSize to incorrectly report false.
+
+2010-05-29 (version 0.7)
+----------------------------------------------
+	- When auditSize() is called and the URLStream fails because of an IO_ERROR, the loader will now set its status to FAILED and generate an error event which also takes it out of consideration when determining a LoaderMax's progress.
+	- Fixed a garbage collection problem
+	- Updated docs
+
+2010-05-28 (version 0.65)
+----------------------------------------------
+	- Added DataLoader class for loading generic text, binary, and URL-encoded variables
+	- Added CSSLoader class for loading StyleSheet information.
+	- Added onOpen to docs for all loaders
+	- Fixed error that was thrown when a swf was loaded whose root was not a MovieClip
+
+2010-05-27
+----------------------------------------------
+	- XMLLoader now recognizes a "context" attribute inside XML-driven loaders, like <SWFLoader name="swf1" url="swf/file.swf" context="separate" />. The default value is "own" and other options are "child" and "separate".
+	- ImageLoader and SWFLoader now recognize the "blendMode" special property so that you can set the image's/swf's blendMode as soon as it loads. 
+	- If SWFLoader loads an AVM1Movie (AS1/AS2), it will toggle the scriptAccessDenied to true and the content will refer to the Loader object instead of the root of the swf for security purposes.
+	- Minor updates to docs
+
+2010-05-26
+----------------------------------------------
+	- Added an auditSize special vars property to LoaderMax. See ASDocs for details about functionality
+	- Added auditSize() method and auditedSize property to all loaders
+	- Added logic in ImageLoader and SWFLoader to fall back to a more restricted mode in terms of script access when a security error is thrown due to a missing or malconfigured crossdomain.xml file. This improves the likelihood that the content will still load even if there was a security error. 
+	- Added LoaderMax.SCRIPT_ACCESS_DENIED event dispatching along with an onScriptAccessDenied special vars property
+	- Added a new scriptAccessDenied property that you can check in order to determine whether or not you can perform operations like BitmapData.draw() on ImageLoader/SWFLoader content.
+	- Tweaked error handling so that unhandled errors aren't thrown.
+	- Added dispatching of IOErrorEvents, SecurityErrorEvents, and HTTPStatusEvents (you can set them up normally or with onIOError, onSecurityError, and onHTTPStatus special vars properties)
+
+2010-05-25
+----------------------------------------------
+	- Changed LoaderMax's getAllLoaders() to getChildren()
+	- Changed LoaderMax's getLoadersByStatus() to getChildrenByStatus()
+	- Changed LoaderMax's getLoaderIndex() to getChildIndex()
+	- Added LoaderMax.defaultEstimatedBytes so that you can define any default value for new Loaders that don't have an estimatedBytes property defined in the vars object.
+	- Changed the default estimatedBytes to 20000 instead of 1000.
+	- Added the ability for ImageLoaders and SWFLoaders to recognize a "visible" property in the vars object so that you can set the object's visible property.
+	- Removed "loaders" property of LoaderMax
+	- Added getClass() method to SWFLoader
+	- Minor updates to docs

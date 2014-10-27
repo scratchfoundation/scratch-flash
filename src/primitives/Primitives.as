@@ -27,7 +27,9 @@ package primitives {
 	import flash.utils.Dictionary;
 	import blocks.*;
 	import interpreter.*;
-	import scratch.ScratchSprite;
+import interpreter.Interpreter;
+
+import scratch.ScratchSprite;
 	import translation.Translator;
 
 public class Primitives {
@@ -70,10 +72,10 @@ public class Primitives {
 		// clone
 		primTable["createCloneOf"]		= primCreateCloneOf;
 		primTable["deleteClone"]		= primDeleteClone;
-		primTable["whenCloned"]			= interp.primNoop;
+		primTable["whenCloned"]			= Interpreter.primNoop;
 
 		// testing (for development)
-		primTable["NOOP"]				= interp.primNoop;
+		primTable["NOOP"]				= Interpreter.primNoop;
 		primTable["COUNT"]				= function(b:*):* { return counter };
 		primTable["INCR_COUNT"]			= function(b:*):* { counter++ };
 		primTable["CLR_COUNT"]			= function(b:*):* { counter = 0 };

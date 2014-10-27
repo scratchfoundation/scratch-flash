@@ -35,33 +35,34 @@ package ui.parts {
 
 public class SpriteInfoPart extends UIPart implements DragClient {
 
-	private const readoutLabelFormat:TextFormat = new TextFormat(CSS.font, 12, 0xA6A8AB, true);
-	private const readoutFormat:TextFormat = new TextFormat(CSS.font, 12, 0xA6A8AB);
+	protected const readoutLabelFormat:TextFormat = new TextFormat(CSS.font, 12, 0xA6A8AB, true);
+	protected const readoutFormat:TextFormat = new TextFormat(CSS.font, 12, 0xA6A8AB);
+	protected const spriteNameFormat:TextFormat = new TextFormat(CSS.font, 13, 0x929497);
 
 	private var shape:Shape;
 
 	// sprite info parts
-	private var closeButton:IconButton;
-	private	var thumbnail:Bitmap;
-	private var spriteName:EditableLabel;
+	protected var closeButton:IconButton;
+	protected	var thumbnail:Bitmap;
+	protected var spriteName:EditableLabel;
 
-	private var xReadoutLabel:TextField;
-	private var yReadoutLabel:TextField;
-	private var xReadout:TextField;
-	private var yReadout:TextField;
+	protected var xReadoutLabel:TextField;
+	protected var yReadoutLabel:TextField;
+	protected var xReadout:TextField;
+	protected var yReadout:TextField;
 
-	private var dirLabel:TextField;
-	private var dirReadout:TextField;
-	private var dirWheel:Sprite;
+	protected var dirLabel:TextField;
+	protected var dirReadout:TextField;
+	protected var dirWheel:Sprite;
 
-	private var rotationStyleLabel:TextField;
-	private var rotationStyleButtons:Array;
+	protected var rotationStyleLabel:TextField;
+	protected var rotationStyleButtons:Array;
 
-	private var draggableLabel:TextField;
-	private var draggableButton:IconButton;
+	protected var draggableLabel:TextField;
+	protected var draggableButton:IconButton;
 
-	private var showSpriteLabel:TextField;
-	private var showSpriteButton:IconButton;
+	protected var showSpriteLabel:TextField;
+	protected var showSpriteButton:IconButton;
 
 	private var lastX:Number, lastY:Number, lastDirection:Number, lastRotationStyle:String;
 	private var lastSrcImg:DisplayObject;
@@ -99,17 +100,19 @@ public class SpriteInfoPart extends UIPart implements DragClient {
 	public function step():void { updateSpriteInfo() }
 
 	public function refresh():void {
-		spriteName.setContents(app.viewedObj().objName);
-		updateSpriteInfo();
+		if(app.viewedObj()) {
+			spriteName.setContents(app.viewedObj().objName);
+			updateSpriteInfo();
+		}
 		if (app.stageIsContracted) layoutCompact();
 		else layoutFullsize();
 	}
 
-	private function addParts():void {
+	protected function addParts():void {
 		addChild(closeButton = new IconButton(closeSpriteInfo, 'backarrow'));
 		closeButton.isMomentary = true;
 
-		addChild(spriteName = new EditableLabel(nameChanged));
+		addChild(spriteName = new EditableLabel(nameChanged, spriteNameFormat));
 		spriteName.setWidth(200);
 
 		addChild(thumbnail = new Bitmap());
@@ -127,21 +130,25 @@ public class SpriteInfoPart extends UIPart implements DragClient {
 
 		addChild(rotationStyleLabel = makeLabel('', readoutLabelFormat));
 		rotationStyleButtons = [
-			new IconButton(rotate360, 'rotate360', null, true),
-			new IconButton(rotateFlip, 'flip', null, true),
-			new IconButton(rotateNone, 'norotation', null, true)];
+			makeIconButton(rotate360, 'rotate360', true),
+			makeIconButton(rotateFlip, 'flip', true),
+			makeIconButton(rotateNone, 'norotation', true)];
 		for each (var b:IconButton in rotationStyleButtons) addChild(b);
 
 		addChild(draggableLabel = makeLabel('', readoutLabelFormat));
-		addChild(draggableButton = new IconButton(toggleLock, 'checkbox'));
+		addChild(draggableButton = makeIconButton(toggleLock, 'checkbox'));
 		draggableButton.disableMouseover();
 
 		addChild(showSpriteLabel = makeLabel('', readoutLabelFormat));
-		addChild(showSpriteButton = new IconButton(toggleShowSprite, 'checkbox'));
+		addChild(showSpriteButton = makeIconButton(toggleShowSprite, 'checkbox'));
 		showSpriteButton.disableMouseover();
 	}
 
-	private function layoutFullsize():void {
+	protected function makeIconButton(func:Function, icon:String, radio:Boolean = false):IconButton {
+		return new IconButton(func, icon, null, radio);
+	}
+
+	protected function layoutFullsize():void {
 		dirLabel.visible = true;
 		rotationStyleLabel.visible = true;
 
@@ -280,7 +287,7 @@ public class SpriteInfoPart extends UIPart implements DragClient {
 		app.setSaveNeeded();
 	}
 
-	private function toggleLock(b:IconButton):void {
+	protected function toggleLock(b:IconButton):void {
 		var spr:ScratchSprite = ScratchSprite(app.viewedObj());
 		if (spr) {
 			spr.isDraggable = b.isOn();
@@ -288,7 +295,7 @@ public class SpriteInfoPart extends UIPart implements DragClient {
 		}
 	}
 
-	private function toggleShowSprite(b:IconButton):void {
+	protected function toggleShowSprite(b:IconButton):void {
 		var spr:ScratchSprite = ScratchSprite(app.viewedObj());
 		if (spr) {
 			spr.visible = !spr.visible;
@@ -324,7 +331,7 @@ public class SpriteInfoPart extends UIPart implements DragClient {
 		showSpriteButton.setOn(spr.visible);
 	}
 
-	private function drawDirWheel(dir:Number):void {
+	protected function drawDirWheel(dir:Number):void {
 		const DegreesToRadians:Number = (2 * Math.PI) / 360;
 		var r:Number = 11;
 		var g:Graphics = dirWheel.graphics;

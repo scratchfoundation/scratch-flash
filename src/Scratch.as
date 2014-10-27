@@ -97,8 +97,8 @@ public class Scratch extends Sprite {
 	protected var stagePart:BaseStagePart;
 	protected var tabsPart:TabsPart;
 	public var scriptsPart:IScriptsPart;
-	public var imagesPart:ImagesPart;
-	public var soundsPart:SoundsPart;
+	public var imagesPart:IImagesPart;
+	public var soundsPart:ISoundsPart;
 
 	public function Scratch() {
 		loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, uncaughtErrorHandler);
@@ -381,7 +381,7 @@ public class Scratch extends Sprite {
 	public function selectSound(snd:ScratchSound):void { soundsPart.selectSound(snd); }
 	public function clearTool():void { CursorTool.setTool(null); topBarPart.clearToolButtons(); }
 	public function tabsRight():int { return tabsPart.x + tabsPart.w; }
-	public function enableEditorTools(flag:Boolean):void { imagesPart.editor.enableTools(flag); }
+	public function enableEditorTools(flag:Boolean):void { imagesPart.enableTools(flag); }
 
 	public function get usesUserNameBlock():Boolean {
 		return _usesUserNameBlock;
@@ -477,7 +477,6 @@ public class Scratch extends Sprite {
 		runtime.stepRuntime();
 		Transition.step(null);
 		stagePart.step();
-		stagePane
 		libraryPart.step();
 		scriptsPart.step();
 		imagesPart.step();
@@ -487,16 +486,16 @@ public class Scratch extends Sprite {
 	public function threadStarted():void { stagePart.threadStarted() }
 
 	public function selectSprite(obj:ScratchObj):void {
-		if (isShowing(imagesPart)) imagesPart.editor.shutdown();
-		if (isShowing(soundsPart)) soundsPart.editor.shutdown();
+		if (isShowing(imagesPart as DisplayObject)) imagesPart.shutdownEditor();
+		if (isShowing(soundsPart as DisplayObject)) soundsPart.shutdownEditor();
 		viewedObject = obj;
 		libraryPart.refresh();
 		tabsPart.refresh();
-		if (isShowing(imagesPart)) {
+		if (isShowing(imagesPart as DisplayObject)) {
 			imagesPart.refresh();
 		}
-		if (isShowing(soundsPart)) {
-			soundsPart.currentIndex = 0;
+		if (isShowing(soundsPart as DisplayObject)) {
+			soundsPart.selectSound(null);
 			soundsPart.refresh();
 		}
 		if (isShowing(scriptsPart as DisplayObject)) {
@@ -507,18 +506,18 @@ public class Scratch extends Sprite {
 	}
 
 	public function setTab(tabName:String):void {
-		if (isShowing(imagesPart)) imagesPart.editor.shutdown();
-		if (isShowing(soundsPart)) soundsPart.editor.shutdown();
+		if (isShowing(imagesPart as DisplayObject)) imagesPart.shutdownEditor();
+		if (isShowing(soundsPart as DisplayObject)) soundsPart.shutdownEditor();
 		hide(scriptsPart as DisplayObject);
-		hide(imagesPart);
-		hide(soundsPart);
+		hide(imagesPart as DisplayObject);
+		hide(soundsPart as DisplayObject);
 		if (!editMode) return;
 		if (tabName == 'images') {
-			show(imagesPart);
+			show(imagesPart as DisplayObject);
 			imagesPart.refresh();
 		} else if (tabName == 'sounds') {
 			soundsPart.refresh();
-			show(soundsPart);
+			show(soundsPart as DisplayObject);
 		} else if (tabName && (tabName.length > 0)) {
 			tabName = 'scripts';
 			scriptsPart.updatePalette();
@@ -553,12 +552,20 @@ public class Scratch extends Sprite {
 		libraryPart = getLibraryPart();
 		tabsPart = new TabsPart(this);
 		scriptsPart = getScriptsPart();
-		imagesPart = new ImagesPart(this);
-		soundsPart = new SoundsPart(this);
+		imagesPart = getImagesPart();
+		soundsPart = getSoundsPart();
 		addChild(topBarPart);
 		addChild(stagePart);
 		addChild(libraryPart as DisplayObject);
 		addChild(tabsPart);
+	}
+
+	protected function getImagesPart():IImagesPart {
+		return new ImagesPart(this);
+	}
+
+	protected function getSoundsPart():ISoundsPart {
+		return new SoundsPart(this);
 	}
 
 	protected function getScriptsPart():IScriptsPart {
@@ -605,9 +612,10 @@ public class Scratch extends Sprite {
 		stagePart.refresh();
 	}
 
-	protected function hide(obj:DisplayObject):void { if (obj.parent) obj.parent.removeChild(obj) }
-	protected function show(obj:DisplayObject):void { addChild(obj) }
-	protected function isShowing(obj:DisplayObject):Boolean { return obj.parent != null }
+//	protected function hide(obj:DisplayObject):void { if (obj.parent) obj.parent.removeChild(obj); }
+	protected function hide(obj:DisplayObject):void { if (obj.parent == this) obj.parent.removeChild(obj); }
+	protected function show(obj:DisplayObject):void { if (obj.parent == this || !obj.parent) addChild(obj); }
+	protected function isShowing(obj:DisplayObject):Boolean { return obj.parent != null; }
 
 	public function onResize(e:Event):void {
 		fixLayout();
@@ -669,10 +677,10 @@ public class Scratch extends Sprite {
 	}
 
 	protected function updateContentArea(contentX:int, contentY:int, contentW:int, contentH:int, fullH:int):void {
-		imagesPart.x = soundsPart.x = contentX;
-		imagesPart.y = soundsPart.y = contentY;
-		imagesPart.setWidthHeight(contentW, contentH);
+		soundsPart.setXY(contentX, contentY);
 		soundsPart.setWidthHeight(contentW, contentH);
+		imagesPart.setXY(contentX, contentY);
+		imagesPart.setWidthHeight(contentW, contentH);
 		scriptsPart.setXY(contentX, contentY);
 		scriptsPart.setWidthHeight(contentW, contentH);
 

@@ -48,6 +48,7 @@ public class MediaInfo extends Sprite {
 	protected static var thumbnailHeight:int = 51;
 
 	// at most one of the following is non-null:
+	private var frameHeightOverride:int = -1;
 	public var mycostume:ScratchCostume;
 	public var mysprite:ScratchSprite;
 	public var mysound:ScratchSound;
@@ -65,8 +66,8 @@ public class MediaInfo extends Sprite {
 	private var frame:Shape; // visible when selected
 	protected var thumbnail:Bitmap;
 	protected var label:TextField;
-	private var info:TextField;
-	private var deleteButton:IconButton;
+	protected var info:TextField;
+	protected var deleteButton:IconButton;
 
 	public function MediaInfo(obj:*, owningObj:ScratchObj = null) {
 		owner = owningObj;
@@ -81,7 +82,7 @@ public class MediaInfo extends Sprite {
 			objType = 'sound';
 			objName = mysound.soundName;
 			md5 = mysound.md5;
-			if (owner) frameHeight = 75; // use a shorter frame for sounds in a MediaPane
+			if (owner) frameHeightOverride = 75; // use a shorter frame for sounds in a MediaPane
 		} else if (mysprite) {
 			objType = 'sprite';
 			objName = mysprite.objName;
@@ -109,6 +110,10 @@ public class MediaInfo extends Sprite {
 		unhighlight();
 		addDeleteButton();
 		updateLabelAndInfo(false);
+	}
+
+	protected function getFrameHeight():uint {
+		return frameHeightOverride > 0 ? frameHeightOverride : frameHeight;
 	}
 
 	public static function strings():Array {
@@ -341,7 +346,7 @@ public class MediaInfo extends Sprite {
 		var g:Graphics = frame.graphics;
 		g.lineStyle(3, CSS.overColor, 1, true);
 		g.beginFill(CSS.itemSelectedColor);
-		g.drawRoundRect(0, 0, frameWidth, frameHeight, 12, 12);
+		g.drawRoundRect(0, 0, frameWidth, getFrameHeight(), 12, 12);
 		g.endFill();
 		addChild(frame);
 	}
@@ -360,12 +365,12 @@ public class MediaInfo extends Sprite {
 		if (owner) computeThumbnail();
 	}
 
-	private function addLabelAndInfo():void {
+	protected function addLabelAndInfo():void {
 		label = Resources.makeLabel('', CSS.thumbnailFormat);
-		label.y = frameHeight - 28;
+		label.y = getFrameHeight() - 28;
 		addChild(label);
 		info = Resources.makeLabel('', CSS.thumbnailExtraInfoFormat);
-		info.y = frameHeight - 14;
+		info.y = getFrameHeight() - 14;
 		addChild(info);
 	}
 

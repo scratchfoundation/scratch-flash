@@ -47,21 +47,18 @@
 // understand the nesting of UI objects.
 
 package util {
-	import flash.display.*;
-import flash.events.Event;
+import flash.display.*;
 import flash.events.MouseEvent;
-	import flash.filters.*;
-	import flash.geom.*;
-	import flash.text.*;
-	import flash.utils.getTimer;
-	import blocks.*;
-	import scratch.*;
-
+import flash.filters.*;
+import flash.geom.*;
+import flash.text.*;
+import flash.utils.getTimer;
+import blocks.*;
+import scratch.*;
 import ui.DropTarget;
-
 import uiwidgets.*;
-	import svgeditor.*;
-	import watchers.*;
+import svgeditor.*;
+import watchers.*;
 
 public class GestureHandler {
 	public static const DROP_REJECTED:uint = 0;
@@ -75,6 +72,7 @@ public class GestureHandler {
 
 	// Grab-n-drop support:
 	public var carriedObj:Sprite;
+	private var originalObj:DisplayObject;
 	private var originalParent:DisplayObjectContainer;
 	private var originalPosition:Point;
 	private var originalScale:Number;
@@ -258,9 +256,6 @@ public class GestureHandler {
 
 	private var currentDropTarget:DropTarget;
 	private function handleDragging(event:MouseEvent):void {
-		var dragMove:DragEvent = new DragEvent(DragEvent.DRAG_DROP, null);
-		event.target.dispatchEvent(dragMove);
-
 		var dropTarget:DropTarget = getCurrentDropTarget();
 		if (dropTarget != currentDropTarget) {
 			if (currentDropTarget) currentDropTarget.dispatchEvent(new DragEvent(DragEvent.DRAG_OUT, carriedObj));
@@ -456,7 +451,9 @@ public class GestureHandler {
 		if (evt) drop(evt);
 
 		var globalP:Point = obj.localToGlobal(new Point(0, 0)); // record the original object's global position
+		originalObj = obj;
 		obj = obj.objToGrab(evt ? evt : new MouseEvent('')); // can return the original object, a new object, or null
+		originalObj.dispatchEvent(new DragEvent(DragEvent.DRAG_START, obj));
 		if (!obj) return; // not grabbable
 		if (obj.parent) globalP = obj.localToGlobal(new Point(0, 0)); // update position if not a copy
 
@@ -546,7 +543,9 @@ public class GestureHandler {
 		removeDropShadowFrom(carriedObj);
 		carriedObj.parent.removeChild(carriedObj);
 		carriedObj.scaleX = carriedObj.scaleY = originalScale;
-		if (!dropHandled(carriedObj, evt)) {
+
+		var dropAccepted:Boolean = dropHandled(carriedObj, evt);
+		if (!dropAccepted) {
 			if (carriedObj is Block) {
 				Block(carriedObj).restoreOriginalState();
 			} else if (originalParent) { // put carriedObj back where it came from
@@ -559,11 +558,16 @@ public class GestureHandler {
 					ss.updateBubble();
 				}
 			}
+
+			originalObj.dispatchEvent(new DragEvent(DragEvent.DRAG_CANCEL, carriedObj))
 		}
 		app.scriptsPane.draggingDone();
+		if (dropAccepted) originalObj.dispatchEvent(new DragEvent(DragEvent.DRAG_STOP, carriedObj));
 		carriedObj = null;
+		originalObj = null;
 		originalParent = null;
 		originalPosition = null;
+		currentDropTarget = null;
 	}
 
 	private function addDropShadowTo(o:DisplayObject):void {

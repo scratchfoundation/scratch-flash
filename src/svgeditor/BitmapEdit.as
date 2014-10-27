@@ -79,15 +79,15 @@ public class BitmapEdit extends ImageEdit {
 		return false;
 	}
 
-	protected override function getToolDefs():Array { return bitmapTools }
+	override protected function getToolDefs():Array { return bitmapTools }
 
-	protected override function onColorChange(e:Event):void {
+	override protected function onColorChange(e:Event):void {
 		var pencilTool:BitmapPencilTool = currentTool as BitmapPencilTool;
 		if (pencilTool) pencilTool.updateProperties();
 		super.onColorChange(e);
 	}
 
-	public override function shutdown():void {
+	override public function shutdown():void {
 		super.shutdown();
 
 		// Bake and save costume
@@ -99,7 +99,7 @@ public class BitmapEdit extends ImageEdit {
 	// Bitmap selection support
 	//------------------------------
 
-	public override function snapToGrid(toolsP:Point):Point {
+	override public function snapToGrid(toolsP:Point):Point {
 		var toolsLayer:Sprite = getToolsLayer();
 		var contentLayer:Sprite = workArea.getContentLayer();
 		var p:Point = contentLayer.globalToLocal(toolsLayer.localToGlobal(toolsP));
@@ -150,7 +150,7 @@ public class BitmapEdit extends ImageEdit {
 		}
 	}
 
-	protected override function selectHandler(evt:Event = null):void {
+	override protected function selectHandler(evt:Event = null):void {
 		if ((currentTool is ObjectTransformer && !(currentTool as ObjectTransformer).getSelection())) {
 			// User clicked away from the object transformer, so bake it in.
 			bakeIntoBitmap();
@@ -171,7 +171,7 @@ public class BitmapEdit extends ImageEdit {
 	// Load and Save Costume
 	//------------------------------
 
-	protected override function loadCostume(c:ScratchCostume):void {
+	override protected function loadCostume(c:ScratchCostume):void {
 		var bm:BitmapData = workArea.getBitmap().bitmapData;
 		bm.fillRect(bm.rect, bgColor()); // clear
 
@@ -186,7 +186,7 @@ public class BitmapEdit extends ImageEdit {
 		}
 	}
 
-	public override function addCostume(c:ScratchCostume, destP:Point):void {
+	override public function addCostume(c:ScratchCostume, destP:Point):void {
 		var el:SVGElement = SVGElement.makeBitmapEl(c.bitmapForEditor(isScene), 0.5);
 		var sel:SVGBitmap = new SVGBitmap(el, el.bitmap);
 		sel.redraw();
@@ -198,7 +198,7 @@ public class BitmapEdit extends ImageEdit {
 		(currentTool as ObjectTransformer).select(new Selection([sel]));
 	}
 
-	public override function saveContent(evt:Event = null):void {
+	override public function saveContent(evt:Event = null):void {
 		// Note: Don't save when there is an active selection or in text entry mode.
 		if (currentTool is ObjectTransformer) return;
 		if (currentTool is TextTool) return; // should select the text so it can be manipulated
@@ -343,7 +343,7 @@ public class BitmapEdit extends ImageEdit {
 	// Set costume center support
 	//------------------------------
 
-	public override function translateContents(x:Number, y:Number):void {
+	override public function translateContents(x:Number, y:Number):void {
 		var bm:BitmapData = workArea.getBitmap().bitmapData;
 		var newBM:BitmapData = new BitmapData(bm.width, bm.height, true, 0);
 		newBM.copyPixels(bm, bm.rect, new Point(Math.round(2 * x), Math.round(2 * y)));
@@ -375,7 +375,7 @@ public class BitmapEdit extends ImageEdit {
 		stampMode = true;
 	}
 
-	protected override function flipAll(vertical:Boolean):void {
+	override protected function flipAll(vertical:Boolean):void {
 		var oldBM:BitmapData = workArea.getBitmap().bitmapData;
 		var newBM:BitmapData = new BitmapData(oldBM.width, oldBM.height, true, 0);
 		var m:Matrix = new Matrix();
@@ -424,14 +424,14 @@ public class BitmapEdit extends ImageEdit {
 	// Clear/Undo/Redo
 	//------------------------------
 
-	public override function canClearCanvas():Boolean {
+	override public function canClearCanvas():Boolean {
 		// True if canvas has any marks.
 		var bm:BitmapData = workArea.getBitmap().bitmapData;
 		var r:Rectangle = bm.getColorBoundsRect(0xFFFFFFFF, bgColor(), false);
 		return (r.width > 0) && (r.height > 0);
 	}
 
-	public override function clearCanvas(ignore:* = null):void {
+	override public function clearCanvas(ignore:* = null):void {
 		setToolMode('bitmapBrush');
 		var bm:BitmapData = workArea.getBitmap().bitmapData;
 		bm.fillRect(bm.rect, bgColor());
@@ -440,7 +440,7 @@ public class BitmapEdit extends ImageEdit {
 
 	private function bgColor():int { return isScene ? 0xFFFFFFFF : 0 }
 
-	protected override function restoreUndoState(undoRec:Array):void {
+	override public function restoreUndoState(undoRec:Array):void {
 		var c:ScratchCostume = targetCostume;
 		c.setBitmapData(undoRec[0], undoRec[1], undoRec[2]);
 		loadCostume(c);

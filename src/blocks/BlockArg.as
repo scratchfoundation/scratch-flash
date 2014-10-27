@@ -107,6 +107,10 @@ public class BlockArg extends Sprite {
 				isEditable = true;
 			}
 			field.addEventListener(FocusEvent.FOCUS_OUT, stopEditing);
+			// Stop editing when the enter key is pressed
+			field.addEventListener(KeyboardEvent.KEY_DOWN, function(e:KeyboardEvent):void {
+				if (e.keyCode == 13) stage.focus = null;
+			});
 			addChild(field);
 			textChanged(null);
 		} else {
@@ -190,7 +194,7 @@ public class BlockArg extends Sprite {
 		}
 	}
 
-	private function stopEditing(ignore:*):void {
+	protected function stopEditing(ignore:*):void {
 		field.type = TextFieldType.DYNAMIC;
 		field.selectable = false;
 	}
@@ -249,9 +253,13 @@ public class BlockArg extends Sprite {
 		if (menuIcon) menuIcon.x = w - menuIcon.width - 3;
 		base.setWidth(w);
 		base.redraw();
-		if (parent is Block) Block(parent).fixExpressionLayout();
+		fixLayout();
 
 		if (evt && Scratch.app) Scratch.app.setSaveNeeded();
+	}
+
+	protected function fixLayout():void {
+		if (parent is Block) Block(parent).fixExpressionLayout();
 	}
 
 	protected function invokeMenu(evt:MouseEvent):void {

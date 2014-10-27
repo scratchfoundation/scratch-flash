@@ -24,21 +24,23 @@
 // as well as the image editor, camera, import button and other image media tools.
 
 package ui.parts {
-	import flash.display.*;
-	import flash.events.MouseEvent;
-	import flash.geom.*;
-	import flash.text.*;
-	import flash.utils.setTimeout;
-	import scratch.*;
-	import svgeditor.*;
-	import svgutils.*;
-	import translation.Translator;
-	import ui.media.*;
-	import uiwidgets.*;
+import flash.display.*;
+import flash.events.MouseEvent;
+import flash.geom.*;
+import flash.text.*;
+import flash.utils.setTimeout;
+import scratch.*;
+import svgeditor.*;
+import svgutils.*;
+import translation.Translator;
+import ui.media.*;
+import ui.parts.base.IImagesPart;
 
-public class ImagesPart extends UIPart {
+import uiwidgets.*;
 
-	public var editor:ImageEdit;
+public class ImagesPart extends UIPart implements IImagesPart {
+
+	protected var editor:ImageEdit;
 
 	private const columnWidth:int = 106;
 	private const contentsX:int = columnWidth + 13;
@@ -93,6 +95,26 @@ public class ImagesPart extends UIPart {
 		];
 	}
 
+	public function setCostume(costume:ScratchCostume, isScene:Boolean):void {
+		editor.setCostume(costume, isScene);
+	}
+
+	public function shutdownEditor():void {
+		editor.shutdown();
+	}
+
+	public function restoreUndoState(undoRec:Array):void {
+		editor.restoreUndoState(undoRec);
+	}
+
+	public function usingBitmapEditor():Boolean {
+		return editor is BitmapEdit;
+	}
+
+	public function enableTools(enable:Boolean):void {
+		editor.enableTools(enable);
+	}
+
 	public function updateTranslation():void {
 		clearButton.setLabel(Translator.map('Clear'));
 		libraryButton.setLabel(Translator.map('Add'));
@@ -133,7 +155,7 @@ public class ImagesPart extends UIPart {
 		listFrame.updateScrollbars();
 	}
 
-	public function setWidthHeight(w:int, h:int):void {
+	public function setWidthHeight(w:uint, h:uint):void {
 		this.w = w;
 		this.h = h;
 		var g:Graphics = shape.graphics;
@@ -291,8 +313,8 @@ public class ImagesPart extends UIPart {
 
 	public function convertToBitmap():void {
 		function finishConverting():void {
-			var c:ScratchCostume = editor.targetCostume;
-			var forStage:Boolean = editor.isScene;
+			var c:ScratchCostume = editor.getCostume();
+			var forStage:Boolean = editor.editingScene();
 			var zoomAndScroll:Array = editor.getZoomAndScroll();
 			useBitmapEditor(true);
 
@@ -312,8 +334,8 @@ public class ImagesPart extends UIPart {
 		if (editor is SVGEdit) return;
 		editor.shutdown();
 		editor.setToolMode('select', true);
-		var c:ScratchCostume = editor.targetCostume;
-		var forStage:Boolean = editor.isScene;
+		var c:ScratchCostume = editor.getCostume();
+		var forStage:Boolean = editor.editingScene();
 		var zoomAndScroll:Array = editor.getZoomAndScroll();
 		useBitmapEditor(false);
 
@@ -483,5 +505,4 @@ public class ImagesPart extends UIPart {
 			else Scratch.app.showTip('scratchUI');
 		}
 	}
-
 }}

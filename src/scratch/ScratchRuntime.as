@@ -268,13 +268,13 @@ public class ScratchRuntime {
 	// Edge-trigger sensor hats
 	//------------------------------
 
-	private var triggeredHats:Array = [];
+	protected var triggeredHats:Array = [];
 
 	private function clearEdgeTriggeredHats():void { edgeTriggersEnabled = true; triggeredHats = [] }
 
 	// hats whose triggering condition is currently true
-	private var activeHats:Array = [];
-	private function startEdgeTriggeredHats(hat:Block, target:ScratchObj):void {
+	protected var activeHats:Array = [];
+	protected function startEdgeTriggeredHats(hat:Block, target:ScratchObj):void {
 		if (!hat.isHat || !hat.nextBlock) return; // skip disconnected hats
 
 		var triggerCondition:Boolean = false;

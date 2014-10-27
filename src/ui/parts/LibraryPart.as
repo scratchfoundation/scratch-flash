@@ -93,11 +93,6 @@ public class LibraryPart extends UIPart implements ILibraryPart{
 		];
 	}
 
-	public function setXY(x:Number, y:Number):void {
-		this.x = x;
-		this.y = y;
-	}
-
 	public function updateTranslation():void {
 		spritesTitle.text = Translator.map('Sprites');
 		newSpriteLabel.text = Translator.map('New sprite:');

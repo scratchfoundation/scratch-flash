@@ -79,10 +79,10 @@ public class PaletteSelector extends Sprite {
 			addChild(item);
 			y += itemH;
 		}
-		setWidthHeightColor(w, startY + (numberOfRows * itemH) + 5);
+		setWidthHeight(w, startY + (numberOfRows * itemH) + 5);
 	}
 
-	protected function setWidthHeightColor(w:int, h:int):void {
+	public function setWidthHeight(w:int, h:int):void {
 		var g:Graphics = graphics;
 		g.clear();
 		g.beginFill(0xFFFF00, 0); // invisible (alpha = 0) rectangle used to set size

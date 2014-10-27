@@ -49,12 +49,12 @@ public class MP3SoundPlayer extends ScratchSoundPlayer {
 		this.soundData = mp3Data;
 	}
 
-	public override function atEnd():Boolean {
+	override public function atEnd():Boolean {
 		if (isLoading) return false;
 		return soundChannel == null;
 	}
 
-	public override function startPlaying(doneFunction:Function = null):void {
+	override public function startPlaying(doneFunction:Function = null):void {
 		function loadDone(snd:Sound):void {
 			mp3Sound = snd;
 			startChannel(doneFunction);

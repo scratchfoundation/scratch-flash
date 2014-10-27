@@ -141,7 +141,7 @@ public class Watcher extends Sprite implements DragClient {
 		isDiscrete = (int(min) == min) && (int(max) == max) && (int(val) == val);
 	}
 
-	public override function hitTestPoint(globalX:Number, globalY:Number, shapeFlag:Boolean = true):Boolean {
+	override public function hitTestPoint(globalX:Number, globalY:Number, shapeFlag:Boolean = true):Boolean {
 		if (!visible) return false;
 		if (frame.visible) return frame.hitTestPoint(globalX, globalY, shapeFlag);
 		return readout.hitTestPoint(globalX, globalY, shapeFlag);

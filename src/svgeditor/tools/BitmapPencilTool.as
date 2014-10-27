@@ -85,7 +85,7 @@ public final class BitmapPencilTool extends SVGTool {
 		updateProperties();
 		canvas = editor.getWorkArea().getBitmap().bitmapData;
 		// when editing a backdrop/scene, erase by drawing with white
-		var eraseWithWhite:Boolean = editor.isScene && (eraseMode || (brushColor == 0));
+		var eraseWithWhite:Boolean = editor.editingScene() && (eraseMode || (brushColor == 0));
 		brush = makeBrush(brushSize, (eraseWithWhite ? 0xFFFFFFFF : brushColor));
 		eraser = makeBrush(brushSize, 0, 0xFFFFFFFF);
 		tempBM = new BitmapData(brushSize, brushSize, true, 0);
@@ -192,7 +192,7 @@ public final class BitmapPencilTool extends SVGTool {
 	private function drawAtPoint(p:Point):void {
 		// Stamp with the brush or erase with the eraser at the given point.
 		var isErasing:Boolean = eraseMode || (brushColor == 0);
-		if (isErasing && !editor.isScene) {
+		if (isErasing && !editor.editingScene()) {
 			var r:Rectangle = new Rectangle(p.x, p.y, brushSize, brushSize);
 			tempBM.fillRect(tempBM.rect, 0);
 			tempBM.copyPixels(canvas, r, new Point(0, 0), eraser, new Point(0, 0), true);

@@ -100,11 +100,6 @@ public class BaseScriptsPart extends UIPart implements IScriptsPart {
 		this.h = h;
 	}
 
-	public function setXY(x:Number, y:Number):void {
-		this.x = x;
-		this.y = y;
-	}
-
 	protected function getPaletteSelector():PaletteSelector {
 		return new PaletteSelector(app);
 	}

@@ -9,10 +9,11 @@ import ui.DropTarget;
 public class DragEvent extends Event {
 	public static const DRAG_START:String   = 'dragStart';
 	public static const DRAG_STOP:String    = 'dragStop';
+	public static const DRAG_CANCEL:String  = 'dragCancel';
 	public static const DRAG_OVER:String    = 'dragOver';
 	public static const DRAG_MOVE:String    = 'dragMove';
 	public static const DRAG_OUT:String     = 'dragOut';
-	public static const DRAG_DROP:String     = 'dragDrop';
+	public static const DRAG_DROP:String    = 'dragDrop';
 	private var _draggedObj:DisplayObject;
 	private var _acceptedBy:DropTarget;
 	public function DragEvent(type:String, obj:DisplayObject) {
@@ -20,7 +21,7 @@ public class DragEvent extends Event {
 		super(type, true, true);
 
 		// DragEvents won't propagate and are only dispatched on DropTargets
-		stopPropagation();
+		//if (type != DRAG_START) stopPropagation();
 	}
 
 	public function get draggedObject():DisplayObject {

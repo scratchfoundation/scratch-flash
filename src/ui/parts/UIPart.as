@@ -133,4 +133,8 @@ public class UIPart extends Sprite {
 		return arrow;
 	}
 
+	public function setXY(x:Number, y:Number):void {
+		this.x = x;
+		this.y = y;
+	}
 }}

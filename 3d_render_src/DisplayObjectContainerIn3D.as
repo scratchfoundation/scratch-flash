@@ -1620,9 +1620,9 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 						"mul ft1.w, ft1.w, v1.z\n"+     // varying alpha in v1.z
 						"mov oc, ft1\n"   // fill ft0.x with v0.x and ft0.w with v0.w
 		);
-
+/*
 		fragmentShaderAssembler.assemble( Context3DProgramType.FRAGMENT,
-				/*** Move the texture coordinates into the sub-texture space ***/
+				// Move the texture coordinates into the sub-texture space
 						"mul ft0.xyzw, v0.xyxy, v1.xyxy\n" +
 						"add ft0.xy, ft0.xy, v0.zw\n" +
 
@@ -1670,6 +1670,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D
 
 				//"tex oc, ft0, fs0 <2d,clamp,linear,nomip>\n"
 		);
+*/
 	}
 
 	private function context3DCreated(e:Event):void {

@@ -483,7 +483,7 @@ public class Interpreter {
 		}
 	}
 
-	public function primNoop(b:Block):void { }
+	public static function primNoop(b:Block):void { }
 
 	private function primForLoop(b:Block):void {
 		var list:Array = [];

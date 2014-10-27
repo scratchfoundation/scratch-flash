@@ -237,7 +237,7 @@ public class ScratchSprite extends ScratchObj {
 			updateRenderDetails(1);
 	}
 
-	protected override function adjustForRotationCenter():void {
+	override protected function adjustForRotationCenter():void {
 		super.adjustForRotationCenter();
 		geomShape.scaleX = img.getChildAt(0).scaleX;
 	}
@@ -291,7 +291,7 @@ public class ScratchSprite extends ScratchObj {
 		return (rotationStyle == 'leftRight') && (direction < 0);
 	}
 
-	public override function clearCachedBitmap():void {
+	override public function clearCachedBitmap():void {
 		super.clearCachedBitmap();
 		cachedBitmap = null;
 		cachedBounds = null;
@@ -308,7 +308,7 @@ public class ScratchSprite extends ScratchObj {
 		}
 	}
 
-	public override function hitTestPoint(globalX:Number, globalY:Number, shapeFlag:Boolean = true):Boolean {
+	override public function hitTestPoint(globalX:Number, globalY:Number, shapeFlag:Boolean = true):Boolean {
 		if ((!visible) || (img.transform.colorTransform.alphaMultiplier == 0)) return false;
 		var p:Point = parent.globalToLocal(new Point(globalX, globalY));
 		var myRect:Rectangle = bounds();
@@ -316,7 +316,7 @@ public class ScratchSprite extends ScratchObj {
 		return shapeFlag ? bitmap().hitTest(myRect.topLeft, 1, p) : true;
 	}
 
-	public override function getBounds(space:DisplayObject):Rectangle {
+	override public function getBounds(space:DisplayObject):Rectangle {
 		//if(space == this && geomShape.parent) img.removeChild(geomShape);
 		var b:Rectangle = getChildAt(0).getBounds(space);
 		//img.addChild(geomShape);
@@ -429,7 +429,7 @@ public class ScratchSprite extends ScratchObj {
 		return newR;
 	}
 
-	public override function defaultArgsFor(op:String, specDefaults:Array):Array {
+	override public function defaultArgsFor(op:String, specDefaults:Array):Array {
 		if ('gotoSpriteOrMouse:' == op) return ['_mouse_'];
 		if ('gotoX:y:' == op) return [Math.round(scratchX), Math.round(scratchY)];
 		if ('glideSecs:toX:y:elapsed:from:' == op) return [1, Math.round(scratchX), Math.round(scratchY)];
@@ -633,7 +633,7 @@ public class ScratchSprite extends ScratchObj {
 
 	/* Saving */
 
-	public override function writeJSON(json:util.JSON):void {
+	override public function writeJSON(json:util.JSON):void {
 		super.writeJSON(json);
 		json.writeKeyValue('scratchX', scratchX);
 		json.writeKeyValue('scratchY', scratchY);
@@ -646,7 +646,7 @@ public class ScratchSprite extends ScratchObj {
 		json.writeKeyValue('spriteInfo', spriteInfo);
 	}
 
-	public override function readJSON(jsonObj:Object):void {
+	override public function readJSON(jsonObj:Object):void {
 		super.readJSON(jsonObj);
 		scratchX = jsonObj.scratchX;
 		scratchY = jsonObj.scratchY;
@@ -688,7 +688,7 @@ public class ScratchSprite extends ScratchObj {
 		applyFilters(true);
 	}
 
-	public override function stopDrag():void {
+	override public function stopDrag():void {
 		super.stopDrag();
 		applyFilters();
 	}

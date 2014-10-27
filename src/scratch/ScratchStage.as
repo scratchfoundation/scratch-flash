@@ -158,7 +158,7 @@ public class ScratchStage extends ScratchObj implements DropTarget {
 	public function scratchMouseX():int { return Math.max(-240, Math.min(mouseX - (STAGEW / 2), 240)) }
 	public function scratchMouseY():int { return -Math.max(-180, Math.min(mouseY - (STAGEH / 2), 180)) }
 
-	public override function allObjects():Array {
+	override public function allObjects():Array {
 		// Return an array of all sprites in this project plus the stage.
 		var result:Array = sprites();
 		result.push(this);
@@ -729,7 +729,7 @@ public class ScratchStage extends ScratchObj implements DropTarget {
 
 	/* Saving */
 
-	public override function writeJSON(json:util.JSON):void {
+	override public function writeJSON(json:util.JSON):void {
 		super.writeJSON(json);
 		var children:Array = [];
 		for (var i:int = 0; i < numChildren; i++) {
@@ -760,7 +760,7 @@ public class ScratchStage extends ScratchObj implements DropTarget {
 		json.writeKeyValue('info', info);
 	}
 
-	public override function readJSON(jsonObj:Object):void {
+	override public function readJSON(jsonObj:Object):void {
 		var children:Array, i:int, o:Object;
 
 		// read stage fields
@@ -811,7 +811,7 @@ public class ScratchStage extends ScratchObj implements DropTarget {
 		}
 	}
 
-	public override function getSummary():String {
+	override public function getSummary():String {
 		var summary:String = super.getSummary();
 		for each (var s:ScratchSprite in sprites()) {
 			summary += "\n\n" + s.getSummary();

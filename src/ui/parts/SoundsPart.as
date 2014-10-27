@@ -24,19 +24,21 @@
 // as well as the sound recorder, editor, and import button.
 
 package ui.parts {
-	import flash.display.*;
-	import flash.events.KeyboardEvent;
-	import flash.geom.*;
-	import flash.text.*;
-	import assets.Resources;
-	import scratch.*;
-	import sound.WAVFile;
-	import soundedit.SoundEditor;
-	import translation.Translator;
-	import ui.media.*;
-	import uiwidgets.*;
+import flash.display.*;
+import flash.events.KeyboardEvent;
+import flash.geom.*;
+import flash.text.*;
+import assets.Resources;
+import scratch.*;
+import sound.WAVFile;
+import soundedit.SoundEditor;
+import translation.Translator;
+import ui.media.*;
+import ui.parts.base.ISoundsPart;
 
-public class SoundsPart extends UIPart {
+import uiwidgets.*;
+
+public class SoundsPart extends UIPart implements ISoundsPart {
 
 	public var editor:SoundEditor;
 	public var currentIndex:int;
@@ -68,6 +70,8 @@ public class SoundsPart extends UIPart {
 		app.stage.addEventListener(KeyboardEvent.KEY_DOWN, editor.keyDown);
 		updateTranslation();
 	}
+
+	public function shutdownEditor():void { editor.shutdown(); }
 
 	public static function strings():Array {
 		new SoundsPart(Scratch.app).showNewSoundMenu(Menu.dummyButton());
@@ -126,7 +130,7 @@ public class SoundsPart extends UIPart {
 		}
 	}
 
-	public function setWidthHeight(w:int, h:int):void {
+	public function setWidthHeight(w:uint, h:uint):void {
 		this.w = w;
 		this.h = h;
 		var g:Graphics = shape.graphics;

@@ -533,8 +533,8 @@ public class DrawPropertyUI extends Sprite {
 	}
 
 	private function makeModeLabelAndButton():void {
-		function convertToBitmap():void { editor.imagesPart.convertToBitmap() }
-		function convertToVector():void { editor.imagesPart.convertToVector() }
+		function convertToBitmap():void { Scratch.app.imagesPart.convertToBitmap() }
+		function convertToVector():void { Scratch.app.imagesPart.convertToVector() }
 
 		modeLabel = Resources.makeLabel(
 			Translator.map((editor is SVGEdit) ? 'Vector Mode' : 'Bitmap Mode'),
