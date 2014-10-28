@@ -57,7 +57,7 @@ public class ScrollFrameContents extends Sprite {
 	public function updateSize():void {
 		// Make my size a little bigger necessary to subsume all my children.
 		// Also ensure that the x and y positions of all children are positive.
-		var minX:int, maxX:int, minY:int, maxY:int
+		var minX:int = 5, maxX:int, minY:int = 5, maxY:int;
 		var child:DisplayObject, i:int;
 		for (i = 0; i < numChildren; i++) {
 			child = getChildAt(i);
