@@ -443,6 +443,11 @@ public class ScratchObj extends Sprite {
 		return false;
 	}
 
+	public function hasName(varName:String):Boolean {
+		var p:ScratchObj = parent as ScratchObj;
+		return ownsVar(varName) || ownsList(varName) || p && (p.ownsVar(varName) || p.ownsList(varName));
+	}
+
 	public function lookupOrCreateVar(varName:String):Variable {
 		// Lookup and return a variable. If lookup fails, create the variable in this object.
 		var v:Variable = lookupVar(varName);

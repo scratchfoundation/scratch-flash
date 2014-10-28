@@ -642,17 +642,14 @@ public class BlockMenus implements DragClient {
 	private function renameVar():void {
 		function doVarRename(dialog:DialogBox):void {
 			var newName:String = dialog.getField('New name').replace(/^\s+|\s+$/g, '');
-			if (newName.length == 0 || app.viewedObj().lookupVar(newName)) return;
-			if (block.op != Specs.GET_VAR) return;
+			if (newName.length == 0 || block.op != Specs.GET_VAR) return;
 			var oldName:String = blockVarOrListName();
 
 			if (oldName.charAt(0) == '\u2601') { // Retain the cloud symbol
 				newName = '\u2601 ' + newName;
 			}
 
-			app.runtime.renameVariable(oldName, newName, block);
-			setBlockVarOrListName(newName);
-			app.updatePalette();
+			app.runtime.renameVariable(oldName, newName);
 		}
 		var d:DialogBox = new DialogBox(doVarRename);
 		d.addTitle(Translator.map('Rename') + ' ' + blockVarOrListName());
