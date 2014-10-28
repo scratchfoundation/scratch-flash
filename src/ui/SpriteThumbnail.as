@@ -45,6 +45,7 @@ public class SpriteThumbnail extends Sprite {
 	private var thumbnail:Bitmap;
 	private var label:TextField;
 	private var sceneInfo:TextField;
+	private var normalFrame:Shape;
 	private var selectedFrame:Shape;
 	private var highlightFrame:Shape;
 	private var infoSprite:Sprite;
@@ -58,6 +59,7 @@ public class SpriteThumbnail extends Sprite {
 		this.targetObj = targetObj;
 		this.app = app;
 
+		if (!targetObj.isStage) addNormalFrame();
 		addSelectedFrame();
 		addHighlightFrame();
 
@@ -90,6 +92,15 @@ public class SpriteThumbnail extends Sprite {
 		detailsButton.isMomentary = true;
 		detailsButton.visible = false;
 		addChild(detailsButton);
+	}
+
+	private function addNormalFrame():void {
+		normalFrame = new Shape();
+		var g:Graphics = normalFrame.graphics;
+		g.lineStyle(1, CSS.borderColor, 1, true);
+		g.drawRect(-4, -4, frameW + 8, frameH + 8);
+		g.endFill();
+		addChild(normalFrame);
 	}
 
 	private function addSelectedFrame():void {

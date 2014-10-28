@@ -203,10 +203,10 @@ public class LibraryPart extends UIPart {
 			tn.x = nextX;
 			tn.y = nextY;
 			spritesPane.addChild(tn);
-			nextX += tn.width;
-			if ((nextX + tn.width) > rightEdge) { // start new line
+			nextX += tn.width - 1;
+			if ((nextX + tn.width - 1) > rightEdge) { // start new line
 				nextX = inset;
-				nextY += tn.height;
+				nextY += tn.height - 1;
 			}
 		}
 		spritesPane.updateSize();
