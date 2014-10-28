@@ -351,6 +351,7 @@ public class Scratch extends Sprite {
 		return [
 			'a copy of the project file on your computer.',
 			'Project not saved!', 'Save now', 'Not saved; project did not load.',
+			'Save project?', 'Don\'t save',
 			'Save now', 'Saved',
 			'Revert', 'Undo Revert', 'Reverting...',
 			'Throw away all changes since opening this project?',
@@ -808,7 +809,7 @@ public class Scratch extends Sprite {
 			return;
 		}
 		var d:DialogBox = new DialogBox();
-		d.addTitle(Translator.map('Save project') + '?');
+		d.addTitle('Save project?');
 		d.addButton('Save', save);
 		d.addButton('Don\'t save', proceedWithoutSaving);
 		d.addButton('Cancel', cancel);
