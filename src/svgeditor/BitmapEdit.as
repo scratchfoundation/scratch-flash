@@ -61,22 +61,11 @@ public class BitmapEdit extends ImageEdit {
 	];
 
 	private var offscreenBM:BitmapData;
-	private var lastToolMode:String;
 
 	public function BitmapEdit(app:Scratch, imagesPart:ImagesPart) {
 		super(app, imagesPart);
 		addStampTool();
 		setToolMode('bitmapBrush');
-	}
-
-	public function revertToCreateTool(e:MouseEvent):Boolean {
-		// If just finished creating and placing a rect or ellipse, return to that tool.
-		if (toolMode == 'bitmapSelect' && ((lastToolMode == 'rect') || (lastToolMode == 'ellipse'))) {
-			setToolMode(lastToolMode);
-			(currentTool as SVGCreateTool).eventHandler(e);
-			return true;
-		}
-		return false;
 	}
 
 	protected override function getToolDefs():Array { return bitmapTools }
@@ -229,40 +218,22 @@ public class BitmapEdit extends ImageEdit {
 		Scratch.app.setSaveNeeded();
 	}
 
-	override public function setToolMode(newMode:String, bForce:Boolean = false):void {
+	override public function setToolMode(newMode:String, bForce:Boolean = false, fromButton:Boolean = false):void {
 		highlightTool('none');
-		if (('bitmapSelect' == newMode) && (('ellipse' == toolMode) || ('rect' == toolMode))) {
-			lastToolMode = toolMode;
-		} else {
-			lastToolMode = '';
-		}
 		var obj:ISVGEditable = null;
 		if (newMode != toolMode && currentTool is SVGEditTool)
 			obj = (currentTool as SVGEditTool).getObject();
 
 		var prevToolMode:String = toolMode;
-		super.setToolMode(newMode, bForce);
-		if (lastToolMode != '') highlightTool(lastToolMode);
+		super.setToolMode(newMode, bForce, fromButton);
 
 		if (obj) {
-			if (currentTool is TextTool && prevToolMode == 'bitmapSelect') {
-				(currentTool as TextTool).setObject(obj);
-			}
-			else if (!(currentTool is ObjectTransformer)) {
+			if (!(currentTool is ObjectTransformer)) {
 				// User was editing an object and switched tools, bake the object
 				bakeIntoBitmap();
 				saveToCostume();
 			}
 		}
-	}
-
-	private function highlightTool(toolName:String):void {
-		// Hack! This method forces a given to be highlighted even if that's not the
-		// actual mode. Used to force shape buttons to stay highlighted even when moving
-		// the shape around with the select tool.
-		if (!toolName || (toolName == '')) return;
-		for each (var btn:IconButton in toolButtons) btn.turnOff();
-		if (toolButtons[toolName]) toolButtons[toolName].turnOn();
 	}
 
 	private function createdObjectIsEmpty():Boolean {

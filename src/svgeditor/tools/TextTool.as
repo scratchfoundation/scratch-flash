@@ -158,7 +158,7 @@ package svgeditor.tools
 			dispatchEvent(new Event(Event.CHANGE));
 		}
 
-		override protected function mouseDown(e:MouseEvent):void {
+		override public function mouseDown(e:MouseEvent):void {
 			var wasEditing:Boolean = !!object;
 			var obj:ISVGEditable = getEditableUnderMouse(false);
 			var origObj:ISVGEditable = object;
