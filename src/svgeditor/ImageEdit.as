@@ -239,6 +239,9 @@ package svgeditor {
 		public function enableTools(enabled:Boolean):void {
 			uiLayer.mouseChildren = enabled;
 			uiLayer.alpha = enabled ? 1.0 : 0.6;
+			if (!enabled) {
+				setToolMode('select');
+			}
 		}
 
 		public function isActive():Boolean {
