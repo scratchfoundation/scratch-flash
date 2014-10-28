@@ -298,6 +298,11 @@ public class Block extends Sprite {
 		}
 	}
 
+	public function argType(arg:DisplayObject):String {
+		var i:int = labelsAndArgs.indexOf(arg);
+		return i == -1 ? '' : argTypes[i];
+	}
+
 	public function allBlocksDo(f:Function):void {
 		f(this);
 		for each (var arg:* in args) {
