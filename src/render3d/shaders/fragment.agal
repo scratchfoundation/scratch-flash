@@ -20,31 +20,44 @@ macro sat(x) { sat out, x }
 macro sin(x) { sin out, x }
 macro sqt(x) { sqt out, x }
 
+// TODO: create and inject these macros from AS3
+alias v3.wwww, Tex_index
+alias v0.xyxy, Tex_uv
+alias v0.zwzw, Tex_u0v0
+alias v1.xyxy, Tex_wh
+alias v1.zzzz, FX_alpha
+alias v1.wwww, FX_mosaic
+alias v2.xyxy, FX_pixel
+alias v2.zzzz, FX_whirl
+alias v3.xxxx, FX_hueShift
+alias v3.yyyy, FX_fisheye
+alias v3.zzzz, FX_brightness
+
 
 /*** Mosaic effect ***/
 #if EFFECT_mosaic
-ft0.xyzw = v0.xyxy * v1.wwww
+ft0.xyzw = Tex_uv * FX_mosaic
 ft0.xyzw = frc(ft0.xyzw)
 #else
-ft0.xyzw = v0.xyxy
+ft0.xyzw = Tex_uv
 #endif
 
 /*** Pixelate effect ***/
 #if EFFECT_pixelate
 // Do xy = int(xy / pixels) * pixels
-ft2.xyzw = ft0.xyxy / v2.xyxy
+ft2.xyzw = ft0.xyxy / FX_pixel
 ft1.xyzw = frc(ft2.xyzw)
 ft2.xyzw -= ft1.xyzw
-ft2.xyzw *= v2.xyxy
+ft2.xyzw *= FX_pixel
 
 // Get the middle pixel
-ft1.xy = v2.xy / fc0.yy
+ft1.xy = FX_pixel / fc0.yy
 ft2.xyzw = ft2.xyxy + ft1.xyxy
 
 // Use the pixelated UV?
-ft1.x = v2.x >= 0 // is pixelate_x >= 0?
+ft1.x = FX_pixel >= 0 // is pixelate_x >= 0?
 ft2.xyzw *= ft1.xxxx // then use the pixelated UV
-ft1.x = v2.x < 0 // is pixelate_x < 0?
+ft1.x = FX_pixel < 0 // is pixelate_x < 0?
 ft0.xyzw *= ft1.xxxx // then use the pixelated UV
 ft0.xyzw += ft2.xyzw // Add them together
 #endif // EFFECT_pixelate
@@ -60,7 +73,7 @@ ft1.y = ft1.x / 0.5 // radius = 0.5 (to the edge)
 ft1.y = 1 - ft1.y // ft1.y = factor
 
 ft1.z = ft1.y * ft1.y
-ft1.z *= v2.z // ft1.z = a, using v2.w for whirlRadians
+ft1.z *= FX_whirl // ft1.z = a
 ft2.x = sin(ft1.zzzz) // ft2.x = sinAngle
 ft2.y = cos(ft1.zzzz) // ft2.y = cosAngle
 
@@ -82,7 +95,7 @@ ft0.xy += ft4.xy
 ft0.xy = sat(ft0.xy)
 #endif // EFFECT_whirl
 
-/*** Fisheye effect ***/ // fisheye = v3.y
+/*** Fisheye effect ***/
 #if EFFECT_fisheye
 ft1.xy = ft0.xy - fc0.ww // ft0.xy = vec = (uv - [0.5,0.5])
 ft2.xy = ft1.xy / fc0.ww // vec = vec / [0.5, 0.5]
@@ -96,7 +109,7 @@ ft3.x = 0.001 * ft3.y //tiny = 0.000001 * len_eq_zero; = ft3.x
 ft1.x += ft3.x //len = len + tiny;
 
 ft2.xy /= ft1.xx // vec2 = vec / len;
-ft1.y = pow(ft1.x, v3.y) // r = pow(len, scaledPower);
+ft1.y = pow(ft1.x, FX_fisheye) // r = pow(len, scaledPower);
 ft2.xy *= ft1.yy // coords = center + (r * vec2 * center);
 ft2.xy *= fc0.ww
 ft2.xy += fc0.ww
@@ -109,45 +122,45 @@ ft0.xy += ft2.xy
 #endif // EFFECT_fisheye
 
 /*** Move the texture coordinates into the sub-texture space ***/
-ft0.xyzw *= v1.xyxy
-ft0.xy += v0.zw
+ft0.xyzw *= Tex_wh
+ft0.xy += Tex_u0v0
 
 /*** Select texture to use ***/
 // Get the texture pixel using ft0.xy as the coordinates
-ft5 = v3.w == 0	// Use texture 0?
+ft5 = Tex_index == 0	// Use texture 0?
 ft1 = tex<2d,clamp,linear,nomip>(ft0, fs0)
 ft1 *= ft5
 
 #if MAXTEXTURE > 0
-ft5 = v3.w == 1	// Use texture 1?
+ft5 = Tex_index == 1	// Use texture 1?
 ft2 = tex<2d,clamp,linear,nomip>(ft0, fs1)
 ft2 *= ft5
 ft1 += ft2
 #endif // MAXTEXTURE > 0
 
 #if MAXTEXTURE > 1
-ft5 = v3.w == 2	// Use texture 2?
+ft5 = Tex_index == 2	// Use texture 2?
 ft3 = tex<2d,clamp,linear,nomip>(ft0, fs2)
 ft3 *= ft5
 ft1 += ft3
 #endif // MAXTEXTURE > 1
 
 #if MAXTEXTURE > 2
-ft5 = v3.w == 3	// Use texture 3?
+ft5 = Tex_index == 3	// Use texture 3?
 ft4 = tex<2d,clamp,linear,nomip>(ft0, fs3)
 ft4 *= ft5
 ft1 += ft4
 #endif // MAXTEXTURE > 2
 
 #if MAXTEXTURE > 3
-ft5 = v3.w == 4	// Use texture 4?
+ft5 = Tex_index == 4	// Use texture 4?
 ft4 = tex<2d,clamp,linear,nomip>(ft0, fs4)
 ft4 *= ft5
 ft1 += ft4
 #endif // MAXTEXTURE > 3
 
 #if MAXTEXTURE > 4
-ft5 = v3.w == 5	// Use texture 5?
+ft5 = Tex_index == 5	// Use texture 5?
 ft4 = tex<2d,clamp,linear,nomip>(ft0, fs5)
 ft4 *= ft5
 ft1 += ft4
@@ -234,7 +247,7 @@ ft2.y *= ft3.z //float s = s_span_not_zero * span_not_zero;	s	= ft2.y
 
 //				if (hueShift != 0.0 && v < 0.11) { v = 0.11; s = 1.0; }
 /*** ft3 is now free ***/  // Check this section for accuracy / mistakes
-ft3.y = v3.x != 0 //int hs_not_zero = (hueShift != 0.0);	hs_not_zero	= ft3.y
+ft3.y = FX_hueShift != 0 //int hs_not_zero = (hueShift != 0.0);	hs_not_zero	= ft3.y
 ft3.z = ft2.z < 0.11 //int v_lt_0_11 = (v < 0.11);			v_lt_0_11	= ft3.z
 ft3.z *= ft3.y //v_lt_0_11 = v_lt_0_11 * hs_not_zero;
 ft3.w = ft3.z == 0 //int !v_lt_0_11						!v_lt_0_11	= ft3.w
@@ -266,7 +279,7 @@ ft4.z = ft4.z == 0 //v_eq_0_11_or_s_eq_0_09 = !v_eq_0_11_or_s_eq_0_09
 ft2.x *= ft4.z //h = h * (!v_eq_0_11_or_s_eq_0_09);
 
 //				h = mod(h + hueShift, 360.0);
-ft2.x += v3.x //h = h + hueShift;
+ft2.x += FX_hueShift //h = h + hueShift;
 ft2.x /= 360 //h = h / 360;
 ft2.x = frc(ft2.x) //h = frc h;
 ft2.x *= 360 //h = h * 360;
@@ -280,7 +293,7 @@ ft2.x += ft4.x //h = h + hh;
 ft2.y = sat(ft2.y) //s = sat(s);
 
 //				v = max(0.0, min(v + brightnessShift, 1.0));
-ft2.z += v3.z //v = v + brightnessShift;
+ft2.z += FX_brightness //v = v + brightnessShift;
 ft2.z = sat(ft2.z) //v = sat(v);
 
 //				int i = int(floor(h / 60.0));
@@ -349,7 +362,7 @@ ft1.xyz = sat(ft7.xyz)			// Move the shifted color into ft1
 
 /*** Ghost effect ***/
 #if EFFECT_ghost
-ft1.w *= v1.z	// varying alpha in v1.z
+ft1.w *= FX_alpha
 #endif // EFFECT_ghost
 
-oc = ft1 // fill ft0.x with v0.x and ft0.w with v0.w
+oc = ft1
