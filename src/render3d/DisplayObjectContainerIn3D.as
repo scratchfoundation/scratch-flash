@@ -600,6 +600,7 @@ import flash.system.Capabilities;
 			vertexData.writeFloat(top);				// v0
 		vertexData.writeFloat(right - left);	// w
 		vertexData.writeFloat(bottom - top); 	// h
+		vertexData.writeFloat(texIndex + 0.01);
 		vertexData.writeFloat(alpha);
 		vertexData.writeFloat(mosaic);
 		vertexData.writeFloat(pixelX);
@@ -608,7 +609,6 @@ import flash.system.Capabilities;
 		vertexData.writeFloat(hueShift);
 		vertexData.writeFloat(fisheye);
 		vertexData.writeFloat(brightnessShift);
-		vertexData.writeFloat(texIndex + 0.01);
 
 			vertexData.writeFloat(BLx);				// x
 			vertexData.writeFloat(BLy);				// y
@@ -619,6 +619,7 @@ import flash.system.Capabilities;
 			vertexData.writeFloat(top);				// v0
 		vertexData.writeFloat(right - left);	// w
 		vertexData.writeFloat(bottom - top); 	// h
+		vertexData.writeFloat(texIndex + 0.02);
 		vertexData.writeFloat(alpha);
 		vertexData.writeFloat(mosaic);
 		vertexData.writeFloat(pixelX);
@@ -627,7 +628,6 @@ import flash.system.Capabilities;
 		vertexData.writeFloat(hueShift);
 		vertexData.writeFloat(fisheye);
 		vertexData.writeFloat(brightnessShift);
-		vertexData.writeFloat(texIndex + 0.02);
 
 			vertexData.writeFloat(BRx);				// x
 			vertexData.writeFloat(BRy);				// y
@@ -638,6 +638,7 @@ import flash.system.Capabilities;
 			vertexData.writeFloat(top);				// v0
 		vertexData.writeFloat(right - left);	// w
 		vertexData.writeFloat(bottom - top); 	// h
+		vertexData.writeFloat(texIndex + 0.03);
 		vertexData.writeFloat(alpha);
 		vertexData.writeFloat(mosaic);
 		vertexData.writeFloat(pixelX);
@@ -646,7 +647,6 @@ import flash.system.Capabilities;
 		vertexData.writeFloat(hueShift);
 		vertexData.writeFloat(fisheye);
 		vertexData.writeFloat(brightnessShift);
-		vertexData.writeFloat(texIndex + 0.03);
 
 			vertexData.writeFloat(TRx);				// x
 			vertexData.writeFloat(TRy);				// y
@@ -657,6 +657,7 @@ import flash.system.Capabilities;
 			vertexData.writeFloat(top);				// v0
 		vertexData.writeFloat(right - left);	// w
 		vertexData.writeFloat(bottom - top); 	// h
+		vertexData.writeFloat(texIndex + 0.04);
 		vertexData.writeFloat(alpha);
 		vertexData.writeFloat(mosaic);
 		vertexData.writeFloat(pixelX);
@@ -665,7 +666,6 @@ import flash.system.Capabilities;
 		vertexData.writeFloat(hueShift);
 		vertexData.writeFloat(fisheye);
 		vertexData.writeFloat(brightnessShift);
-		vertexData.writeFloat(texIndex + 0.04);
 	}
 
 		private function cleanUpUnusedBitmaps():void {
@@ -1305,13 +1305,13 @@ import flash.system.Capabilities;
 		// u, v, u0, v0
 		__context.setVertexBufferAt(1, vertexBuffer, 3, Context3DVertexBufferFormat.FLOAT_4);
 
-		// w, h, alpha, mosaic
-		__context.setVertexBufferAt(2, vertexBuffer, 7, Context3DVertexBufferFormat.FLOAT_4);
+		// w, h, texture index, {unused}
+		__context.setVertexBufferAt(2, vertexBuffer, 7, Context3DVertexBufferFormat.FLOAT_3);
 
-		// pixelate_x, pixelate_y, whirlRadians, {unused}
-		__context.setVertexBufferAt(3, vertexBuffer, 11, Context3DVertexBufferFormat.FLOAT_3);
+		// alpha, mosaic, pixelate_x, pixelate_y
+		__context.setVertexBufferAt(3, vertexBuffer, 10, Context3DVertexBufferFormat.FLOAT_4);
 
-		// hueShift, saturation, brightness, texture index
+		// whirlRadians, hueShift, fisheye, brightness
 		__context.setVertexBufferAt(4, vertexBuffer, 14, Context3DVertexBufferFormat.FLOAT_4);
 
 			if(blend)
