@@ -61,7 +61,7 @@ import flash.system.Capabilities;
 	private var vertexBuffer:VertexBuffer3D;
 	private var shaderCache:Object; // mapping of shader config -> Program3D
 	private var fragmentShaderAssembler:AGALMacroAssembler;
-	private var vertexShaderAssembler:AGALMiniAssembler;
+	private var vertexShaderAssembler:AGALMacroAssembler;
 	private var fragmentShaderCode:String;
 	private var spriteBitmaps:Dictionary;
 	private var spriteRenderOpts:Dictionary;
@@ -115,7 +115,7 @@ import flash.system.Capabilities;
 		spriteRenderOpts = new Dictionary();
 		shaderCache = {};
 		fragmentShaderAssembler = new AGALMacroAssembler();
-		vertexShaderAssembler = new AGALMiniAssembler();
+		vertexShaderAssembler = new AGALMacroAssembler();
 		bitmapsByID = {};
 		textureIndexByID = {};
 		textures = [];
@@ -1360,6 +1360,9 @@ import flash.system.Capabilities;
 		}
 
 		vertexShaderAssembler.assemble(Context3DProgramType.VERTEX, getUTF(new VertexShader()));
+		if (vertexShaderAssembler.error.length > 0) {
+			Scratch.app.logMessage('Error building vertex shader: ' + vertexShaderAssembler.error);
+		}
 		fragmentShaderCode = getUTF(new FragmentShader());
 	}
 
@@ -1386,6 +1389,9 @@ import flash.system.Capabilities;
 			var completeFragmentShaderCode:String = shaderParts.join('\n');
 
 			fragmentShaderAssembler.assemble(Context3DProgramType.FRAGMENT, completeFragmentShaderCode);
+			if (fragmentShaderAssembler.error.length > 0) {
+				Scratch.app.logMessage('Error building fragment shader: ' + fragmentShaderAssembler.error);
+			}
 			program = shaderCache[shaderID] = __context.createProgram();
 			program.upload(vertexShaderAssembler.agalcode, fragmentShaderAssembler.agalcode);
 		}
