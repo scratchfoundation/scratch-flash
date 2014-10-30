@@ -59,7 +59,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 	private var vertexBuffer:VertexBuffer3D;
 	private var shaderCache:Object; // mapping of shader config -> Program3D
 	private var fragmentShaderAssembler:AGALMacroAssembler;
-	private var vertexShaderAssembler:AGALMiniAssembler;
+	private var vertexShaderAssembler:AGALMacroAssembler;
 	private var fragmentShaderCode:String;
 	private var spriteBitmaps:Dictionary;
 	private var spriteRenderOpts:Dictionary;
@@ -113,7 +113,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		spriteRenderOpts = new Dictionary();
 		shaderCache = {};
 		fragmentShaderAssembler = new AGALMacroAssembler();
-		vertexShaderAssembler = new AGALMiniAssembler();
+		vertexShaderAssembler = new AGALMacroAssembler();
 		bitmapsByID = {};
 		textureIndexByID = {};
 		textures = [];
@@ -1339,6 +1339,9 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		}
 
 		vertexShaderAssembler.assemble(Context3DProgramType.VERTEX, getUTF(new VertexShader()));
+		if (vertexShaderAssembler.error.length > 0) {
+			Scratch.app.logMessage('Error building vertex shader: ' + vertexShaderAssembler.error);
+		}
 		fragmentShaderCode = getUTF(new FragmentShader());
 	}
 
@@ -1365,6 +1368,9 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 			var completeFragmentShaderCode:String = shaderParts.join('\n');
 
 			fragmentShaderAssembler.assemble(Context3DProgramType.FRAGMENT, completeFragmentShaderCode);
+			if (fragmentShaderAssembler.error.length > 0) {
+				Scratch.app.logMessage('Error building fragment shader: ' + fragmentShaderAssembler.error);
+			}
 			program = shaderCache[shaderID] = __context.createProgram();
 			program.upload(vertexShaderAssembler.agalcode, fragmentShaderAssembler.agalcode);
 		}

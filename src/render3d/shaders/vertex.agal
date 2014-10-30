@@ -1,5 +1,5 @@
-m44 op, va0, vc0 // pos to clipspace
-mov v0, va1 // copy u,v, u0, v0
-mov v1, va2 // copy w, h, alpha, mosaic
-mov v2, va3 // copy p_x, p_y, whirlRadians, (push fisheye here?)
-mov v3, va4 // copy hueShift, fisheye, brightness, texture index
+op = mul4x4(va0, vc0) // pos to clipspace
+v0 = va1 // copy u,v, u0, v0
+v1 = va2 // copy w, h, alpha, mosaic
+v2 = va3 // copy p_x, p_y, whirlRadians, (push fisheye here?)
+v3 = va4 // copy hueShift, fisheye, brightness, texture index
