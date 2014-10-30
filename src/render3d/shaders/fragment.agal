@@ -38,7 +38,7 @@ ft2.xyzw -= ft1.xyzw
 ft2.xyzw *= v2.xyxy
 
 // Get the middle pixel
-ft1.xyxy = v2.xyxy / fc0.yyyy
+ft1.xy = v2.xy / fc0.yy
 ft2.xyzw = ft2.xyxy + ft1.xyxy
 
 // Use the pixelated UV?
@@ -51,18 +51,18 @@ ft0.xyzw += ft2.xyzw // Add them together
 
 /*** Whirl effect ***/
 #if EFFECT_whirl
-ft0.zwzw = fc0.zzzz
+ft0.zw = fc0.zz
 ft4.xyzw = ft0.xyzw
 ft0.xy -= fc0.ww // ft0.xy = vec
-ft1.yyy = dp3(ft0.xyz, ft0.xyz)
+ft1.y = dp3(ft0.xyz, ft0.xyz)
 ft1.x = sqt(ft1.y) // ft.x = d, len(uv) from center of texture (0.5, 0.5)
 ft1.y = ft1.x / 0.5 // radius = 0.5 (to the edge)
 ft1.y = 1 - ft1.y // ft1.y = factor
 
 ft1.z = ft1.y * ft1.y
 ft1.z *= v2.z // ft1.z = a, using v2.w for whirlRadians
-ft2.xyzw = sin(ft1.zzzz) // ft2.x = sinAngle
-ft2.yyyy = cos(ft1.zzzz) // ft2.y = cosAngle
+ft2.x = sin(ft1.zzzz) // ft2.x = sinAngle
+ft2.y = cos(ft1.zzzz) // ft2.y = cosAngle
 
 ft2.z = ft0.x * ft2.y // ft2.z = vec.x * cosAngle
 ft2.w = ft0.y * ft2.x // ft2.w = vec.y * sinAngle
@@ -70,7 +70,7 @@ ft3.xyzw = ft2.zzzz - ft2.wwww
 
 ft2.z = ft0.x * ft2.x // ft2.z = vec.x * sinAngle
 ft2.w = ft0.y * ft2.y // ft2.w = vec.y * cosAngle
-ft3.yyyy = ft2.zzzz + ft2.wwww
+ft3.y = ft2.z + ft2.w
 ft3.xy += fc0.ww // ft3.y = p.y
 
 ft1.y = ft1.x >= 0.5
@@ -87,7 +87,7 @@ ft0.xy = sat(ft0.xy)
 ft1.xy = ft0.xy - fc0.ww // ft0.xy = vec = (uv - [0.5,0.5])
 ft2.xy = ft1.xy / fc0.ww // vec = vec / [0.5, 0.5]
 ft2.zw = fc0.zz
-ft1.yyy = dp3(ft2.xyz, ft2.xyz) // ft1.y = length(vec)^2
+ft1.y = dp3(ft2.xyz, ft2.xyz) // ft1.y = length(vec)^2
 ft1.x = sqt(ft1.y) // ft.x = length(vec)
 
 // Prevent divide by zero
@@ -195,39 +195,39 @@ ft2.w = ft2.z - ft2.w //span = v - span;
 //					s = span / v;
 //				}
 ft3.y = ft2.z == 0 //int v_eq_zero = (v == 0);
-ft3.x = 0.001 * ft3.y //tiny = 0.000001 * v_eq_zero;				tiny	= ft3.x
-ft2.z += ft3.x //v = v + tiny;					Avoid division by zero, v != 0
+ft3.w = 0.001 * ft3.y //tiny = 0.000001 * v_eq_zero;				tiny	= ft3.w
+ft2.z += ft3.w //v = v + tiny;					Avoid division by zero, v != 0
 
-ft3.y = ft2.w == 0 //int span_eq_zero = (span == 0);		span_eq_zero= ft3.y
+ft3.x = ft2.w == 0 //int span_eq_zero = (span == 0);		span_eq_zero= ft3.x
 ft2.y = ft2.w != 0 //int span_not_zero = (span != 0.0); span_not_zero	= ft2.y
-ft3.y = ft1.x == ft2.z //int r_eq_v = (dst.r == v);				r_eq_v	= ft3.y
+ft3.x = ft1.x == ft2.z //int r_eq_v = (dst.r == v);				r_eq_v	= ft3.x
 ft4.x = ft1.x != ft2.z //int r_not_v = (dst.r != v);				r_not_v	= ft4.x
-ft3.z = ft1.y == ft2.z //int g_eq_v = (dst.g == v);				g_eq_v	= ft3.z
-ft3.z *= ft4.x //g_eq_v = g_eq_v * r_not_v
-ft3.w = ft1.z == ft2.z //int b_eq_v = (dst.b == v);				b_eq_v	= ft3.w
-ft4.y = ft3.y + ft3.z //int not_g_eq_v_or_r_eq_v = r_eq_v + g_eq_v	not_g_eq_v_or_r_eq_v	= ft4.y
+ft3.y = ft1.y == ft2.z //int g_eq_v = (dst.g == v);				g_eq_v	= ft3.y
+ft3.y *= ft4.x //g_eq_v = g_eq_v * r_not_v
+ft3.z = ft1.z == ft2.z //int b_eq_v = (dst.b == v);				b_eq_v	= ft3.z
+ft4.y = ft3.x + ft3.y //int not_g_eq_v_or_r_eq_v = r_eq_v + g_eq_v	not_g_eq_v_or_r_eq_v	= ft4.y
 ft4.y = ft4.y == 0 //not_g_eq_v_or_r_eq_v = (not_g_eq_v_or_r_eq_v == 0)
-ft3.w *= ft4.y //b_eq_v = b_eq_v * not_g_eq_v_or_r_eq_v	// (b==v) is only valid when the other two are not
+ft3.z *= ft4.y //b_eq_v = b_eq_v * not_g_eq_v_or_r_eq_v	// (b==v) is only valid when the other two are not
 
-ft3.x = 0.001 * ft3.y //tiny = 0.000001 * span_eq_zero;			tiny	= ft3.x
-ft2.w += ft3.x //span = span + tiny;					Avoid division by zero, span != 0
+ft3.w = 0.001 * ft3.x //tiny = 0.000001 * span_eq_zero;			tiny	= ft3.w
+ft2.w += ft3.w //span = span + tiny;					Avoid division by zero, span != 0
 
-ft3.yzw *= ft2.yyy //{r,g,b}_eq_v = {r,g,b}_eq_v * span_not_zero;
+ft3.xyz *= ft2.yyy //{r,g,b}_eq_v = {r,g,b}_eq_v * span_not_zero;
 
 ft4.x = 60 / ft2.w //float 60_div_span = 60 / span;		60_div_span	= ft4.x
 ft4.y = ft1.y - ft1.z //float h_r_eq_v = dst.g - dst.b;		h_r_eq_v	= ft4.y
 ft4.y *= ft4.x //h_r_eq_v = h_r_eq_v * 60_div_span;
-ft4.y *= ft3.y //h_r_eq_v = h_r_eq_v * r_eq_v;
+ft4.y *= ft3.x //h_r_eq_v = h_r_eq_v * r_eq_v;
 
 ft4.z = ft1.z - ft1.x //float h_g_eq_v = dst.b - dst.r;		h_g_eq_v	= ft4.z
 ft4.z *= ft4.x //h_g_eq_v = h_g_eq_v * 60_div_span;
 ft4.z += 120 //h_g_eq_v = h_g_eq_v + 120;
-ft4.z *= ft3.z //h_g_eq_v = h_g_eq_v * g_eq_v;
+ft4.z *= ft3.y //h_g_eq_v = h_g_eq_v * g_eq_v;
 
 ft4.w = ft1.x - ft1.y //float h_b_eq_v = dst.r - dst.g;		h_b_eq_v	= ft4.w
 ft4.w *= ft4.x //h_b_eq_v = h_b_eq_v * 60_div_span;
 ft4.w += 240 //h_b_eq_v = h_b_eq_v + 240;
-ft4.w *= ft3.w //h_b_eq_v = h_b_eq_v * b_eq_v;
+ft4.w *= ft3.z //h_b_eq_v = h_b_eq_v * b_eq_v;
 
 /*** ft2 == (h, s, v) ***/
 ft2.x = ft4.y		 //float h = h_r_eq_v;							h	= ft2.x
