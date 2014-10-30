@@ -21,17 +21,17 @@ macro sin(x) { sin out, x }
 macro sqt(x) { sqt out, x }
 
 // TODO: create and inject these macros from AS3
-alias v3.wwww, Tex_index
 alias v0.xyxy, Tex_uv
 alias v0.zwzw, Tex_u0v0
 alias v1.xyxy, Tex_wh
-alias v1.zzzz, FX_alpha
-alias v1.wwww, FX_mosaic
-alias v2.xyxy, FX_pixel
-alias v2.zzzz, FX_whirl
-alias v3.xxxx, FX_hueShift
-alias v3.yyyy, FX_fisheye
-alias v3.zzzz, FX_brightness
+alias v1.zzzz, Tex_index
+alias v2.xxxx, FX_alpha
+alias v2.yyyy, FX_mosaic
+alias v2.zwzw, FX_pixel
+alias v3.xxxx, FX_whirl
+alias v3.yyyy, FX_hueShift
+alias v3.zzzz, FX_fisheye
+alias v3.wwww, FX_brightness
 
 
 /*** Mosaic effect ***/

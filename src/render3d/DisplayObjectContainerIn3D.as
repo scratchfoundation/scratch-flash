@@ -602,6 +602,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		vertexData.writeFloat(top);				// v0
 		vertexData.writeFloat(right - left);	// w
 		vertexData.writeFloat(bottom - top); 	// h
+		vertexData.writeFloat(texIndex);
 		vertexData.writeFloat(alpha);
 		vertexData.writeFloat(mosaic);
 		vertexData.writeFloat(pixelX);
@@ -610,7 +611,6 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		vertexData.writeFloat(hueShift);
 		vertexData.writeFloat(fisheye);
 		vertexData.writeFloat(brightnessShift);
-		vertexData.writeFloat(texIndex);
 
 		vertexData.writeFloat(BLx);				// x
 		vertexData.writeFloat(BLy);				// y
@@ -621,6 +621,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		vertexData.writeFloat(top);				// v0
 		vertexData.writeFloat(right - left);	// w
 		vertexData.writeFloat(bottom - top); 	// h
+		vertexData.writeFloat(texIndex);
 		vertexData.writeFloat(alpha);
 		vertexData.writeFloat(mosaic);
 		vertexData.writeFloat(pixelX);
@@ -629,7 +630,6 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		vertexData.writeFloat(hueShift);
 		vertexData.writeFloat(fisheye);
 		vertexData.writeFloat(brightnessShift);
-		vertexData.writeFloat(texIndex);
 
 		vertexData.writeFloat(BRx);				// x
 		vertexData.writeFloat(BRy);				// y
@@ -640,6 +640,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		vertexData.writeFloat(top);				// v0
 		vertexData.writeFloat(right - left);	// w
 		vertexData.writeFloat(bottom - top); 	// h
+		vertexData.writeFloat(texIndex);
 		vertexData.writeFloat(alpha);
 		vertexData.writeFloat(mosaic);
 		vertexData.writeFloat(pixelX);
@@ -648,7 +649,6 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		vertexData.writeFloat(hueShift);
 		vertexData.writeFloat(fisheye);
 		vertexData.writeFloat(brightnessShift);
-		vertexData.writeFloat(texIndex);
 
 		vertexData.writeFloat(TRx);				// x
 		vertexData.writeFloat(TRy);				// y
@@ -659,6 +659,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		vertexData.writeFloat(top);				// v0
 		vertexData.writeFloat(right - left);	// w
 		vertexData.writeFloat(bottom - top); 	// h
+		vertexData.writeFloat(texIndex);
 		vertexData.writeFloat(alpha);
 		vertexData.writeFloat(mosaic);
 		vertexData.writeFloat(pixelX);
@@ -667,7 +668,6 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		vertexData.writeFloat(hueShift);
 		vertexData.writeFloat(fisheye);
 		vertexData.writeFloat(brightnessShift);
-		vertexData.writeFloat(texIndex);
 	}
 
 	private function cleanUpUnusedBitmaps():void {
@@ -1283,13 +1283,13 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		// u, v, u0, v0
 		__context.setVertexBufferAt(1, vertexBuffer, 3, Context3DVertexBufferFormat.FLOAT_4);
 
-		// w, h, alpha, mosaic
-		__context.setVertexBufferAt(2, vertexBuffer, 7, Context3DVertexBufferFormat.FLOAT_4);
+		// w, h, texture index, {unused}
+		__context.setVertexBufferAt(2, vertexBuffer, 7, Context3DVertexBufferFormat.FLOAT_3);
 
-		// pixelate_x, pixelate_y, whirlRadians, {unused}
-		__context.setVertexBufferAt(3, vertexBuffer, 11, Context3DVertexBufferFormat.FLOAT_3);
+		// alpha, mosaic, pixelate_x, pixelate_y
+		__context.setVertexBufferAt(3, vertexBuffer, 10, Context3DVertexBufferFormat.FLOAT_4);
 
-		// hueShift, saturation, brightness, texture index
+		// whirlRadians, hueShift, fisheye, brightness
 		__context.setVertexBufferAt(4, vertexBuffer, 14, Context3DVertexBufferFormat.FLOAT_4);
 
 		if (blend)
