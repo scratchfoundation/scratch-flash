@@ -354,6 +354,28 @@ package com.adobe.utils
 						   + basicOp( "add", tokens[pos+0], tokens[pos+0], tokens[pos+2] )
 					break;
 
+				// BEGIN added by Scratch
+				case "i=i<i":
+					body = basicOp("slt", tokens[pos+0], tokens[pos+2], tokens[pos+4]);
+					break;
+				case "i=i2i": // ==, >=, etc.
+					switch(tokens[pos+3]) {
+						case ">=":
+							body = basicOp("sge", tokens[pos+0], tokens[pos+2], tokens[pos+4]);
+							break;
+						case "==":
+							body = basicOp("seq", tokens[pos+0], tokens[pos+2], tokens[pos+4]);
+							break;
+						case "!=":
+							body = basicOp("sne", tokens[pos+0], tokens[pos+2], tokens[pos+4]);
+							break;
+						default: // probably an error
+							body = basicOp(tokens[pos+3], tokens[pos+0], tokens[pos+2], tokens[pos+4]);
+							break;
+					}
+					break;
+				// END added by Scratch
+
 				default:
 					return false;
 			}
