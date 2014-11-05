@@ -220,6 +220,7 @@ public class BlockShape extends Shape {
 	protected function drawCmdShape(g:Graphics):void {
 		drawTop(g);
 		drawRightAndBottom(g, topH, (shape != FinalCmdShape));
+		drawLeftSide(g);
 	}
 
 	protected function drawCmdOutlineShape(g:Graphics):void {
@@ -227,6 +228,10 @@ public class BlockShape extends Shape {
 		g.lineStyle(2, 0xFFFFFF, 0.2);
 		drawTop(g);
 		drawRightAndBottom(g, topH, (shape != FinalCmdShape));
+		drawLeftSide(g);
+	}
+
+	protected function drawLeftSide(g:Graphics):void {
 		g.lineTo(0, CornerInset);
 	}
 

@@ -88,7 +88,7 @@ public class PaletteBuilder {
 				var defaultArgs:Array = targetObj.defaultArgsFor(spec[3], spec.slice(4));
 				var label:String = spec[0];
 				if(targetObj.isStage && spec[3] == 'whenClicked') label = 'when Stage clicked';
-				var block:Block = BlockIO.makeBlock(label, spec[1], blockColor, spec[3], defaultArgs);
+				var block:Block = app.blockIO.makeBlock(label, spec[1], blockColor, spec[3], defaultArgs);
 				var showCheckbox:Boolean = isCheckboxReporter(spec[3]);
 				if (showCheckbox) addReporterCheckbox(block);
 				addItem(block, showCheckbox);
