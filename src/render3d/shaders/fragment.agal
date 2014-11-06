@@ -20,22 +20,16 @@ macro sat(x) { sat out, x }
 macro sin(x) { sin out, x }
 macro sqt(x) { sqt out, x }
 
-// TODO: create and inject these macros from AS3
+// These aliases are always used
+// FX-related aliases are generated and prepended by AS3
 alias v0.xyxy, Tex_uv
 alias v0.zwzw, Tex_u0v0
 alias v1.xyxy, Tex_wh
 alias v1.zzzz, Tex_index
-alias v2.xxxx, FX_alpha
-alias v2.yyyy, FX_mosaic
-alias v2.zwzw, FX_pixel
-alias v3.xxxx, FX_whirl
-alias v3.yyyy, FX_hueShift
-alias v3.zzzz, FX_fisheye
-alias v3.wwww, FX_brightness
 
 
 /*** Mosaic effect ***/
-#if EFFECT_mosaic
+#if ENABLE_mosaic
 ft0.xyzw = Tex_uv * FX_mosaic
 ft0.xyzw = frc(ft0.xyzw)
 #else
@@ -43,27 +37,27 @@ ft0.xyzw = Tex_uv
 #endif
 
 /*** Pixelate effect ***/
-#if EFFECT_pixelate
+#if ENABLE_pixelate
 // Do xy = int(xy / pixels) * pixels
-ft2.xyzw = ft0.xyxy / FX_pixel
+ft2.xyzw = ft0.xyxy / FX_pixelate
 ft1.xyzw = frc(ft2.xyzw)
 ft2.xyzw -= ft1.xyzw
-ft2.xyzw *= FX_pixel
+ft2.xyzw *= FX_pixelate
 
 // Get the middle pixel
-ft1.xy = FX_pixel / fc0.yy
+ft1.xy = FX_pixelate / fc0.yy
 ft2.xyzw = ft2.xyxy + ft1.xyxy
 
 // Use the pixelated UV?
-ft1.x = FX_pixel >= 0 // is pixelate_x >= 0?
+ft1.x = FX_pixelate >= 0 // is pixelate_x >= 0?
 ft2.xyzw *= ft1.xxxx // then use the pixelated UV
-ft1.x = FX_pixel < 0 // is pixelate_x < 0?
+ft1.x = FX_pixelate < 0 // is pixelate_x < 0?
 ft0.xyzw *= ft1.xxxx // then use the pixelated UV
 ft0.xyzw += ft2.xyzw // Add them together
-#endif // EFFECT_pixelate
+#endif // ENABLE_pixelate
 
 /*** Whirl effect ***/
-#if EFFECT_whirl
+#if ENABLE_whirl
 ft0.zw = fc0.zz
 ft4.xyzw = ft0.xyzw
 ft0.xy -= fc0.ww // ft0.xy = vec
@@ -93,10 +87,10 @@ ft0.xy = ft3.xy * ft1.yy
 ft0.xy += ft4.xy
 
 ft0.xy = sat(ft0.xy)
-#endif // EFFECT_whirl
+#endif // ENABLE_whirl
 
 /*** Fisheye effect ***/
-#if EFFECT_fisheye
+#if ENABLE_fisheye
 ft1.xy = ft0.xy - fc0.ww // ft0.xy = vec = (uv - [0.5,0.5])
 ft2.xy = ft1.xy / fc0.ww // vec = vec / [0.5, 0.5]
 ft2.zw = fc0.zz
@@ -119,7 +113,7 @@ ft0.xy *= ft1.xx
 ft1.y = ft1.y < 1
 ft2.xy *= ft1.yy
 ft0.xy += ft2.xy
-#endif // EFFECT_fisheye
+#endif // ENABLE_fisheye
 
 /*** Move the texture coordinates into the sub-texture space ***/
 ft0.xyzw *= Tex_wh
@@ -183,7 +177,8 @@ ft1.xyz += ft2.xyz //rgb = rgb + new_rgb
 ft1 = sat(ft1)
 
 /*** Color effect ***/
-#if EFFECT_color
+#if ENABLE_color || ENABLE_brightness
+// TODO: probably more of this section can be simplified when either color or brightness is disabled
 // compute h, s, v														dst		= ft1
 //				float v = max(r, max(g, b));
 ft2.z = max(ft1.y, ft1.z) //float v = max(dst.g, dst.b);				v		= ft2.z
@@ -247,7 +242,11 @@ ft2.y *= ft3.z //float s = s_span_not_zero * span_not_zero;	s	= ft2.y
 
 //				if (hueShift != 0.0 && v < 0.11) { v = 0.11; s = 1.0; }
 /*** ft3 is now free ***/  // Check this section for accuracy / mistakes
-ft3.y = FX_hueShift != 0 //int hs_not_zero = (hueShift != 0.0);	hs_not_zero	= ft3.y
+#if ENABLE_color
+ft3.y = FX_color != 0 //int hs_not_zero = (hueShift != 0.0);	hs_not_zero	= ft3.y
+#else // ENABLE_color
+ft3.y = 0
+#endif // ENABLE_color
 ft3.z = ft2.z < 0.11 //int v_lt_0_11 = (v < 0.11);			v_lt_0_11	= ft3.z
 ft3.z *= ft3.y //v_lt_0_11 = v_lt_0_11 * hs_not_zero;
 ft3.w = ft3.z == 0 //int !v_lt_0_11						!v_lt_0_11	= ft3.w
@@ -279,7 +278,9 @@ ft4.z = ft4.z == 0 //v_eq_0_11_or_s_eq_0_09 = !v_eq_0_11_or_s_eq_0_09
 ft2.x *= ft4.z //h = h * (!v_eq_0_11_or_s_eq_0_09);
 
 //				h = mod(h + hueShift, 360.0);
-ft2.x += FX_hueShift //h = h + hueShift;
+#if ENABLE_color
+ft2.x += FX_color //h = h + hueShift;
+#endif // ENABLE_color
 ft2.x /= 360 //h = h / 360;
 ft2.x = frc(ft2.x) //h = frc h;
 ft2.x *= 360 //h = h * 360;
@@ -293,7 +294,9 @@ ft2.x += ft4.x //h = h + hh;
 ft2.y = sat(ft2.y) //s = sat(s);
 
 //				v = max(0.0, min(v + brightnessShift, 1.0));
+#if ENABLE_brightness
 ft2.z += FX_brightness //v = v + brightnessShift;
+#endif // ENABLE_brightness
 ft2.z = sat(ft2.z) //v = sat(v);
 
 //				int i = int(floor(h / 60.0));
@@ -358,11 +361,11 @@ ft6.xyz = ft4.yyy * ft5.wxy //ft6 = i_eq_5 * ft5.wxy
 ft7.xyz += ft6.xyz //ft7 = ft7 + ft6
 
 ft1.xyz = sat(ft7.xyz)			// Move the shifted color into ft1
-#endif // EFFECT_color
+#endif // ENABLE_color || ENABLE_brightness
 
 /*** Ghost effect ***/
-#if EFFECT_ghost
-ft1.w *= FX_alpha
-#endif // EFFECT_ghost
+#if ENABLE_ghost
+ft1.w *= FX_ghost
+#endif // ENABLE_ghost
 
 oc = ft1
