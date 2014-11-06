@@ -51,18 +51,32 @@ import flash.system.Capabilities;
 	import flash.utils.Dictionary;
 	import flash.utils.Endian;
 
+	private static const FX_COLOR:String = 'color';
+	private static const FX_FISHEYE:String = 'fisheye';
+	private static const FX_WHIRL:String = 'whirl';
+	private static const FX_PIXELATE:String = 'pixelate';
+	private static const FX_MOSAIC:String = 'mosaic';
+	private static const FX_BRIGHTNESS:String = 'brightness';
+	private static const FX_GHOST:String = 'ghost';
+
+	// The elements of this array must match FilterPack.filterNames, but not necessarily in the same order.
+	private static const effectNames:Array = [
+		FX_PIXELATE, // since this is a two-component effect, put it first to guarantee alignment
+		FX_COLOR, FX_FISHEYE, FX_WHIRL, FX_MOSAIC, FX_BRIGHTNESS, FX_GHOST];
+
 	private var contextRequested:Boolean = false;
 	private static var isIOS:Boolean = Capabilities.os.indexOf('iPhone') != -1;
 
 	/** Context to create textures on */
 	private var __context:Context3D;
-	private var program:Program3D;
 	private var indexBuffer:IndexBuffer3D;
 	private var vertexBuffer:VertexBuffer3D;
-	private var shaderCache:Object; // mapping of shader config -> Program3D
+	private var shaderConfig:Object; // contains Program3D, vertex size, etc.
+	private var shaderCache:Object; // mapping of shader config ID -> shaderConfig
+	private var vertexShaderCode:String;
+	private var fragmentShaderCode:String;
 	private var fragmentShaderAssembler:AGALMacroAssembler;
 	private var vertexShaderAssembler:AGALMacroAssembler;
-	private var fragmentShaderCode:String;
 	private var spriteBitmaps:Dictionary;
 	private var spriteRenderOpts:Dictionary;
 	private var bitmapsByID:Object;
@@ -104,11 +118,12 @@ import flash.system.Capabilities;
 
 	/**
 	 *   Make the texture
-	 *   @param context Context to create textures on
-	 *   @param sprite Sprite to use for the texture
-	 *   @param bgColor Background color of the texture
 	 */
 	public function DisplayObjectContainerIn3D() {
+		if (effectNames.length != FilterPack.filterNames.length) {
+			Scratch.app.logMessage(
+					'Effect list mismatch', {effectNames: effectNames, filterPack: FilterPack.filterNames});
+		}
 		uiContainer = new StageUIContainer();
 		uiContainer.graphics.lineStyle(1);
 		spriteBitmaps = new Dictionary();
@@ -209,7 +224,6 @@ import flash.system.Capabilities;
 
 		penPacked = false;
 			if(!__context) {
-			checkBuffers();
 			stage3D = scratchStage.stage.stage3Ds[0];
 			callbackCalled = false;
 			requestContext3D();
@@ -286,11 +300,6 @@ import flash.system.Capabilities;
 		}
 	}
 
-	// 5 for x/y/z/u/v + 4 for u0/v0/w/h +
-	// 9 for alpha, mosaic, pixelation x, pixelation y, whirlRadians, hue, saturation, brightness, texture index
-	private var vStride:uint = 18;
-	private var ovStride:uint = 4 * vStride;
-
 	private function childAdded(e:Event):void {
 			if(e.target.parent != scratchStage) return;
 
@@ -348,7 +357,7 @@ import flash.system.Capabilities;
 	private function checkBuffers():void {
 		var resized:Boolean = false;
 		var numChildren:uint = scratchStage.numChildren;
-		var vertexDataMinSize:int = numChildren * ovStride << 2;
+		var vertexDataMinSize:int = numChildren * 4 * shaderConfig.vertexSizeBytes; // 4 verts per child
 			if(vertexDataMinSize > vertexData.length) {
 			// Increase and fill in the index buffer
 			var index:uint = indexData.length;
@@ -366,9 +375,8 @@ import flash.system.Capabilities;
 				base += 4;
 			}
 
-			vertexData.length = ovStride * numChildren << 2;
+			vertexData.length = vertexDataMinSize;
 			resized = true;
-			//trace('indexData resized');
 		}
 
 			if(__context) {
@@ -386,8 +394,10 @@ import flash.system.Capabilities;
 				indexBuffer.uploadFromByteArray(indexData, 0, 0, indexData.length >> 1);
 				indexBufferUploaded = true;
 				//trace('indexBuffer uploaded');
+			}
 
-					vertexBuffer = __context.createVertexBuffer((indexData.length/12)*4, vStride);
+			if (resized || vertexBuffer == null) {
+				vertexBuffer = __context.createVertexBuffer((indexData.length / 12) * 4, shaderConfig.vertexComponents);
 				vertexBufferUploaded = false;
 			}
 		}
@@ -401,12 +411,26 @@ import flash.system.Capabilities;
 	private var tlPoint:Point;
 
 	private function draw():void {
-		checkBuffers();
-
 		var textureDirty:Boolean = false;
 		var numChildren:uint = scratchStage.numChildren;
 		var i:int;
 		var dispObj:DisplayObject;
+
+		var effectsChanged:Boolean = false;
+		forEachEffect(function(effectName:String): void {
+			if (!!oldEffectRefs[effectName] != !!effectRefs[effectName]) effectsChanged = true;
+			oldEffectRefs[effectName] = effectRefs[effectName];
+		});
+		if (effectsChanged) {
+			switchShaders();
+
+			// Throw away the old vertex buffer: it might have the wrong number of streams activated
+			vertexBuffer.dispose();
+			vertexBuffer = null;
+		}
+
+		checkBuffers();
+
 			if(childrenChanged) {
 				if(debugTexture) {
 				uiContainer.graphics.clear();
@@ -427,52 +451,31 @@ import flash.system.Capabilities;
 			packTextureBitmaps();
 		}
 
-			if(childrenChanged) {
+		if (childrenChanged || effectsChanged) {
 			vertexData.position = 0;
 			childrenDrawn = 0;
 			var skipped:uint = 0;
 				for(i=0; i<numChildren; ++i) {
 				dispObj = scratchStage.getChildAt(i);
 					if(!dispObj.visible) {
-					//trace('Skipping hidden '+Dbg.printObj(dispObj));
 					++skipped;
 					continue;
 				}
 				drawChild(dispObj);
 				++childrenDrawn;
 			}
-			//if(skipped>0) trace('Skipped rendering '+skipped+' hidden children.');
-//trace(vertexData);
 		}
 
-		uploadBuffers(childrenDrawn);
-
-//		if(childrenChanged) {
-//			trace(indexData);
-//			trace(vertexData);
-//		}
-		//childrenChanged = false;
 		for (var key:Object in unrenderedChildren)
 			delete unrenderedChildren[key];
-
-		var rebuildShader:Boolean = false;
-		forEachEffect(function(effectName:String): void {
-			if (!!oldEffectRefs[effectName] != !!effectRefs[effectName]) rebuildShader = true;
-			oldEffectRefs[effectName] = effectRefs[effectName];
-		});
-		if (rebuildShader) {
-			buildShaders();
-		}
 	}
 
-	private function uploadBuffers(quadCount:uint):void {
+	private function uploadBuffers():void {
 			if(!indexBufferUploaded) {
 			indexBuffer.uploadFromByteArray(indexData, 0, 0, indexData.length >> 1);
-			//trace('indexBuffer uploaded');
 			indexBufferUploaded = true;
 		}
-//			trace('Uploading buffers for '+quadCount+' children');
-			vertexBuffer.uploadFromByteArray(vertexData, 0, 0, (indexData.length/12)*4);//quadCount*4);
+		vertexBuffer.uploadFromByteArray(vertexData, 0, 0, (indexData.length / 12) * 4);
 		vertexBufferUploaded = true;
 	}
 
@@ -527,8 +530,6 @@ import flash.system.Capabilities;
 		var BLx:Number = TLx - sinH;
 		var BLy:Number = TLy + cosH;
 
-		//trace('UpdateTextureCoords() '+Dbg.printObj(dispObj)+'  -  '+rect);
-		//if(dispObj is ScratchSprite) trace(rect + ' ' + w + ','+h);
 		// Setup the texture data
 		const texIndex:int = textureIndexByID[bmID];
 		const texture:ScratchTextureBitmap = textures[texIndex];
@@ -545,38 +546,31 @@ import flash.system.Capabilities;
 			uiContainer.graphics.lineTo(BLx, BLy);
 			uiContainer.graphics.lineTo(TLx, TLy);
 		}
-//if('objName' in dispObj && (dispObj as Object)['objName'] == 'delete_all') {
-//	trace('bmd.rect: '+rect+'    dispObj @ ('+dispObj.x+','+dispObj.y+')');
-//	trace(dispObj.parent.getChildIndex(dispObj) + ' ('+left+','+top+') -> ('+right+','+bottom+')');
-//  trace('raw bounds: '+renderOpts.raw_bounds);
-//}
 
 		// Setup the shader data
 		var alpha:Number = dispObj.alpha;
-		//trace('dispObj.visible = '+dispObj.visible+'    alpha = '+alpha);
 		var mosaic:Number = 1;
 		var pixelate:Number = 1;
 		var radians:Number = 0;
 		var hueShift:Number = 0;
 		var brightnessShift:Number = 0;
 		var fisheye:Number = 1;
-		//trace('dispObj = '+Dbg.printObj(dispObj));
 		const effects:Object = (renderOpts ? renderOpts.effects : null);
-			if(effects) {
+		if (effects) {
 			var scale:Number = ('isStage' in dispObj && dispObj['isStage'] ? 1 : appScale);
 			var srcWidth:Number = dw * scale; // Is this right?
 			var srcHeight:Number = dh * scale;
-			hueShift = ((360.0 * effects["color"]) / 200.0) % 360.0;
+			hueShift = ((360.0 * effects[FX_COLOR]) / 200.0) % 360.0;
 
-			var n:Number = Math.max(0, Math.min(effects['ghost'], 100));
+			var n:Number = Math.max(0, Math.min(effects[FX_GHOST], 100));
 			alpha = 1.0 - (n / 100.0);
 
-			mosaic = Math.round((Math.abs(effects["mosaic"]) + 10) / 10);
+			mosaic = Math.round((Math.abs(effects[FX_MOSAIC]) + 10) / 10);
 			mosaic = Math.floor(Math.max(1, Math.min(mosaic, Math.min(srcWidth, srcHeight))));
-			pixelate = (Math.abs(effects["pixelate"] * scale) / 10) + 1;
-			radians = (Math.PI * (effects["whirl"])) / 180;
-			fisheye = Math.max(0, (effects["fisheye"] + 100) / 100);
-			brightnessShift = Math.max(-100, Math.min(effects["brightness"], 100)) / 100;
+			pixelate = (Math.abs(effects[FX_PIXELATE] * scale) / 10) + 1;
+			radians = (Math.PI * (effects[FX_WHIRL])) / 180;
+			fisheye = Math.max(0, (effects[FX_FISHEYE] + 100) / 100);
+			brightnessShift = Math.max(-100, Math.min(effects[FX_BRIGHTNESS], 100)) / 100;
 		}
 
 			if(renderOpts && renderOpts.costumeFlipped) {
@@ -591,85 +585,55 @@ import flash.system.Capabilities;
 			pixelX *= rect.width / srcWidth;
 			pixelY *= rect.height / srcHeight;
 		}
+
+		var perQuadData:ByteArray = new ByteArray();
+		perQuadData.endian = Endian.LITTLE_ENDIAN;
+		perQuadData.writeFloat(left);			// u0
+		perQuadData.writeFloat(top);			// v0
+		perQuadData.writeFloat(right - left);	// w
+		perQuadData.writeFloat(bottom - top); 	// h
+		perQuadData.writeFloat(texIndex); // TODO: fudge tex index by 0.01, 0.02, 0.03, 0.04
+		if (shaderConfig.effectActive[FX_PIXELATE]) {
+			perQuadData.writeFloat(pixelX);
+			perQuadData.writeFloat(pixelY);
+		}
+		if (shaderConfig.effectActive[FX_COLOR]) perQuadData.writeFloat(hueShift);
+		if (shaderConfig.effectActive[FX_FISHEYE]) perQuadData.writeFloat(fisheye);
+		if (shaderConfig.effectActive[FX_WHIRL]) perQuadData.writeFloat(radians);
+		if (shaderConfig.effectActive[FX_MOSAIC]) perQuadData.writeFloat(mosaic);
+		if (shaderConfig.effectActive[FX_BRIGHTNESS]) perQuadData.writeFloat(brightnessShift);
+		if (shaderConfig.effectActive[FX_GHOST]) perQuadData.writeFloat(alpha);
+
 			vertexData.writeFloat(TLx);				// x
 			vertexData.writeFloat(TLy);				// y
 		vertexData.writeFloat(0);				// z - use index?
 		vertexData.writeFloat(0);				// u
 		vertexData.writeFloat(0);				// v
-		vertexData.writeFloat(left);			// u0
-			vertexData.writeFloat(top);				// v0
-		vertexData.writeFloat(right - left);	// w
-		vertexData.writeFloat(bottom - top); 	// h
-		vertexData.writeFloat(texIndex + 0.01);
-		vertexData.writeFloat(alpha);
-		vertexData.writeFloat(mosaic);
-		vertexData.writeFloat(pixelX);
-		vertexData.writeFloat(pixelY);
-		vertexData.writeFloat(radians);
-		vertexData.writeFloat(hueShift);
-		vertexData.writeFloat(fisheye);
-		vertexData.writeFloat(brightnessShift);
+		vertexData.writeBytes(perQuadData);
 
 			vertexData.writeFloat(BLx);				// x
 			vertexData.writeFloat(BLy);				// y
 		vertexData.writeFloat(0);
 		vertexData.writeFloat(0);				// u
 		vertexData.writeFloat(1);				// v
-		vertexData.writeFloat(left);			// u0
-			vertexData.writeFloat(top);				// v0
-		vertexData.writeFloat(right - left);	// w
-		vertexData.writeFloat(bottom - top); 	// h
-		vertexData.writeFloat(texIndex + 0.02);
-		vertexData.writeFloat(alpha);
-		vertexData.writeFloat(mosaic);
-		vertexData.writeFloat(pixelX);
-		vertexData.writeFloat(pixelY);
-		vertexData.writeFloat(radians);
-		vertexData.writeFloat(hueShift);
-		vertexData.writeFloat(fisheye);
-		vertexData.writeFloat(brightnessShift);
+		vertexData.writeBytes(perQuadData);
 
 			vertexData.writeFloat(BRx);				// x
 			vertexData.writeFloat(BRy);				// y
 		vertexData.writeFloat(0);
 		vertexData.writeFloat(1);				// u
 		vertexData.writeFloat(1);				// v
-		vertexData.writeFloat(left);			// u0
-			vertexData.writeFloat(top);				// v0
-		vertexData.writeFloat(right - left);	// w
-		vertexData.writeFloat(bottom - top); 	// h
-		vertexData.writeFloat(texIndex + 0.03);
-		vertexData.writeFloat(alpha);
-		vertexData.writeFloat(mosaic);
-		vertexData.writeFloat(pixelX);
-		vertexData.writeFloat(pixelY);
-		vertexData.writeFloat(radians);
-		vertexData.writeFloat(hueShift);
-		vertexData.writeFloat(fisheye);
-		vertexData.writeFloat(brightnessShift);
+		vertexData.writeBytes(perQuadData);
 
 			vertexData.writeFloat(TRx);				// x
 			vertexData.writeFloat(TRy);				// y
 		vertexData.writeFloat(0);
 		vertexData.writeFloat(1);				// u
 		vertexData.writeFloat(0);				// v
-		vertexData.writeFloat(left);			// u0
-			vertexData.writeFloat(top);				// v0
-		vertexData.writeFloat(right - left);	// w
-		vertexData.writeFloat(bottom - top); 	// h
-		vertexData.writeFloat(texIndex + 0.04);
-		vertexData.writeFloat(alpha);
-		vertexData.writeFloat(mosaic);
-		vertexData.writeFloat(pixelX);
-		vertexData.writeFloat(pixelY);
-		vertexData.writeFloat(radians);
-		vertexData.writeFloat(hueShift);
-		vertexData.writeFloat(fisheye);
-		vertexData.writeFloat(brightnessShift);
+		vertexData.writeBytes(perQuadData);
 	}
 
 		private function cleanUpUnusedBitmaps():void {
-//trace('cleanupUnusedBitmaps()');
 		var deletedBMs:Array = [];
 		for (var k:Object in bitmapsByID) {
 			var bmID:String = k as String;
@@ -683,7 +647,6 @@ import flash.system.Capabilities;
 			}
 
 				if(!isUsed) {
-//trace('Deleting bitmap '+bmID);
 					if(bitmapsByID[bmID] is ChildRender)
 					bitmapsByID[bmID].dispose();
 				deletedBMs.push(bmID);
@@ -771,9 +734,9 @@ import flash.system.Capabilities;
 //	}
 
 	// Calls perEffect(effectName:String) for each supported effect name.
-	private function forEachEffect(perEffect:Function): void {
-		for (var i:int = 0; i < FilterPack.filterNames.length; ++i) {
-			var effectName:String = FilterPack.filterNames[i];
+	private static function forEachEffect(perEffect:Function): void {
+		for (var i:int = 0; i < effectNames.length; ++i) {
+			var effectName:String = effectNames[i];
 			perEffect(effectName);
 		}
 	}
@@ -789,10 +752,10 @@ import flash.system.Capabilities;
 
 			var newCount:int = effectRefs[effectName];
 			if (newCount < 0) {
-				trace('Reference count negative for effect ' + effectName);
+				Scratch.app.logMessage('Reference count negative for effect ' + effectName);
 			}
 			else if (newCount > spriteRenderOpts.length) {
-				trace('Reference count too high for effect ' + effectName);
+				Scratch.app.logMessage('Reference count too high for effect ' + effectName);
 			}
 		});
 	}
@@ -809,8 +772,6 @@ import flash.system.Capabilities;
 				id = spriteBitmaps[dispObj] = 'bm'+Math.random();
 		}
 
-//trace('checkChildRender() '+Dbg.printObj(dispObj)+' with id: '+id);
-		var filters:Array = null;
 		var renderOpts:Object = spriteRenderOpts[dispObj];
 		var bounds:Rectangle = boundsDict[dispObj] || (boundsDict[dispObj] = renderOpts.bounds);
 		var dw:Number = bounds.width * dispObj.scaleX * Math.min(maxScale, appScale * scratchStage.stage.contentsScaleFactor);
@@ -828,11 +789,11 @@ import flash.system.Capabilities;
 
 				return (isNew || unrenderedChildren[dispObj]);
 			}
-				else if(effects && 'mosaic' in effects) {
+			else if (effects && FX_MOSAIC in effects) {
 				s = renderOpts.isStage ? 1 : appScale;
 				srcWidth = dw * s;
 					srcHeight =  dh * s;
-				mosaic = Math.round((Math.abs(effects["mosaic"]) + 10) / 10);
+				mosaic = Math.round((Math.abs(effects[FX_MOSAIC]) + 10) / 10);
 				mosaic = Math.max(1, Math.min(mosaic, Math.min(srcWidth, srcHeight)));
 				scale = 1 / mosaic;
 			}
@@ -1079,8 +1040,6 @@ import flash.system.Capabilities;
 			return;
 		}
 
-		//trace('Drawing!');
-			if(!indexBuffer) checkBuffers();
 		draw();
 		render(childrenDrawn);
 		__context.present();
@@ -1136,7 +1095,7 @@ import flash.system.Capabilities;
 				var prop:String;
 					if(old_fx) {
 						for(prop in old_fx) {
-							if(prop == 'ghost') continue;
+						if (prop == FX_GHOST) continue;
 							if(old_fx[prop] == 0 && !effects) continue;
 							if(!effects || old_fx[prop] != effects[prop]) {
 							changed = true;
@@ -1146,7 +1105,7 @@ import flash.system.Capabilities;
 				}
 				else {
 						for(prop in effects) {
-							if(prop == 'ghost') continue;
+						if (prop == FX_GHOST) continue;
 							if(effects[prop] != 0) {
 							changed = true;
 							break;
@@ -1194,13 +1153,13 @@ import flash.system.Capabilities;
 
 		// TODO: Find out why the index buffer isn't uploaded sometimes
 		indexBufferUploaded = false;
-		uploadBuffers(1);
+		uploadBuffers();
 
-			__context.setScissorRectangle(new Rectangle(0, 0, bmd.width+1, bmd.height+1));
+		__context.setScissorRectangle(new Rectangle(0, 0, bmd.width + 1, bmd.height + 1));
 		render(1, false);
 		__context.drawToBitmapData(bmd);
 
-			if(changeBackBuffer) {
+		if (changeBackBuffer) {
 			scissorRect = null;
 			// Reset scissorRect and framebuffer size
 			setupContext3D();
@@ -1273,14 +1232,15 @@ import flash.system.Capabilities;
 	}
 
 	private const FC0:Vector.<Number> = Vector.<Number>([1, 2, 0, 0.5]);
-	private const FC1:Vector.<Number> = Vector.<Number>([3.1415926535, 180, 60, 120]);
+	private const FC1:Vector.<Number> = Vector.<Number>([Math.PI, 180, 60, 120]);
 	private const FC2:Vector.<Number> = Vector.<Number>([240, 3, 4, 5]);
 	private const FC3:Vector.<Number> = Vector.<Number>([6, 0.11, 0.09, 0.001]);
 	private const FC4:Vector.<Number> = Vector.<Number>([360, 0, 0, 0]);
 
+	private var registersUsed:int = 0;
 	public function render(quadCount:uint, blend:Boolean = true):void {
 		// assign shader program
-		__context.setProgram(program);
+		__context.setProgram(shaderConfig.program);
 		__context.clear(0, 0, 0, 0);
 
 		// assign texture to texture sampler 0
@@ -1308,24 +1268,47 @@ import flash.system.Capabilities;
 		// w, h, texture index, {unused}
 		__context.setVertexBufferAt(2, vertexBuffer, 7, Context3DVertexBufferFormat.FLOAT_3);
 
-		// alpha, mosaic, pixelate_x, pixelate_y
-		__context.setVertexBufferAt(3, vertexBuffer, 10, Context3DVertexBufferFormat.FLOAT_4);
+		// allocate space for the rest of the effects, packed as tightly as possible
+		var registerIndex:int = 3;
+		var bufferPosition:int = 10;
+		while (bufferPosition < shaderConfig.vertexComponents) {
+			var format:String;
+			switch (shaderConfig.vertexComponents - bufferPosition) {
+				case 1:
+					format = Context3DVertexBufferFormat.FLOAT_1;
+					break;
+				case 2:
+					format = Context3DVertexBufferFormat.FLOAT_2;
+					break;
+				case 3:
+					format = Context3DVertexBufferFormat.FLOAT_3;
+					break;
+				default: // 4 or more
+					format = Context3DVertexBufferFormat.FLOAT_4;
+					break;
+			}
+			__context.setVertexBufferAt(registerIndex, vertexBuffer, bufferPosition, format);
+			++registerIndex;
+			bufferPosition += 4; // bufferPosition could be incorrect when we leave this loop but that's currently OK.
+		}
 
-		// whirlRadians, hueShift, fisheye, brightness
-		__context.setVertexBufferAt(4, vertexBuffer, 14, Context3DVertexBufferFormat.FLOAT_4);
+		// null out the remaining registers
+		for (; registerIndex < registersUsed; ++registerIndex) {
+			__context.setVertexBufferAt(registerIndex, null);
+		}
+		if (registersUsed < registerIndex) {
+			registersUsed = registerIndex;
+		}
 
 			if(blend)
 			__context.setBlendFactors(Context3DBlendFactor.SOURCE_ALPHA, Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA);
 		else
 			__context.setBlendFactors(Context3DBlendFactor.SOURCE_ALPHA, Context3DBlendFactor.ZERO);
 
-		// draw all sprites
-		//trace('Drawing '+quadCount+' children');
-			__context.drawTriangles(indexBuffer, 0, quadCount*2);
-		//trace('finished drawing() - '+drawCount);
+		uploadBuffers();
 
-		//childrenChanged = false;
-		//movedChildren = new Dictionary();
+		// draw all sprites
+		__context.drawTriangles(indexBuffer, 0, quadCount * 2);
 	}
 
 	private function setupContext3D(e:Event = null):void {
@@ -1341,13 +1324,8 @@ import flash.system.Capabilities;
 		__context.setDepthTest(false, Context3DCompareMode.ALWAYS);
 		__context.enableErrorChecking = true;
 
-		buildShaders();
+		switchShaders();
 
-		indexBuffer = __context.createIndexBuffer(indexData.length >> 1);
-		//trace('indexBuffer created');
-		indexBufferUploaded = false;
-			vertexBuffer = __context.createVertexBuffer((indexData.length/12)*4, vStride);
-		vertexBufferUploaded = false;
 		tlPoint = scratchStage.localToGlobal(originPt);
 	}
 
@@ -1359,14 +1337,27 @@ import flash.system.Capabilities;
 			return embed.readUTFBytes(embed.length);
 		}
 
-		vertexShaderAssembler.assemble(Context3DProgramType.VERTEX, getUTF(new VertexShader()));
-		if (vertexShaderAssembler.error.length > 0) {
-			Scratch.app.logMessage('Error building vertex shader: ' + vertexShaderAssembler.error);
-		}
+		vertexShaderCode = getUTF(new VertexShader());
 		fragmentShaderCode = getUTF(new FragmentShader());
 	}
 
-	private function buildShaders():void {
+	private function switchShaders():void {
+		// Number of 32-bit values associated with each effect
+		// Must be kept in sync with FilterPack.filterNames, vertex format setup, and vertex buffer fill.
+		const effectVertexComponents:Object = {
+			pixelate: 2,
+			color: 1,
+			fisheye: 1,
+			whirl: 1,
+			mosaic: 1,
+			brightness: 1,
+			ghost: 1
+		};
+
+		var availableEffectRegisters:Array = [
+			'v2.xxxx', 'v2.yyyy', 'v2.zzzz', 'v2.wwww',
+			'v3.xxxx', 'v3.yyyy', 'v3.zzzz', 'v3.wwww'
+		];
 
 		// TODO: Bind the minimal number of textures and track the count. The shader must use every bound sampler.
 		const maxTextureNum:int = 5; // index of the last texture in use
@@ -1376,24 +1367,59 @@ import flash.system.Capabilities;
 			shaderID = (shaderID << 1) | (effectRefs[effectName] > 0 ? 1 : 0);
 		});
 
-		program = shaderCache[shaderID];
-		if (!program) {
-			var shaderParts:Array = ['#define MAXTEXTURE ' + maxTextureNum];
+		shaderConfig = shaderCache[shaderID];
+		if (!shaderConfig) {
+			var vertexShaderParts:Array = [];
+			var fragmentShaderParts:Array = ['#define MAXTEXTURE ' + maxTextureNum];
 
+			var numEffects: int = 0;
+			var vertexComponents: int = 10; // x, y, z, u, v, u0, v0, w, h, texture index
+			var effectActive:Object = {};
 			forEachEffect(function(effectName:String): void {
-				shaderParts.push(['#define EFFECT_', effectName, ' ', (effectRefs[effectName] > 0 ? '1' : '0')].join(''));
+				var isActive:Boolean = effectRefs[effectName] > 0;
+				numEffects += int(isActive);
+				effectActive[effectName] = isActive;
+				fragmentShaderParts.push(['#define ENABLE_', effectName, ' ', int(isActive)].join(''));
+				if (isActive) {
+					vertexComponents += effectVertexComponents[effectName];
+					if (effectName == FX_PIXELATE) {
+						fragmentShaderParts.push('alias v2.xyxy, FX_' + effectName);
+						++numEffects; // consume an extra register in the vertex shader
+						availableEffectRegisters.shift(); // consume an extra register in the fragment shader
+					}
+					else {
+						fragmentShaderParts.push(['alias ', availableEffectRegisters[0], ', FX_', effectName].join(''));
+					}
+					availableEffectRegisters.shift();
+				}
 			});
 
-			shaderParts.push(fragmentShaderCode);
+			vertexShaderParts.push('#define ACTIVE_EFFECTS '+numEffects);
 
-			var completeFragmentShaderCode:String = shaderParts.join('\n');
+			vertexShaderParts.push(vertexShaderCode);
+			fragmentShaderParts.push(fragmentShaderCode);
+
+			var completeVertexShaderCode:String = vertexShaderParts.join('\n');
+			var completeFragmentShaderCode:String = fragmentShaderParts.join('\n');
+
+			vertexShaderAssembler.assemble(Context3DProgramType.VERTEX, completeVertexShaderCode);
+			if (vertexShaderAssembler.error.length > 0) {
+				Scratch.app.logMessage('Error building vertex shader: ' + vertexShaderAssembler.error);
+			}
 
 			fragmentShaderAssembler.assemble(Context3DProgramType.FRAGMENT, completeFragmentShaderCode);
 			if (fragmentShaderAssembler.error.length > 0) {
 				Scratch.app.logMessage('Error building fragment shader: ' + fragmentShaderAssembler.error);
 			}
-			program = shaderCache[shaderID] = __context.createProgram();
+			var program:Program3D = __context.createProgram();
 			program.upload(vertexShaderAssembler.agalcode, fragmentShaderAssembler.agalcode);
+
+			shaderCache[shaderID] = shaderConfig = {
+				program: program,
+				vertexComponents: vertexComponents,
+				vertexSizeBytes: 4 * vertexComponents,
+				effectActive: effectActive
+			};
 		}
 /*
 		fragmentShaderAssembler.assemble( Context3DProgramType.FRAGMENT,
@@ -1505,8 +1531,8 @@ import flash.system.Capabilities;
 	}
 
 	private function onContextLoss(e:Event = null):void {
-		for (var config:Object in shaderCache) {
-			shaderCache[config].dispose();
+		for each(var config:Object in shaderCache) {
+			config.program.dispose();
 		}
 		shaderCache = {};
 
