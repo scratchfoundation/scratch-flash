@@ -23,23 +23,23 @@
 // A Scratch stage object. Supports a drawing surface for the pen commands.
 
 package scratch {
-	import flash.display.*;
-	import flash.geom.*;
-	import flash.media.*;
-	import flash.events.*;
-	import flash.system.Capabilities;
-	import flash.utils.ByteArray;
-	import flash.net.FileReference;
-	import blocks.Block;
-	import filters.FilterPack;
-	import translation.Translator;
-	import uiwidgets.Menu;
-	import ui.media.MediaInfo;
-	import util.*;
-	import watchers.*;
-	import by.blooddy.crypto.image.PNG24Encoder;
-	import by.blooddy.crypto.image.PNGFilter;
-	import by.blooddy.crypto.MD5;
+import flash.display.*;
+import flash.geom.*;
+import flash.media.*;
+import flash.events.*;
+import flash.system.Capabilities;
+import flash.utils.ByteArray;
+import flash.net.FileReference;
+import blocks.Block;
+import filters.FilterPack;
+import translation.Translator;
+import uiwidgets.Menu;
+import ui.media.MediaInfo;
+import util.*;
+import watchers.*;
+import by.blooddy.crypto.image.PNG24Encoder;
+import by.blooddy.crypto.image.PNGFilter;
+import by.blooddy.crypto.MD5;
 
 public class ScratchStage extends ScratchObj {
 
@@ -372,7 +372,6 @@ public class ScratchStage extends ScratchObj {
 		}
 	}
 
-//	private var testBM:Bitmap = new Bitmap();
 	private var stampBounds:Rectangle = new Rectangle();
 	public function stampSprite(s:ScratchSprite, stampAlpha:Number):void {
 		if(s == null) return;
@@ -522,17 +521,19 @@ public class ScratchStage extends ScratchObj {
 		if (!cachedBitmapIsCurrent) updateCachedBitmap();
 
 		var m:Matrix = new Matrix();
-		m.translate(-r.x, -r.y);
-		bm.draw(cachedBM, m);
+		m.translate(-Math.floor(r.x), -Math.floor(r.y));
+		bm.draw(cachedBM, m, null);
 
 		for (var i:int = 0; i < this.numChildren; i++) {
 			var o:ScratchSprite = this.getChildAt(i) as ScratchSprite;
 			if (o && (o != s) && o.visible && o.bounds().intersects(r)) {
-				m = new Matrix();
+				m.identity();
 				m.translate(o.img.x, o.img.y);
 				m.rotate((Math.PI * o.rotation) / 180);
 				m.scale(o.scaleX, o.scaleY);
 				m.translate(o.x - r.x, o.y - r.y);
+				m.tx = Math.floor(m.tx);
+				m.ty = Math.floor(m.ty);
 				var colorTransform:ColorTransform = (o.img.alpha == 1) ? null : new ColorTransform(1, 1, 1, o.img.alpha);
 				bm.draw(o.img, m, colorTransform);
 			}
@@ -540,6 +541,8 @@ public class ScratchStage extends ScratchObj {
 
 		return bm;
 	}
+//	private var testBM:Bitmap = new Bitmap();
+//	private var dumpPixels:Boolean = true;
 
 	SCRATCH::allow3d
 	public function updateSpriteEffects(spr:DisplayObject, effects:Object):void {
@@ -550,7 +553,7 @@ public class ScratchStage extends ScratchObj {
 		commitPenStrokes(); // force any pen strokes to be rendered so they can be sensed
 
 		var bm1:BitmapData;
-		var mask:uint = 0x00F8F8F0; //0xF0F8F8F0;
+		var mask:uint = 0xF0F8F8F8;
 		if(Scratch.app.isIn3D) {
 			var b:Rectangle;
 			SCRATCH::allow3d {
@@ -584,7 +587,6 @@ public class ScratchStage extends ScratchObj {
 
 		return bm2;
 	}
-//	private var dumpPixels:Boolean = false;
 
 	private function getNumberAsHexString(number:uint, minimumLength:uint = 1, showHexDenotation:Boolean = true):String {
 		// The string that will be output at the end of the function.
