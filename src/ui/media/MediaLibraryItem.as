@@ -106,6 +106,7 @@ public class MediaLibraryItem extends Sprite {
 		return (i < 0) ? '' : s.slice(i + 1);
 	}
 
+	// all paths must call done() even on failure!
 	private function setImageThumbnail(md5:String, done:Function, spriteMD5:String = null):void {
 		var forStage:Boolean = (dbObj.width == 480); // if width is 480, format thumbnail for stage
 		var importer:SVGImporter;
@@ -114,17 +115,22 @@ public class MediaLibraryItem extends Sprite {
 				importer = new SVGImporter(XML(data));
 				importer.loadAllImages(svgImagesLoaded);
 			}
+			else {
+				done();
+			}
 		}
 		function svgImagesLoaded():void {
 			var c:ScratchCostume = new ScratchCostume('', null);
 			c.setSVGRoot(importer.root, false);
 			setThumbnail(c.thumbnail(thumbnailWidth, thumbnailHeight, forStage));
+			done();
 		}
 		function setThumbnail(bm:BitmapData):void {
-			if (!bm) return;
-			thumbnailCache[md5] = bm;
-			if (spriteMD5) thumbnailCache[spriteMD5] = bm;
-			setThumbnailBM(bm);
+			if (bm) {
+				thumbnailCache[md5] = bm;
+				if (spriteMD5) thumbnailCache[spriteMD5] = bm;
+				setThumbnailBM(bm);
+			}
 			done();
 		}
 		// first, check the thumbnail cache
@@ -136,23 +142,29 @@ public class MediaLibraryItem extends Sprite {
 		else loaders.push(Scratch.app.server.getThumbnail(md5, thumbnailWidth, thumbnailHeight, setThumbnail));
 	}
 
+	// all paths must call done() even on failure!
 	private function setSpriteThumbnail(done:Function):void {
 		function gotJSONData(data:String):void {
-			if (!data) return; // fetch failed
-			var sprObj:Object = util.JSON.parse(data);
-			spriteCache[spriteMD5] = data;
-			dbObj.scriptCount = (sprObj.scripts is Array) ? sprObj.scripts.length : 0;
-			dbObj.costumeCount = (sprObj.costumes is Array) ? sprObj.costumes.length : 0;
-			dbObj.soundCount = (sprObj.sounds is Array) ? sprObj.sounds.length : 0;
-			if (dbObj.scriptCount > 0) setInfo(Translator.map('Scripts:') + ' ' + dbObj.scriptCount);
-			else if (dbObj.costumeCount > 1) setInfo(Translator.map('Costumes:') + ' ' + dbObj.costumeCount);
-			else setInfo('');
-			if ((sprObj.costumes is Array) && (sprObj.currentCostumeIndex is Number)) {
-				var cList:Array = sprObj.costumes;
-				var cObj:Object = cList[Math.round(sprObj.currentCostumeIndex) % cList.length];
-				var md5:String = cObj ? cObj.baseLayerMD5 : null;
-				if (md5) setImageThumbnail(md5, done, spriteMD5);
-			} else {
+			var md5:String;
+			if (data) {
+				var sprObj:Object = util.JSON.parse(data);
+				spriteCache[spriteMD5] = data;
+				dbObj.scriptCount = (sprObj.scripts is Array) ? sprObj.scripts.length : 0;
+				dbObj.costumeCount = (sprObj.costumes is Array) ? sprObj.costumes.length : 0;
+				dbObj.soundCount = (sprObj.sounds is Array) ? sprObj.sounds.length : 0;
+				if (dbObj.scriptCount > 0) setInfo(Translator.map('Scripts:') + ' ' + dbObj.scriptCount);
+				else if (dbObj.costumeCount > 1) setInfo(Translator.map('Costumes:') + ' ' + dbObj.costumeCount);
+				else setInfo('');
+				if ((sprObj.costumes is Array) && (sprObj.currentCostumeIndex is Number)) {
+					var cList:Array = sprObj.costumes;
+					var cObj:Object = cList[Math.round(sprObj.currentCostumeIndex) % cList.length];
+					if (cObj) md5 = cObj.baseLayerMD5;
+				}
+			}
+			if (md5) {
+				setImageThumbnail(md5, done, spriteMD5);
+			}
+			else {
 				done();
 			}
 		}
