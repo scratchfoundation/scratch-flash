@@ -226,6 +226,8 @@ public class BlockArg extends Sprite {
 		return isNumber ? [3, 0] : [2, -1];
 	}
 
+	protected var addedTextPadding:uint = 6;
+	protected var minTextWidth:uint = 14;
 	private function textChanged(evt:*):void {
 		argValue = field.text;
 		if (isNumber) {
@@ -249,7 +251,7 @@ public class BlockArg extends Sprite {
 		var padding:int = (type == 'n') ? 3 : 0;
 		if (type == 'b') padding = 8;
 		if (menuIcon != null) padding = (type == 'd') ? 10 : 13;
-		var w:int = Math.max(14, field.textWidth + 6 + padding);
+		var w:int = Math.max(minTextWidth, field.textWidth + addedTextPadding + padding);
 		if (menuIcon) menuIcon.x = w - menuIcon.width - 3;
 		base.setWidth(w);
 		base.redraw();

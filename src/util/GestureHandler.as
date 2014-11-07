@@ -218,7 +218,7 @@ public class GestureHandler {
 
 	public function mouseMove(evt:MouseEvent):void {
 		if (gesture == "debug") { evt.stopImmediatePropagation(); return; }
-		mouseIsDown = evt.buttonDown;
+		//mouseIsDown = evt.buttonDown;
 		if (dragClient != null) {
 			dragClient.dragMove(evt);
 			return;

@@ -118,7 +118,10 @@ public class BlockShape extends Shape {
 		redraw();
 	}
 
-	public function setColor(color:int):void { this.color = color; redrawNeeded = true }
+	public function setColor(color:int):void {
+		this.color = color;
+		redrawNeeded = true;
+	}
 
 	public function nextBlockY():int {
 		if (ProcHatShape == shape) return topH;
