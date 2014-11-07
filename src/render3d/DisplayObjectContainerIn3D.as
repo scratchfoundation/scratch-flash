@@ -379,23 +379,24 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		}
 
 		if (__context) {
-			if (resized || indexBuffer == null) {
+			if (resized)  {
+				if (indexBuffer) {
+					indexBuffer.dispose();
+					indexBuffer = null;
+				}
 				if (vertexBuffer) {
 					vertexBuffer.dispose();
 					vertexBuffer = null;
-					indexBuffer.dispose();
-					//trace('indexBuffer disposed');
-					indexBuffer = null;
 				}
-
-				indexBuffer = __context.createIndexBuffer(indexData.length >> 1);
-				//trace('indexBuffer created');
-				indexBuffer.uploadFromByteArray(indexData, 0, 0, indexData.length >> 1);
-				indexBufferUploaded = true;
-				//trace('indexBuffer uploaded');
 			}
 
-			if (resized || vertexBuffer == null) {
+			if (indexBuffer == null) {
+				indexBuffer = __context.createIndexBuffer(indexData.length >> 1);
+				indexBuffer.uploadFromByteArray(indexData, 0, 0, indexData.length >> 1);
+				indexBufferUploaded = true;
+			}
+
+			if (vertexBuffer == null) {
 				vertexBuffer = __context.createVertexBuffer((indexData.length / 12) * 4, shaderConfig.vertexComponents);
 				vertexBufferUploaded = false;
 			}
