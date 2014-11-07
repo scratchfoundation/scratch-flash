@@ -522,7 +522,7 @@ public class ScratchStage extends ScratchObj {
 
 		var m:Matrix = new Matrix();
 		m.translate(-Math.floor(r.x), -Math.floor(r.y));
-		bm.draw(cachedBM, m, null);
+		bm.draw(cachedBM, m);
 
 		for (var i:int = 0; i < this.numChildren; i++) {
 			var o:ScratchSprite = this.getChildAt(i) as ScratchSprite;
