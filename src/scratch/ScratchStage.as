@@ -528,7 +528,6 @@ public class ScratchStage extends ScratchObj {
 		for (var i:int = 0; i < this.numChildren; i++) {
 			var o:ScratchSprite = this.getChildAt(i) as ScratchSprite;
 			if (o && (o != s) && o.visible && o.bounds().intersects(r)) {
-				var oBnds:Rectangle = o.bounds();
 				m = new Matrix();
 				m.translate(o.img.x, o.img.y);
 				m.rotate((Math.PI * o.rotation) / 180);
@@ -538,6 +537,7 @@ public class ScratchStage extends ScratchObj {
 				bm.draw(o.img, m, colorTransform);
 			}
 		}
+
 		return bm;
 	}
 

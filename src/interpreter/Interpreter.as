@@ -184,7 +184,8 @@ public class Interpreter {
 	}
 
 	public function restartThread(b:Block, targetObj:*):Thread {
-		// used by broadcast; stop any thread running on b, then start a new thread on b
+		// used by broadcast, click hats, and when key pressed hats
+		// stop any thread running on b, then start a new thread on b
 		var newThread:Thread = new Thread(b, targetObj);
 		var wasRunning:Boolean = false;
 		for (var i:int = 0; i < threads.length; i++) {

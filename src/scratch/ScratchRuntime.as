@@ -195,8 +195,7 @@ public class ScratchRuntime {
 		if (keyName == null) return;
 		var startMatchingKeyHats:Function = function (stack:Block, target:ScratchObj):void {
 			if ((stack.op == 'whenKeyPressed') && (stack.args[0].argValue == keyName)) {
-				// only start the stack if it is not already running
-				if (!interp.isRunning(stack, target)) interp.toggleThread(stack, target);
+				interp.restartThread(stack, target);
 			}
 		}
 		allStacksAndOwnersDo(startMatchingKeyHats);
@@ -512,8 +511,10 @@ public class ScratchRuntime {
 		var ch:int = evt.charCode;
 		if (evt.charCode == 0) ch = mapArrowKey(evt.keyCode);
 		if ((65 <= ch) && (ch <= 90)) ch += 32; // map A-Z to a-z
-		if (!(evt.target is TextField)) startKeyHats(ch);
-		if (ch < 128) keyIsDown[ch] = true;
+		if (ch < 128) {
+			if (!(evt.target is TextField) && !keyIsDown[ch]) startKeyHats(ch);
+			keyIsDown[ch] = true;
+		}
 	}
 
 	public function keyUp(evt:KeyboardEvent):void {
