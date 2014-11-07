@@ -170,8 +170,8 @@ package com.adobe.utils
 				start = source.indexOf( "/*" );
 			}
 			
+			source = source.replace( COMMENT, "\n" );
 			source = source.replace( REGEXP_LINE_BREAKER, "\n" );
-			source = source.replace( COMMENT, "" );
 			return source;
 		}
 			
@@ -353,6 +353,28 @@ package com.adobe.utils
 					body =   basicOp( "mul", tokens[pos+0], tokens[pos+4], tokens[pos+6] ) + "\n"
 						   + basicOp( "add", tokens[pos+0], tokens[pos+0], tokens[pos+2] )
 					break;
+
+				// BEGIN added by Scratch
+				case "i=i<i":
+					body = basicOp("slt", tokens[pos+0], tokens[pos+2], tokens[pos+4]);
+					break;
+				case "i=i2i": // ==, >=, etc.
+					switch(tokens[pos+3]) {
+						case ">=":
+							body = basicOp("sge", tokens[pos+0], tokens[pos+2], tokens[pos+4]);
+							break;
+						case "==":
+							body = basicOp("seq", tokens[pos+0], tokens[pos+2], tokens[pos+4]);
+							break;
+						case "!=":
+							body = basicOp("sne", tokens[pos+0], tokens[pos+2], tokens[pos+4]);
+							break;
+						default: // probably an error
+							body = basicOp(tokens[pos+3], tokens[pos+0], tokens[pos+2], tokens[pos+4]);
+							break;
+					}
+					break;
+				// END added by Scratch
 
 				default:
 					return false;
@@ -692,10 +714,12 @@ package com.adobe.utils
 			// Matrix multiply 4x5
 			"macro mul4x4( vec, mat ) {" +
 			"	m44 out, vec, mat; " +
-			"}"
+			"}\n"
 	}
 		
 }
+
+import com.adobe.utils.AGALMacroAssembler;
 
 
 internal class Macro 
