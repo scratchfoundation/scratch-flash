@@ -23,23 +23,23 @@
 // A Scratch stage object. Supports a drawing surface for the pen commands.
 
 package scratch {
-	import flash.display.*;
-	import flash.geom.*;
-	import flash.media.*;
-	import flash.events.*;
-	import flash.system.Capabilities;
-	import flash.utils.ByteArray;
-	import flash.net.FileReference;
-	import blocks.Block;
-	import filters.FilterPack;
-	import translation.Translator;
-	import uiwidgets.Menu;
-	import ui.media.MediaInfo;
-	import util.*;
-	import watchers.*;
-	import by.blooddy.crypto.image.PNG24Encoder;
-	import by.blooddy.crypto.image.PNGFilter;
-	import by.blooddy.crypto.MD5;
+import flash.display.*;
+import flash.geom.*;
+import flash.media.*;
+import flash.events.*;
+import flash.system.Capabilities;
+import flash.utils.ByteArray;
+import flash.net.FileReference;
+import blocks.Block;
+import filters.FilterPack;
+import translation.Translator;
+import uiwidgets.Menu;
+import ui.media.MediaInfo;
+import util.*;
+import watchers.*;
+import by.blooddy.crypto.image.PNG24Encoder;
+import by.blooddy.crypto.image.PNGFilter;
+import by.blooddy.crypto.MD5;
 
 public class ScratchStage extends ScratchObj {
 
@@ -523,7 +523,7 @@ public class ScratchStage extends ScratchObj {
 
 		var m:Matrix = new Matrix();
 		m.translate(-r.x, -r.y);
-		bm.draw(cachedBM, m);
+		bm.drawWithQuality(cachedBM, m, null, null, null, false, StageQuality.LOW);
 
 		for (var i:int = 0; i < this.numChildren; i++) {
 			var o:ScratchSprite = this.getChildAt(i) as ScratchSprite;
@@ -534,7 +534,7 @@ public class ScratchStage extends ScratchObj {
 				m.scale(o.scaleX, o.scaleY);
 				m.translate(o.x - r.x, o.y - r.y);
 				var colorTransform:ColorTransform = (o.img.alpha == 1) ? null : new ColorTransform(1, 1, 1, o.img.alpha);
-				bm.draw(o.img, m, colorTransform);
+				bm.drawWithQuality(o.img, m, colorTransform, null, null, false, StageQuality.LOW);
 			}
 		}
 
