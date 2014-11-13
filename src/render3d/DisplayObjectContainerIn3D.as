@@ -1178,15 +1178,15 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		var rot:Number = skipObj.rotation;
 
 		var childTL:Point = bounds.topLeft;
-		var scaleX:Number = scratchStage.scaleX * scratchStage.stage.scaleX;
-		var scaleY:Number = scratchStage.scaleY * scratchStage.stage.scaleY;
+		var scaleX:Number = scratchStage.scaleX * scratchStage.stage.scaleX * globalScale;
+		var scaleY:Number = scratchStage.scaleY * scratchStage.stage.scaleY * globalScale;
 		childTL.x *= skipObj.scaleX;
 		childTL.y *= skipObj.scaleY;
 		var oldProj:Matrix3D = projMatrix.clone();
 		projMatrix.prependScale(scale / scaleX, scale / scaleY, 1);
-		projMatrix.prependTranslation(-childTL.x, -childTL.y, 0);
+		projMatrix.prependTranslation(Math.floor(-childTL.x), Math.floor(-childTL.y), 0);
 		projMatrix.prependRotation(-rot, Vector3D.Z_AXIS);
-		projMatrix.prependTranslation(-skipObj.x, -skipObj.y, 0);
+		projMatrix.prependTranslation(Math.floor(-skipObj.x), Math.floor(-skipObj.y), 0);
 
 		skipObj.visible = false;
 		pixelateAll = true;
