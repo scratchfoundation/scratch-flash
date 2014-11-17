@@ -132,7 +132,7 @@ public class ListPrims {
 		list.contents[i - 1] = item;
 	}
 
-	private function primGetItem(b:Block):String {
+	private function primGetItem(b:Block):* {
 		var list:ListWatcher = listarg(b, 1);
 		if (!list) return '';
 		var i:int = computeIndex(interp.arg(b, 0), list.contents.length);
