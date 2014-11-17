@@ -429,11 +429,7 @@ public class ScratchCostume {
 			else if(dispObj is Shape) {
 				var shape:Shape = new Shape();
 				shape.graphics.copyFrom((dispObj as Shape).graphics);
-				shape.x = dispObj.x;
-				shape.y = dispObj.y;
-				shape.scaleX = dispObj.scaleX;
-				shape.scaleY = dispObj.scaleY;
-				shape.rotation = dispObj.rotation;
+				shape.transform = dispObj.transform;
 				clone.addChild(shape);
 			}
 			else if(dispObj is Bitmap) {
