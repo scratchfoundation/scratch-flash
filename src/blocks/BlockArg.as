@@ -228,7 +228,7 @@ public class BlockArg extends Sprite {
 
 	protected var addedTextPadding:uint = 6;
 	protected var minTextWidth:uint = 14;
-	private function textChanged(evt:*):void {
+	protected function textChanged(evt:*):void {
 		argValue = field.text;
 		if (isNumber) {
 			// optimization: coerce to a number if possible
