@@ -239,9 +239,7 @@ package svgeditor {
 		public function enableTools(enabled:Boolean):void {
 			uiLayer.mouseChildren = enabled;
 			uiLayer.alpha = enabled ? 1.0 : 0.6;
-			if (!enabled) {
-				setToolMode('select');
-			}
+			setToolMode(enabled ? 'select' : 'cursorTool');
 		}
 
 		public function isActive():Boolean {
@@ -607,6 +605,7 @@ package svgeditor {
 				case 'bitmapEraser': currentTool = new BitmapPencilTool(this, true); break;
 				case 'bitmapSelect': currentTool = new ObjectTransformer(this); break;
 				case 'paintbucket': currentTool = new PaintBucketTool(this); break;
+				case 'cursorTool': currentTool = new CursorToolShim(this); break;
 			}
 
 			if(currentTool is SVGEditTool) {
