@@ -30,11 +30,10 @@
 
 package scratch {
 import by.blooddy.crypto.MD5;
-
 import flash.utils.*;
-	import sound.*;
-	import sound.mp3.MP3Loader;
-	import util.*;
+import sound.*;
+import sound.mp3.MP3Loader;
+import util.*;
 
 public class ScratchSound {
 
