@@ -673,11 +673,16 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 			SCRATCH::allow3d {
 				sound = new Sound();
 				data.position = 0;
-				sound.loadCompressedDataFromByteArray(data, data.length);
-				MP3Loader.extractSamples(name, sound, sound.length * 44.1, function (out:ScratchSound):void {
-					snd = out;
-					startSoundUpload(out, origName, uploadComplete);
-				});
+				try {
+					sound.loadCompressedDataFromByteArray(data, data.length);
+					MP3Loader.extractSamples(name, sound, sound.length * 44.1, function (out:ScratchSound):void {
+						snd = out;
+						startSoundUpload(out, origName, uploadComplete);
+					});
+				}
+				catch(e:Error) {
+					uploadComplete();
+				}
 			}
 
 			if (!sound)
