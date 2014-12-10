@@ -60,6 +60,7 @@ public class ScratchComment extends Sprite {
 		frame.setWidthHeight(width, 200);
 		expandedSize = new Point(width, 200);
 		addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
+		addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, menu);
 		fixLayout();
 		setExpanded(isOpen);
 	}

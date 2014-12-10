@@ -19,29 +19,20 @@
 
 package svgeditor.tools
 {
-	import flash.display.Bitmap;
-	import flash.display.BitmapData;
-	import flash.display.CapsStyle;
-	import flash.display.DisplayObject;
-	import flash.display.Graphics;
-	import flash.display.JointStyle;
-	import flash.display.Shape;
-	import flash.display.Sprite;
-	import flash.events.Event;
-	import flash.events.MouseEvent;
-	import flash.geom.Matrix;
-	import flash.geom.Point;
-	import flash.geom.Rectangle;
+import flash.display.DisplayObject;
+import flash.display.Sprite;
+import flash.events.Event;
+import flash.events.MouseEvent;
+import flash.geom.Point;
 
-	import svgeditor.ImageEdit;
-	import svgeditor.objs.ISVGEditable;
-	import svgeditor.objs.PathDrawContext;
-	import svgeditor.objs.SVGShape;
+import svgeditor.ImageEdit;
+import svgeditor.objs.ISVGEditable;
+import svgeditor.objs.SVGShape;
 
-	import svgutils.SVGElement;
-	import svgutils.SVGPath;
+import svgutils.SVGElement;
+import svgutils.SVGPath;
 
-	public final class PathEditTool extends SVGEditTool
+public final class PathEditTool extends SVGEditTool
 	{
 		private var pathElem:SVGElement;
 		private var controlPoints:Array;
@@ -53,13 +44,13 @@ package svgeditor.tools
 			reset();
 		}
 
-		override protected function init():void {
-			super.init();
+		override protected function start():void {
+			super.start();
 			showPathPoints();
 		}
 
-		override protected function shutdown():void {
-			super.shutdown();
+		override protected function stop():void {
+			super.stop();
 			PathEndPointManager.removeEndPoints();
 		}
 

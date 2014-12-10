@@ -71,6 +71,8 @@ public class ProcedureSpecEditor extends Sprite {
 		addEventListener(Event.CHANGE, textChange);
 		addEventListener(FocusEvent.FOCUS_OUT, focusChange);
 		addEventListener(FocusEvent.FOCUS_IN, focusChange);
+		addEventListener(MouseEvent.CLICK, click);
+		addEventListener(MouseEvent.DOUBLE_CLICK, doubleClick);
 
 		addSpecElements(originalSpec, inputNames);
 		warpCheckbox.setOn(warpFlag);

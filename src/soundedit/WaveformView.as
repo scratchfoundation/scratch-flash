@@ -35,7 +35,7 @@ package soundedit {
 	import flash.text.*;
 	import assets.Resources;
 	import ui.parts.SoundsPart;
-	import util.DragClient;
+	import ui.dragdrop.DragClient;
 	import scratch.ScratchSound;
 
 public class WaveformView extends Sprite implements DragClient {

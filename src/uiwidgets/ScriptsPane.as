@@ -32,7 +32,7 @@ import blocks.*;
 import scratch.*;
 import flash.geom.Rectangle;
 
-import ui.DropTarget;
+import ui.dragdrop.DropTarget;
 import ui.media.MediaInfo;
 
 import util.GestureHandler;
@@ -61,6 +61,7 @@ public class ScriptsPane extends ScrollFrameContents implements DropTarget {
 		hExtra = vExtra = 40;
 		createTexture();
 		addFeedbackShape();
+		addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, menu);
 	}
 
 	protected function createTexture():void {
@@ -371,21 +372,21 @@ public class ScriptsPane extends ScrollFrameContents implements DropTarget {
 
 	/* Dropping */
 
-	public function handleDrop(obj:*):uint {
+	public function handleDrop(obj:*):Boolean {
 		var localP:Point = globalToLocal(new Point(obj.x, obj.y));
 
 		var info:MediaInfo = obj as MediaInfo;
 		if (info) {
-			if (!info.scripts) return GestureHandler.DROP_REJECTED;
+			if (!info.scripts) return false;
 			localP.x += info.thumbnailX();
 			localP.y += info.thumbnailY();
 			addStacksFromBackpack(info, localP);
-			return GestureHandler.DROP_ACCEPTED;
+			return true;
 		}
 
 		var b:Block = obj as Block;
 		var c:ScratchComment = obj as ScratchComment;
-		if (!b && !c) return GestureHandler.DROP_REJECTED;
+		if (!b && !c) return false;
 
 		obj.x = Math.max(5, localP.x);
 		obj.y = Math.max(5, localP.y);
@@ -398,7 +399,7 @@ public class ScriptsPane extends ScrollFrameContents implements DropTarget {
 		saveScripts();
 		updateSize();
 		if (c) fixCommentLayout();
-		return GestureHandler.DROP_ACCEPTED;
+		return true;
 	}
 
 	private function addStacksFromBackpack(info:MediaInfo, dropP:Point):void {

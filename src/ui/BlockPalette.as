@@ -27,6 +27,9 @@
 package ui {
 import blocks.Block;
 import interpreter.Interpreter;
+
+import ui.dragdrop.DropTarget;
+
 import uiwidgets.*;
 import scratch.ScratchObj;
 import scratch.ScratchComment;
@@ -52,19 +55,19 @@ public class BlockPalette extends ScrollFrameContents implements DropTarget {
 		if (scrollToOrigin) x = y = 0;
 	}
 
-	public function handleDrop(obj:*):uint {
+	public function handleDrop(obj:*):Boolean {
 		// Delete blocks and stacks dropped onto the palette.
 		var c:ScratchComment = obj as ScratchComment;
 		if (c) {
 			c.x = c.y = 20; // position for undelete
 			c.deleteComment();
-			return GestureHandler.DROP_ACCEPTED;
+			return true;
 		}
 		var b:Block = obj as Block;
 		if (b) {
-			return b.deleteStack() ? GestureHandler.DROP_ACCEPTED : GestureHandler.DROP_REJECTED;
+			return b.deleteStack();
 		}
-		return GestureHandler.DROP_REJECTED;
+		return true;
 	}
 
 	public static function strings():Array {

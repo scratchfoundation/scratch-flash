@@ -19,35 +19,33 @@
 
 package svgeditor.tools
 {
-	import assets.Resources;
+import assets.Resources;
 
-	import flash.display.Bitmap;
-	import flash.display.BitmapData;
-	import flash.display.BlendMode;
-	import flash.display.CapsStyle;
-	import flash.display.DisplayObject;
-	import flash.display.Graphics;
-	import flash.display.LineScaleMode;
-	import flash.display.Shape;
-	import flash.display.Sprite;
-	import flash.events.Event;
-	import flash.events.MouseEvent;
-	import flash.geom.Matrix;
-	import flash.geom.Point;
-	import flash.geom.Rectangle;
+import flash.display.Bitmap;
+import flash.display.BitmapData;
+import flash.display.BlendMode;
+import flash.display.CapsStyle;
+import flash.display.DisplayObject;
+import flash.display.Graphics;
+import flash.display.LineScaleMode;
+import flash.display.Shape;
+import flash.display.Sprite;
+import flash.events.Event;
+import flash.events.MouseEvent;
+import flash.geom.Matrix;
+import flash.geom.Point;
+import flash.geom.Rectangle;
 
-	import svgeditor.DrawProperties;
-	import svgeditor.ImageEdit;
-	import svgeditor.objs.ISVGEditable;
-	import svgeditor.objs.SVGBitmap;
-	import svgeditor.objs.SVGGroup;
-	import svgeditor.objs.SVGShape;
+import svgeditor.DrawProperties;
+import svgeditor.ImageEdit;
+import svgeditor.objs.ISVGEditable;
+import svgeditor.objs.SVGBitmap;
+import svgeditor.objs.SVGShape;
 
-	import svgutils.SVGElement;
-	import svgutils.SVGExport;
-	import svgutils.SVGPath;
+import svgutils.SVGExport;
+import svgutils.SVGPath;
 
-	public final class EraserTool extends SVGTool
+public final class EraserTool extends SVGTool
 	{
 		private var eraserShape:Shape;
 		private var lastPos:Point;
@@ -82,18 +80,18 @@ package svgeditor.tools
 			}
 		}
 
-		override protected function init():void {
-			super.init();
+		override protected function start():void {
+			super.start();
 			editor.getWorkArea().addEventListener(MouseEvent.MOUSE_DOWN, mouseDown, false, 0, true);
 			stage.addChild(eraserShape);
 			updateIcon();
 			origStrokeWidth = editor.getShapeProps().strokeWidth;
 		}
 
-		override protected function shutdown():void {
+		override protected function stop():void {
 			editor.getWorkArea().removeEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
 			editor.getShapeProps().strokeWidth = origStrokeWidth;
-			super.shutdown();
+			super.stop();
 			stage.removeChild(eraserShape);
 		}
 

@@ -95,6 +95,8 @@ public class ListWatcher extends Sprite {
 		setWidthHeight(100, 200);
 		addEventListener(flash.events.FocusEvent.FOCUS_IN, gotFocus);
 		addEventListener(flash.events.FocusEvent.FOCUS_OUT, lostFocus);
+		addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, menu);
+
 	}
 
 	public static function strings():Array {

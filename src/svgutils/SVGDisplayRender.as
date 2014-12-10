@@ -42,7 +42,7 @@ public class SVGDisplayRender {
 	private var currentShape:Shape;
 	private var forHitTest:Boolean;
 
-	public function renderAsSprite(rootSVG:SVGElement, doShift:Boolean = false, forHitTest:Boolean = false):Sprite {
+	public function renderAsSprite(rootSVG:SVGElement, doShift:Boolean = false, forHitTest:Boolean = false, scale:Number = 1.0):Sprite {
 		// Return a sprite containing all the SVG elements that Scratch can render.
 		// If doShift is true, shift visible objects so the visible bounds is at (0,0).
 
@@ -50,7 +50,7 @@ public class SVGDisplayRender {
 		svgSprite = new Sprite();
 		if (!rootSVG) return svgSprite;
 
-		for each (var el:SVGElement in rootSVG.allElements()) renderElement(el);
+		for each (var el:SVGElement in rootSVG.allElements()) renderElement(el, scale);
 		if (currentShape) svgSprite.addChild(currentShape); // add final shape layer, if any
 
 		if (doShift) {
@@ -67,24 +67,24 @@ public class SVGDisplayRender {
 		return svgSprite;
 	}
 
-	private function renderElement(el:SVGElement):void {
+	private function renderElement(el:SVGElement, scale:Number = 1.0):void {
 		// Render the given element, either by adding a new child to svgSprite or
 		// by drawing onto the current shape.
 		if ('image' == el.tag) {
 			var bmp:Bitmap = new Bitmap();
-			el.renderImageOn(bmp);
+			el.renderImageOn(bmp, scale);
 			addLayer(bmp);
 		} else if ('text' == el.tag) {
 			var tf:TextField = new TextField();
 			tf.selectable = false;
 			tf.mouseEnabled = false;
 			tf.tabEnabled = false;
-			el.renderTextOn(tf);
+			el.renderTextOn(tf, scale);
 			addLayer(tf);
 		} else if (el.path) {
 //			if (!currentShape) currentShape = new Shape();
 			var shape:Shape = new Shape();
-			el.renderPathOn(shape, forHitTest);
+			el.renderPathOn(shape, forHitTest, scale);
 			if(el.transform) shape.transform.matrix = el.transform;
 			addLayer(shape);
 		}

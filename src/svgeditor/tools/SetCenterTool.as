@@ -19,14 +19,14 @@
 
 package svgeditor.tools
 {
-	import flash.events.MouseEvent;
-	import flash.geom.Point;
-	import flash.geom.Rectangle;
+import flash.events.MouseEvent;
+import flash.geom.Point;
+import flash.geom.Rectangle;
 
-	import svgeditor.ImageCanvas;
-	import svgeditor.ImageEdit;
+import svgeditor.ImageCanvas;
+import svgeditor.ImageEdit;
 
-	public final class SetCenterTool extends SVGTool
+public final class SetCenterTool extends SVGTool
 	{
 		private var canvasCenter:Point; // Used for reporting back the new offset
 		private var localRect:Rectangle; // Used for drawing crosshairs
@@ -38,8 +38,8 @@ package svgeditor.tools
 			active = false;
 		}
 
-		override protected function init():void {
-			super.init();
+		override protected function start():void {
+			super.start();
 			editor.getToolsLayer().mouseEnabled = false;
 			editor.getToolsLayer().mouseChildren = false;
 
@@ -47,14 +47,14 @@ package svgeditor.tools
 			refresh();
 		}
 
-		override protected function shutdown():void {
+		override protected function stop():void {
 			editor.getToolsLayer().mouseEnabled = true;
 			editor.getToolsLayer().mouseChildren = true;
 
 			editor.getWorkArea().removeEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
 			editor.removeEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
 			editor.removeEventListener(MouseEvent.MOUSE_UP, mouseUp);
-			super.shutdown();
+			super.stop();
 		}
 
 		override public function refresh():void {

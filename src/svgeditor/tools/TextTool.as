@@ -19,29 +19,25 @@
 
 package svgeditor.tools
 {
-	import flash.display.Bitmap;
-	import flash.display.DisplayObject;
-	import flash.display.Sprite;
-	import flash.events.Event;
-	import flash.events.FocusEvent;
-	import flash.events.KeyboardEvent;
-	import flash.events.MouseEvent;
-	import flash.events.TimerEvent;
-	import flash.filters.DropShadowFilter;
-	import flash.geom.Matrix;
-	import flash.geom.Point;
-	import flash.text.TextField;
-	import flash.text.TextFieldAutoSize;
-	import flash.text.TextFieldType;
-	import flash.utils.Timer;
+import flash.display.DisplayObject;
+import flash.display.Sprite;
+import flash.events.Event;
+import flash.events.KeyboardEvent;
+import flash.events.MouseEvent;
+import flash.events.TimerEvent;
+import flash.filters.DropShadowFilter;
+import flash.geom.Point;
+import flash.text.TextFieldAutoSize;
+import flash.text.TextFieldType;
+import flash.utils.Timer;
 
-	import svgeditor.*;
-	import svgeditor.objs.ISVGEditable;
-	import svgeditor.objs.SVGTextField;
+import svgeditor.*;
+import svgeditor.objs.ISVGEditable;
+import svgeditor.objs.SVGTextField;
 
-	import svgutils.SVGElement;
+import svgutils.SVGElement;
 
-	// TODO: Make it non-sticky when the editor is a BitmapEdit instance
+// TODO: Make it non-sticky when the editor is a BitmapEdit instance
 	public final class TextTool extends SVGEditTool
 	{
 		private var created:Boolean;
@@ -52,18 +48,18 @@ package svgeditor.tools
 			cursorName = 'ibeam';
 		}
 
-		override protected function init():void {
-			super.init();
+		override protected function start():void {
+			super.start();
 			if(object) stage.focus = object as SVGTextField;
-			editor.getContentLayer().removeEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
-			editor.getWorkArea().addEventListener(MouseEvent.MOUSE_DOWN, mouseDown, false, 0, true);
+//			editor.getContentLayer().removeEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
+//			editor.getWorkArea().addEventListener(MouseEvent.MOUSE_DOWN, mouseDown, false, 0, true);
 			created = false;
 		}
 
-		override protected function shutdown():void {
+		override protected function stop():void {
 			endEdit();
-			editor.getWorkArea().removeEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
-			super.shutdown();
+//			editor.getWorkArea().removeEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
+			super.stop();
 		}
 
 		private function handleEvents(e:Event):void {
@@ -158,7 +154,7 @@ package svgeditor.tools
 			dispatchEvent(new Event(Event.CHANGE));
 		}
 
-		override protected function mouseDown(e:MouseEvent):void {
+		override protected function mouseDown(event:MouseEvent):void {
 			var wasEditing:Boolean = !!object;
 			var obj:ISVGEditable = getEditableUnderMouse(false);
 			var origObj:ISVGEditable = object;
@@ -182,7 +178,7 @@ package svgeditor.tools
 			if(!object) {
 				if(wasEditing && (origObj as SVGTextField).text.length && (origObj as SVGTextField).text != ' ') {
 					editor.endCurrentTool(created ? origObj : null);
-					e.stopPropagation();
+					event.stopPropagation();
 				}
 				else {
 					var contentLayer:Sprite = editor.getContentLayer();

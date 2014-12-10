@@ -19,16 +19,16 @@
 
 package svgeditor.tools
 {
-	import flash.display.*;
-	import flash.events.*;
-	import flash.events.KeyboardEvent;
-	import flash.geom.*;
-	import svgeditor.*;
-	import svgeditor.objs.SVGShape;
-	import svgeditor.tools.PathEndPointManager;
-	import svgutils.*;
+import flash.display.*;
+import flash.events.*;
+import flash.geom.*;
 
-	public final class PathTool extends SVGCreateTool
+import svgeditor.*;
+import svgeditor.objs.SVGShape;
+
+import svgutils.*;
+
+public final class PathTool extends SVGCreateTool
 	{
 		private var newElement:SVGElement;
 		private var gfx:Graphics;
@@ -57,8 +57,8 @@ package svgeditor.tools
 			previewShape = new Shape();
 		}
 
-		override protected function init():void {
-			super.init();
+		override protected function start():void {
+			super.start();
 			if(!linesOnly) {
 				stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyPress, false, 0, true);
 				stage.addEventListener(KeyboardEvent.KEY_UP, onKeyRelease, false, 0, true);
@@ -71,7 +71,7 @@ package svgeditor.tools
 			if (editor is SVGEdit) PathEndPointManager.makeEndPoints();
 		}
 
-		override protected function shutdown():void {
+		override protected function stop():void {
 			if(editor.stage) {
 				editor.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyPress);
 				editor.stage.removeEventListener(KeyboardEvent.KEY_UP, onKeyRelease);
@@ -79,7 +79,7 @@ package svgeditor.tools
 			editor.getToolsLayer().mouseEnabled = true;
 			PathEndPointManager.removeEndPoints();
 			if(previewShape.parent) previewShape.parent.removeChild(previewShape);
-			super.shutdown();
+			super.stop();
 		}
 
 		private function onKeyPress(e:KeyboardEvent):void {

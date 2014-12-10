@@ -31,7 +31,10 @@ package watchers {
 	import flash.text.*;
 	import interpreter.*;
 	import scratch.*;
-	import uiwidgets.*;
+
+import ui.dragdrop.DragClient;
+
+import uiwidgets.*;
 	import util.*;
 	import blocks.Block;
 	import translation.Translator;
@@ -83,6 +86,7 @@ public class Watcher extends Sprite implements DragClient {
 		addSliderAndKnob();
 		slider.visible = knob.visible = false;
 		addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
+		addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, menu);
 	}
 
 	public static function strings():Array {

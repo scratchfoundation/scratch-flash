@@ -9,11 +9,13 @@ import flash.events.Event;
 import flash.events.MouseEvent;
 import flash.geom.Point;
 import scratch.ScratchSprite;
-import ui.DropTarget;
+
+import ui.dragdrop.DragAndDropMgr;
+import ui.dragdrop.DropTarget;
 import ui.EditableItem;
 import ui.media.MediaInfo;
 import ui.media.MediaInfoOnline;
-import util.DragEvent;
+import ui.dragdrop.DragEvent;
 import util.GestureHandler;
 
 public class ArrangeableContents extends ScrollFrameContents implements DropTarget {
@@ -22,7 +24,6 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 	public static const TYPE_STRIP_VERTICAL:uint = 2;
 	private static const leftBehindAlpha:Number = 0.6;
 	private static const animationDuration:Number = 0.25;
-
 
 	// Fixed state variables
 	private var type:uint = 0;
@@ -44,12 +45,12 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 		addEventListener(DragEvent.DRAG_OVER, dragAndDropHandler);
 		addEventListener(DragEvent.DRAG_MOVE, dragAndDropHandler);
 		addEventListener(DragEvent.DRAG_OUT, dragAndDropHandler);
-		addEventListener(MediaInfoTablet.TOUCH_LONG_HOLD, onLongHold);
+		//addEventListener(MediaInfoTablet.TOUCH_LONG_HOLD, onLongHold);
 	}
 
-	private function onLongHold(e:Event):void {
-		setEditMode(true);
-	}
+//	protected function onLongHold(e:Event):void {
+//		setEditMode(true);
+//	}
 
 	override public function updateSize():void {
 		super.updateSize();
@@ -57,35 +58,35 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 		arrangeItems();
 	}
 
-	private function setEditMode(enable:Boolean):void {
-		if (editMode == enable) return;
+//	private function setEditMode(enable:Boolean):void {
+//		if (editMode == enable) return;
+//
+//		// Enter edit mode
+//		editMode = enable;
+//		for (var i:int=0, l:int=numChildren; i<l; ++i) {
+//			var item:EditableItem = getChildAt(i) as EditableItem;
+//			if (item) item.toggleEditMode(enable);
+//		}
+//
+//		if (editMode)
+//			stage.addEventListener(MouseEvent.MOUSE_DOWN, cancelEditMode);
+//		else
+//			stage.removeEventListener(MouseEvent.MOUSE_DOWN, cancelEditMode);
+//	}
 
-		// Enter edit mode
-		editMode = enable;
-		for (var i:int=0, l:int=numChildren; i<l; ++i) {
-			var item:EditableItem = getChildAt(i) as EditableItem;
-			if (item) item.toggleEditMode(enable);
-		}
-
-		if (editMode)
-			stage.addEventListener(MouseEvent.MOUSE_DOWN, cancelEditMode);
-		else
-			stage.removeEventListener(MouseEvent.MOUSE_DOWN, cancelEditMode);
-	}
-
-	private function cancelEditMode(event:Event):void {
-		if (getBounds(this).contains(mouseX, mouseY)) {
-			var dObj:DisplayObject = event.target as DisplayObject;
-			while (dObj != stage && dObj != this) {
-				// If we find a MediaInfo in the target's ancestry then don't cancel edit mode
-				// since the user may be trying to drag items around
-				if (dObj is MediaInfo) return;
-				dObj = dObj.parent ? dObj.parent : stage;
-			}
-		}
-
-		setEditMode(false);
-	}
+//	private function cancelEditMode(event:Event):void {
+//		if (getBounds(this).contains(mouseX, mouseY)) {
+//			var dObj:DisplayObject = event.target as DisplayObject;
+//			while (dObj != stage && dObj != this) {
+//				// If we find a MediaInfo in the target's ancestry then don't cancel edit mode
+//				// since the user may be trying to drag items around
+//				if (dObj is MediaInfo) return;
+//				dObj = dObj.parent ? dObj.parent : stage;
+//			}
+//		}
+//
+//		setEditMode(false);
+//	}
 
 	// Move items out of the way of a dragging item
 	private var dropPos:int = -1;
@@ -114,7 +115,8 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 							arrangeItems(true);
 						}
 						else {
-							ignoredObj = event.draggedObject;
+							// TODO: when do we ignore?
+							//ignoredObj = event.draggedObject;
 						}
 					}
 				}
@@ -157,18 +159,20 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 
 	// Used for re-arranging items
 	// Override for custom dropping actions
-	public function handleDrop(obj:*):uint {
+	public function handleDrop(obj:*):Boolean {
 		// Accept the drop if we're re-arranging items OR we already have that item as identified by MD5
 		var mi:MediaInfo = obj as MediaInfo;
 		if(mi && (mi.parent == this || !!(mi = getItemByMD5(mi.objType, mi.md5)))) {
 			mi.visible = true;
-			addContent(mi, dropPos);
+			if (mi.parent != this || dropPos > -1)
+				addContent(mi, dropPos);
 			dropPos = -1;
 			arrangeItems();
-			return GestureHandler.DROP_ACCEPTED;
+			return true;
 		}
 
-		return GestureHandler.DROP_IGNORED;
+		// TODO: is this correct?
+		return true;
 	}
 
 	private function getItemByMD5(objType:String, md5:String):MediaInfo {
@@ -181,21 +185,6 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 
 		return null;
 	}
-
-//	private function insertItem(newItem:MediaInfo):void {
-//		var location:Point = newItem.localToGlobal(new Point(0, 0));
-//		for each (var existingItem:MediaInfo in contents.allItems())
-//			if (existingItem.md5 && (existingItem.md5 == newItem.md5)) {
-//				newItem = existingItem;
-//				if (newItem is EditableItem) (newItem as EditableItem).toggleEditMode(false);
-//				break;
-//			}
-//
-//		newItem.addDeleteButton();
-//		contents.addContent(newItem, location);
-//		contents.arrangeItems();
-//	}
-
 
 	// Select an item
 	private function onTap(e:Event):void {
@@ -217,10 +206,10 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 		else addChild(item);
 
 		if (item is EditableItem) (item as EditableItem).toggleEditMode(editMode);
+		DragAndDropMgr.setDraggable(item, true);
 	}
 
 	private function getIndexFromPoint(pt:Point, forAdding:Boolean = false):int {
-		// TODO: Update for other layouts
 		var loc:Point = globalToLocal(pt);
 		var i:int = 0;
 		var mi:MediaInfo;
@@ -239,10 +228,18 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 			}
 		}
 		else {
-			// TODO: Make this work for grid layouts
+			// Grid layout
+			var firstItem:MediaInfo;
 			for each(mi in allItems()) {
-				if (mi.y + mi.height / 2 > loc.y)
-					return forAdding ? getChildIndex(mi) : i;
+				if (mi.x + mi.width / 2 > loc.x || (mi.y + mi.height / 2 > loc.y && firstItem && mi.y > firstItem.y)) {
+					if (mi.owner == null)
+						return -1;
+					else
+						return forAdding ? getChildIndex(mi) : i;
+				}
+
+				if (i == 0)
+					firstItem = mi;
 				++i;
 			}
 		}

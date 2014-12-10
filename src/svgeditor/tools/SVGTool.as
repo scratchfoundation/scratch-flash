@@ -19,18 +19,21 @@
 
 package svgeditor.tools
 {
-	import flash.display.DisplayObject;
-	import flash.display.Sprite;
-	import flash.events.Event;
-	import flash.events.MouseEvent;
-	import flash.geom.Point;
+import flash.display.DisplayObject;
+import flash.display.Sprite;
+import flash.events.Event;
+import flash.events.MouseEvent;
+import flash.geom.Point;
 
-	import svgeditor.ImageEdit;
-	import svgeditor.objs.*;
+import svgeditor.ImageEdit;
+import svgeditor.objs.*;
 
-	import svgutils.SVGPath;
+import svgutils.SVGPath;
 
-	public class SVGTool extends Sprite
+import ui.ITool;
+import ui.ToolMgr;
+
+public class SVGTool extends Sprite implements ITool
 	{
 		protected var editor:ImageEdit;
 		protected var isShuttingDown:Boolean;
@@ -51,16 +54,20 @@ package svgeditor.tools
 
 		public function refresh():void {}
 
-		protected function init():void {
+		protected function start():void {
 			if(cursorBMName && cursorHotSpot)
 				editor.setCurrentCursor(cursorBMName, cursorBMName, cursorHotSpot);
 			else if(cursorName)
 				editor.setCurrentCursor(cursorName);
+
+			ToolMgr.activateTool(this, editor.getWorkArea());
 		}
 
-		protected function shutdown():void {
+		protected function stop():void {
 			editor.setCurrentCursor(null);
 			editor = null;
+
+			ToolMgr.deactivateTool(this);
 		}
 
 		public final function interactsWithContent():Boolean {
@@ -73,7 +80,7 @@ package svgeditor.tools
 
 		private function addedToStage(e:Event):void {
 			removeEventListener(Event.ADDED_TO_STAGE, addedToStage);
-			init();
+			start();
 		}
 
 		private function removedFromStage(e:Event):void {
@@ -81,7 +88,7 @@ package svgeditor.tools
 
 			removeEventListener(Event.REMOVED, removedFromStage);
 			isShuttingDown = true;
-			shutdown();
+			stop();
 		}
 
 		protected function getEditableUnderMouse(includeGroups:Boolean = true):ISVGEditable {
@@ -148,5 +155,8 @@ package svgeditor.tools
 
 			return null;
 		}
-	}
-}
+
+	public function isSticky():Boolean { return true; }
+	public function shutdown():void {}
+	public function mouseHandler(e:MouseEvent):void {}
+}}

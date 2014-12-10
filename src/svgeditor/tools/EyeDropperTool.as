@@ -19,21 +19,18 @@
 
 package svgeditor.tools
 {
-	import flash.display.BitmapData;
-	import flash.display.DisplayObject;
-	import flash.display.Bitmap;
-	import flash.events.MouseEvent;
-	import flash.geom.Matrix;
-	import flash.geom.Point;
+import flash.display.Bitmap;
+import flash.display.BitmapData;
+import flash.display.DisplayObject;
+import flash.events.MouseEvent;
+import flash.geom.Matrix;
+import flash.geom.Point;
 
-	import svgeditor.BitmapEdit;
-	import svgeditor.ImageEdit;
-	import svgeditor.objs.ISVGEditable;
-	import svgeditor.objs.SVGBitmap;
+import svgeditor.BitmapEdit;
+import svgeditor.ImageEdit;
+import svgeditor.objs.ISVGEditable;
 
-	import svgutils.SVGElement;
-
-	public final class EyeDropperTool extends SVGTool
+public final class EyeDropperTool extends SVGTool
 	{
 		public function EyeDropperTool(svgEditor:ImageEdit) {
 			super(svgEditor);
@@ -42,15 +39,15 @@ package svgeditor.tools
 			cursorHotSpot = new Point(14,20);
 		}
 
-		override protected function init():void {
-			super.init();
+		override protected function start():void {
+			super.start();
 			editor.getWorkArea().addEventListener(MouseEvent.MOUSE_DOWN, mouseDown, false, 0, true);
 		}
 
-		override protected function shutdown():void {
+		override protected function stop():void {
 			editor.getWorkArea().removeEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
 			mouseUp();
-			super.shutdown();
+			super.stop();
 		}
 
 		private function mouseDown(event:MouseEvent):void {

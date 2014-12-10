@@ -19,21 +19,18 @@
 
 package svgeditor.tools
 {
-	import flash.display.DisplayObject;
-	import flash.display.Sprite;
-	import flash.events.Event;
-	import flash.filters.GlowFilter;
-	import flash.geom.Matrix;
-	import flash.geom.Point;
-	import flash.geom.Rectangle;
+import flash.display.DisplayObject;
+import flash.display.Sprite;
+import flash.events.Event;
+import flash.filters.GlowFilter;
+import flash.geom.Matrix;
+import flash.geom.Point;
+import flash.geom.Rectangle;
 
-	import svgeditor.*;
-	import svgeditor.objs.ISVGEditable;
-	import svgeditor.objs.SVGShape;
+import svgeditor.*;
+import svgeditor.objs.ISVGEditable;
 
-	import svgutils.SVGElement;
-
-	public final class CloneTool extends SVGCreateTool
+public final class CloneTool extends SVGCreateTool
 	{
 		private var copiedObjects:Array;
 		private var previewObjects:Array;
@@ -69,16 +66,16 @@ package svgeditor.tools
 			previewObjects = s.cloneObjs(contentLayer);
 		}
 
-		override protected function init():void {
-			super.init();
+		override protected function start():void {
+			super.start();
 			editor.getToolsLayer().mouseEnabled = false;
 			editor.getToolsLayer().mouseChildren = false;
 		}
 
-		override protected function shutdown():void {
+		override protected function stop():void {
 			editor.getToolsLayer().mouseEnabled = true;
 			editor.getToolsLayer().mouseChildren = true;
-			super.shutdown();
+			super.stop();
 			clearCurrentClone();
 		}
 

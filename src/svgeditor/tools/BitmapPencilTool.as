@@ -18,11 +18,12 @@
  */
 
 package svgeditor.tools {
-	import flash.display.*;
-	import flash.events.MouseEvent;
-	import flash.geom.*;
-	import flash.ui.Mouse;
-	import svgeditor.*;
+import flash.display.*;
+import flash.events.MouseEvent;
+import flash.geom.*;
+import flash.ui.Mouse;
+
+import svgeditor.*;
 
 public final class BitmapPencilTool extends SVGTool {
 
@@ -49,8 +50,8 @@ public final class BitmapPencilTool extends SVGTool {
 		mouseChildren = false;
 	}
 
-	override protected function init():void {
-		super.init();
+	override protected function start():void {
+		super.start();
 		editor.stage.addEventListener(MouseEvent.MOUSE_DOWN, mouseDown, false, 0, true);
 		editor.stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseMove, false, 0, true);
 		editor.stage.addEventListener(MouseEvent.MOUSE_UP, mouseUp, false, 0, true);
@@ -58,13 +59,13 @@ public final class BitmapPencilTool extends SVGTool {
 		updateProperties();
 	}
 
-	override protected function shutdown():void {
+	override protected function stop():void {
 		editor.stage.removeEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
 		editor.stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
 		editor.stage.removeEventListener(MouseEvent.MOUSE_UP, mouseUp);
 		editor.getToolsLayer().mouseEnabled = true;
 		removeFeedback();
-		super.shutdown();
+		super.stop();
 	}
 
 	public function updateProperties():void {

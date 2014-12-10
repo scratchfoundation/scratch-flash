@@ -19,16 +19,16 @@
 
 package svgeditor.tools
 {
-	import flash.display.DisplayObject;
-	import flash.events.*;
-	import flash.geom.*;
+import flash.display.DisplayObject;
+import flash.events.*;
+import flash.geom.*;
 
-	import svgeditor.*;
-	import svgeditor.objs.*;
+import svgeditor.*;
+import svgeditor.objs.*;
 
-	import svgutils.SVGElement;
+import svgutils.SVGElement;
 
-	public final class PaintBrushTool extends SVGEditTool
+public final class PaintBrushTool extends SVGEditTool
 	{
 		private var shapeUnderMouse:ISVGEditable;
 		private var overStroke:Boolean;
@@ -47,17 +47,17 @@ package svgeditor.tools
 			}
 		}
 
-		override protected function init():void {
-			super.init();
+		override protected function start():void {
+			super.start();
 			editor.getContentLayer().addEventListener(MouseEvent.ROLL_OVER, rollOver, false, 0, true);
 			editor.getContentLayer().addEventListener(MouseEvent.ROLL_OUT, rollOut, false, 0, true);
 		}
 
-		override protected function shutdown():void {
+		override protected function stop():void {
 			editor.getContentLayer().removeEventListener(MouseEvent.ROLL_OVER, rollOver);
 			editor.getContentLayer().removeEventListener(MouseEvent.ROLL_OUT, rollOut);
 			editor.getContentLayer().removeEventListener(MouseEvent.MOUSE_MOVE, previewColorChange);
-			super.shutdown();
+			super.stop();
 		}
 
 		private function rollOver(e:MouseEvent):void {

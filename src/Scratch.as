@@ -35,6 +35,9 @@ import flash.utils.*;
 import interpreter.*;
 import blocks.*;
 import scratch.*;
+
+import ui.dragdrop.DragAndDropMgr;
+
 import watchers.ListWatcher;
 import translation.*;
 import ui.*;
@@ -110,7 +113,7 @@ public class Scratch extends Sprite {
 
 	protected function initialize():void {
 		isOffline = loaderInfo.url.indexOf('http:') == -1;
-		checkFlashVersion();
+		//checkFlashVersion();
 		initServer();
 
 		stage.align = StageAlign.TOP_LEFT;
@@ -123,8 +126,10 @@ public class Scratch extends Sprite {
 		app = this;
 
 		stagePane = new ScratchStage();
-		gh = new GestureHandler(this, (loaderInfo.parameters['inIE'] == 'true'));
-		initBlockIO()
+		//gh = new GestureHandler(this, (loaderInfo.parameters['inIE'] == 'true'));
+		new DragAndDropMgr(this);
+		ToolMgr.init(stage);
+		initBlockIO();
 		initInterpreter();
 		initRuntime();
 		initPaletteBuilder();
@@ -134,11 +139,11 @@ public class Scratch extends Sprite {
 		playerBG = new Shape(); // create, but don't add
 		addParts();
 
-		stage.addEventListener(MouseEvent.MOUSE_DOWN, gh.mouseDown);
-		stage.addEventListener(MouseEvent.MOUSE_MOVE, gh.mouseMove);
-		stage.addEventListener(MouseEvent.MOUSE_UP, gh.mouseUp);
-		stage.addEventListener(MouseEvent.MOUSE_WHEEL, gh.mouseWheel);
-		stage.addEventListener('rightClick', gh.rightMouseClick);
+//		stage.addEventListener(MouseEvent.MOUSE_DOWN, gh.mouseDown);
+//		stage.addEventListener(MouseEvent.MOUSE_MOVE, gh.mouseMove);
+//		stage.addEventListener(MouseEvent.MOUSE_UP, gh.mouseUp);
+//		stage.addEventListener(MouseEvent.MOUSE_WHEEL, gh.mouseWheel);
+//		stage.addEventListener('rightClick', gh.rightMouseClick);
 		stage.addEventListener(KeyboardEvent.KEY_DOWN, runtime.keyDown);
 		stage.addEventListener(KeyboardEvent.KEY_UP, runtime.keyUp);
 		stage.addEventListener(KeyboardEvent.KEY_DOWN, keyDown); // to handle escape key
@@ -473,7 +478,7 @@ public class Scratch extends Sprite {
 
 	protected function step(e:Event):void {
 		// Step the runtime system and all UI components.
-		gh.step();
+		//gh.step();
 		runtime.stepRuntime();
 		Transition.step(null);
 		stagePart.step();

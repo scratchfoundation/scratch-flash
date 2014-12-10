@@ -73,6 +73,12 @@ public class ScratchObj extends Sprite {
 	public var procCache:Object = {};
 	public var varCache:Object = {};
 
+	function ScratchObj() {
+		super();
+
+		addEventListener(MouseEvent.CLICK, click);
+	}
+
 	public function clearCaches():void {
 		// Clear the list, procedure, and variable caches for this object.
 		listCache = {};

@@ -27,7 +27,7 @@ package uiwidgets {
 	import flash.display.*;
 	import flash.events.*;
 	import flash.geom.*;
-	import util.DragClient;
+	import ui.dragdrop.DragClient;
 
 public class Slider extends Sprite implements DragClient {
 

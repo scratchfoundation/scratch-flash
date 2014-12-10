@@ -22,7 +22,7 @@ import flash.display.*;
 import flash.events.*;
 import flash.filters.*;
 import flash.geom.Point;
-import util.DragClient
+import ui.dragdrop.DragClient
 
 public class Scrollbar extends Sprite implements DragClient {
 

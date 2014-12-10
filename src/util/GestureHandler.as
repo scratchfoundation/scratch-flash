@@ -55,7 +55,8 @@ import flash.text.*;
 import flash.utils.getTimer;
 import blocks.*;
 import scratch.*;
-import ui.DropTarget;
+import ui.dragdrop.*;
+
 import uiwidgets.*;
 import svgeditor.*;
 import watchers.*;
@@ -120,8 +121,16 @@ public class GestureHandler {
 		}
 	}
 
+	public function cancelInteraction():void {
+		mouseIsDown = false;
+		mouseTarget = null;
+	}
+
+	public var stepActive:Boolean = true;
 	public function step():void {
-		if ((getTimer() - mouseDownTime) > DOUBLE_CLICK_MSECS) {
+		if (!stepActive) return;
+
+		if (mouseDownTime > 0 && (getTimer() - mouseDownTime) > DOUBLE_CLICK_MSECS) {
 			if (gesture == "unknown") {
 				if (mouseTarget != null) handleDrag(null);
 				if (gesture != 'drag') handleClick(mouseDownEvent);
@@ -129,6 +138,7 @@ public class GestureHandler {
 			if (gesture == "clickOrDoubleClick") {
 				handleClick(mouseDownEvent);
 			}
+			mouseDownTime = 0;
 		}
 	}
 
@@ -559,7 +569,7 @@ public class GestureHandler {
 				}
 			}
 
-			originalObj.dispatchEvent(new DragEvent(DragEvent.DRAG_CANCEL, carriedObj))
+			originalObj.dispatchEvent(new DragEvent(DragEvent.DRAG_CANCEL, carriedObj));
 		}
 		app.scriptsPane.draggingDone();
 		if (dropAccepted) originalObj.dispatchEvent(new DragEvent(DragEvent.DRAG_STOP, carriedObj));

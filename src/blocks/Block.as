@@ -115,6 +115,9 @@ public class Block extends Sprite {
 		setSpec(this.spec, defaultArgs);
 
 		addEventListener(FocusEvent.KEY_FOCUS_CHANGE, focusChange);
+		addEventListener(MouseEvent.CLICK, click);
+		addEventListener(MouseEvent.DOUBLE_CLICK, doubleClick);
+		addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, menu);
 	}
 
 	protected function setType(type:String, color:int):void {

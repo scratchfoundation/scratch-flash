@@ -210,7 +210,7 @@ public class SVGElement {
 	// Rendering
 	//------------------------------
 
-	public function renderImageOn(bmp:Bitmap):void {
+	public function renderImageOn(bmp:Bitmap, scale:Number = 1.0):void {
 		// Render an image element on the given Bitmap.
 		var bmData:BitmapData = bitmap;
 		if (bmData == null) { // image not yet loaded; use a placeholder (a magenta rectangle)
@@ -225,13 +225,13 @@ public class SVGElement {
 		if (transform) bmp.transform.matrix = transform;
 	}
 
-	public function renderPathOn(s:Shape, forHitTest:Boolean = false):void {
-		SVGPath.render(this, s.graphics, forHitTest);
+	public function renderPathOn(s:Shape, forHitTest:Boolean = false, scale:Number = 1.0):void {
+		SVGPath.render(this, s.graphics, forHitTest, scale);
 		//s.alpha = alpha();
 		//if (transform) s.transform.matrix = transform;
 	}
 
-	public function renderTextOn(tf:TextField):void {
+	public function renderTextOn(tf:TextField, scale:Number = 1.0):void {
 		// Render a text element on the given TextField.
 		// For now, always use an embedded font to allow rotation.
 		const useEmbeddedFont:Boolean = true;

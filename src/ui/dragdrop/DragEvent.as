@@ -1,10 +1,9 @@
 /**
  * Created by shanemc on 9/12/14.
  */
-package util {
-import flash.display.DisplayObject;
+package ui.dragdrop {
+import flash.display.Sprite;
 import flash.events.Event;
-import ui.DropTarget;
 
 public class DragEvent extends Event {
 	public static const DRAG_START:String   = 'dragStart';
@@ -14,9 +13,10 @@ public class DragEvent extends Event {
 	public static const DRAG_MOVE:String    = 'dragMove';
 	public static const DRAG_OUT:String     = 'dragOut';
 	public static const DRAG_DROP:String    = 'dragDrop';
-	private var _draggedObj:DisplayObject;
+	private var _draggedObj:Sprite;
 	private var _acceptedBy:DropTarget;
-	public function DragEvent(type:String, obj:DisplayObject) {
+	private var _prevented:Boolean;
+	public function DragEvent(type:String, obj:Sprite) {
 		_draggedObj = obj;
 		super(type, true, true);
 
@@ -24,7 +24,7 @@ public class DragEvent extends Event {
 		//if (type != DRAG_START) stopPropagation();
 	}
 
-	public function get draggedObject():DisplayObject {
+	public function get draggedObject():Sprite {
 		return _draggedObj;
 	}
 
@@ -35,6 +35,14 @@ public class DragEvent extends Event {
 	public function acceptDrop():void {
 		_acceptedBy = currentTarget as DropTarget;
 		stopImmediatePropagation();
+	}
+
+	override public function preventDefault():void {
+		_prevented = true;
+	}
+
+	public function wasPrevented():Boolean {
+		return _prevented;
 	}
 }
 }

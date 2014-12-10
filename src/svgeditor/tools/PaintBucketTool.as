@@ -19,15 +19,17 @@
 
 package svgeditor.tools
 {
-	import com.hangunsworld.util.BMPFunctions;
-	import flash.display.*;
-	import flash.events.*;
-	import flash.filters.GlowFilter;
-	import flash.geom.*;
-	import svgeditor.*;
-	import svgeditor.objs.*;
+import com.hangunsworld.util.BMPFunctions;
 
-	public final class PaintBucketTool extends SVGTool
+import flash.display.*;
+import flash.events.*;
+import flash.filters.GlowFilter;
+import flash.geom.*;
+
+import svgeditor.*;
+import svgeditor.objs.*;
+
+public final class PaintBucketTool extends SVGTool
 	{
 		private var highlightedObj:DisplayObject;
 		private var tolerance:uint;
@@ -41,8 +43,8 @@ package svgeditor.tools
 			cursorHotSpot = new Point(20,18);
 		}
 
-		override protected function init():void {
-			super.init();
+		override protected function start():void {
+			super.start();
 			var layer:Sprite = (editor is BitmapEdit ? editor.getWorkArea() : editor.getContentLayer());
 			layer.addEventListener(MouseEvent.MOUSE_DOWN, mouseDown, false, 0, true);
 			if(editor is SVGEdit) {
@@ -51,7 +53,7 @@ package svgeditor.tools
 			}
 		}
 
-		override protected function shutdown():void {
+		override protected function stop():void {
 			if(highlightedObj) highlightedObj.filters = [];
 			if(savedBM) savedBM.dispose();
 
@@ -62,7 +64,7 @@ package svgeditor.tools
 				editor.getContentLayer().removeEventListener(MouseEvent.ROLL_OUT, rollOut);
 				editor.getContentLayer().removeEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
 			}
-			super.shutdown();
+			super.stop();
 		}
 
 		private function rollOver(e:MouseEvent):void {

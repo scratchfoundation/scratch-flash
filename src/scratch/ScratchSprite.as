@@ -34,11 +34,15 @@ import flash.utils.*;
 	import filters.FilterPack;
 	import interpreter.Variable;
 	import translation.Translator;
-	import uiwidgets.Menu;
+
+import ui.dragdrop.DragAndDropMgr;
+import ui.dragdrop.IDraggable;
+
+import uiwidgets.Menu;
 	import util.*;
 	import watchers.ListWatcher;
 
-public class ScratchSprite extends ScratchObj {
+public class ScratchSprite extends ScratchObj implements IDraggable {
 
 	public var scratchX:Number;
 	public var scratchY:Number;
@@ -77,6 +81,8 @@ public class ScratchSprite extends ScratchObj {
 		img.addChild(geomShape);
 		showCostume(0);
 		setScratchXY(0, 0);
+		DragAndDropMgr.setDraggable(this);
+		addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, menu);
 	}
 
 	private function initMedia():void {
@@ -444,7 +450,8 @@ public class ScratchSprite extends ScratchObj {
 
 	/* Dragging */
 
-	public function objToGrab(evt:MouseEvent):ScratchSprite { return this } // allow dragging
+	//public function objToGrab(evt:MouseEvent):ScratchSprite { return this } // allow dragging
+	public function getSpriteToDrag():Sprite { return this; }
 
 	/* Menu */
 

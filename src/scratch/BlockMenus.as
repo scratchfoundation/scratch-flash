@@ -27,7 +27,9 @@ package scratch {
 	import sound.*;
 	import translation.Translator;
 	import ui.ProcedureSpecEditor;
-	import uiwidgets.*;
+import ui.dragdrop.DragClient;
+
+import uiwidgets.*;
 	import util.*;
 
 public class BlockMenus implements DragClient {

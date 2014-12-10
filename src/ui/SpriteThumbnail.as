@@ -26,6 +26,8 @@ import assets.Resources;
 import blocks.Block;
 import scratch.*;
 import translation.Translator;
+
+import ui.dragdrop.DropTarget;
 import ui.media.MediaInfo;
 import ui.parts.LibraryPart;
 import uiwidgets.*;
@@ -72,6 +74,8 @@ public class SpriteThumbnail extends Sprite implements DropTarget {
 		addLabels();
 		addDetailsButton();
 		updateThumbnail();
+		addEventListener(MouseEvent.CLICK, click);
+		addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, menu);
 	}
 
 	public static function strings():Array {
@@ -220,19 +224,19 @@ public class SpriteThumbnail extends Sprite implements DropTarget {
 		return result;
 	}
 
-	public function handleDrop(obj:*):uint {
-		function addCostume(c:ScratchCostume):void { app.addCostume(c, targetObj) }
-		function addSound(snd:ScratchSound):void { app.addSound(snd, targetObj) }
+	public function handleDrop(obj:*):Boolean {
+		function addCostume(c:ScratchCostume):void { app.addCostume(c, targetObj); }
+		function addSound(snd:ScratchSound):void { app.addSound(snd, targetObj); }
 		var item:MediaInfo = obj as MediaInfo;
 		if (item) {
 			// accept dropped costumes and sounds from another sprite, but not yet from Backpack
 			if (item.mycostume) {
 				addCostume(item.mycostume.duplicate());
-				return GestureHandler.DROP_ACCEPTED;
+				return true;
 			}
 			if (item.mysound) {
 				addSound(item.mysound.duplicate());
-				return GestureHandler.DROP_ACCEPTED;
+				return true;
 			}
 		}
 		if (obj is Block) {
@@ -242,9 +246,9 @@ public class SpriteThumbnail extends Sprite implements DropTarget {
 			copy.x = app.scriptsPane.padding;
 			copy.y = app.scriptsPane.padding;
 			targetObj.scripts.push(copy);
-			return GestureHandler.DROP_REJECTED; // do not consume the original block
+			return false; // do not consume the original block
 		}
-		return GestureHandler.DROP_REJECTED;
+		return false;
 	}
 
 	// -----------------------------

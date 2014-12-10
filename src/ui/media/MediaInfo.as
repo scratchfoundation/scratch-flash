@@ -27,6 +27,9 @@
 
 package ui.media {
 import by.blooddy.crypto.MD5;
+
+import ui.dragdrop.DraggableSprite;
+
 import util.JSON;
 import flash.display.*;
 import flash.events.*;
@@ -40,7 +43,7 @@ import translation.Translator;
 import ui.parts.*;
 import uiwidgets.*;
 
-public class MediaInfo extends Sprite {
+public class MediaInfo extends DraggableSprite {
 
 	public static var frameWidth:int = 81;
 	public static var frameHeight:int = 94;
@@ -110,6 +113,8 @@ public class MediaInfo extends Sprite {
 		unhighlight();
 		addDeleteButton();
 		updateLabelAndInfo(false);
+		addEventListener(MouseEvent.CLICK, click);
+		addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, menu);
 	}
 
 	protected function getFrameHeight():uint {
@@ -282,7 +287,25 @@ public class MediaInfo extends Sprite {
 	// Backpack Support
 	//------------------------------
 
-	public function objToGrab(evt:MouseEvent):* {
+//	public function objToGrab(evt:MouseEvent):* {
+//		var result:MediaInfo = Scratch.app.createMediaInfo({
+//			type: objType,
+//			name: objName,
+//			width: objWidth,
+//			md5: md5
+//		});
+//		if (mycostume) result = Scratch.app.createMediaInfo(mycostume, owner);
+//		if (mysound) result = Scratch.app.createMediaInfo(mysound, owner);
+//		if (mysprite) result = Scratch.app.createMediaInfo(mysprite);
+//		if (scripts) result = Scratch.app.createMediaInfo(scripts);
+//
+//		result.removeDeleteButton();
+//		if (thumbnail.bitmapData) result.setThumbnailBM(thumbnail.bitmapData);
+//		result.hideTextFields();
+//		return result;
+//	}
+
+	override public function getSpriteToDrag():Sprite {
 		var result:MediaInfo = Scratch.app.createMediaInfo({
 			type: objType,
 			name: objName,
@@ -297,6 +320,7 @@ public class MediaInfo extends Sprite {
 		result.removeDeleteButton();
 		if (thumbnail.bitmapData) result.setThumbnailBM(thumbnail.bitmapData);
 		result.hideTextFields();
+		result.scaleX = result.scaleY = transform.concatenatedMatrix.a;
 		return result;
 	}
 
@@ -402,7 +426,8 @@ public class MediaInfo extends Sprite {
 	public function handleTool(tool:String, evt:MouseEvent):void {
 		if (tool == 'copy') duplicateMe();
 		if (tool == 'cut') deleteMe();
-		if (tool == 'help') Scratch.app.showTip('scratchUI');	}
+		if (tool == 'help') Scratch.app.showTip('scratchUI');
+	}
 
 	public function menu(evt:MouseEvent):Menu {
 		var m:Menu = new Menu();

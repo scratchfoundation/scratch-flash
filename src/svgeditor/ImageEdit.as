@@ -30,6 +30,8 @@ import svgeditor.objs.*;
 import svgeditor.tools.*;
 import svgutils.*;
 import translation.Translator;
+
+import ui.ToolMgr;
 import ui.media.MediaInfo;
 import ui.parts.ImagesPart;
 import uiwidgets.*;
@@ -234,6 +236,8 @@ public class ImageEdit extends Sprite {
 	public function enableTools(enabled:Boolean):void {
 		uiLayer.mouseChildren = enabled;
 		uiLayer.alpha = enabled ? 1.0 : 0.6;
+		if (enabled) ToolMgr.activateTool(currentTool);
+		else ToolMgr.deactivateTool(currentTool);
 	}
 
 	public function isActive():Boolean {

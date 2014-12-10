@@ -33,7 +33,7 @@ import flash.net.FileReference;
 import blocks.Block;
 import filters.FilterPack;
 import translation.Translator;
-import ui.DropTarget;
+import ui.dragdrop.DropTarget;
 import uiwidgets.Menu;
 import ui.media.MediaInfo;
 import util.*;
@@ -79,6 +79,7 @@ public class ScratchStage extends ScratchObj implements DropTarget {
 		addPenLayer();
 		initMedia();
 		showCostume(0);
+		addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, menu);
 	}
 
 	public function setTempo(bpm:Number):void {
@@ -677,7 +678,7 @@ public class ScratchStage extends ScratchObj implements DropTarget {
 
 	/* Dropping */
 
-	public function handleDrop(obj:*):uint {
+	public function handleDrop(obj:*):Boolean {
 		var app:Scratch = root as Scratch;
 		if ((obj is ScratchSprite) || (obj is Watcher) || (obj is ListWatcher)) {
 			var p:Point = globalToLocal(new Point(obj.x, obj.y));
@@ -693,7 +694,7 @@ public class ScratchStage extends ScratchObj implements DropTarget {
 				(obj as ScratchObj).applyFilters();
 			}
 			if (!(obj is ScratchSprite) || Scratch.app.editMode) Scratch.app.setSaveNeeded();
-			return GestureHandler.DROP_ACCEPTED;
+			return true;
 		}
 		Scratch.app.setSaveNeeded();
 		if ((obj is MediaInfo) && obj.fromBackpack) {
@@ -705,7 +706,7 @@ public class ScratchStage extends ScratchObj implements DropTarget {
 			// Add sprites
 			if (obj.mysprite) {
 				app.addNewSprite(obj.mysprite.duplicate(), false, true);
-				return GestureHandler.DROP_ACCEPTED;
+				return true;
 			}
 			if (obj.objType == 'sprite') {
 				function addDroppedSprite(spr:ScratchSprite):void {
@@ -713,18 +714,18 @@ public class ScratchStage extends ScratchObj implements DropTarget {
 					app.addNewSprite(spr, false, true);
 				}
 				new ProjectIO(app).fetchSprite(obj.md5, addDroppedSprite);
-				return GestureHandler.DROP_ACCEPTED;
+				return true;
 			}
 			if (obj.mycostume) {
 				addSpriteForCostume(obj.mycostume);
-				return GestureHandler.DROP_ACCEPTED;
+				return true;
 			}
 			if (obj.objType == 'image') {
 				new ProjectIO(app).fetchImage(obj.md5, obj.objName, obj.objWidth, addSpriteForCostume);
-				return GestureHandler.DROP_ACCEPTED;
+				return true;
 			}
 		}
-		return GestureHandler.DROP_REJECTED;
+		return false;
 	}
 
 	/* Saving */

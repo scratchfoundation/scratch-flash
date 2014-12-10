@@ -73,7 +73,7 @@ public class BitmapEdit extends ImageEdit {
 		// If just finished creating and placing a rect or ellipse, return to that tool.
 		if (toolMode == 'bitmapSelect' && ((lastToolMode == 'rect') || (lastToolMode == 'ellipse'))) {
 			setToolMode(lastToolMode);
-			(currentTool as SVGCreateTool).eventHandler(e);
+			(currentTool as SVGCreateTool).mouseHandler(e);
 			return true;
 		}
 		return false;

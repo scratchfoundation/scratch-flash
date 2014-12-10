@@ -30,7 +30,7 @@ package ui.parts {
 	import scratch.*;
 	import translation.Translator;
 	import uiwidgets.*;
-	import util.DragClient;
+	import ui.dragdrop.DragClient;
 	import watchers.ListWatcher;
 
 public class SpriteInfoPart extends UIPart implements DragClient {

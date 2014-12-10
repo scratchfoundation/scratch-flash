@@ -31,9 +31,7 @@
 package svgutils {
 	import flash.display.*;
 	import flash.geom.*;
-
 	import svgeditor.objs.PathDrawContext;
-	import svgeditor.tools.PixelPerfectCollisionDetection;
 
 public dynamic class SVGPath extends Array {
 	private const adjustmentFactor:Number = 0.5;
@@ -383,43 +381,79 @@ public dynamic class SVGPath extends Array {
 		return (length && this[length-1] is Array && this[length-1][0] == 'z');
 	}
 
-	public static function render(el:SVGElement, g:Graphics, forHitTest:Boolean = false):void {
+	public static function render(el:SVGElement, g:Graphics, forHitTest:Boolean = false, scale:Number = 1.0):void {
 		if (!el.path || el.path.length == 0) return;
 		var cmds:Vector.<int> = new Vector.<int>;
 		var points:Vector.<Number> = new Vector.<Number>;
 		var lastX:Number = 0, lastY:Number = 0;
 		var lastMove:Point = new Point();
-		setBorderAndFill(g, el, gradientBoxForPath(el.path), forHitTest);
-		for each (var cmd:Array in el.path) {
-			switch (cmd[0]) {
-				case 'C':
-					drawCubicBezier(g,
-						new Point(lastX, lastY),
-						new Point(cmd[1], cmd[2]),
-						new Point(cmd[3], cmd[4]),
-						new Point(cmd[5], cmd[6]),
-						cmds, points);
-					break;
-				case 'L':
-					cmds.push(GraphicsPathCommand.LINE_TO);
-					points.push(cmd[1], cmd[2]);
-					break;
-				case 'M':
-					cmds.push(GraphicsPathCommand.MOVE_TO);
-					points.push(cmd[1], cmd[2]);
-					lastMove = new Point(cmd[1], cmd[2]);
-					break;
-				case 'Q':
-					cmds.push(GraphicsPathCommand.CURVE_TO);
-					points.push(cmd[1], cmd[2], cmd[3], cmd[4]);
-					break;
-				case 'Z':
-					cmds.push(GraphicsPathCommand.LINE_TO);
-					points.push(lastMove.x, lastMove.y);
-					break;
+		setBorderAndFill(g, el, gradientBoxForPath(el.path), forHitTest, scale);
+		if (scale != 1.0) {
+			for each (var cmd:Array in el.path) {
+				switch (cmd[0]) {
+					case 'C':
+						drawCubicBezier(g,
+								new Point(Math.round(lastX * scale), Math.round(lastY * scale)),
+								new Point(Math.round(cmd[1] * scale), Math.round(cmd[2] * scale)),
+								new Point(Math.round(cmd[3] * scale), Math.round(cmd[4] * scale)),
+								new Point(Math.round(cmd[5] * scale), Math.round(cmd[6] * scale)),
+								cmds, points);
+						break;
+					case 'L':
+						cmds.push(GraphicsPathCommand.LINE_TO);
+						points.push(Math.round(cmd[1] * scale), Math.round(cmd[2] * scale));
+						break;
+					case 'M':
+						cmds.push(GraphicsPathCommand.MOVE_TO);
+						points.push(Math.round(cmd[1] * scale), Math.round(cmd[2] * scale));
+						lastMove = new Point(cmd[1], cmd[2]);
+						break;
+					case 'Q':
+						cmds.push(GraphicsPathCommand.CURVE_TO);
+						points.push(Math.round(cmd[1] * scale), Math.round(cmd[2] * scale),
+								Math.round(cmd[3] * scale), Math.round(cmd[4] * scale));
+						break;
+					case 'Z':
+						cmds.push(GraphicsPathCommand.LINE_TO);
+						points.push(Math.round(lastMove.x * scale), Math.round(lastMove.y * scale));
+						break;
+				}
+				lastX = cmd[cmd.length - 2];
+				lastY = cmd[cmd.length - 1];
 			}
-			lastX = cmd[cmd.length - 2];
-			lastY = cmd[cmd.length - 1];
+		}
+		else {
+			for each (var cmd:Array in el.path) {
+				switch (cmd[0]) {
+					case 'C':
+						drawCubicBezier(g,
+								new Point(lastX, lastY),
+								new Point(cmd[1], cmd[2]),
+								new Point(cmd[3], cmd[4]),
+								new Point(cmd[5], cmd[6]),
+								cmds, points);
+						break;
+					case 'L':
+						cmds.push(GraphicsPathCommand.LINE_TO);
+						points.push(cmd[1], cmd[2]);
+						break;
+					case 'M':
+						cmds.push(GraphicsPathCommand.MOVE_TO);
+						points.push(cmd[1], cmd[2]);
+						lastMove = new Point(cmd[1], cmd[2]);
+						break;
+					case 'Q':
+						cmds.push(GraphicsPathCommand.CURVE_TO);
+						points.push(cmd[1], cmd[2], cmd[3], cmd[4]);
+						break;
+					case 'Z':
+						cmds.push(GraphicsPathCommand.LINE_TO);
+						points.push(lastMove.x, lastMove.y);
+						break;
+				}
+				lastX = cmd[cmd.length - 2];
+				lastY = cmd[cmd.length - 1];
+			}
 		}
 
 		var fillRule:String = (el.getAttribute('fill-rule', 'nonzero') == 'nonzero') ? 'nonZero' : 'evenOdd';
@@ -490,7 +524,7 @@ public dynamic class SVGPath extends Array {
 		square:	CapsStyle.SQUARE
 	};
 
-	public static function setBorderAndFill(g:Graphics, el:SVGElement, box:Rectangle, forHitTest:Boolean = false):void {
+	public static function setBorderAndFill(g:Graphics, el:SVGElement, box:Rectangle, forHitTest:Boolean = false, scale:Number = 1.0):void {
 		var alpha:Number;
 
 		var stroke:* = el.getAttribute('stroke');
@@ -505,7 +539,7 @@ public dynamic class SVGPath extends Array {
 				capStyle = CapsStyle.NONE;
 
 			if (stroke is SVGElement) setGradient(g, stroke, box, alpha, true, el.getAttribute('stroke-width', 1));
-			else g.lineStyle(el.getAttribute('stroke-width', 1), el.getColorValue(stroke), alpha,
+			else g.lineStyle(el.getAttribute('stroke-width', 1) * scale, el.getColorValue(stroke), alpha,
 									false, "normal", capStyle, JointStyle.MITER);
 		} else {
 			g.lineStyle(NaN); // no line

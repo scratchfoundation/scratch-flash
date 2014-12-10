@@ -80,6 +80,8 @@ public class MediaLibraryItem extends Sprite {
 		addInfo();
 		unhighlight();
 		if (isSound) addPlayButton();
+		addEventListener(MouseEvent.CLICK, click);
+		addEventListener(MouseEvent.DOUBLE_CLICK, doubleClick);
 	}
 
 	public static function strings():Array { return ['Costumes:', 'Scripts:'] }
