@@ -1360,7 +1360,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		];
 
 		// TODO: Bind the minimal number of textures and track the count. The shader must use every bound sampler.
-		const maxTextureNum:int = 5; // index of the last texture in use
+		const maxTextureNum:int = (maxTextures - 1); // index of the last texture in use
 
 		var shaderID:int = maxTextureNum;
 		forEachEffect(function(effectName:String): void {
