@@ -387,9 +387,10 @@ public dynamic class SVGPath extends Array {
 		var points:Vector.<Number> = new Vector.<Number>;
 		var lastX:Number = 0, lastY:Number = 0;
 		var lastMove:Point = new Point();
+		var cmd:Array;
 		setBorderAndFill(g, el, gradientBoxForPath(el.path), forHitTest, scale);
 		if (scale != 1.0) {
-			for each (var cmd:Array in el.path) {
+			for each (cmd in el.path) {
 				switch (cmd[0]) {
 					case 'C':
 						drawCubicBezier(g,
@@ -423,7 +424,7 @@ public dynamic class SVGPath extends Array {
 			}
 		}
 		else {
-			for each (var cmd:Array in el.path) {
+			for each (cmd in el.path) {
 				switch (cmd[0]) {
 					case 'C':
 						drawCubicBezier(g,
