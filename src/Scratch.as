@@ -122,7 +122,7 @@ public class Scratch extends Sprite {
 
 	protected function initialize():void {
 		isOffline = loaderInfo.url.indexOf('http:') == -1;
-		//checkFlashVersion();
+		checkFlashVersion();
 		initServer();
 
 		stage.align = StageAlign.TOP_LEFT;
@@ -260,7 +260,7 @@ public class Scratch extends Sprite {
 				var versionParts:Array = versionString.split(',');
 				var majorVersion:int = parseInt(versionParts[0]);
 				var minorVersion:int = parseInt(versionParts[1]);
-			if((majorVersion > 11 || (majorVersion == 11 && minorVersion >=1)) && !isArmCPU && Capabilities.cpuArchitecture == 'x86') {
+				if((majorVersion > 11 || (majorVersion == 11 && minorVersion >=1)) && !isArmCPU && Capabilities.cpuArchitecture == 'x86') {
 					render3D = (new DisplayObjectContainerIn3D() as IRenderIn3D);
 					render3D.setStatusCallback(handleRenderCallback);
 					return;
