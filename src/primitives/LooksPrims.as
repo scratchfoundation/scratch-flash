@@ -207,6 +207,7 @@ public class LooksPrims {
 	private function primClearEffects(b:Block):void {
 		var s:ScratchObj = interp.targetObj();
 		s.clearFilters();
+		s.applyFilters();
 		if (s.visible || s == Scratch.app.stagePane) interp.redraw();
 	}
 
