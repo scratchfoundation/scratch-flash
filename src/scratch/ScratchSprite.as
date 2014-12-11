@@ -36,6 +36,7 @@ import flash.utils.*;
 	import translation.Translator;
 
 import ui.dragdrop.DragAndDropMgr;
+import ui.dragdrop.DragEvent;
 import ui.dragdrop.IDraggable;
 
 import uiwidgets.Menu;

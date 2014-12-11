@@ -36,7 +36,6 @@ public final class PathEditTool extends SVGEditTool
 	{
 		private var pathElem:SVGElement;
 		private var controlPoints:Array;
-		private var toolsLayer:Sprite;
 		private var currentEndPoints:Array;
 
 		public function PathEditTool(ed:ImageEdit) {

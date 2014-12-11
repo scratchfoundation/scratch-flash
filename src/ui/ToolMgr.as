@@ -57,8 +57,10 @@ public class ToolMgr {
 		if (currentTool && (!toolArea || toolArea.hitTestPoint(stage.mouseX, stage.mouseY, true))) {
 			currentTool.mouseHandler(e);
 
-			if (!currentTool || !currentTool.isSticky())
+			if (!currentTool || !currentTool.isSticky()) {
 				e.stopImmediatePropagation();
+				e.preventDefault();
+			}
 		}
 	}
 }}

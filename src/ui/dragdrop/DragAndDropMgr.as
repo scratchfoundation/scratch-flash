@@ -94,18 +94,22 @@ public class DragAndDropMgr implements ITool{
 				draggedObj.y = stage.mouseY - offsetY;
 				stage.addChild(draggedObj);
 				draggedObj.startDrag();
+				draggedObj.mouseEnabled = false;
+				draggedObj.mouseChildren = false;
 			}
 		}
 	}
 
 	public function shutdown():void {
-		stage = null;
 		if (originalObj)
 			originalObj.dispatchEvent(new DragEvent(DragEvent.DRAG_CANCEL, draggedObj));
 
 		if (draggedObj) {
 			draggedObj.stopDrag();
-			if (draggedObj.parent)
+			draggedObj.mouseEnabled = true;
+			draggedObj.mouseChildren = true;
+
+			if (originalObj != draggedObj && draggedObj.parent)
 				draggedObj.parent.removeChild(draggedObj);
 		}
 
@@ -134,7 +138,15 @@ public class DragAndDropMgr implements ITool{
 			case MouseEvent.MOUSE_UP:
 				var dropAccepted:Boolean = currentDropTarget.handleDrop(draggedObj);
 				originalObj.dispatchEvent(new DragEvent(dropAccepted ? DragEvent.DRAG_STOP : DragEvent.DRAG_CANCEL, draggedObj));
+				draggedObj.stopDrag();
+				draggedObj.mouseEnabled = true;
+				draggedObj.mouseChildren = true;
+
+				if (originalObj != draggedObj && draggedObj.parent)
+					draggedObj.parent.removeChild(draggedObj);
+
 				originalObj = null;
+				draggedObj = null;
 
 				ToolMgr.deactivateTool(this);
 				break;

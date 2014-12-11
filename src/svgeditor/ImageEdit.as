@@ -32,12 +32,13 @@ import svgutils.*;
 import translation.Translator;
 
 import ui.ToolMgr;
+import ui.dragdrop.DropTarget;
 import ui.media.MediaInfo;
 import ui.parts.ImagesPart;
 import uiwidgets.*;
 import util.ProjectIO;
 
-public class ImageEdit extends Sprite {
+public class ImageEdit extends Sprite implements DropTarget {
 
 	protected var app:Scratch;
 	protected var imagesPart:ImagesPart;
@@ -551,8 +552,10 @@ public class ImageEdit extends Sprite {
 
 		var s:Selection = null;
 		if(currentTool) {
-			if(toolMode == 'select' && newMode != 'select')
-				s = (currentTool as ObjectTransformer).getSelection();
+			if ((toolMode == 'select' || toolMode == 'pathedit') && newMode != toolMode)
+				s = (currentTool is ObjectTransformer ?
+						(currentTool as ObjectTransformer).getSelection() :
+						new Selection([(currentTool as PathEditTool).getObject()]));
 
 			// If the next mode is not immediate, shut down the current tool
 			var btn:IconButton = toolButtons[toolMode];
@@ -582,11 +585,6 @@ public class ImageEdit extends Sprite {
 			case 'paintbucket': currentTool = new PaintBucketTool(this); break;
 		}
 
-		if(currentTool is SVGEditTool) {
-			currentTool.addEventListener('select', selectHandler, false, 0, true);
-			if(currentTool is ObjectTransformer && s) (currentTool as ObjectTransformer).select(s);
-		}
-
 		// Setup the drawing properties for the next tool
 		updateDrawPropsForTool(newMode);
 
@@ -594,6 +592,11 @@ public class ImageEdit extends Sprite {
 			toolsLayer.addChild(currentTool);
 			btn = toolButtons[newMode];
 			if(btn) btn.turnOn();
+		}
+
+		if(currentTool is SVGEditTool) {
+			currentTool.addEventListener('select', selectHandler, false, 0, true);
+			if(currentTool is ObjectTransformer && s) (currentTool as ObjectTransformer).select(s);
 		}
 
 		workArea.toggleContentInteraction(currentTool.interactsWithContent());

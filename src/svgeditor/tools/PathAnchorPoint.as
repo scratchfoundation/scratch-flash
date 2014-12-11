@@ -25,6 +25,8 @@ import flash.events.Event;
 import flash.events.MouseEvent;
 import flash.geom.Point;
 
+import uiwidgets.CursorTool;
+
 public class PathAnchorPoint extends Sprite
 {
 	// Standard anchor point
@@ -112,6 +114,7 @@ public class PathAnchorPoint extends Sprite
 
 	private var wasMoved:Boolean = false;
 	private var canDelete:Boolean = false;
+	private var mouseDown:Boolean = false;
 	private function eventHandler(event:MouseEvent):void {
 		var p:Point;
 		switch(event.type) {
@@ -120,6 +123,7 @@ public class PathAnchorPoint extends Sprite
 				stage.addEventListener(MouseEvent.MOUSE_UP, arguments.callee);
 				wasMoved = false;
 				canDelete = !isNaN(event.localX);
+				mouseDown = true;
 				break;
 			case MouseEvent.MOUSE_MOVE:
 				p = new Point(stage.mouseX, stage.mouseY);
@@ -139,11 +143,16 @@ public class PathAnchorPoint extends Sprite
 				pathEditTool.movePoint(index, p, true);
 
 				if(!wasMoved && canDelete) pathEditTool.removePoint(index, event);
+				wasMoved = false;
+				mouseDown = false;
 				break;
 		}
 	}
 
 	private function toggleHighlight(e:MouseEvent):void{
-		render(graphics, e.type == MouseEvent.MOUSE_OVER, isEndPoint);
+		var isOver:Boolean = e.type == MouseEvent.MOUSE_OVER;
+		render(graphics, isOver, isEndPoint);
+		if (!mouseDown)
+			CursorTool.setCustomCursor(isOver ? 'hand' : 'arrow');
 	}
 }}

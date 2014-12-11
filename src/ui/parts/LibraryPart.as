@@ -28,12 +28,14 @@ package ui.parts {
 	import flash.utils.*;
 	import scratch.*;
 	import translation.Translator;
-	import ui.media.*;
+
+import ui.dragdrop.DropTarget;
+import ui.media.*;
 	import ui.SpriteThumbnail;
 	import ui.parts.base.ILibraryPart;
 	import uiwidgets.*;
 
-public class LibraryPart extends UIPart implements ILibraryPart{
+public class LibraryPart extends UIPart implements ILibraryPart, DropTarget {
 
 	private const smallTextFormat:TextFormat = new TextFormat(CSS.font, 10, CSS.textColor);
 

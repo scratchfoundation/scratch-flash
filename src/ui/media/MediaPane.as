@@ -23,10 +23,12 @@ package ui.media {
 	import flash.text.TextField;
 	import assets.Resources;
 	import scratch.*;
-	import ui.parts.SoundsPart;
+
+import ui.dragdrop.DropTarget;
+import ui.parts.SoundsPart;
 	import uiwidgets.*;
 
-public class MediaPane extends ScrollFrameContents {
+public class MediaPane extends ScrollFrameContents implements DropTarget{
 
 	public var app:Scratch;
 
