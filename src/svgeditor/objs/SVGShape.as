@@ -35,7 +35,7 @@ package svgeditor.objs
 	import svgutils.SVGImporter;
 	import svgutils.SVGPath;
 
-	public class SVGShape extends Shape implements ISVGEditable
+	public class SVGShape extends Sprite implements ISVGEditable
 	{
 		private var element:SVGElement;
 
@@ -50,7 +50,7 @@ package svgeditor.objs
 
 		public function redraw(forHitTest:Boolean = false):void {
 			graphics.clear();
-			element.renderPathOn(this, forHitTest);
+			element.renderPathOn(graphics, forHitTest);
 		}
 
 		public function clone():ISVGEditable {

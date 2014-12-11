@@ -225,10 +225,8 @@ public class SVGElement {
 		if (transform) bmp.transform.matrix = transform;
 	}
 
-	public function renderPathOn(s:Shape, forHitTest:Boolean = false, scale:Number = 1.0):void {
-		SVGPath.render(this, s.graphics, forHitTest, scale);
-		//s.alpha = alpha();
-		//if (transform) s.transform.matrix = transform;
+	public function renderPathOn(g:Graphics, forHitTest:Boolean = false, scale:Number = 1.0):void {
+		SVGPath.render(this, g, forHitTest, scale);
 	}
 
 	public function renderTextOn(tf:TextField, scale:Number = 1.0):void {

@@ -209,7 +209,7 @@ public class ImagesPart extends UIPart implements IImagesPart {
 		nameField.setContents(obj.currentCostume().costumeName);
 
 		var zoomAndScroll:Array = editor.getZoomAndScroll();
-		editor.shutdown();
+		editor.setToolMode('select', true);
 		var c:ScratchCostume = obj.currentCostume();
 		useBitmapEditor(c.isBitmap() && !c.text);
 		editor.editCostume(c, obj.isStage);
@@ -251,11 +251,17 @@ public class ImagesPart extends UIPart implements IImagesPart {
 		}
 		if (flag) {
 			if (editor is BitmapEdit) return;
-			if (editor && editor.parent) removeChild(editor);
+			if (editor) {
+				editor.shutdown();
+				if (editor.parent) removeChild(editor);
+			}
 			addChild(editor = new BitmapEdit(app, this));
 		} else {
 			if (editor is SVGEdit) return;
-			if (editor && editor.parent) removeChild(editor);
+			if (editor) {
+				editor.shutdown();
+				if (editor.parent) removeChild(editor);
+			}
 			addChild(editor = new SVGEdit(app, this));
 		}
 		if (oldSettings) {
@@ -333,7 +339,6 @@ public class ImagesPart extends UIPart implements IImagesPart {
 	public function convertToVector():void {
 		if (editor is SVGEdit) return;
 		editor.shutdown();
-		editor.setToolMode('select', true);
 		var c:ScratchCostume = editor.getCostume();
 		var forStage:Boolean = editor.editingScene();
 		var zoomAndScroll:Array = editor.getZoomAndScroll();

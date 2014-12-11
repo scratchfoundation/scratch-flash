@@ -68,11 +68,9 @@ public class ObjectTransformer extends SVGEditTool {
 	// State variables
 	private var initialMatrix:Matrix;
 	private var initialRotation:Number;
-	private var initialRotation2:Number;
 	private var moveOffset:Point;
 	private var selectionRect:Rectangle;
 	private var centerMoved:Boolean;
-	private var copiedObjects:Array;
 	private var dblClickTimer:Timer;
 	private var preEditTF:TextField;
 	private var isRefreshing:Boolean;
@@ -130,17 +128,15 @@ public class ObjectTransformer extends SVGEditTool {
 	}
 
 	override public function mouseHandler(event:MouseEvent):void {
+//		if (event.type != MouseEvent.MOUSE_MOVE)
 //		switch (mouseHandlerFunc) {
 //			case moveHandler:           trace('moveHandler '+event); break;
 //			case selectionBoxHandler:   trace('selectionBoxHandler '+event); break;
 //			case rotateHandler:         trace('rotateHandler '+event); break;
 //			case resizeHandler:         trace('resizeHandler '+event); break;
 //		}
-		if (!targetObj) {
+		if (mouseHandlerFunc == selectionBoxHandler && event.type == MouseEvent.MOUSE_DOWN) {
 			super.mouseHandler(event);
-			if (!targetObj && mouseHandlerFunc == selectionBoxHandler) {
-				mouseHandlerFunc(event);
-			}
 		}
 
 		else if (mouseHandlerFunc == selectionBoxHandler || event.type == MouseEvent.MOUSE_DOWN || isTransforming)
@@ -273,7 +269,7 @@ public class ObjectTransformer extends SVGEditTool {
 			targetObj.toggleHighlight(true);
 			// Add to the display list of the object's parent
 			// Add the move cursor
-//trace('adding events');
+//trace('adding events to '+targetObj);
 			targetObj.addEventListener(MouseEvent.ROLL_OVER, handleMoveCursor, false, 0, true);
 			targetObj.addEventListener(MouseEvent.ROLL_OUT, handleMoveCursor, false, 0, true);
 
@@ -292,6 +288,8 @@ public class ObjectTransformer extends SVGEditTool {
 		} else {
 			if(toolsLayer && toolsLayer.stage) toolsLayer.stage.removeEventListener(KeyboardEvent.KEY_DOWN, keyPressed);
 			transform.matrix = new Matrix();
+
+			toolCursorHandler(new MouseEvent(MouseEvent.ROLL_OUT), 0);
 		}
 
 		if(targetObj && targetObj.getObjs().length == 1)
@@ -441,7 +439,9 @@ public class ObjectTransformer extends SVGEditTool {
 				color = moveColor;
 				break;
 		}
-		var handlerWrapper:Function = function(e:MouseEvent):void { toolCursorHandler(e, handleType); };
+		var handlerWrapper:Function = function(e:MouseEvent):void {
+			toolCursorHandler(e, handleType);
+		};
 		spr.addEventListener(MouseEvent.ROLL_OVER, handlerWrapper, false, 0, true);
 		spr.addEventListener(MouseEvent.ROLL_OUT, handlerWrapper, false, 0, true);
 
@@ -462,25 +462,29 @@ public class ObjectTransformer extends SVGEditTool {
 		isTransforming = active;
 		editor.getToolsLayer().mouseEnabled = !active;
 		editor.getToolsLayer().mouseChildren = !active;
-		if(!active) editor.setCurrentCursor(null);
+		if(!active && rolledOut)
+			toolCursorHandler();
+
+//			editor.setCurrentCursor(null);
 	}
 
 	private var mouseHandlerFunc:Function;
-	private function toolCursorHandler(e:MouseEvent, handleType:int):void {
-		if(e.type == MouseEvent.ROLL_OUT) {
-			// Keep the current operations cursor even if the mouse moves away from the handle
-			if(!isTransforming) {
-				//trace('removing cursor, no operation in progress');
-				if(editor)
-					editor.setCurrentCursor(null);
-				else if(e.currentTarget)
-					e.currentTarget.removeEventListener(e.type, arguments.callee);
+	private var rolledOut:Boolean;
+	private function toolCursorHandler(e:MouseEvent = null, handleType:int = -1):void {
+		rolledOut = (e && e.type == MouseEvent.ROLL_OUT);
+		if (isTransforming) return;
 
-				mouseHandlerFunc = selectionBoxHandler;
-			}
-			return;
+		if(!e || e.type == MouseEvent.ROLL_OUT) {
+			// Keep the current operations cursor even if the mouse moves away from the handle
+			//trace('removing cursor, no operation in progress');
+			if(editor)
+				editor.setCurrentCursor(null);
+			else if(e && e.currentTarget)
+				e.currentTarget.removeEventListener(e.type, arguments.callee);
+
+			mouseHandlerFunc = selectionBoxHandler;
 		}
-		else if(!isTransforming) {
+		else {
 //trace('Setting cursor for ' + handleType);
 			switch(handleType) {
 				case HT_RESIZER:
@@ -497,13 +501,6 @@ public class ObjectTransformer extends SVGEditTool {
 					break;
 			}
 		}
-//		trace('isTransforming = '+isTransforming);
-//		switch (mouseHandlerFunc) {
-//			case moveHandler:           trace('moveHandler '+e); break;
-//			case selectionBoxHandler:   trace('selectionBoxHandler '+e); break;
-//			case rotateHandler:         trace('rotateHandler '+e); break;
-//			case resizeHandler:         trace('resizeHandler '+e); break;
-//		}
 	}
 
 	private function updateResizeCursor(handle:Sprite):void {
@@ -608,6 +605,7 @@ public class ObjectTransformer extends SVGEditTool {
 				}
 				wasMoved = false;//newSelection;
 				setActive(true);
+				mouseHandlerFunc = moveHandler;
 				e.stopImmediatePropagation();
 				//break;
 

@@ -18,19 +18,19 @@
  */
 
 package uiwidgets {
-	import flash.display.*;
-	import flash.events.*;
-	import flash.geom.Point;
-	import flash.system.Capabilities;
-	import flash.ui.*;
-	import assets.Resources;
+import flash.display.*;
+import flash.events.*;
+import flash.geom.Point;
+import flash.system.Capabilities;
+import flash.ui.*;
+import assets.Resources;
 
 public class CursorTool {
 
 	public static var tool:String; // null or one of: copy, cut, grow, shrink, help
 
 	private static var app:Scratch;
-	private static var currentCursor:Bitmap;
+	private static var swCursorBitmap:Bitmap;
 	private static var offsetX:int;
 	private static var offsetY:int;
 	private static var registeredCursors:Object = {};
@@ -66,20 +66,21 @@ public class CursorTool {
 	}
 
 	private static function hideSoftwareCursor():void {
+		if (!swCursorBitmap) return;
 		// Hide the current cursor and revert to using the hardware cursor.
-		if (currentCursor && currentCursor.parent) currentCursor.parent.removeChild(currentCursor);
-		currentCursor = null;
+		if (swCursorBitmap.parent) swCursorBitmap.parent.removeChild(swCursorBitmap);
+		swCursorBitmap = null;
 		Mouse.cursor = MouseCursor.AUTO;
 		Mouse.show();
 	}
 
 	private static function showSoftwareCursor(bm:Bitmap, offsetX:int = 999, offsetY:int = 999):void {
 		if (bm) {
-			if (currentCursor && currentCursor.parent) currentCursor.parent.removeChild(currentCursor);
-			currentCursor = new Bitmap(bm.bitmapData);
+			if (swCursorBitmap && swCursorBitmap.parent) swCursorBitmap.parent.removeChild(swCursorBitmap);
+			swCursorBitmap = new Bitmap(bm.bitmapData);
 			CursorTool.offsetX = (offsetX <= bm.width) ? offsetX : (bm.width / 2);
 			CursorTool.offsetY = (offsetY <= bm.height) ? offsetY : (bm.height / 2);
-			app.stage.addChild(currentCursor);
+			app.stage.addChild(swCursorBitmap);
 			Mouse.hide();
 			mouseMove(null);
 		}
@@ -92,10 +93,10 @@ public class CursorTool {
 	}
 
 	private static function mouseMove(ignore:*):void {
-		if (currentCursor) {
+		if (swCursorBitmap) {
 			Mouse.hide();
-			currentCursor.x = app.mouseX - offsetX;
-			currentCursor.y = app.mouseY - offsetY;
+			swCursorBitmap.x = app.mouseX - offsetX;
+			swCursorBitmap.y = app.mouseY - offsetY;
 		}
 	}
 
@@ -119,13 +120,12 @@ public class CursorTool {
 		if (saved && reuse) {
 			if (isLinux()) showSoftwareCursor(new Bitmap(saved[0]), saved[1].x, saved[1].y);
 			else Mouse.cursor = name; // use previously registered hardware cursor
-			return;
 		}
 
-		if (bmp && hotSpot) {
+		else if (bmp && hotSpot) {
 			registeredCursors[name] = [bmp, hotSpot];
 			if (isLinux()) showSoftwareCursor(new Bitmap(bmp), hotSpot.x, hotSpot.y);
-			else registerHardwareCursor(name, bmp, hotSpot);
+			else setHardwareCursor(name, bmp, hotSpot);
 		}
 	}
 
@@ -136,7 +136,7 @@ public class CursorTool {
 		return true;
 	}
 
-	private static function registerHardwareCursor(name:String, bmp:BitmapData, hotSpot:Point):void {
+	private static function setHardwareCursor(name:String, bmp:BitmapData, hotSpot:Point):void {
 		var images:Vector.<BitmapData> = new Vector.<BitmapData>(1, true);
 		images[0] = bmp;
 
@@ -144,6 +144,6 @@ public class CursorTool {
 		cursorData.data = images;
 		cursorData.hotSpot = hotSpot;
 		Mouse.registerCursor(name, cursorData);
+		Mouse.cursor = name;
 	}
-
 }}

@@ -84,7 +84,7 @@ public class SVGDisplayRender {
 		} else if (el.path) {
 //			if (!currentShape) currentShape = new Shape();
 			var shape:Shape = new Shape();
-			el.renderPathOn(shape, forHitTest, scale);
+			el.renderPathOn(shape.graphics, forHitTest, scale);
 			if(el.transform) shape.transform.matrix = el.transform;
 			addLayer(shape);
 		}

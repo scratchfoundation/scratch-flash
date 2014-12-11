@@ -77,8 +77,6 @@ public class ImageEdit extends Sprite {
 		uiLayer.addChild(toolButtonsLayer);
 
 		app.stage.addEventListener(KeyboardEvent.KEY_DOWN, stageKeyDownHandler, false, 0, true);
-		workArea.getContentLayer().addEventListener(MouseEvent.MOUSE_OVER, workAreaMouseHandler);
-		workArea.getContentLayer().addEventListener(MouseEvent.MOUSE_OUT, workAreaMouseHandler);
 
 		createTools();
 		addDrawPropsUI();
@@ -141,20 +139,6 @@ public class ImageEdit extends Sprite {
 	}
 
 	protected function selectHandler(event:Event = null):void {}
-
-	private function workAreaMouseHandler(event:MouseEvent):void {
-		if(event.type == MouseEvent.MOUSE_OVER && currentCursor != null) {
-			CursorTool.setCustomCursor(currentCursor);
-		} else {
-			CursorTool.setCustomCursor(MouseCursor.AUTO);
-		}
-
-		// Capture mouse down before anyone else in case there is a global tool running
-		if(event.type == MouseEvent.MOUSE_OVER && CursorTool.tool)
-			workArea.getContentLayer().addEventListener(MouseEvent.MOUSE_DOWN, workAreaMouseDown, true, 1, true);
-		else
-			workArea.getContentLayer().removeEventListener(MouseEvent.MOUSE_DOWN, workAreaMouseDown);
-	}
 
 	private var globalToolObject:ISVGEditable;
 	private function workAreaMouseDown(event:MouseEvent):void {
@@ -548,29 +532,31 @@ public class ImageEdit extends Sprite {
 		}
 	}
 
+	private function stopCurrentTool():void {
+		if (!currentTool) return;
+		if (currentTool.parent)
+			toolsLayer.removeChild(currentTool);
+
+		if (currentTool is SVGEditTool)
+			currentTool.removeEventListener('select', selectHandler);
+
+		currentTool.removeEventListener(Event.CHANGE, saveContent);
+		currentTool = null;
+		if (toolButtons[toolMode]) toolButtons[toolMode].turnOff()
+		toolMode = null;
+	}
+
 	public function setToolMode(newMode:String, bForce:Boolean = false):void {
 		if(newMode == toolMode && !bForce) return;
 
-		var toolChanged:Boolean = true;//!currentTool || (immediateTools.indexOf(newMode) == -1);
 		var s:Selection = null;
 		if(currentTool) {
 			if(toolMode == 'select' && newMode != 'select')
 				s = (currentTool as ObjectTransformer).getSelection();
 
 			// If the next mode is not immediate, shut down the current tool
-			if(toolChanged) {
-				if(currentTool.parent)
-					toolsLayer.removeChild(currentTool);
-
-				if(currentTool is SVGEditTool)
-					currentTool.removeEventListener('select', selectHandler);
-
-				currentTool.removeEventListener(Event.CHANGE, saveContent);
-				currentTool = null;
-				var btn:IconButton = toolButtons[toolMode];
-				if(btn) btn.turnOff();
-				toolChanged = true;
-			}
+			var btn:IconButton = toolButtons[toolMode];
+			stopCurrentTool();
 		}
 
 		switch(newMode) {
@@ -604,25 +590,23 @@ public class ImageEdit extends Sprite {
 		// Setup the drawing properties for the next tool
 		updateDrawPropsForTool(newMode);
 
-		if(toolChanged) {
-			if(currentTool) {
-				toolsLayer.addChild(currentTool);
-				btn = toolButtons[newMode];
-				if(btn) btn.turnOn();
-			}
-
-			workArea.toggleContentInteraction(currentTool.interactsWithContent());
-			toolMode = newMode;
-
-			// Pass the selected path to the path edit tool OR
-			// Pass the selected text element to the text tool
-			if(currentTool is PathEditTool || currentTool is TextTool) {
-				(currentTool as SVGEditTool).editSelection(s);
-			}
-
-			// Listen for any changes to the content
-			currentTool.addEventListener(Event.CHANGE, saveContent, false, 0, true);
+		if(currentTool) {
+			toolsLayer.addChild(currentTool);
+			btn = toolButtons[newMode];
+			if(btn) btn.turnOn();
 		}
+
+		workArea.toggleContentInteraction(currentTool.interactsWithContent());
+		toolMode = newMode;
+
+		// Pass the selected path to the path edit tool OR
+		// Pass the selected text element to the text tool
+		if(currentTool is PathEditTool || currentTool is TextTool) {
+			(currentTool as SVGEditTool).editSelection(s);
+		}
+
+		// Listen for any changes to the content
+		currentTool.addEventListener(Event.CHANGE, saveContent, false, 0, true);
 
 		// Make sure the tool selected is visible!
 		if(toolButtons.hasOwnProperty(newMode) && currentTool)
@@ -707,8 +691,8 @@ public class ImageEdit extends Sprite {
 
 	public function shutdown():void {
 		// Called before switching costumes. Should commit any operations that were in
-		// progress (e.g. entering text). Forcing a re-select of the current tool should work.
-		setToolMode(toolMode, true);
+		// progress (e.g. entering text).
+		stopCurrentTool();
 	}
 
 //---------------------------------
@@ -847,7 +831,6 @@ public class ImageEdit extends Sprite {
 	}
 
 	public function setCurrentCursor(name:String, bmp:* = null, hotSpot:Point = null, reuse:Boolean = true):void {
-		//trace('setting cursor to '+name);
 		if (name == null || [MouseCursor.HAND, MouseCursor.BUTTON].indexOf(name) > -1) {
 			currentCursor = (name == null ? MouseCursor.AUTO : name);
 			CursorTool.setCustomCursor(currentCursor);
@@ -858,12 +841,12 @@ public class ImageEdit extends Sprite {
 		}
 
 		// When needed for display, pass the alias to the existing cursor property
-		if (stage && workArea.getInteractionLayer().hitTestPoint(stage.mouseX, stage.mouseY, true) &&
-			!uiLayer.hitTestPoint(stage.mouseX, stage.mouseY, true)) {
-			CursorTool.setCustomCursor(currentCursor);
-		} else {
-			CursorTool.setCustomCursor(MouseCursor.AUTO);
-		}
+//		if (stage && workArea.getInteractionLayer().hitTestPoint(stage.mouseX, stage.mouseY, true) &&
+//			!uiLayer.hitTestPoint(stage.mouseX, stage.mouseY, true)) {
+//			CursorTool.setCustomCursor(currentCursor);
+//		} else {
+//			CursorTool.setCustomCursor(MouseCursor.AUTO);
+//		}
 	}
 
 	public function snapToGrid(toolsP:Point):Point {

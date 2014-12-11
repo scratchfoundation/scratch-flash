@@ -23,7 +23,6 @@ public class ToolMgr {
 		if (currentTool != null)
 			return false;
 
-		trace('active tool now: '+tool);
 		currentTool = tool;
 		toolArea = area;
 		addMouseListener();
@@ -35,7 +34,6 @@ public class ToolMgr {
 		if (currentTool != tool)
 			return false;
 
-		trace('deactivating tool now: '+tool);
 		currentTool = null;
 		tool.shutdown();
 		removeMouseListener();
@@ -56,7 +54,7 @@ public class ToolMgr {
 	}
 
 	static private function mouseHandler(e:MouseEvent):void {
-		if (currentTool && (!toolArea || toolArea.hitTestPoint(stage.mouseX, stage.mouseY))) {
+		if (currentTool && (!toolArea || toolArea.hitTestPoint(stage.mouseX, stage.mouseY, true))) {
 			currentTool.mouseHandler(e);
 
 			if (!currentTool || !currentTool.isSticky())
