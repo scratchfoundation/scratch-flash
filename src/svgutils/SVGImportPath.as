@@ -150,23 +150,32 @@ public class SVGImportPath {
 			var args:Array = el.extractNumericArgs(cmdString.substr(1));
 			var argCount:int = pathCmdArgCount[cmd];
 			if (argCount == 0) {
-				cmds = cmds.concat(simplePathCommands(cmd, args));
+				cmds.push(simplePathCommands(cmd, args));
 				continue;
 			}
 			if (('m' == cmd.toLowerCase()) && (args.length > 2)) {
 				// Special case: If 'M' or 'm' has more than 2 arguments, the
 				// extra arguments are for an implied 'L' or 'l' line command.
-				cmds = cmds.concat(simplePathCommands(cmd, args));
+				cmds.push(simplePathCommands(cmd, args));
 				args = args.slice(2);
 				cmd = ('M' == cmd) ? 'L' : 'l';
 			}
-			while (args.length >= argCount) { // sequence commands of the same kind (with command letter omitted)
-				cmds = cmds.concat(simplePathCommands(cmd, args));
-				args = args.slice(argCount);
+			if (args.length == argCount) { // common case: no splicing necessary
+				cmds.push(simplePathCommands(cmd, args));
+			}
+			else { // sequence commands of the same kind (with command letter omitted on subsequent commands)
+				var argsPos:int = 0;
+				while (args.length >= argsPos + argCount) {
+					cmds.push(simplePathCommands(cmd, args.slice(argsPos, argsPos + argCount)));
+					argsPos += argCount;
+				}
 			}
 		}
+		// Flatten array-of-arrays to just one big array
+		var flattened:Array = [];
+		flattened = flattened.concat.apply(flattened, cmds);
 		var result:SVGPath = new SVGPath();
-		result.set(cmds);
+		result.set(flattened);
 		return result;
 	}
 

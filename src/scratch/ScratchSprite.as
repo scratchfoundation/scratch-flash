@@ -320,7 +320,7 @@ public class ScratchSprite extends ScratchObj implements IDraggable {
 		var p:Point = parent.globalToLocal(new Point(globalX, globalY));
 		var myRect:Rectangle = bounds();
 		if (!myRect.containsPoint(p)) return false;
-		return shapeFlag ? bitmap().hitTest(myRect.topLeft, 1, p) : true;
+		return shapeFlag ? bitmap(true).hitTest(myRect.topLeft, 1, p) : true;
 	}
 
 	override public function getBounds(space:DisplayObject):Rectangle {
@@ -343,8 +343,8 @@ public class ScratchSprite extends ScratchObj implements IDraggable {
 
 //	private var testBM:Bitmap = new Bitmap();
 //	private var testSpr:Sprite = new Sprite();
-	public function bitmap(forColorTest:Boolean = false):BitmapData {
-		if (cachedBitmap != null && (!forColorTest || !Scratch.app.isIn3D))
+	public function bitmap(forTest:Boolean = false):BitmapData {
+		if (cachedBitmap != null && (!forTest || !Scratch.app.isIn3D))
 			return cachedBitmap;
 
 		// compute cachedBitmap
@@ -395,8 +395,6 @@ public class ScratchSprite extends ScratchObj implements IDraggable {
 //	    			testSpr.graphics.drawRect(testBM.x, testBM.y, bm.width * testBM.scaleX, bm.height * testBM.scaleY);
 //		    		testBM.bitmapData = bm;
 //			    }
-
-			if(forColorTest) return bm;
 
 				if (rotation != 0) {
 					m = new Matrix();

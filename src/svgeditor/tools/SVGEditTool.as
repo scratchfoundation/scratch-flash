@@ -90,7 +90,7 @@ public class SVGEditTool extends SVGTool
 			mouseDown(event);
 	}
 
-	protected function mouseDown(event:MouseEvent):void {
+	public function mouseDown(event:MouseEvent):void {
 		if (!stage) {
 			ToolMgr.deactivateTool(this);
 			return;

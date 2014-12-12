@@ -127,10 +127,10 @@ public class ScratchObj extends Sprite {
 		updateImage();
 	}
 
-	public function updateCostume():void { updateImage() }
+	public function updateCostume():void { updateImage(); }
 
 	public function currentCostume():ScratchCostume {
-		return costumes[Math.round(currentCostumeIndex) % costumes.length]
+		return costumes[Math.round(currentCostumeIndex) % costumes.length];
 	}
 
 	public function costumeNumber():int {
@@ -447,6 +447,11 @@ public class ScratchObj extends Sprite {
 			if (v.name == varName) return true;
 		}
 		return false;
+	}
+
+	public function hasName(varName:String):Boolean {
+		var p:ScratchObj = parent as ScratchObj;
+		return ownsVar(varName) || ownsList(varName) || p && (p.ownsVar(varName) || p.ownsList(varName));
 	}
 
 	public function lookupOrCreateVar(varName:String):Variable {

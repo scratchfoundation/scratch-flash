@@ -43,7 +43,7 @@ public class MP3Loader {
 		load(sndData, loaded);
 	}
 
-	private static function extractSamples(sndName:String, mp3Snd:Sound, mp3SampleCount:int, whenDone:Function):void {
+	public static function extractSamples(sndName:String, mp3Snd:Sound, mp3SampleCount:int, whenDone:Function):void {
 		// Extract the samples from the given mp3 Sound object and convert them into
 		// a ScratchSound object, merging stereo channels and downsampling to 22050 samples/second
 		// if needed. When finished, call whenDone with the new ScratchSound.

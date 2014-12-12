@@ -30,18 +30,17 @@
 
 package scratch {
 import by.blooddy.crypto.MD5;
-
 import flash.utils.*;
-	import sound.*;
-	import sound.mp3.MP3Loader;
-	import util.*;
+import sound.*;
+import sound.mp3.MP3Loader;
+import util.*;
 
 public class ScratchSound {
 
 	public var soundName:String = '';
 	public var soundID:int;
 	public var md5:String;
-	public var soundData:ByteArray = new ByteArray();
+	private var __soundData:ByteArray = new ByteArray();
 	public var format:String = '';
 	public var rate:int = 44100;
 	public var sampleCount:int;
@@ -69,6 +68,15 @@ public class ScratchSound {
 				setSamples(new Vector.<int>(0), 22050);
 			}
 		}
+	}
+
+	public function get soundData():ByteArray {
+		return __soundData;
+	}
+
+	public function set soundData(data:ByteArray):void {
+		__soundData = data;
+		md5 = null;
 	}
 
 	private function reduceSizeIfNeeded(channels:int):void {

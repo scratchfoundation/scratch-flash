@@ -46,6 +46,7 @@ public class ImageEdit extends Sprite implements DropTarget {
 	protected var isScene:Boolean;
 
 	protected var toolMode:String;
+		protected var lastToolMode:String;
 	protected var currentTool:SVGTool;
 	protected var drawPropsUI:DrawPropertyUI;
 	protected var toolButtons:Object;
@@ -526,7 +527,7 @@ public class ImageEdit extends Sprite implements DropTarget {
 
 	private function selectTool(btn:IconButton):void {
 		var newMode:String = (btn ? btn.name : 'select');
-		setToolMode(newMode);
+			setToolMode(newMode, false, true);
 
 		if(btn && btn.lastEvent) {
 			btn.lastEvent.stopPropagation();
@@ -658,6 +659,28 @@ public class ImageEdit extends Sprite implements DropTarget {
 			(currentTool as ObjectTransformer).select(s);
 		}
 		saveContent();
+	}
+
+	public function revertToCreateTool(e:MouseEvent):Boolean {
+		// If just finished creating and placing a rect or ellipse, return to that tool.
+		if (selectionTools.indexOf(toolMode) != -1 && repeatedTools.indexOf(lastToolMode) != -1) {
+			setToolMode(lastToolMode);
+			if (currentTool is SVGCreateTool) {
+				(currentTool as SVGCreateTool).eventHandler(e);
+			} else if (currentTool is SVGEditTool) {
+				(currentTool as SVGEditTool).setObject(null);
+				(currentTool as SVGEditTool).mouseDown(e);
+			}
+			return true;
+		}
+		return false;
+	}
+
+	protected function highlightTool(toolName:String):void {
+		// Hack! This method forces a given tool to be highlighted even if that's not the actual mode. Used to force shape buttons to stay highlighted even when moving the shape around with the select tool.
+		if (!toolName || (toolName == '')) return;
+		for each (var btn:IconButton in toolButtons) btn.turnOff();
+		if (toolButtons[toolName]) toolButtons[toolName].turnOn();
 	}
 
 //---------------------------------

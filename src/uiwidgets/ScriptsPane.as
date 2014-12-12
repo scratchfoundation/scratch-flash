@@ -361,7 +361,7 @@ public class ScriptsPane extends ScrollFrameContents implements DropTarget {
 			if (Block(target).isEmbeddedParameter()) return false;
 		}
 		var dropType:String = droppedBlock.type;
-		var targetType:String = (target is Block) ? Block(target).type : BlockArg(target).type;
+		var targetType:String = target is Block ? Block(target.parent).argType(target).slice(1) : BlockArg(target).type;
 		if (targetType == 'm') {
 			if (Block(target.parent).type == 'h') return false;
 			return menusThatAcceptReporters.indexOf(BlockArg(target).menuName) > -1;

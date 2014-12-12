@@ -133,6 +133,14 @@ public class ScratchStage extends ScratchObj implements DropTarget {
 		return withoutTrailingDigits(baseName) + i;
 	}
 
+	override public function hasName(varName:String):Boolean {
+		// Return true if this object owns a variable of the given name.
+		for each (var s:ScratchSprite in sprites()) {
+			if (s.ownsVar(varName) || s.ownsList(varName)) return true;
+		}
+		return ownsVar(varName) || ownsList(varName);
+	}
+
 	private function initMedia():void {
 		costumes.push(ScratchCostume.emptyBitmapCostume(Translator.map('backdrop1'), true));
 		sounds.push(new ScratchSound(Translator.map('pop'), new Pop()));
@@ -366,7 +374,6 @@ public class ScratchStage extends ScratchObj implements DropTarget {
 		}
 	}
 
-//	private var testBM:Bitmap = new Bitmap();
 	private var stampBounds:Rectangle = new Rectangle();
 	public function stampSprite(s:ScratchSprite, stampAlpha:Number):void {
 		if(s == null) return;
@@ -516,24 +523,28 @@ public class ScratchStage extends ScratchObj implements DropTarget {
 		if (!cachedBitmapIsCurrent) updateCachedBitmap();
 
 		var m:Matrix = new Matrix();
-		m.translate(-r.x, -r.y);
+		m.translate(-Math.floor(r.x), -Math.floor(r.y));
 		bm.draw(cachedBM, m);
 
 		for (var i:int = 0; i < this.numChildren; i++) {
 			var o:ScratchSprite = this.getChildAt(i) as ScratchSprite;
 			if (o && (o != s) && o.visible && o.bounds().intersects(r)) {
-				var oBnds:Rectangle = o.bounds();
-				m = new Matrix();
+				m.identity();
 				m.translate(o.img.x, o.img.y);
 				m.rotate((Math.PI * o.rotation) / 180);
 				m.scale(o.scaleX, o.scaleY);
 				m.translate(o.x - r.x, o.y - r.y);
+				m.tx = Math.floor(m.tx);
+				m.ty = Math.floor(m.ty);
 				var colorTransform:ColorTransform = (o.img.alpha == 1) ? null : new ColorTransform(1, 1, 1, o.img.alpha);
 				bm.draw(o.img, m, colorTransform);
 			}
 		}
+
 		return bm;
 	}
+//	private var testBM:Bitmap = new Bitmap();
+//	private var dumpPixels:Boolean = true;
 
 	SCRATCH::allow3d
 	public function updateSpriteEffects(spr:DisplayObject, effects:Object):void {
@@ -544,7 +555,7 @@ public class ScratchStage extends ScratchObj implements DropTarget {
 		commitPenStrokes(); // force any pen strokes to be rendered so they can be sensed
 
 		var bm1:BitmapData;
-		var mask:uint = 0x00F8F8F0; //0xF0F8F8F0;
+		var mask:uint = 0xF0F8F8F0;
 		if(Scratch.app.isIn3D) {
 			var b:Rectangle;
 			SCRATCH::allow3d {
@@ -578,7 +589,6 @@ public class ScratchStage extends ScratchObj implements DropTarget {
 
 		return bm2;
 	}
-//	private var dumpPixels:Boolean = false;
 
 	private function getNumberAsHexString(number:uint, minimumLength:uint = 1, showHexDenotation:Boolean = true):String {
 		// The string that will be output at the end of the function.
@@ -718,8 +728,8 @@ public class ScratchStage extends ScratchObj implements DropTarget {
 			if (obj.parent) obj.parent.removeChild(obj); // force redisplay
 			addChild(obj);
 			if (obj is ScratchSprite) {
-				obj.setScratchXY(p.x - 240, 180 - p.y);
 				(obj as ScratchSprite).updateCostume();
+				obj.setScratchXY(p.x - 240, 180 - p.y);
 				Scratch.app.selectSprite(obj);
 				obj.setScratchXY(p.x - 240, 180 - p.y); // needed because selectSprite() moves sprite back if costumes tab is open
 				(obj as ScratchObj).applyFilters();

@@ -182,6 +182,10 @@ public class PaletteBuilder {
 
 	protected function createVar(name:String, varSettings:VariableSettings):* {
 		var obj:ScratchObj = (varSettings.isLocal) ? app.viewedObj() : app.stageObj();
+		if (obj.hasName(name)) {
+			DialogBox.notify("Cannot Add", "That name is already in use.");
+			return;
+		}
 		var variable:* = (varSettings.isList ? obj.lookupOrCreateList(name) : obj.lookupOrCreateVar(name));
 
 		app.runtime.showVarOrListFor(name, varSettings.isList, obj);
@@ -192,7 +196,7 @@ public class PaletteBuilder {
 
 	private function makeVariable():void {
 		function makeVar2():void {
-			var n:String = d.fields['Variable name'].text.replace(/^\s+|\s+$/g, '');
+			var n:String = d.getField('Variable name').replace(/^\s+|\s+$/g, '');
 			if (n.length == 0) return;
 
 			createVar(n, varSettings);
@@ -209,7 +213,7 @@ public class PaletteBuilder {
 
 	private function makeList():void {
 		function makeList2(d:DialogBox):void {
-			var n:String = d.fields['List name'].text.replace(/^\s+|\s+$/g, '');
+			var n:String = d.getField('List name').replace(/^\s+|\s+$/g, '');
 			if (n.length == 0) return;
 
 			createVar(n, varSettings);

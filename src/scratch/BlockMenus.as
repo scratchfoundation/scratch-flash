@@ -61,10 +61,7 @@ public class BlockMenus implements DragClient {
 			if ((comparisonOps.indexOf(op)) > -1) { menuHandler.changeOpMenu(evt, comparisonOps); return; }
 			if (menuName == null) { menuHandler.genericBlockMenu(evt); return; }
 		}
-		if (op.indexOf('.') > -1) {
-			menuHandler.extensionMenu(evt, menuName);
-			return;
-		}
+		if (op.indexOf('.') > -1 && menuHandler.extensionMenu(evt, menuName)) return;
 		if (menuName == 'attribute') menuHandler.attributeMenu(evt);
 		if (menuName == 'backdrop') menuHandler.backdropMenu(evt);
 		if (menuName == 'booleanSensor') menuHandler.booleanSensorMenu(evt);
@@ -179,6 +176,7 @@ public class BlockMenus implements DragClient {
 			return ['delete list'].indexOf(item) > -1;
 		case 'sound':
 			return ['record...'].indexOf(item) > -1;
+		case 'sprite':
 		case 'spriteOnly':
 		case 'spriteOrMouse':
 		case 'spriteOrStage':
@@ -281,12 +279,13 @@ public class BlockMenus implements DragClient {
 		showMenu(m);
 	}
 
-	protected function extensionMenu(evt:MouseEvent, menuName:String):void {
+	protected function extensionMenu(evt:MouseEvent, menuName:String):Boolean {
 		var items:Array = app.extensionManager.menuItemsFor(block.op, menuName);
-		if (app.viewedObj() == null) return;
+		if (!items) return false;
 		var m:Menu = new Menu(setBlockArg);
 		for each (var s:String in items) m.addItem(s);
 		showMenu(m);
+		return true;
 	}
 
 	protected function instrumentMenu(evt:MouseEvent):void {
@@ -407,15 +406,15 @@ public class BlockMenus implements DragClient {
 		}
 		var spriteNames:Array = [];
 		var m:Menu = new Menu(setSpriteArg, 'sprite');
-		if (includeMouse) m.addItem('mouse-pointer', 'mouse-pointer');
-		if (includeEdge) m.addItem('edge', 'edge');
+		if (includeMouse) m.addItem(Translator.map('mouse-pointer'), 'mouse-pointer');
+		if (includeEdge) m.addItem(Translator.map('edge'), 'edge');
 		m.addLine();
 		if (includeStage) {
 			m.addItem(app.stagePane.objName, 'Stage');
 			m.addLine();
 		}
 		if (includeSelf && !app.viewedObj().isStage) {
-			m.addItem('myself', 'myself');
+			m.addItem(Translator.map('myself'), 'myself');
 			m.addLine();
 			spriteNames.push(app.viewedObj().objName);
 		}
@@ -645,18 +644,15 @@ public class BlockMenus implements DragClient {
 
 	protected function renameVar():void {
 		function doVarRename(dialog:DialogBox):void {
-			var newName:String = dialog.fields['New name'].text.replace(/^\s+|\s+$/g, '');
-			if (newName.length == 0 || app.viewedObj().lookupVar(newName)) return;
-			if (block.op != Specs.GET_VAR) return;
+			var newName:String = dialog.getField('New name').replace(/^\s+|\s+$/g, '');
+			if (newName.length == 0 || block.op != Specs.GET_VAR) return;
 			var oldName:String = blockVarOrListName();
 
 			if (oldName.charAt(0) == '\u2601') { // Retain the cloud symbol
 				newName = '\u2601 ' + newName;
 			}
 
-			app.runtime.renameVariable(oldName, newName, block);
-			setBlockVarOrListName(newName);
-			app.updatePalette();
+			app.runtime.renameVariable(oldName, newName);
 		}
 		var d:DialogBox = new DialogBox(doVarRename);
 		d.addTitle(Translator.map('Rename') + ' ' + blockVarOrListName());
@@ -764,7 +760,7 @@ public class BlockMenus implements DragClient {
 
 	protected function newBroadcast():void {
 		function changeBroadcast(dialog:DialogBox):void {
-			var newName:String = dialog.fields['Message Name'].text;
+			var newName:String = dialog.getField('Message Name');
 			if (newName.length == 0) return;
 			setBlockArg(newName);
 		}

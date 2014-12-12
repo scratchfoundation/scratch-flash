@@ -59,7 +59,7 @@ public class ScratchCostume {
 	public var baseLayerBitmap:BitmapData;
 	public var baseLayerID:int = -1;
 	public var baseLayerMD5:String;
-	public var baseLayerData:ByteArray;
+	private var __baseLayerData:ByteArray;
 
 	public static const WasEdited:int = -10; // special baseLayerID used to indicate costumes that have been edited
 
@@ -74,7 +74,7 @@ public class ScratchCostume {
 	public var textLayerBitmap:BitmapData;
 	public var textLayerID:int = -1;
 	public var textLayerMD5:String;
-	public var textLayerData:ByteArray;
+	private var __textLayerData:ByteArray;
 
 	public var text:String;
 	public var textRect:Rectangle;
@@ -101,6 +101,24 @@ public class ScratchCostume {
 			setSVGData(data, (centerX == 99999));
 			prepareToSave();
 		}
+	}
+
+	public function get baseLayerData():ByteArray {
+		return __baseLayerData;
+	}
+
+	public function set baseLayerData(data:ByteArray):void {
+		__baseLayerData = data;
+		baseLayerMD5 = null;
+	}
+
+	public function get textLayerData():ByteArray {
+		return __textLayerData;
+	}
+
+	public function set textLayerData(data:ByteArray):void {
+		__textLayerData = data;
+		textLayerMD5 = null;
 	}
 
 	public static function scaleForScratch(bm:BitmapData):BitmapData {
@@ -412,11 +430,7 @@ public class ScratchCostume {
 			else if(dispObj is Shape) {
 				var shape:Shape = new Shape();
 				shape.graphics.copyFrom((dispObj as Shape).graphics);
-				shape.x = dispObj.x;
-				shape.y = dispObj.y;
-				shape.scaleX = dispObj.scaleX;
-				shape.scaleY = dispObj.scaleY;
-				shape.rotation = dispObj.rotation;
+				shape.transform = dispObj.transform;
 				clone.addChild(shape);
 			}
 			else if(dispObj is Bitmap) {

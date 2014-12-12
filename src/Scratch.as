@@ -58,7 +58,7 @@ import watchers.ListWatcher;
 
 public class Scratch extends Sprite {
 	// Version
-	public static const versionString:String = 'v423f';
+	public static const versionString:String = 'v429a';
 	public static var app:Scratch; // static reference to the app, used for debugging
 
 	// Display modes
@@ -111,6 +111,7 @@ public class Scratch extends Sprite {
 	public var scriptsPart:IScriptsPart;
 	public var imagesPart:IImagesPart;
 	public var soundsPart:ISoundsPart;
+	public const tipsBarClosedWidth:int = 17;
 
 	public function Scratch() {
 		loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, uncaughtErrorHandler);
@@ -210,6 +211,7 @@ public class Scratch extends Sprite {
 	public function showTip(tipName:String):void {}
 	public function closeTips():void {}
 	public function reopenTips():void {}
+	public function tipsWidth():int { return 0; }
 
 	protected function startInEditMode():Boolean {
 		return isOffline;
@@ -260,7 +262,7 @@ public class Scratch extends Sprite {
 				var versionParts:Array = versionString.split(',');
 				var majorVersion:int = parseInt(versionParts[0]);
 				var minorVersion:int = parseInt(versionParts[1]);
-				if((majorVersion > 11 || (majorVersion == 11 && minorVersion >=1)) && !isArmCPU && Capabilities.cpuArchitecture == 'x86') {
+				if ((majorVersion > 11 || (majorVersion == 11 && minorVersion >= 7)) && !isArmCPU && Capabilities.cpuArchitecture == 'x86') {
 					render3D = (new DisplayObjectContainerIn3D() as IRenderIn3D);
 					render3D.setStatusCallback(handleRenderCallback);
 					return;
@@ -362,6 +364,7 @@ public class Scratch extends Sprite {
 		return [
 			'a copy of the project file on your computer.',
 			'Project not saved!', 'Save now', 'Not saved; project did not load.',
+			'Save project?', 'Don\'t save',
 			'Save now', 'Saved',
 			'Revert', 'Undo Revert', 'Reverting...',
 			'Throw away all changes since opening this project?',
@@ -589,6 +592,7 @@ public class Scratch extends Sprite {
 		Menu.removeMenusFrom(stage);
 		editMode = newMode;
 		if (editMode) {
+			interp.showAllRunFeedback();
 			hide(playerBG);
 			show(topBarPart);
 			show(libraryPart as DisplayObject);
@@ -670,6 +674,7 @@ public class Scratch extends Sprite {
 
 		// the content area shows the part associated with the currently selected tab:
 		var contentY:int = tabsPart.y + 27;
+		w -= tipsWidth();
 		updateContentArea(tabsPart.x, contentY, w - tabsPart.x - 6, h - contentY - 5, h);
 	}
 
@@ -754,7 +759,7 @@ public class Scratch extends Sprite {
 			m.addLine();
 			m.addItem('Import experimental extension', function():void {
 				function loadJSExtension(dialog:DialogBox):void {
-					var url:String = dialog.fields['URL'].text.replace(/^\s+|\s+$/g, '');
+					var url:String = dialog.getField('URL').replace(/^\s+|\s+$/g, '');
 					if (url.length == 0) return;
 					externalCall('ScratchExtensions.loadExternalJS', null, url);
 				}
@@ -829,7 +834,7 @@ public class Scratch extends Sprite {
 			return;
 		}
 		var d:DialogBox = new DialogBox();
-		d.addTitle(Translator.map('Save project') + '?');
+		d.addTitle('Save project?');
 		d.addButton('Save', save);
 		d.addButton('Don\'t save', proceedWithoutSaving);
 		d.addButton('Cancel', cancel);

@@ -191,13 +191,18 @@ public class ScrollFrame extends Sprite implements DragClient {
 		xVelocity = yVelocity = 0;
 	}
 
-	private function maxScrollH():int {
+	public function maxScrollH():int {
 		return Math.max(0, contents.width - visibleW());
 	}
 
-	private function maxScrollV():int {
+	public function maxScrollV():int {
 		return Math.max(0, contents.height - visibleH());
 	}
+
+	public function canScrollLeft():Boolean {return contents.x < 0}
+	public function canScrollRight():Boolean {return contents.x > -maxScrollH()}
+	public function canScrollUp():Boolean {return contents.y < 0}
+	public function canScrollDown():Boolean {return contents.y > -maxScrollV()}
 
 	private function fixLayout():void {
 		var inset:int = 2;
@@ -214,7 +219,7 @@ public class ScrollFrame extends Sprite implements DragClient {
 		updateScrollbars();
 	}
 
-	private function constrainScroll():void {
+	public function constrainScroll():void {
 		contents.x = Math.max(-maxScrollH(), Math.min(contents.x, 0));
 		contents.y = Math.max(-maxScrollV(), Math.min(contents.y, 0));
 	}

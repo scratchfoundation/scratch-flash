@@ -81,7 +81,7 @@ public class TopBarPart extends UIPart {
 	public function updateTranslation():void {
 		removeTextButtons();
 		addTextButtons();
-		if (offlineNotice) offlineNotice.text = Translator.map('Offline Editor') + ' (beta)';
+		if (offlineNotice) offlineNotice.text = Translator.map('Offline Editor');
 		refresh();
 	}
 

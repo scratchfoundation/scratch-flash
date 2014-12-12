@@ -18,19 +18,19 @@
  */
 
 package ui.media {
-	import flash.display.*;
-	import flash.events.*;
-	import flash.net.*;
-	import flash.text.*;
-	import flash.ui.*;
-	import flash.utils.*;
-	import assets.Resources;
-	import extensions.ScratchExtension;
-	import scratch.*;
-	import sound.mp3.MP3Loader;
-	import translation.Translator;
-	import uiwidgets.*;
-	import util.*;
+import flash.display.*;
+import flash.events.*;
+import flash.media.Sound;
+import flash.net.*;
+import flash.text.*;
+import flash.utils.*;
+import assets.Resources;
+import extensions.ScratchExtension;
+import scratch.*;
+import sound.mp3.MP3Loader;
+import translation.Translator;
+import uiwidgets.*;
+import util.*;
 
 public class MediaLibrary extends Sprite {
 
@@ -216,11 +216,11 @@ public class MediaLibrary extends Sprite {
 
 	private function addTitle():void {
 		var s:String = assetType;
-		if ('backdrop' == s) s = Translator.map('Backdrop Library');
-		if ('costume' == s) s = Translator.map('Costume Library');
-		if ('extension' == s) s = Translator.map('Extension Library');
-		if ('sprite' == s) s = Translator.map('Sprite Library');
-		if ('sound' == s) s = Translator.map('Sound Library');
+		if ('backdrop' == s) s = 'Backdrop Library';
+		if ('costume' == s) s = 'Costume Library';
+		if ('extension' == s) s = 'Extension Library';
+		if ('sprite' == s) s = 'Sprite Library';
+		if ('sound' == s) s = 'Sound Library';
 		addChild(title = Resources.makeLabel(Translator.map(s), titleFormat));
 	}
 
@@ -669,12 +669,29 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 			startSoundUpload(snd, origName, uploadComplete);
 		} else { // try to read data as an MP3 file
 			if (app.lp) app.lp.setTitle('Converting mp3...');
-			setTimeout(function():void {
-				MP3Loader.convertToScratchSound(sndName, data, function(s:ScratchSound):void {
-					snd = s;
-					startSoundUpload(s, origName, uploadComplete);
-				});
-			}, 1);
+			var sound:Sound;
+			SCRATCH::allow3d {
+				sound = new Sound();
+				data.position = 0;
+				try {
+					sound.loadCompressedDataFromByteArray(data, data.length);
+					MP3Loader.extractSamples(name, sound, sound.length * 44.1, function (out:ScratchSound):void {
+						snd = out;
+						startSoundUpload(out, origName, uploadComplete);
+					});
+				}
+				catch(e:Error) {
+					uploadComplete();
+				}
+			}
+
+			if (!sound)
+				setTimeout(function():void {
+					MP3Loader.convertToScratchSound(sndName, data, function(s:ScratchSound):void {
+						snd = s;
+						startSoundUpload(s, origName, uploadComplete);
+					});
+				}, 1);
 		}
 	}
 
