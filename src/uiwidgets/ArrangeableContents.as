@@ -247,7 +247,7 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 		return forAdding ? numChildren : i;
 	}
 
-	public function removeContent(which):void {
+	public function removeContent(which:*):void {
 		if (which is MediaInfo)
 			removeChild(which as MediaInfo);
 		else if (which is Number)

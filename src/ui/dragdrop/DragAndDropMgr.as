@@ -22,6 +22,7 @@
 package ui.dragdrop {
 import flash.display.*;
 import flash.events.MouseEvent;
+import flash.filters.DropShadowFilter;
 import flash.geom.*;
 import flash.utils.Dictionary;
 
@@ -82,32 +83,52 @@ public class DragAndDropMgr implements ITool{
 			var spr:Sprite = original.getSpriteToDrag();
 			if (!spr) return;
 
-			var startDrag:DragEvent = new DragEvent(DragEvent.DRAG_START, spr);
-			original.dispatchEvent(startDrag);
+			var startDragEvent:DragEvent = new DragEvent(DragEvent.DRAG_START, spr);
+			original.dispatchEvent(startDragEvent);
 
-			if (!startDrag.wasPrevented()) {
+			if (!startDragEvent.wasPrevented()) {
 				ToolMgr.activateTool(this);
 
 				originalObj = original as Sprite;
-				draggedObj = startDrag.draggedObject;
+				draggedObj = startDragEvent.draggedObject;
 				draggedObj.x = stage.mouseX - offsetX;
 				draggedObj.y = stage.mouseY - offsetY;
 				stage.addChild(draggedObj);
-				draggedObj.startDrag();
-				draggedObj.mouseEnabled = false;
-				draggedObj.mouseChildren = false;
+				startDrag();
 			}
 		}
 	}
+
+	private function startDrag():void {
+		var f:DropShadowFilter = new DropShadowFilter();
+		var blockScale:Number = (app.scriptsPane) ? app.scriptsPane.scaleX : 1;
+		f.distance = 8 * blockScale;
+		f.blurX = f.blurY = 2;
+		f.alpha = 0.4;
+		draggedObj.filters = draggedObj.filters.concat([f]);
+		draggedObj.startDrag();
+		draggedObj.mouseEnabled = false;
+		draggedObj.mouseChildren = false;
+	}
+
+	private function stopDrag():void {
+		var newFilters:Array = [];
+		for each (var f:* in draggedObj.filters) {
+			if (!(f is DropShadowFilter)) newFilters.push(f);
+		}
+		draggedObj.filters = newFilters;
+		draggedObj.stopDrag();
+		draggedObj.mouseEnabled = true;
+		draggedObj.mouseChildren = true;
+	}
+
 
 	public function shutdown():void {
 		if (originalObj)
 			originalObj.dispatchEvent(new DragEvent(DragEvent.DRAG_CANCEL, draggedObj));
 
 		if (draggedObj) {
-			draggedObj.stopDrag();
-			draggedObj.mouseEnabled = true;
-			draggedObj.mouseChildren = true;
+			stopDrag();
 
 			if (originalObj != draggedObj && draggedObj.parent)
 				draggedObj.parent.removeChild(draggedObj);
@@ -138,9 +159,7 @@ public class DragAndDropMgr implements ITool{
 			case MouseEvent.MOUSE_UP:
 				var dropAccepted:Boolean = currentDropTarget.handleDrop(draggedObj);
 				originalObj.dispatchEvent(new DragEvent(dropAccepted ? DragEvent.DRAG_STOP : DragEvent.DRAG_CANCEL, draggedObj));
-				draggedObj.stopDrag();
-				draggedObj.mouseEnabled = true;
-				draggedObj.mouseChildren = true;
+				stopDrag();
 
 				if (originalObj != draggedObj && draggedObj.parent)
 					draggedObj.parent.removeChild(draggedObj);
