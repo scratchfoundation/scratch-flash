@@ -195,9 +195,9 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 		if (selectedItem) selectedItem.toggleSelected(true);
 	}
 
+	private var contentChanged:Boolean;
 	public function addContent(item:MediaInfo, where:* = null):void {
-		if (where is Point) addChildAt(item, getIndexFromPoint(where as Point, true));
-		else if (where is Number && where >= 0) addChildAt(item, where as Number);
+		if (where is Number && where >= 0) addChildAt(item, where as Number);
 		else if (dropPos > -1) {
 			var index:int = (dropPos < numChildren) ? getChildIndex(allItems()[dropPos]) : numChildren;
 			addChildAt(item, index);
@@ -207,6 +207,7 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 
 		if (item is EditableItem) (item as EditableItem).toggleEditMode(editMode);
 		DragAndDropMgr.setDraggable(item, true);
+		contentChanged = true;
 	}
 
 	private function getIndexFromPoint(pt:Point, forAdding:Boolean = false):int {
@@ -229,19 +230,15 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 		}
 		else {
 			// Grid layout
-			var firstItem:MediaInfo;
-			for each(mi in allItems()) {
-				if (mi.x + mi.width / 2 > loc.x || (mi.y + mi.height / 2 > loc.y && firstItem && mi.y > firstItem.y)) {
-					if (mi.owner == null)
-						return -1;
-					else
-						return forAdding ? getChildIndex(mi) : i;
-				}
+			var px:Number = loc.x - itemPadding;
+			var py:Number = loc.y - itemPadding;
+			var rowLen:int = w / (MediaInfo.frameWidth + itemPadding);
+			var index:int = Math.max(0, Math.min(rowLen-1, Math.floor(px / (MediaInfo.frameWidth + itemPadding))) + rowLen * Math.floor(py / (MediaInfo.frameHeight + itemPadding)));
+			var items:Array = allItems();
+			if (items.length && index < items.length && items[index].owner != null)
+				return forAdding ? getChildIndex(items[index]) : index;
 
-				if (i == 0)
-					firstItem = mi;
-				++i;
-			}
+			return -1;
 		}
 
 		return forAdding ? numChildren : i;
@@ -254,6 +251,8 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 			removeChildAt(which as Number);
 		else
 			throw new ArgumentError();
+
+		contentChanged = true;
 	}
 
 	public function removeAllItems():void {
@@ -279,6 +278,10 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 	}
 
 	public function arrangeItems(animate:Boolean = false):void {
+		if (contentChanged) {
+			contentChanged = false;
+			dispatchEvent(new Event(Event.CHANGE));
+		}
 		if (numChildren == 0) return;
 
 		allItems().forEach(getPlacementFunc(animate));

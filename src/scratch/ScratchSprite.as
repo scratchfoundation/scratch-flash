@@ -30,20 +30,16 @@ import flash.filters.GlowFilter;
 import flash.geom.*;
 import flash.geom.ColorTransform;
 import flash.utils.*;
-	import flash.net.FileReference;
-	import filters.FilterPack;
-	import interpreter.Variable;
-	import translation.Translator;
-
-import ui.dragdrop.DragAndDropMgr;
-import ui.dragdrop.DragEvent;
-import ui.dragdrop.IDraggable;
+import flash.net.FileReference;
+import filters.FilterPack;
+import interpreter.Variable;
+import translation.Translator;
 
 import uiwidgets.Menu;
-	import util.*;
-	import watchers.ListWatcher;
+import util.*;
+import watchers.ListWatcher;
 
-public class ScratchSprite extends ScratchObj implements IDraggable {
+public class ScratchSprite extends ScratchObj {
 
 	public var scratchX:Number;
 	public var scratchY:Number;
@@ -82,7 +78,6 @@ public class ScratchSprite extends ScratchObj implements IDraggable {
 		img.addChild(geomShape);
 		showCostume(0);
 		setScratchXY(0, 0);
-		DragAndDropMgr.setDraggable(this);
 		addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, menu);
 	}
 
@@ -460,13 +455,7 @@ public class ScratchSprite extends ScratchObj implements IDraggable {
 		return super.defaultArgsFor(op, specDefaults);
 	}
 
-	/* Dragging */
-
-	//public function objToGrab(evt:MouseEvent):ScratchSprite { return this } // allow dragging
-	public function getSpriteToDrag():Sprite { return this; }
-
 	/* Menu */
-
 	public function menu(evt:MouseEvent):Menu {
 		var m:Menu = new Menu();
 		m.addItem('info', showDetails);
@@ -705,6 +694,12 @@ public class ScratchSprite extends ScratchObj implements IDraggable {
 	public function prepareToDrag():void {
 		// Force rendering with PixelBender for a dragged sprite
 		applyFilters(true);
+	}
+
+	override public function startDrag(lockCenter:Boolean = false,bounds:flash.geom.Rectangle = null):void {
+		super.startDrag(lockCenter, bounds);
+
+		prepareToDrag();
 	}
 
 	override public function stopDrag():void {

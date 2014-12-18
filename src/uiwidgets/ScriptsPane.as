@@ -32,10 +32,9 @@ import blocks.*;
 import scratch.*;
 import flash.geom.Rectangle;
 
+import ui.dragdrop.DragEvent;
 import ui.dragdrop.DropTarget;
 import ui.media.MediaInfo;
-
-import util.GestureHandler;
 
 public class ScriptsPane extends ScrollFrameContents implements DropTarget {
 
@@ -62,6 +61,36 @@ public class ScriptsPane extends ScrollFrameContents implements DropTarget {
 		createTexture();
 		addFeedbackShape();
 		addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, menu);
+		addEventListener(DragEvent.DRAG_OVER, handleDrag, false, 0, true);
+		addEventListener(DragEvent.DRAG_MOVE, handleDrag, false, 0, true);
+		addEventListener(DragEvent.DRAG_OUT, handleDrag, false, 0, true);
+		addEventListener(DragEvent.DRAG_DROP, handleDrag, false, 0, true);
+	}
+
+	protected function handleDrag(e:DragEvent):void {
+		if (!(e.draggedObject is Block) && !(e.draggedObject is ScratchComment)) return;
+
+		var b:Block = e.draggedObject as Block;
+		var c:ScratchComment = e.draggedObject as ScratchComment;
+		switch (e.type) {
+			case DragEvent.DRAG_OVER:
+				if (c)
+					c.scaleX = c.scaleY = scaleX;
+				else {
+					findTargetsFor(b);
+					nearestTarget = null;
+					b.scaleX = b.scaleY = scaleX * app.scaleX;
+					addFeedbackShape();
+				}
+				break;
+
+			case DragEvent.DRAG_MOVE:
+				if (b) app.scriptsPane.updateFeedbackFor(b);
+				break;
+
+			case DragEvent.DRAG_OUT:
+				if (b) draggingDone();
+		}
 	}
 
 	protected function createTexture():void {
@@ -232,6 +261,7 @@ public class ScriptsPane extends ScrollFrameContents implements DropTarget {
 		}
 		if (b.op == Specs.PROCEDURE_DEF) app.updatePalette();
 		app.runtime.blockDropped(b);
+		draggingDone();
 	}
 
 	protected function findTargetsFor(b:Block):void {

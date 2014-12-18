@@ -54,7 +54,7 @@ public class PaletteSelector extends Sprite {
 		var oldID:int = selectedCategory;
 		selectedCategory = id;
 		if(app.palette) app.palette.clear(id != oldID);
-		app.palBuilder.showBlocksForCategory(selectedCategory, app.palette, shiftKey);
+		app.palBuilder.showBlocksForCategory(selectedCategory, !!app.palette, shiftKey);
 	}
 
 	protected function initCategories():void {

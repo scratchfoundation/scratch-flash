@@ -41,11 +41,18 @@ import flash.display.*;
 	import flash.text.*;
 	import assets.Resources;
 	import translation.Translator;
-	import util.*;
+
+import ui.BlockPalette;
+
+import ui.dragdrop.DragAndDropMgr;
+import ui.dragdrop.DragEvent;
+import ui.dragdrop.IDraggable;
+
+import util.*;
 	import uiwidgets.*;
 	import scratch.*;
 
-public class Block extends Sprite {
+public class Block extends Sprite implements IDraggable {
 
 	private const minCommandWidth:int = 36;
 	private const minHatWidth:int = 80;
@@ -118,6 +125,9 @@ public class Block extends Sprite {
 		addEventListener(MouseEvent.CLICK, click);
 		addEventListener(MouseEvent.DOUBLE_CLICK, doubleClick);
 		addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, menu);
+		addEventListener(DragEvent.DRAG_START, handleDragEvent);
+		addEventListener(DragEvent.DRAG_CANCEL, handleDragEvent);
+		DragAndDropMgr.setDraggable(this);
 	}
 
 	protected function setType(type:String, color:int):void {
@@ -386,6 +396,18 @@ public class Block extends Sprite {
 			b.insertBlockSub2(this);
 			break;
 		}
+	}
+
+	private function handleDragEvent(e:DragEvent):void {
+		if (e.type == DragEvent.DRAG_START) {
+			if (parent is BlockPalette) return;
+
+			saveOriginalState();
+			if (parent is Block) Block(parent).removeBlock(this);
+			//if (parent != null) parent.removeChild(this);
+		}
+		else
+			restoreOriginalState();
 	}
 
 	public function originalPositionIn(p:DisplayObject):Point {
@@ -868,7 +890,7 @@ public class Block extends Sprite {
 
 	/* Dragging */
 
-	public function objToGrab(evt:MouseEvent):Block {
+	public function getSpriteToDrag():Sprite {
 		if (isEmbeddedParameter() || isInPalette()) return duplicate(false, Scratch.app.viewedObj() is ScratchStage);
 		return this;
 	}

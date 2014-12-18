@@ -67,7 +67,7 @@ public class BlockPalette extends ScrollFrameContents implements DropTarget {
 		if (b) {
 			return b.deleteStack();
 		}
-		return true;
+		return false;
 	}
 
 	public static function strings():Array {

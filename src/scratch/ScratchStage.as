@@ -33,6 +33,8 @@ import flash.net.FileReference;
 import blocks.Block;
 import filters.FilterPack;
 import translation.Translator;
+
+import ui.ITool;
 import ui.dragdrop.DropTarget;
 import uiwidgets.Menu;
 import ui.media.MediaInfo;
@@ -42,7 +44,7 @@ import by.blooddy.crypto.image.PNG24Encoder;
 import by.blooddy.crypto.image.PNGFilter;
 import by.blooddy.crypto.MD5;
 
-public class ScratchStage extends ScratchObj implements DropTarget {
+public class ScratchStage extends ScratchObj implements DropTarget, ITool {
 
 	public var info:Object = new Object();
 	public var tempoBPM:Number = 60;
@@ -80,6 +82,22 @@ public class ScratchStage extends ScratchObj implements DropTarget {
 		initMedia();
 		showCostume(0);
 		addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, menu);
+	}
+
+	public function isSticky():Boolean { return true; }
+	public function shutdown():void {}
+
+	public function mouseHandler(e:MouseEvent):void {
+		visible = true;
+		for (var i:int = numChildren - 1; i > 0; --i) {
+			var o:DisplayObject = getChildAt(i) as DisplayObject;
+			if (o is Bitmap) break; // hit the paint layer of the stage; no more elments
+			if (o.visible && o.hitTestPoint(stage.mouseX, stage.mouseY, true)) {
+				o.dispatchEvent(e);
+				break;
+			}
+		}
+		visible = false;
 	}
 
 	public function setTempo(bpm:Number):void {
@@ -728,11 +746,12 @@ public class ScratchStage extends ScratchObj implements DropTarget {
 			if (obj.parent) obj.parent.removeChild(obj); // force redisplay
 			addChild(obj);
 			if (obj is ScratchSprite) {
-				(obj as ScratchSprite).updateCostume();
-				obj.setScratchXY(p.x - 240, 180 - p.y);
-				Scratch.app.selectSprite(obj);
-				obj.setScratchXY(p.x - 240, 180 - p.y); // needed because selectSprite() moves sprite back if costumes tab is open
-				(obj as ScratchObj).applyFilters();
+				var spr:ScratchSprite = obj as ScratchSprite;
+				spr.setScratchXY(p.x - 240, 180 - p.y);
+				spr.updateCostume();
+				Scratch.app.selectSprite(spr);
+				spr.setScratchXY(p.x - 240, 180 - p.y); // needed because selectSprite() moves sprite back if costumes tab is open
+				spr.applyFilters();
 			}
 			if (!(obj is ScratchSprite) || Scratch.app.editMode) Scratch.app.setSaveNeeded();
 			return true;

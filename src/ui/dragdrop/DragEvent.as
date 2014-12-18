@@ -15,13 +15,9 @@ public class DragEvent extends Event {
 	public static const DRAG_DROP:String    = 'dragDrop';
 	private var _draggedObj:Sprite;
 	private var _acceptedBy:DropTarget;
-	private var _prevented:Boolean;
 	public function DragEvent(type:String, obj:Sprite) {
 		_draggedObj = obj;
 		super(type, true, true);
-
-		// DragEvents won't propagate and are only dispatched on DropTargets
-		//if (type != DRAG_START) stopPropagation();
 	}
 
 	public function get draggedObject():Sprite {
@@ -36,13 +32,4 @@ public class DragEvent extends Event {
 		_acceptedBy = currentTarget as DropTarget;
 		stopImmediatePropagation();
 	}
-
-	override public function preventDefault():void {
-		_prevented = true;
-	}
-
-	public function wasPrevented():Boolean {
-		return _prevented;
-	}
-}
-}
+}}
