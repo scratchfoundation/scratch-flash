@@ -675,7 +675,7 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 				data.position = 0;
 				try {
 					sound.loadCompressedDataFromByteArray(data, data.length);
-					MP3Loader.extractSamples(name, sound, sound.length * 44.1, function (out:ScratchSound):void {
+					MP3Loader.extractSamples(origName, sound, sound.length * 44.1, function (out:ScratchSound):void {
 						snd = out;
 						startSoundUpload(out, origName, uploadComplete);
 					});
