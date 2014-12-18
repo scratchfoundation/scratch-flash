@@ -26,6 +26,8 @@ package svgeditor.tools {
 
 public final class BitmapPencilTool extends SVGTool {
 
+	private static const ERASER_SCALE:int = 4; // scale the eraser size by this much to make it easier to use
+
 	private var eraseMode:Boolean;	// true if this is the eraser tool
 
 	// brush/eraser properties
@@ -125,6 +127,7 @@ public final class BitmapPencilTool extends SVGTool {
 	private function getPenProps():void {
 		var props:DrawProperties = editor.getShapeProps();
 		brushSize = Math.max(1, 2 * Math.round(props.strokeWidth));
+		if (eraseMode) brushSize *= ERASER_SCALE;
 		brushColor = (props.alpha > 0) ? (0xFF000000 | props.color) : 0;
 	}
 
