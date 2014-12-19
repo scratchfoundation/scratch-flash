@@ -66,7 +66,7 @@ public final class PathEditTool extends SVGEditTool
 			edit(obj, currentEvent);
 		}
 
-		override protected function mouseDown(event:MouseEvent):void {
+		override public function mouseDown(event:MouseEvent):void {
 			// Ignore clicks on anchor points and let them handle the mouse
 			if (event.target is PathAnchorPoint) return;
 			super.mouseDown(event);

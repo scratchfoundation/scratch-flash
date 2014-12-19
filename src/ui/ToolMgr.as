@@ -5,6 +5,7 @@ package ui {
 import flash.display.DisplayObject;
 import flash.display.Stage;
 import flash.events.MouseEvent;
+import flash.events.TouchEvent;
 
 public class ToolMgr {
 	static private var currentTool:ITool;
@@ -45,7 +46,14 @@ public class ToolMgr {
 		stage.addEventListener(MouseEvent.MOUSE_DOWN, mouseHandler, true, 0, true);
 		stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseHandler, true, 0, true);
 		stage.addEventListener(MouseEvent.MOUSE_UP, mouseHandler, true, 0, true);
+
+//		stage.addEventListener(TouchEvent.TOUCH_BEGIN, mouseHandler, true, 0, true);
+//		stage.addEventListener(TouchEvent.TOUCH_MOVE, mouseHandler, true, 0, true);
+//		stage.addEventListener(TouchEvent.TOUCH_END, mouseHandler, true, 0, true);
 	}
+
+	// TODO: Track touch ids and associate touch ids with tools.
+	// http://help.adobe.com/en_US/as3/dev/WS1ca064e08d7aa93023c59dfc1257b16a3d6-7ffe.html
 
 	static private function removeMouseListener():void {
 		stage.removeEventListener(MouseEvent.MOUSE_DOWN, mouseHandler);

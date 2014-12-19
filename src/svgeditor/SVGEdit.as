@@ -479,7 +479,7 @@ public class SVGEdit extends ImageEdit {
 // Undo/Redo
 //------------------------------
 
-	override public function restoreUndoState(undoRec:Array):void {
+	override protected function restoreUndoState(undoRec:Array):void {
 		var id:String = null;
 		if(toolMode == 'select')
 			setToolMode('select', true);

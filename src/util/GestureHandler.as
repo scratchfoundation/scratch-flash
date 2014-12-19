@@ -156,7 +156,8 @@ public class GestureHandler {
 			scrollTarget.updateScrollbars();
 			var b:Block = carriedObj as Block;
 			if (b) {
-				app.scriptsPane.findTargetsFor(b);
+				// Removed?
+				//app.scriptsPane.findTargetsFor(b);
 				app.scriptsPane.updateFeedbackFor(b);
 			}
 		}

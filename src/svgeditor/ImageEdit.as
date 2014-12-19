@@ -19,34 +19,40 @@
 
 package svgeditor {
 import assets.Resources;
+
 import flash.display.*;
 import flash.events.*;
 import flash.geom.*;
 import flash.text.*;
 import flash.ui.*;
 import flash.utils.ByteArray;
+
 import scratch.*;
+
+import svgeditor.*;
 import svgeditor.objs.*;
 import svgeditor.tools.*;
+
 import svgutils.*;
+
 import translation.Translator;
 
-import ui.ToolMgr;
-import ui.dragdrop.DropTarget;
 import ui.media.MediaInfo;
 import ui.parts.ImagesPart;
+
 import uiwidgets.*;
+
 import util.ProjectIO;
 
-public class ImageEdit extends Sprite implements DropTarget {
+public class ImageEdit extends Sprite {
 
-	protected var app:Scratch;
-	protected var imagesPart:ImagesPart;
-	protected var targetCostume:ScratchCostume;
-	protected var isScene:Boolean;
+	public var app:Scratch;
+	public var imagesPart:ImagesPart;
+	public var targetCostume:ScratchCostume;
+	public var isScene:Boolean;
 
 	protected var toolMode:String;
-		protected var lastToolMode:String;
+	protected var lastToolMode:String;
 	protected var currentTool:SVGTool;
 	protected var drawPropsUI:DrawPropertyUI;
 	protected var toolButtons:Object;
@@ -79,6 +85,8 @@ public class ImageEdit extends Sprite implements DropTarget {
 		uiLayer.addChild(toolButtonsLayer);
 
 		app.stage.addEventListener(KeyboardEvent.KEY_DOWN, stageKeyDownHandler, false, 0, true);
+		workArea.getContentLayer().addEventListener(MouseEvent.MOUSE_OVER, workAreaMouseHandler);
+		workArea.getContentLayer().addEventListener(MouseEvent.MOUSE_OUT, workAreaMouseHandler);
 
 		createTools();
 		addDrawPropsUI();
@@ -105,19 +113,14 @@ public class ImageEdit extends Sprite implements DropTarget {
 		return result;
 	}
 
-	public function editingScene():Boolean { return isScene; }
-	public function getCostume():ScratchCostume { return targetCostume; }
-	public function getCanvasLayer():Sprite { return workArea.getInteractionLayer(); }
-	public function getContentLayer():Sprite { return workArea.getContentLayer(); }
-	public function getShapeProps():DrawProperties { return drawPropsUI.settings; }
-	public function setShapeProps(props:DrawProperties):void { drawPropsUI.settings = props; }
-	public function getStrokeSmoothness():Number { return drawPropsUI.getStrokeSmoothness(); }
-	public function getToolsLayer():Sprite { return toolsLayer; }
-	public function getWorkArea():ImageCanvas { return workArea; }
-	public function setCostume(c:ScratchCostume, scene:Boolean):void {
-		targetCostume = c;
-		isScene = scene;
-	}
+	public function editingScene():Boolean { return isScene }
+	public function getCanvasLayer():Sprite { return workArea.getInteractionLayer() }
+	public function getContentLayer():Sprite { return workArea.getContentLayer() }
+	public function getShapeProps():DrawProperties { return drawPropsUI.settings }
+	public function setShapeProps(props:DrawProperties):void { drawPropsUI.settings = props }
+	public function getStrokeSmoothness():Number { return drawPropsUI.getStrokeSmoothness() }
+	public function getToolsLayer():Sprite { return toolsLayer }
+	public function getWorkArea():ImageCanvas { return workArea }
 
 	public function handleDrop(obj:*):Boolean {
 		function insertCostume(c:ScratchCostume):void { addCostume(c, dropPoint) }
@@ -141,6 +144,20 @@ public class ImageEdit extends Sprite implements DropTarget {
 	}
 
 	protected function selectHandler(event:Event = null):void {}
+
+	private function workAreaMouseHandler(event:MouseEvent):void {
+		if(event.type == MouseEvent.MOUSE_OVER && currentCursor != null) {
+			CursorTool.setCustomCursor(currentCursor);
+		} else {
+			CursorTool.setCustomCursor(MouseCursor.AUTO);
+		}
+
+		// Capture mouse down before anyone else in case there is a global tool running
+		if(event.type == MouseEvent.MOUSE_OVER && CursorTool.tool)
+			workArea.getContentLayer().addEventListener(MouseEvent.MOUSE_DOWN, workAreaMouseDown, true, 1, true);
+		else
+			workArea.getContentLayer().removeEventListener(MouseEvent.MOUSE_DOWN, workAreaMouseDown);
+	}
 
 	private var globalToolObject:ISVGEditable;
 	private function workAreaMouseDown(event:MouseEvent):void {
@@ -222,8 +239,9 @@ public class ImageEdit extends Sprite implements DropTarget {
 	public function enableTools(enabled:Boolean):void {
 		uiLayer.mouseChildren = enabled;
 		uiLayer.alpha = enabled ? 1.0 : 0.6;
-		if (enabled) ToolMgr.activateTool(currentTool);
-		else ToolMgr.deactivateTool(currentTool);
+		if (!enabled) {
+			setToolMode('select');
+		}
 	}
 
 	public function isActive():Boolean {
@@ -238,7 +256,7 @@ public class ImageEdit extends Sprite implements DropTarget {
 	protected function stageKeyDownHandler(event:KeyboardEvent):Boolean {
 		if(!isActive()) return true;
 		if(stage && (stage.focus is TextField ||
-			(stage.focus is SVGTextField && (stage.focus as SVGTextField).type == TextFieldType.INPUT))) return true;
+				(stage.focus is SVGTextField && (stage.focus as SVGTextField).type == TextFieldType.INPUT))) return true;
 
 		if(event.keyCode == 27) {
 			// Maybe empty the selection when in BitmapEdit
@@ -303,10 +321,10 @@ public class ImageEdit extends Sprite implements DropTarget {
 
 	// Must be overridden and return an array like this:
 	/*[
-		{ name: 'select',		desc: 'Select' },
-		null, // Space
-		{ name: 'path',			desc: 'Pencil' },
-	]*/
+	 { name: 'select',		desc: 'Select' },
+	 null, // Space
+	 { name: 'path',			desc: 'Pencil' },
+	 ]*/
 	protected function getToolDefs():Array { return [] }
 
 	// May be overridden to return an array like this:
@@ -337,10 +355,10 @@ public class ImageEdit extends Sprite implements DropTarget {
 				if ('text' == toolName) iconName = 'bitmapText';
 
 				ib = new IconButton(
-					isImmediate ? handleImmediateTool : selectTool,
-					makeToolButton(iconName, true, buttonSize),
-					makeToolButton(iconName, false, buttonSize),
-					!isImmediate);
+						isImmediate ? handleImmediateTool : selectTool,
+						makeToolButton(iconName, true, buttonSize),
+						makeToolButton(iconName, false, buttonSize),
+						!isImmediate);
 				registerToolButton(toolName, ib);
 				ib.isMomentary = isImmediate;
 				toolButtonsLayer.addChild(ib);
@@ -527,40 +545,45 @@ public class ImageEdit extends Sprite implements DropTarget {
 
 	private function selectTool(btn:IconButton):void {
 		var newMode:String = (btn ? btn.name : 'select');
-			setToolMode(newMode, false, true);
+		setToolMode(newMode, false, true);
 
 		if(btn && btn.lastEvent) {
 			btn.lastEvent.stopPropagation();
 		}
 	}
 
-	private function stopCurrentTool():void {
-		if (!currentTool) return;
-		if (currentTool.parent)
-			toolsLayer.removeChild(currentTool);
+	public static const repeatedTools:Array = ['rect', 'ellipse', 'vectorRect', 'vectorEllipse', 'text'];
+	public static const selectionTools:Array = ['select', 'bitmapSelect'];
 
-		if (currentTool is SVGEditTool)
-			currentTool.removeEventListener('select', selectHandler);
-
-		currentTool.removeEventListener(Event.CHANGE, saveContent);
-		currentTool = null;
-		if (toolButtons[toolMode]) toolButtons[toolMode].turnOff()
-		toolMode = null;
-	}
-
-	public function setToolMode(newMode:String, bForce:Boolean = false):void {
+	public function setToolMode(newMode:String, bForce:Boolean = false, fromButton:Boolean = false):void {
+		if (!fromButton && selectionTools.indexOf(newMode) != -1 && repeatedTools.indexOf(toolMode) != -1) {
+			lastToolMode = toolMode;
+		} else {
+			if (lastToolMode) highlightTool(newMode);
+			lastToolMode = '';
+		}
 		if(newMode == toolMode && !bForce) return;
 
+		var toolChanged:Boolean = true;//!currentTool || (immediateTools.indexOf(newMode) == -1);
 		var s:Selection = null;
 		if(currentTool) {
-			if ((toolMode == 'select' || toolMode == 'pathedit') && newMode != toolMode)
-				s = (currentTool is ObjectTransformer ?
-						(currentTool as ObjectTransformer).getSelection() :
-						new Selection([(currentTool as PathEditTool).getObject()]));
+			if(toolMode == 'select' && newMode != 'select')
+				s = (currentTool as ObjectTransformer).getSelection();
 
 			// If the next mode is not immediate, shut down the current tool
-			var btn:IconButton = toolButtons[toolMode];
-			stopCurrentTool();
+			if(toolChanged) {
+				if(currentTool.parent)
+					toolsLayer.removeChild(currentTool);
+
+				if(currentTool is SVGEditTool)
+					currentTool.removeEventListener('select', selectHandler);
+
+				currentTool.removeEventListener(Event.CHANGE, saveContent);
+				currentTool = null;
+				var btn:IconButton = toolButtons[toolMode];
+				if(btn) btn.turnOff();
+				toolChanged = true;
+			}
 		}
 
 		switch(newMode) {
@@ -586,31 +609,34 @@ public class ImageEdit extends Sprite implements DropTarget {
 			case 'paintbucket': currentTool = new PaintBucketTool(this); break;
 		}
 
-		// Setup the drawing properties for the next tool
-		updateDrawPropsForTool(newMode);
-
-		if(currentTool) {
-			toolsLayer.addChild(currentTool);
-			btn = toolButtons[newMode];
-			if(btn) btn.turnOn();
-		}
-
 		if(currentTool is SVGEditTool) {
 			currentTool.addEventListener('select', selectHandler, false, 0, true);
 			if(currentTool is ObjectTransformer && s) (currentTool as ObjectTransformer).select(s);
 		}
 
-		workArea.toggleContentInteraction(currentTool.interactsWithContent());
-		toolMode = newMode;
+		// Setup the drawing properties for the next tool
+		updateDrawPropsForTool(newMode);
 
-		// Pass the selected path to the path edit tool OR
-		// Pass the selected text element to the text tool
-		if(currentTool is PathEditTool || currentTool is TextTool) {
-			(currentTool as SVGEditTool).editSelection(s);
+		if(toolChanged) {
+			if(currentTool) {
+				toolsLayer.addChild(currentTool);
+				btn = toolButtons[newMode];
+				if(btn) btn.turnOn();
+			}
+
+			workArea.toggleContentInteraction(currentTool.interactsWithContent());
+			toolMode = newMode;
+
+			// Pass the selected path to the path edit tool OR
+			// Pass the selected text element to the text tool
+			if(currentTool is PathEditTool || currentTool is TextTool) {
+				(currentTool as SVGEditTool).editSelection(s);
+			}
+
+			// Listen for any changes to the content
+			currentTool.addEventListener(Event.CHANGE, saveContent, false, 0, true);
 		}
-
-		// Listen for any changes to the content
-		currentTool.addEventListener(Event.CHANGE, saveContent, false, 0, true);
+		if (lastToolMode != '') highlightTool(lastToolMode);
 
 		// Make sure the tool selected is visible!
 		if(toolButtons.hasOwnProperty(newMode) && currentTool)
@@ -641,8 +667,8 @@ public class ImageEdit extends Sprite implements DropTarget {
 			'select', 'pathedit', 'path', 'vectorLine', 'vectorRect', 'vectorEllipse'];
 		var eraserModes:Array = ['bitmapEraser', 'eraser'];
 		drawPropsUI.showStrokeUI(
-			strokeModes.indexOf(newMode) > -1,
-			eraserModes.indexOf(newMode) > -1
+				strokeModes.indexOf(newMode) > -1,
+				eraserModes.indexOf(newMode) > -1
 		);
 	}
 
@@ -666,7 +692,7 @@ public class ImageEdit extends Sprite implements DropTarget {
 		if (selectionTools.indexOf(toolMode) != -1 && repeatedTools.indexOf(lastToolMode) != -1) {
 			setToolMode(lastToolMode);
 			if (currentTool is SVGCreateTool) {
-				(currentTool as SVGCreateTool).eventHandler(e);
+				(currentTool as SVGCreateTool).mouseHandler(e);
 			} else if (currentTool is SVGEditTool) {
 				(currentTool as SVGEditTool).setObject(null);
 				(currentTool as SVGEditTool).mouseDown(e);
@@ -683,9 +709,9 @@ public class ImageEdit extends Sprite implements DropTarget {
 		if (toolButtons[toolName]) toolButtons[toolName].turnOn();
 	}
 
-//---------------------------------
-// Costume edit and save
-//---------------------------------
+	//---------------------------------
+	// Costume edit and save
+	//---------------------------------
 
 	public function editCostume(c:ScratchCostume, forStage:Boolean, force:Boolean = false):void {
 		// Edit the given ScratchCostume
@@ -717,21 +743,21 @@ public class ImageEdit extends Sprite implements DropTarget {
 
 	public function shutdown():void {
 		// Called before switching costumes. Should commit any operations that were in
-		// progress (e.g. entering text).
-		stopCurrentTool();
+		// progress (e.g. entering text). Forcing a re-select of the current tool should work.
+		setToolMode(toolMode, true);
 	}
 
-//---------------------------------
-// Zooming
-//---------------------------------
+	//---------------------------------
+	// Zooming
+	//---------------------------------
 
 	public function getZoomAndScroll():Array { return workArea.getZoomAndScroll() }
 	public function setZoomAndScroll(zoomAndScroll:Array):void { return workArea.setZoomAndScroll(zoomAndScroll) }
 	public function updateZoomReadout():void { if (drawPropsUI) drawPropsUI.updateZoomReadout() }
 
-// -----------------------------
-// Stamp and Flip Buttons
-//------------------------------
+	// -----------------------------
+	// Stamp and Flip Buttons
+	//------------------------------
 
 	public function stamp():void {}
 
@@ -749,9 +775,9 @@ public class ImageEdit extends Sprite implements DropTarget {
 
 	protected function flipAll(vertical:Boolean):void {}
 
-// -----------------------------
-// Clearing
-//------------------------------
+	// -----------------------------
+	// Clearing
+	//------------------------------
 
 	public function canClearCanvas():Boolean { return false }
 
@@ -765,9 +791,9 @@ public class ImageEdit extends Sprite implements DropTarget {
 		saveContent();
 	}
 
-// -----------------------------
-// Undo/Redo
-//------------------------------
+	// -----------------------------
+	// Undo/Redo
+	//------------------------------
 
 	public function canUndo():Boolean {
 		return targetCostume &&
@@ -826,19 +852,20 @@ public class ImageEdit extends Sprite implements DropTarget {
 
 		var data:* = undoRec[0];
 		imagesPart.useBitmapEditor(data is BitmapData);
-		if (parent != imagesPart) { // switched editors
-			imagesPart.setCostume(targetCostume, isScene);
+		if (imagesPart.editor != this) { // switched editors
+			imagesPart.editor.targetCostume = targetCostume;
+			imagesPart.editor.isScene = isScene;
 		}
 		targetCostume.rotationCenterX = undoRec[1];
 		targetCostume.rotationCenterY = undoRec[2];
 		if (data is ByteArray) targetCostume.setSVGData(data, false);
 		if (data is BitmapData) targetCostume.setBitmapData(data, undoRec[1], undoRec[2]);
 
-		imagesPart.restoreUndoState(undoRec);
+		imagesPart.editor.restoreUndoState(undoRec);
 		imagesPart.refreshUndoButtons();
 	}
 
-	public function restoreUndoState(undoRec:Array):void { }
+	protected function restoreUndoState(undoRec:Array):void { }
 
 	// -----------------------------
 	// Cursor Tool Support
@@ -857,6 +884,7 @@ public class ImageEdit extends Sprite implements DropTarget {
 	}
 
 	public function setCurrentCursor(name:String, bmp:* = null, hotSpot:Point = null, reuse:Boolean = true):void {
+		//trace('setting cursor to '+name);
 		if (name == null || [MouseCursor.HAND, MouseCursor.BUTTON].indexOf(name) > -1) {
 			currentCursor = (name == null ? MouseCursor.AUTO : name);
 			CursorTool.setCustomCursor(currentCursor);
@@ -867,12 +895,12 @@ public class ImageEdit extends Sprite implements DropTarget {
 		}
 
 		// When needed for display, pass the alias to the existing cursor property
-//		if (stage && workArea.getInteractionLayer().hitTestPoint(stage.mouseX, stage.mouseY, true) &&
-//			!uiLayer.hitTestPoint(stage.mouseX, stage.mouseY, true)) {
-//			CursorTool.setCustomCursor(currentCursor);
-//		} else {
-//			CursorTool.setCustomCursor(MouseCursor.AUTO);
-//		}
+		if (stage && workArea.getInteractionLayer().hitTestPoint(stage.mouseX, stage.mouseY, true) &&
+				!uiLayer.hitTestPoint(stage.mouseX, stage.mouseY, true)) {
+			CursorTool.setCustomCursor(currentCursor);
+		} else {
+			CursorTool.setCustomCursor(MouseCursor.AUTO);
+		}
 	}
 
 	public function snapToGrid(toolsP:Point):Point {
@@ -880,4 +908,5 @@ public class ImageEdit extends Sprite implements DropTarget {
 		return toolsP;
 	}
 
-}}
+}
+}

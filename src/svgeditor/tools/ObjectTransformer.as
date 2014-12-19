@@ -170,8 +170,8 @@ public class ObjectTransformer extends SVGEditTool {
 			}
 		}
 		else {
-				if (editor.revertToCreateTool(event)) return;
-			if(targetObj && event && (event.shiftKey || event.ctrlKey)) {
+			if (editor.revertToCreateTool(event)) return;
+			if (targetObj && event && (event.shiftKey || event.ctrlKey)) {
 				targetObj.getObjs().push(obj);
 				select(targetObj);
 			}

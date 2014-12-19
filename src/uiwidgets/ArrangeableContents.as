@@ -4,9 +4,7 @@
 package uiwidgets {
 import com.greensock.TweenLite;
 import com.greensock.easing.Linear;
-import flash.display.DisplayObject;
 import flash.events.Event;
-import flash.events.MouseEvent;
 import flash.geom.Point;
 import scratch.ScratchSprite;
 
@@ -16,7 +14,6 @@ import ui.EditableItem;
 import ui.media.MediaInfo;
 import ui.media.MediaInfoOnline;
 import ui.dragdrop.DragEvent;
-import util.GestureHandler;
 
 public class ArrangeableContents extends ScrollFrameContents implements DropTarget {
 	public static const TYPE_GRID:uint = 0;
@@ -45,48 +42,13 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 		addEventListener(DragEvent.DRAG_OVER, dragAndDropHandler);
 		addEventListener(DragEvent.DRAG_MOVE, dragAndDropHandler);
 		addEventListener(DragEvent.DRAG_OUT, dragAndDropHandler);
-		//addEventListener(MediaInfoTablet.TOUCH_LONG_HOLD, onLongHold);
 	}
-
-//	protected function onLongHold(e:Event):void {
-//		setEditMode(true);
-//	}
 
 	override public function updateSize():void {
 		super.updateSize();
 
 		arrangeItems();
 	}
-
-//	private function setEditMode(enable:Boolean):void {
-//		if (editMode == enable) return;
-//
-//		// Enter edit mode
-//		editMode = enable;
-//		for (var i:int=0, l:int=numChildren; i<l; ++i) {
-//			var item:EditableItem = getChildAt(i) as EditableItem;
-//			if (item) item.toggleEditMode(enable);
-//		}
-//
-//		if (editMode)
-//			stage.addEventListener(MouseEvent.MOUSE_DOWN, cancelEditMode);
-//		else
-//			stage.removeEventListener(MouseEvent.MOUSE_DOWN, cancelEditMode);
-//	}
-
-//	private function cancelEditMode(event:Event):void {
-//		if (getBounds(this).contains(mouseX, mouseY)) {
-//			var dObj:DisplayObject = event.target as DisplayObject;
-//			while (dObj != stage && dObj != this) {
-//				// If we find a MediaInfo in the target's ancestry then don't cancel edit mode
-//				// since the user may be trying to drag items around
-//				if (dObj is MediaInfo) return;
-//				dObj = dObj.parent ? dObj.parent : stage;
-//			}
-//		}
-//
-//		setEditMode(false);
-//	}
 
 	// Move items out of the way of a dragging item
 	private var dropPos:int = -1;
@@ -108,7 +70,7 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 						mi = Scratch.app.createMediaInfo(spr.duplicate()) as MediaInfoOnline;
 				}
 				if (mi) {
-					dup = getItemByMD5(mi.objType, mi.md5);
+					dup = findItemByMediaInfo(mi);
 					if (dup) {
 						if (mi.fromBackpack) {
 							dup.visible = false;
@@ -131,7 +93,7 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 			case DragEvent.DRAG_OUT:
 				mi = event.draggedObject as MediaInfoOnline;
 				if (mi && mi.fromBackpack) {
-					dup = getItemByMD5(mi.objType, mi.md5);
+					dup = findItemByMediaInfo(mi);
 					if (dup) {
 						dup.visible = true;
 						dup.alpha = event.type == DragEvent.DRAG_OUT ? leftBehindAlpha : 1;
@@ -145,7 +107,7 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 			case DragEvent.DRAG_CANCEL:
 				mi = event.draggedObject as MediaInfoOnline;
 				if (mi) {
-					dup = getItemByMD5(mi.objType, mi.md5);
+					dup = findItemByMediaInfo(mi);
 					if (dup) {
 						dup.visible = true;
 						dup.alpha = 1;
@@ -162,7 +124,7 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 	public function handleDrop(obj:*):Boolean {
 		// Accept the drop if we're re-arranging items OR we already have that item as identified by MD5
 		var mi:MediaInfo = obj as MediaInfo;
-		if(mi && (mi.parent == this || !!(mi = getItemByMD5(mi.objType, mi.md5)))) {
+		if(mi && (mi.parent == this || !!(mi = findItemByMediaInfo(mi)))) {
 			mi.visible = true;
 			if (mi.parent != this || dropPos > -1)
 				addContent(mi, dropPos);
@@ -175,15 +137,19 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 		return true;
 	}
 
-	private function getItemByMD5(objType:String, md5:String):MediaInfo {
-		if (!md5) return null;
+	private function findItemByMediaInfo(obj:MediaInfo):MediaInfo {
+		if (!obj.md5) return null;
 
 		for (var i:int = 0; i < numChildren; i++) {
 			var item:MediaInfo = getChildAt(i) as MediaInfo;
-			if (item && item.objType == objType && item.md5 == md5) return item;
+			if (isItemTheSame(item, obj)) return item;
 		}
 
 		return null;
+	}
+
+	protected function isItemTheSame(obj1:MediaInfo, obj2:MediaInfo):Boolean {
+		return obj1 && obj2 && obj1.objType == obj2.objType && obj1.md5 == obj2.md5 && obj1.objName == obj2.objName;
 	}
 
 	// Select an item
@@ -235,8 +201,10 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 			var rowLen:int = w / (MediaInfo.frameWidth + itemPadding);
 			var index:int = Math.max(0, Math.min(rowLen-1, Math.floor(px / (MediaInfo.frameWidth + itemPadding))) + rowLen * Math.floor(py / (MediaInfo.frameHeight + itemPadding)));
 			var items:Array = allItems();
-			if (items.length && index < items.length && items[index].owner != null)
-				return forAdding ? getChildIndex(items[index]) : index;
+			if (items.length && ((index < items.length && items[index].owner != null) || index == items.length))
+				return forAdding ?
+						(index < items.length ? getChildIndex(items[index]) : numChildren) :
+						index;
 
 			return -1;
 		}

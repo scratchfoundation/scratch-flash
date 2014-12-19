@@ -392,16 +392,16 @@ public class ScratchCostume {
 		dup.rotationCenterY = rotationCenterY;
 
 		dup.baseLayerBitmap = baseLayerBitmap;
-		dup.baseLayerMD5 = baseLayerMD5;
 		dup.baseLayerData = baseLayerData;
+		dup.baseLayerMD5 = baseLayerMD5;
 
 		dup.svgRoot = svgRoot;
 		dup.svgWidth = svgWidth;
 		dup.svgHeight = svgHeight;
 
 		dup.textLayerBitmap = textLayerBitmap;
-		dup.textLayerMD5 = textLayerMD5;
 		dup.textLayerData = textLayerData;
+		dup.textLayerMD5 = textLayerMD5;
 
 		dup.text = text;
 		dup.textRect = textRect;

@@ -411,7 +411,7 @@ public class BitmapEdit extends ImageEdit {
 
 	private function bgColor():int { return isScene ? 0xFFFFFFFF : 0 }
 
-	override public function restoreUndoState(undoRec:Array):void {
+	override protected function restoreUndoState(undoRec:Array):void {
 		var c:ScratchCostume = targetCostume;
 		c.setBitmapData(undoRec[0], undoRec[1], undoRec[2]);
 		loadCostume(c);

@@ -40,7 +40,7 @@ import uiwidgets.*;
 
 public class ImagesPart extends UIPart implements IImagesPart {
 
-	protected var editor:ImageEdit;
+	public var editor:ImageEdit;
 
 	private const columnWidth:int = 106;
 	private const contentsX:int = columnWidth + 13;
@@ -95,16 +95,8 @@ public class ImagesPart extends UIPart implements IImagesPart {
 		];
 	}
 
-	public function setCostume(costume:ScratchCostume, isScene:Boolean):void {
-		editor.setCostume(costume, isScene);
-	}
-
 	public function shutdownEditor():void {
 		editor.shutdown();
-	}
-
-	public function restoreUndoState(undoRec:Array):void {
-		editor.restoreUndoState(undoRec);
 	}
 
 	public function usingBitmapEditor():Boolean {
@@ -319,8 +311,8 @@ public class ImagesPart extends UIPart implements IImagesPart {
 
 	public function convertToBitmap():void {
 		function finishConverting():void {
-			var c:ScratchCostume = editor.getCostume();
-			var forStage:Boolean = editor.editingScene();
+			var c:ScratchCostume = editor.targetCostume;
+			var forStage:Boolean = editor.isScene;
 			var zoomAndScroll:Array = editor.getZoomAndScroll();
 			useBitmapEditor(true);
 
@@ -339,8 +331,8 @@ public class ImagesPart extends UIPart implements IImagesPart {
 	public function convertToVector():void {
 		if (editor is SVGEdit) return;
 		editor.shutdown();
-		var c:ScratchCostume = editor.getCostume();
-		var forStage:Boolean = editor.editingScene();
+		var c:ScratchCostume = editor.targetCostume;
+		var forStage:Boolean = editor.isScene;
 		var zoomAndScroll:Array = editor.getZoomAndScroll();
 		useBitmapEditor(false);
 
