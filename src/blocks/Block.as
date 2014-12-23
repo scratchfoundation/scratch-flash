@@ -399,7 +399,7 @@ public class Block extends Sprite implements IDraggable {
 	}
 
 	private function handleDragEvent(e:DragEvent):void {
-		if (parent is BlockPalette) return;
+		if (parent is BlockPalette || e.target != this) return;
 
 		if (e.type == DragEvent.DRAG_START) {
 			saveOriginalState();
