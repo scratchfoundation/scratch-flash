@@ -3,9 +3,9 @@
  */
 package ui.dragdrop {
 import flash.display.Sprite;
-import flash.events.Event;
+import flash.events.MouseEvent;
 
-public class DragEvent extends Event {
+public class DragEvent extends MouseEvent {
 	public static const DRAG_START:String   = 'dragStart';
 	public static const DRAG_STOP:String    = 'dragStop';
 	public static const DRAG_CANCEL:String  = 'dragCancel';

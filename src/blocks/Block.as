@@ -399,9 +399,9 @@ public class Block extends Sprite implements IDraggable {
 	}
 
 	private function handleDragEvent(e:DragEvent):void {
-		if (e.type == DragEvent.DRAG_START) {
-			if (parent is BlockPalette) return;
+		if (parent is BlockPalette) return;
 
+		if (e.type == DragEvent.DRAG_START) {
 			saveOriginalState();
 			if (parent is Block) Block(parent).removeBlock(this);
 			//if (parent != null) parent.removeChild(this);

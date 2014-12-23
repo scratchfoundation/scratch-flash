@@ -35,6 +35,7 @@ import filters.FilterPack;
 import translation.Translator;
 
 import ui.ITool;
+import ui.dragdrop.DragAndDropMgr;
 import ui.dragdrop.DropTarget;
 import uiwidgets.Menu;
 import ui.media.MediaInfo;
@@ -116,8 +117,8 @@ public class ScratchStage extends ScratchObj implements DropTarget, ITool {
 			if ((spr.objName == spriteName) && !spr.isClone) return spr;
 		}
 		var app:Scratch = Scratch.app;
-		if ((app != null) && (app.gh.carriedObj is ScratchSprite)) {
-			spr = ScratchSprite(app.gh.carriedObj);
+		if ((app != null) && DragAndDropMgr.getDraggedObj() is ScratchSprite) {
+			spr = ScratchSprite(DragAndDropMgr.getDraggedObj());
 			if ((spr.objName == spriteName) && !spr.isClone) return spr;
 		}
 		return null;

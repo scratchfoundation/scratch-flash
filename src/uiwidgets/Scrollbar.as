@@ -22,9 +22,11 @@ import flash.display.*;
 import flash.events.*;
 import flash.filters.*;
 import flash.geom.Point;
-import ui.dragdrop.DragClient
 
-public class Scrollbar extends Sprite implements DragClient {
+import ui.ITool;
+import ui.ToolMgr;
+
+public class Scrollbar extends Sprite implements ITool {
 
 	public static const STYLE_DEFAULT:int = 1;
 	public static const STYLE_LIGHT:int = 2;
@@ -133,43 +135,49 @@ public class Scrollbar extends Sprite implements DragClient {
 	}
 
 	public function allowDragging(flag:Boolean):void {
-		if (flag) addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
-		else removeEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
+		if (flag) addEventListener(MouseEvent.MOUSE_DOWN, mouseHandler);
+		else removeEventListener(MouseEvent.MOUSE_DOWN, mouseHandler);
 	}
 
-	private function mouseDown(evt:MouseEvent):void {
-		Scratch.app.gh.setDragClient(this, evt);
-	}
+	public function mouseHandler(evt:MouseEvent):void {
+		switch (evt.type) {
+			case MouseEvent.MOUSE_DOWN:
+				ToolMgr.activateTool(this);
+				var sliderOrigin:Point = slider.localToGlobal(new Point(0, 0));
+				if (isVertical) {
+					dragOffset = evt.stageY - sliderOrigin.y;
+					dragOffset = Math.max(5, Math.min(dragOffset, slider.height - 5));
+				} else {
+					dragOffset = evt.stageX - sliderOrigin.x;
+					dragOffset = Math.max(5, Math.min(dragOffset, slider.width - 5));
+				}
+				dispatchEvent(new Event(Event.SCROLL));
 
-	public function dragBegin(evt:MouseEvent):void {
-		var sliderOrigin:Point = slider.localToGlobal(new Point(0, 0));
-		if (isVertical) {
-			dragOffset = evt.stageY - sliderOrigin.y;
-			dragOffset = Math.max(5, Math.min(dragOffset, slider.height - 5));
-		} else {
-			dragOffset = evt.stageX - sliderOrigin.x;
-			dragOffset = Math.max(5, Math.min(dragOffset, slider.width - 5));
+			case MouseEvent.MOUSE_MOVE:
+				var range:int, frac:Number;
+				var localP:Point = globalToLocal(new Point(evt.stageX, evt.stageY));
+				if (isVertical) {
+					range = base.height - slider.height;
+					positionFraction = (localP.y - dragOffset) / range;
+				} else {
+					range = base.width - slider.width;
+					positionFraction = (localP.x - dragOffset) / range;
+				}
+				positionFraction = Math.max(0, Math.min(positionFraction, 1));
+				drawSlider();
+				if (scrollFunction != null) scrollFunction(positionFraction);
+				trace('scrolled');
+				break;
+
+			case MouseEvent.MOUSE_UP:
+				ToolMgr.deactivateTool(this);
+				break;
 		}
-		dispatchEvent(new Event(Event.SCROLL));
-		dragMove(evt);
 	}
 
-	public function dragMove(evt:MouseEvent):void {
-		var range:int, frac:Number;
-		var localP:Point = globalToLocal(new Point(evt.stageX, evt.stageY));
-		if (isVertical) {
-			range = base.height - slider.height;
-			positionFraction = (localP.y - dragOffset) / range;
-		} else {
-			range = base.width - slider.width;
-			positionFraction = (localP.x - dragOffset) / range;
-		}
-		positionFraction = Math.max(0, Math.min(positionFraction, 1));
-		drawSlider();
-		if (scrollFunction != null) scrollFunction(positionFraction);
-	}
-
-	public function dragEnd(evt:MouseEvent):void {
+	public function shutdown():void {
 		dispatchEvent(new Event(Event.COMPLETE));
 	}
+
+	public function isSticky():Boolean { return false; }
 }}

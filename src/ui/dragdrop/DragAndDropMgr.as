@@ -66,10 +66,12 @@ public class DragAndDropMgr implements ITool{
 			case MouseEvent.MOUSE_DOWN:
 				ct.addEventListener(MouseEvent.MOUSE_MOVE, draggableMouseHandler, false, 0, true);
 				ct.addEventListener(MouseEvent.MOUSE_UP, draggableMouseHandler, false, 0, true);
+				mouseDownPt.x = e.target.stage.mouseX;
+				mouseDownPt.y = e.target.stage.mouseY;
 				break;
 
 			case MouseEvent.MOUSE_MOVE:
-				instance.drag(ct as IDraggable);
+				instance.drag(ct as IDraggable, mouseDownPt.x, mouseDownPt.y);
 
 			case MouseEvent.MOUSE_UP:
 				ct.removeEventListener(MouseEvent.MOUSE_MOVE, draggableMouseHandler);
@@ -78,8 +80,17 @@ public class DragAndDropMgr implements ITool{
 		}
 	}
 
+	static public function startDragging(original:IDraggable, mouseDownX:Number, mouseDownY:Number):void {
+		if (instance) instance.drag(original, mouseDownX, mouseDownY);
+	}
+
+	static public function getDraggedObj():Sprite {
+		return instance ? instance.draggedObj : null;
+	}
+
 	private static var originPt:Point = new Point();
-	public function drag(original:IDraggable):void {
+	private static var mouseDownPt:Point = new Point();
+	public function drag(original:IDraggable, mouseDownX:Number, mouseDownY:Number):void {
 		if (!ToolMgr.isToolActive()) {
 			var spr:Sprite = original.getSpriteToDrag();
 			if (!spr) return;
@@ -89,9 +100,9 @@ public class DragAndDropMgr implements ITool{
 			origPos = originalObj.localToGlobal(originPt);
 
 			draggedObj = spr;
-			draggedObj.x = origPos.x;
-			draggedObj.y = origPos.y;
 			startDrag();
+			draggedObj.x = origPos.x + (stage.mouseX - mouseDownX);
+			draggedObj.y = origPos.y + (stage.mouseY - mouseDownY);
 			ToolMgr.activateTool(this);
 		}
 	}
@@ -187,34 +198,4 @@ public class DragAndDropMgr implements ITool{
 
 		return null;
 	}
-
-//
-//	private function drop(evt:MouseEvent):void {
-//		if (carriedObj == null) return;
-//		if(carriedObj is DisplayObject) carriedObj.cacheAsBitmap = false;
-//		carriedObj.stopDrag();
-//		//carriedObj.mouseEnabled = carriedObj.mouseChildren = true;
-//		removeDropShadowFrom(carriedObj);
-//		carriedObj.parent.removeChild(carriedObj);
-//		carriedObj.scaleX = carriedObj.scaleY = originalScale;
-//
-//		var dropAccepted:Boolean = dropHandled(carriedObj, evt);
-//		if (!dropAccepted) {
-//			if (carriedObj is Block) {
-//				Block(carriedObj).restoreOriginalState();
-//			} else if (originalParent) { // put carriedObj back where it came from
-//				carriedObj.x = originalPosition.x;
-//				carriedObj.y = originalPosition.y;
-//				originalParent.addChild(carriedObj);
-//				if (carriedObj is ScratchSprite) {
-//					var ss:ScratchSprite = carriedObj as ScratchSprite;
-//					ss.updateCostume();
-//					ss.updateBubble();
-//				}
-//			}
-//
-//			originalObj.dispatchEvent(new DragEvent(DragEvent.DRAG_CANCEL, carriedObj))
-//		}
-//		app.scriptsPane.draggingDone();
-//	}
 }}
