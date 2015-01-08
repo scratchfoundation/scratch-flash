@@ -121,7 +121,7 @@ public class Scratch extends Sprite {
 	}
 
 	protected function initialize():void {
-		isOffline = loaderInfo.url.indexOf('http:') == -1;
+		isOffline = loaderInfo.url.indexOf('http:') == -1 && loaderInfo.url.indexOf('https:') == -1;
 		checkFlashVersion();
 		initServer();
 
