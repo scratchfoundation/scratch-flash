@@ -85,7 +85,7 @@ public class ScratchStage extends ScratchObj implements DropTarget, ITool {
 		addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, menu);
 	}
 
-	public function isSticky():Boolean { return true; }
+//	public function isSticky():Boolean { return true; }
 	public function shutdown():void {}
 
 	public function mouseHandler(e:MouseEvent):void {
@@ -117,10 +117,12 @@ public class ScratchStage extends ScratchObj implements DropTarget, ITool {
 			if ((spr.objName == spriteName) && !spr.isClone) return spr;
 		}
 		var app:Scratch = Scratch.app;
-		if ((app != null) && DragAndDropMgr.getDraggedObj() is ScratchSprite) {
-			spr = ScratchSprite(DragAndDropMgr.getDraggedObj());
-			if ((spr.objName == spriteName) && !spr.isClone) return spr;
+		if (app) {
+			var draggedObjs:Array = DragAndDropMgr.getDraggedObjs();
+			for each (spr in draggedObjs)
+				if ((spr.objName == spriteName) && !spr.isClone) return spr;
 		}
+
 		return null;
 	}
 

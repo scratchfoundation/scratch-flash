@@ -23,27 +23,28 @@
 // This part shows information about the currently selected object (the stage or a sprite).
 
 package ui.parts {
-	import flash.display.*;
-	import flash.events.*;
-	import flash.geom.*;
-	import flash.text.*;
-	import scratch.*;
-	import translation.Translator;
-	import uiwidgets.*;
-	import ui.dragdrop.DragClient;
-	import watchers.ListWatcher;
+import flash.display.*;
+import flash.events.*;
+import flash.geom.*;
+import flash.text.*;
+import scratch.*;
+import translation.Translator;
+import ui.ITool;
+import ui.ToolMgr;
 
-public class SpriteInfoPart extends UIPart implements DragClient {
+import uiwidgets.*;
+
+public class SpriteInfoPart extends UIPart implements ITool {
 
 	protected const readoutLabelFormat:TextFormat = new TextFormat(CSS.font, 12, 0xA6A8AB, true);
 	protected const readoutFormat:TextFormat = new TextFormat(CSS.font, 12, 0xA6A8AB);
 	protected const spriteNameFormat:TextFormat = new TextFormat(CSS.font, 13, 0x929497);
 
-	private var shape:Shape;
+	protected var shape:Shape;
 
 	// sprite info parts
 	protected var closeButton:IconButton;
-	protected	var thumbnail:Bitmap;
+	protected var thumbnail:Bitmap;
 	protected var spriteName:EditableLabel;
 
 	protected var xReadoutLabel:TextField;
@@ -290,7 +291,8 @@ public class SpriteInfoPart extends UIPart implements DragClient {
 	protected function toggleLock(b:IconButton):void {
 		var spr:ScratchSprite = ScratchSprite(app.viewedObj());
 		if (spr) {
-			spr.isDraggable = b.isOn();
+			spr.isDraggable = !spr.isDraggable;
+			b.setOn(spr.isDraggable);
 			app.setSaveNeeded();
 		}
 	}
@@ -305,7 +307,7 @@ public class SpriteInfoPart extends UIPart implements DragClient {
 		}
 	}
 
-	private function updateSpriteInfo():void {
+	protected function updateSpriteInfo():void {
 		// Update the sprite info. Do nothing if a field is already up to date (to minimize CPU load).
 		var spr:ScratchSprite = app.viewedObj() as ScratchSprite;
 		if (spr == null) return;
@@ -377,8 +379,8 @@ public class SpriteInfoPart extends UIPart implements DragClient {
 			var b:IconButton = getChildAt(i) as IconButton;
 			if (b) {
 				if (b.clickFunction == rotate360) b.setOn(targetObj.rotationStyle == 'normal');
-				if (b.clickFunction == rotateFlip) b.setOn(targetObj.rotationStyle == 'leftRight');
-				if (b.clickFunction == rotateNone) b.setOn(targetObj.rotationStyle == 'none');
+				else if (b.clickFunction == rotateFlip) b.setOn(targetObj.rotationStyle == 'leftRight');
+				else if (b.clickFunction == rotateNone) b.setOn(targetObj.rotationStyle == 'none');
 			}
 		}
 	}
@@ -387,12 +389,12 @@ public class SpriteInfoPart extends UIPart implements DragClient {
 	// Direction Wheel Interaction
 	//------------------------------
 
-	private function dirMouseDown(evt:MouseEvent):void { app.gh.setDragClient(this, evt) }
+	private function dirMouseDown(evt:MouseEvent):void {
+		ToolMgr.activateTool(this);
+		mouseHandler(evt);
+	}
 
-	public function dragBegin(evt:MouseEvent):void { dragMove(evt) }
-	public function dragEnd(evt:MouseEvent):void { dragMove(evt) }
-
-	public function dragMove(evt:MouseEvent):void {
+	public function mouseHandler(evt:MouseEvent):void {
 		var spr:ScratchSprite = app.viewedObj() as ScratchSprite;
 		if (!spr) return;
 		var p:Point = dirWheel.localToGlobal(new Point(0, 0));
@@ -401,6 +403,10 @@ public class SpriteInfoPart extends UIPart implements DragClient {
 		if ((dx == 0) && (dy == 0)) return;
 		var degrees:Number = 90 + ((180 / Math.PI) * Math.atan2(dy, dx));
 		spr.setDirection(degrees);
+
+		if (evt.type == MouseEvent.MOUSE_UP)
+			ToolMgr.deactivateTool(this);
 	}
 
+	public function shutdown():void {}
 }}

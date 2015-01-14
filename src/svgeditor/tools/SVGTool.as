@@ -156,7 +156,7 @@ public class SVGTool extends Sprite implements ITool
 			return null;
 		}
 
-	public function isSticky():Boolean { return true; }
+//	public function isSticky():Boolean { return true; }
 	public function shutdown():void {}
 	public function mouseHandler(e:MouseEvent):void {}
 }}

@@ -33,65 +33,74 @@ public class DragAndDropMgr implements ITool{
 	public var originalObj:Sprite;
 	public var draggedObj:Sprite;
 
-	private var stage:Stage;
-	private var app:Scratch;
+	static private var stage:Stage;
+	static private var app:Scratch;
 	static private var draggableItems:Dictionary = new Dictionary(true);
-	static private var instance:DragAndDropMgr;
-	public function DragAndDropMgr(app:Scratch) {
-		this.app = app;
-		this.stage = app.stage;
-		instance = this;
+	static private var instances:Array = new Array();
+	public function DragAndDropMgr() {
+		instances.push(this);
+	}
+
+	static public function init(scratchApp:Scratch) {
+		app = scratchApp;
+		stage = scratchApp.stage;
 	}
 
 	static public function setDraggable(sprite:Sprite, draggable:Boolean = true):void {
 		if (draggable) {
 			if (!(sprite in draggableItems)) {
-				sprite.addEventListener(MouseEvent.MOUSE_DOWN, draggableMouseHandler, false, 0, true);
+				sprite.addEventListener(MouseEvent.MOUSE_DOWN, mouseDownHandler, false, 0, true);
 				draggableItems[sprite] = true;
 			}
 		}
 		else {
 			if (sprite in draggableItems) {
-				sprite.removeEventListener(MouseEvent.MOUSE_DOWN, draggableMouseHandler);
+				sprite.removeEventListener(MouseEvent.MOUSE_DOWN, mouseDownHandler);
 				delete draggableItems[sprite];
 			}
 		}
 	}
 
-	static private var origParent:DisplayObjectContainer;
-	static private var origPos:Point;
-	static public function draggableMouseHandler(e:MouseEvent):void {
+	private var origParent:DisplayObjectContainer;
+	private var origPos:Point;
+	static public function mouseDownHandler(e:MouseEvent):void {
 		var ct:Sprite = e.currentTarget as Sprite;
-		switch (e.type) {
-			case MouseEvent.MOUSE_DOWN:
-				ct.addEventListener(MouseEvent.MOUSE_MOVE, draggableMouseHandler, false, 0, true);
-				ct.addEventListener(MouseEvent.MOUSE_UP, draggableMouseHandler, false, 0, true);
-				mouseDownPt.x = e.target.stage.mouseX;
-				mouseDownPt.y = e.target.stage.mouseY;
-				break;
 
-			case MouseEvent.MOUSE_MOVE:
-				instance.drag(ct as IDraggable, mouseDownPt.x, mouseDownPt.y);
+		var mouseDownX:Number = e.stageX;
+		var mouseDownY:Number = e.stageY;
+		function startDragHandler(evt:MouseEvent):void {
+			if (evt.type == MouseEvent.MOUSE_MOVE)
+				new DragAndDropMgr().drag(ct as IDraggable, mouseDownX, mouseDownY, e);
 
-			case MouseEvent.MOUSE_UP:
-				ct.removeEventListener(MouseEvent.MOUSE_MOVE, draggableMouseHandler);
-				ct.removeEventListener(MouseEvent.MOUSE_UP, draggableMouseHandler);
-				break;
+			ct.removeEventListener(MouseEvent.MOUSE_MOVE, startDragHandler);
+			ct.removeEventListener(MouseEvent.MOUSE_UP, startDragHandler);
 		}
+
+		ct.addEventListener(MouseEvent.MOUSE_MOVE, startDragHandler, false, 0, true);
+		ct.addEventListener(MouseEvent.MOUSE_UP, startDragHandler, false, 0, true);
 	}
 
-	static public function startDragging(original:IDraggable, mouseDownX:Number, mouseDownY:Number):void {
-		if (instance) instance.drag(original, mouseDownX, mouseDownY);
+	static public function startDragging(original:IDraggable, mouseDownX:Number, mouseDownY:Number, event:MouseEvent):void {
+		new DragAndDropMgr().drag(original, mouseDownX, mouseDownY, event);
 	}
 
-	static public function getDraggedObj():Sprite {
-		return instance ? instance.draggedObj : null;
+	static public function getDraggedObjs():Array {
+		var objs:Array = [];
+
+		if (instances.length) {
+			for each (var inst:DragAndDropMgr in instances)
+				objs.push(inst.draggedObj);
+		}
+
+		return objs;
 	}
 
 	private static var originPt:Point = new Point();
-	private static var mouseDownPt:Point = new Point();
-	public function drag(original:IDraggable, mouseDownX:Number, mouseDownY:Number):void {
+	private var dragOffset:Point = new Point();
+	public function drag(original:IDraggable, mouseDownX:Number, mouseDownY:Number, event:MouseEvent):void {
 		if (!ToolMgr.isToolActive()) {
+			var mouseX:Number = event.stageX;
+			var mouseY:Number = event.stageY;
 			var spr:Sprite = original.getSpriteToDrag();
 			if (!spr) return;
 
@@ -101,17 +110,19 @@ public class DragAndDropMgr implements ITool{
 
 			draggedObj = spr;
 			startDrag();
-			draggedObj.x = origPos.x + (stage.mouseX - mouseDownX);
-			draggedObj.y = origPos.y + (stage.mouseY - mouseDownY);
+			draggedObj.x = origPos.x + (mouseX - mouseDownX);
+			draggedObj.y = origPos.y + (mouseY - mouseDownY);
+
+			// Let the original object know about the dragging and let it do what it needs to the dragging object
+			originalObj.dispatchEvent(new DragEvent(DragEvent.DRAG_START, draggedObj));
+			stage.addChild(draggedObj);
+			dragOffset.x = draggedObj.x - mouseX;
+			dragOffset.y = draggedObj.y - mouseY;
 			ToolMgr.activateTool(this);
 		}
 	}
 
 	private function startDrag():void {
-		// Let the original object know about the dragging and let it do what it needs to the dragging object
-		originalObj.dispatchEvent(new DragEvent(DragEvent.DRAG_START, draggedObj));
-		draggedObj.startDrag();
-
 		var f:DropShadowFilter = new DropShadowFilter();
 		var blockScale:Number = (app.scriptsPane) ? app.scriptsPane.scaleX : 1;
 		f.distance = 8 * blockScale;
@@ -120,16 +131,15 @@ public class DragAndDropMgr implements ITool{
 		draggedObj.filters = draggedObj.filters.concat([f]);
 		draggedObj.mouseEnabled = false;
 		draggedObj.mouseChildren = false;
-		stage.addChild(draggedObj);
 	}
 
 	private function stopDrag():void {
 		var newFilters:Array = [];
-		for each (var f:* in draggedObj.filters) {
+		for each (var f:* in draggedObj.filters)
 			if (!(f is DropShadowFilter)) newFilters.push(f);
-		}
+
 		draggedObj.filters = newFilters;
-		draggedObj.stopDrag();
+		//draggedObj.stopDrag();
 		draggedObj.mouseEnabled = true;
 		draggedObj.mouseChildren = true;
 
@@ -151,7 +161,7 @@ public class DragAndDropMgr implements ITool{
 	}
 
 	// Stay active until we're done and don't allow mouse events to get to buttons
-	public function isSticky():Boolean { return true; }
+//	public function isSticky():Boolean { return true; }
 
 	private var currentDropTarget:DropTarget;
 	public function mouseHandler(e:MouseEvent):void {
@@ -167,6 +177,10 @@ public class DragAndDropMgr implements ITool{
 				else if (currentDropTarget) {
 					currentDropTarget.dispatchEvent(new DragEvent(DragEvent.DRAG_MOVE, draggedObj));
 				}
+
+				draggedObj.x = e.stageX + dragOffset.x;
+				draggedObj.y = e.stageY + dragOffset.y;
+				e.updateAfterEvent();
 				break;
 
 			case MouseEvent.MOUSE_UP:

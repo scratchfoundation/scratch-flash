@@ -6,9 +6,11 @@ import flash.display.DisplayObject;
 import flash.display.Stage;
 import flash.events.MouseEvent;
 import flash.events.TouchEvent;
+import flash.utils.Dictionary;
 
 public class ToolMgr {
-	static private var currentTool:ITool;
+	static private var currentTools:Dictionary = new Dictionary(true);
+	static private var toolAreas:Dictionary = new Dictionary(true);
 	static private var stage:Stage;
 
 	static public function init(stage:Stage):void {
@@ -16,26 +18,27 @@ public class ToolMgr {
 	}
 
 	static public function isToolActive():Boolean {
-		return currentTool != null;
+		return currentTools[ScratchTablet.currentTouchID] !== undefined;
 	}
 
-	static private var toolArea:DisplayObject;
 	static public function activateTool(tool:ITool, area:DisplayObject = null):Boolean {
-		if (currentTool != null)
+		if (isToolActive())
 			return false;
 
-		currentTool = tool;
-		toolArea = area;
+		currentTools[ScratchTablet.currentTouchID] = tool;
+		if (area)
+			toolAreas[ScratchTablet.currentTouchID] = area;
 		addMouseListener();
 
 		return true;
 	}
 
 	static public function deactivateTool(tool:ITool):Boolean {
-		if (currentTool != tool)
+		if (currentTools[ScratchTablet.currentTouchID] != tool)
 			return false;
 
-		currentTool = null;
+		delete currentTools[ScratchTablet.currentTouchID];
+		delete toolAreas[ScratchTablet.currentTouchID]
 		tool.shutdown();
 		removeMouseListener();
 
@@ -47,12 +50,16 @@ public class ToolMgr {
 		stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseHandler, true, 0, true);
 		stage.addEventListener(MouseEvent.MOUSE_UP, mouseHandler, true, 0, true);
 
-//		stage.addEventListener(TouchEvent.TOUCH_BEGIN, mouseHandler, true, 0, true);
-//		stage.addEventListener(TouchEvent.TOUCH_MOVE, mouseHandler, true, 0, true);
-//		stage.addEventListener(TouchEvent.TOUCH_END, mouseHandler, true, 0, true);
+//		stage.addEventListener(TouchEvent.TOUCH_BEGIN, touchHandler, true, 0, true);
+//		stage.addEventListener(TouchEvent.TOUCH_MOVE, touchHandler, true, 0, true);
+//		stage.addEventListener(TouchEvent.TOUCH_END, touchHandler, true, 0, true);
 	}
 
-	// TODO: Track touch ids and associate touch ids with tools.
+	static private function touchHandler(e:TouchEvent):void {
+		trace(e);
+	}
+
+		// TODO: Track touch ids and associate touch ids with tools.
 	// http://help.adobe.com/en_US/as3/dev/WS1ca064e08d7aa93023c59dfc1257b16a3d6-7ffe.html
 
 	static private function removeMouseListener():void {
@@ -62,10 +69,13 @@ public class ToolMgr {
 	}
 
 	static private function mouseHandler(e:MouseEvent):void {
-		if (currentTool && (!toolArea || toolArea.hitTestPoint(stage.mouseX, stage.mouseY, true))) {
+//		trace(e);
+		var currentTool:ITool = currentTools[ScratchTablet.currentTouchID];
+		var toolArea:DisplayObject = toolAreas[ScratchTablet.currentTouchID];
+		if (currentTool && (!toolArea || toolArea.hitTestPoint(e.stageX, e.stageY, true))) {
 			currentTool.mouseHandler(e);
 
-			if (!currentTool || !currentTool.isSticky()) {
+			if (!currentTool) {//} || !currentTool.isSticky()) {
 				e.stopImmediatePropagation();
 				e.preventDefault();
 			}

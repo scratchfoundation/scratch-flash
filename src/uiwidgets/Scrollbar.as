@@ -179,5 +179,5 @@ public class Scrollbar extends Sprite implements ITool {
 		dispatchEvent(new Event(Event.COMPLETE));
 	}
 
-	public function isSticky():Boolean { return false; }
+//	public function isSticky():Boolean { return false; }
 }}

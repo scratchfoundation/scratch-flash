@@ -246,7 +246,7 @@ public class ScrollFrame extends Sprite implements DragClient {
 	}
 
 	private function initDrag(evt:MouseEvent):void {
-		Object(root).gh.setDragClient(this, evt);
+		//Object(root).gh.setDragClient(this, evt);
 		contents.mouseChildren = false; // disable mouse events while scrolling
 	}
 
