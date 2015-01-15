@@ -41,7 +41,7 @@ public class DragAndDropMgr implements ITool{
 		instances.push(this);
 	}
 
-	static public function init(scratchApp:Scratch) {
+	static public function init(scratchApp:Scratch):void {
 		app = scratchApp;
 		stage = scratchApp.stage;
 	}

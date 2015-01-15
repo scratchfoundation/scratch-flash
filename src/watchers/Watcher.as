@@ -32,14 +32,17 @@ package watchers {
 	import interpreter.*;
 	import scratch.*;
 
-import ui.dragdrop.DragClient;
+import ui.ITool;
+import ui.ToolMgr;
+
+import ui.dragdrop.DragAndDropMgr;
 
 import uiwidgets.*;
 	import util.*;
 	import blocks.Block;
 	import translation.Translator;
 
-public class Watcher extends Sprite implements DragClient {
+public class Watcher extends Sprite implements ITool {
 
 	private static const decimalPlaces:uint = 6;
 	public static function formatValue(value:*):String {
@@ -409,23 +412,31 @@ public class Watcher extends Sprite implements DragClient {
 	private function mouseDown(evt:MouseEvent):void {
 		if (mode != SLIDER_MODE) return;
 		var p:Point = globalToLocal(new Point(evt.stageX, evt.stageY));
-		if (p.y > 20) Scratch(root).gh.setDragClient(this, evt);
+		if (p.y > 20) {
+			ToolMgr.activateTool(this);
+			mouseHandler(evt);
+		}
 	}
 
-	public function dragBegin(evt:MouseEvent):void {
-		mouseMoved = false;
-	}
-
-	public function dragMove(evt:MouseEvent):void {
+	public function mouseHandler(evt:MouseEvent):void {
 		var p:Point = globalToLocal(new Point(evt.stageX, evt.stageY));
-		var xOffset:Number = p.x - slider.x - 4;
-		setSliderValue(((xOffset / (slider.width - 10)) * (sliderMax - sliderMin)) + sliderMin);
-		mouseMoved = true;
-	}
 
-	public function dragEnd(evt:MouseEvent):void {
-		var p:Point = globalToLocal(new Point(evt.stageX, evt.stageY));
-		if (!mouseMoved) clickAt(p.x);
+		switch (evt.type) {
+			case MouseEvent.MOUSE_DOWN:
+				mouseMoved = false;
+				break;
+
+			case MouseEvent.MOUSE_MOVE:
+				var xOffset:Number = p.x - slider.x - 4;
+				setSliderValue(((xOffset / (slider.width - 10)) * (sliderMax - sliderMin)) + sliderMin);
+				mouseMoved = true;
+				break;
+
+			case MouseEvent.MOUSE_UP:
+				if (!mouseMoved) clickAt(p.x);
+				ToolMgr.deactivateTool(this);
+				break;
+		}
 	}
 
 	private function clickAt(localX:Number):void {
@@ -433,6 +444,8 @@ public class Watcher extends Sprite implements DragClient {
 		var delta:Number = (isDiscrete) ? sign : sign * ((sliderMax - sliderMin) / 100.0);
 		setSliderValue(Number(readout.contents) + delta);
 	}
+
+	public function shutdown():void {}
 
 	private function setSliderValue(newValue:Number):void {
 		var sliderVal:Number = isDiscrete ? Math.round(newValue) : Math.round(newValue * 100) / 100;

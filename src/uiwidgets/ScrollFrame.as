@@ -36,9 +36,11 @@ package uiwidgets {
 import flash.display.*;
 import flash.events.*;
 import flash.filters.GlowFilter;
-import ui.dragdrop.DragClient;
 
-public class ScrollFrame extends Sprite implements DragClient {
+import ui.ITool;
+import ui.ToolMgr;
+
+public class ScrollFrame extends Sprite implements ITool {
 
 	public var contents:ScrollFrameContents;
 	public var allowHorizontalScrollbar:Boolean = true;
@@ -247,43 +249,51 @@ public class ScrollFrame extends Sprite implements DragClient {
 
 	private function initDrag(evt:MouseEvent):void {
 		//Object(root).gh.setDragClient(this, evt);
+		ToolMgr.activateTool(this);
 		contents.mouseChildren = false; // disable mouse events while scrolling
 	}
 
-	public function dragBegin(evt:MouseEvent):void {
-		xHistory = [mouseX, mouseX, mouseX];
-		yHistory = [mouseY, mouseY, mouseY];
-		xOffset = mouseX - contents.x;
-		yOffset = mouseY - contents.y;
+	public function mouseHandler(evt:MouseEvent):void {
+		switch (evt.type) {
+			case MouseEvent.MOUSE_DOWN:
+				xHistory = [mouseX, mouseX, mouseX];
+				yHistory = [mouseY, mouseY, mouseY];
+				xOffset = mouseX - contents.x;
+				yOffset = mouseY - contents.y;
 
-		if (visibleW() < contents.width) showHScrollbar(allowHorizontalScrollbar);
-		if (visibleH() < contents.height) showVScrollbar(true);
-		if (hScrollbar) hScrollbar.allowDragging(false);
-		if (vScrollbar) vScrollbar.allowDragging(false);
-		updateScrollbars();
+				if (visibleW() < contents.width) showHScrollbar(allowHorizontalScrollbar);
+				if (visibleH() < contents.height) showVScrollbar(true);
+				if (hScrollbar) hScrollbar.allowDragging(false);
+				if (vScrollbar) vScrollbar.allowDragging(false);
 
-		removeEventListener(Event.ENTER_FRAME, step);
-	}
+				removeEventListener(Event.ENTER_FRAME, step);
+				break;
 
-	public function dragMove(evt:MouseEvent):void {
-		xHistory.push(mouseX);
-		yHistory.push(mouseY);
-		xHistory.shift();
-		yHistory.shift();
-		if (allowHorizontalScrollbar) contents.x = mouseX - xOffset;
-		contents.y = mouseY - yOffset;
-		constrainScroll();
-		updateScrollbars();
-	}
+			case MouseEvent.MOUSE_MOVE:
+				xHistory.push(mouseX);
+				yHistory.push(mouseY);
+				xHistory.shift();
+				yHistory.shift();
+				if (allowHorizontalScrollbar) contents.x = mouseX - xOffset;
+				contents.y = mouseY - yOffset;
+				constrainScroll();
+				break;
 
-	public function dragEnd(evt:MouseEvent):void {
-		xVelocity = (xHistory[2] - xHistory[0]) / 1.5;
-		yVelocity = (yHistory[2] - yHistory[0]) / 1.5;
-		if ((Math.abs(xVelocity) < 2) && (Math.abs(yVelocity) < 2)) {
-			xVelocity = yVelocity = 0;
+			case MouseEvent.MOUSE_UP:
+				xVelocity = (xHistory[2] - xHistory[0]) / 1.5;
+				yVelocity = (yHistory[2] - yHistory[0]) / 1.5;
+				if ((Math.abs(xVelocity) < 2) && (Math.abs(yVelocity) < 2)) {
+					xVelocity = yVelocity = 0;
+				}
+				addEventListener(Event.ENTER_FRAME, step);
+				ToolMgr.deactivateTool(this);
+				break;
 		}
-		addEventListener(Event.ENTER_FRAME, step);
+
+		updateScrollbars();
 	}
+
+	public function shutdown():void {}
 
 	private function step(evt:Event):void {
 		// Implements inertia after releasing the mouse when dragScrolling.

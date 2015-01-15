@@ -27,9 +27,13 @@ package uiwidgets {
 	import flash.display.*;
 	import flash.events.*;
 	import flash.geom.*;
-	import ui.dragdrop.DragClient;
 
-public class Slider extends Sprite implements DragClient {
+import ui.ITool;
+
+import ui.ToolMgr;
+import ui.dragdrop.DragClient;
+
+public class Slider extends Sprite implements ITool {
 
 	public var slotColor:int = 0xBBBDBF;
 	public var slotColor2:int = -1; // if >= 0, fill with linear gradient from slotColor to slotColor2
@@ -117,38 +121,42 @@ public class Slider extends Sprite implements DragClient {
 	}
 
 	private function mouseDown(evt:MouseEvent):void {
-		Scratch.app.gh.setDragClient(this, evt);
+		ToolMgr.activateTool(this);
 	}
 
-	public function dragBegin(evt:MouseEvent):void {
-		var sliderOrigin:Point = knob.localToGlobal(new Point(0, 0));
-		if (isVertical) {
-			dragOffset = evt.stageY - sliderOrigin.y;
-			dragOffset = Math.max(5, Math.min(dragOffset, knob.height - 5));
-		} else {
-			dragOffset = evt.stageX - sliderOrigin.x;
-			dragOffset = Math.max(5, Math.min(dragOffset, knob.width - 5));
+	public function mouseHandler(evt:MouseEvent):void {
+		switch (evt.type) {
+			case MouseEvent.MOUSE_DOWN:
+				var sliderOrigin:Point = knob.localToGlobal(new Point(0, 0));
+				if (isVertical) {
+					dragOffset = evt.stageY - sliderOrigin.y;
+					dragOffset = Math.max(5, Math.min(dragOffset, knob.height - 5));
+				} else {
+					dragOffset = evt.stageX - sliderOrigin.x;
+					dragOffset = Math.max(5, Math.min(dragOffset, knob.width - 5));
+				}
+
+			case MouseEvent.MOUSE_MOVE:
+				var range:int;
+				var localP:Point = globalToLocal(new Point(evt.stageX, evt.stageY));
+				if (isVertical) {
+					range = slot.height - knob.height;
+					positionFraction = 1 - (localP.y - dragOffset) / range;
+				} else {
+					range = slot.width - knob.width;
+					positionFraction = (localP.x - dragOffset) / range;
+				}
+				positionFraction = Math.max(0, Math.min(positionFraction, 1));
+				moveKnob();
+				if (scrollFunction != null) scrollFunction(this.value);
+				break;
+
+			case MouseEvent.MOUSE_UP:
+				dispatchEvent(new Event(Event.COMPLETE));
+				ToolMgr.deactivateTool(this);
+				break;
 		}
-		dragMove(evt);
 	}
 
-	public function dragMove(evt:MouseEvent):void {
-		var range:int, frac:Number;
-		var localP:Point = globalToLocal(new Point(evt.stageX, evt.stageY));
-		if (isVertical) {
-			range = slot.height - knob.height;
-			positionFraction = 1 - (localP.y - dragOffset) / range;
-		} else {
-			range = slot.width - knob.width;
-			positionFraction = (localP.x - dragOffset) / range;
-		}
-		positionFraction = Math.max(0, Math.min(positionFraction, 1));
-		moveKnob();
-		if (scrollFunction != null) scrollFunction(this.value);
-	}
-
-	public function dragEnd(evt:MouseEvent):void {
-		dispatchEvent(new Event(Event.COMPLETE));
-	}
-
+	public function shutdown():void {}
 }}
