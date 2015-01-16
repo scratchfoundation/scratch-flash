@@ -132,7 +132,7 @@ public class BaseStagePart extends UIPart implements IDraggable {
 			dragStageScale = dragTarget.transform.concatenatedMatrix.a;
 			dragOrigScale = dragTarget.scaleX;
 		}
-		return dragTarget;
+		return  (app.editMode || (dragTarget && dragTarget.isDraggable)) ? dragTarget : null;
 	}
 
 	public function projectName():String { return projectTitle; }
