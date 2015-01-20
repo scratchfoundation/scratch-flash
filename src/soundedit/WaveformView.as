@@ -26,19 +26,21 @@
 // undo/redo and a small set of "effects" that can be applied to the selection.
 
 package soundedit {
-	import flash.display.*;
-	import flash.events.Event;
-	import flash.events.MouseEvent;
-	import flash.events.SampleDataEvent;
-	import flash.geom.Point;
-	import flash.media.*;
-	import flash.text.*;
-	import assets.Resources;
-	import ui.parts.SoundsPart;
-	import ui.dragdrop.DragClient;
-	import scratch.ScratchSound;
+import flash.display.*;
+import flash.events.Event;
+import flash.events.MouseEvent;
+import flash.events.SampleDataEvent;
+import flash.geom.Point;
+import flash.media.*;
+import flash.text.*;
+import assets.Resources;
 
-public class WaveformView extends Sprite implements DragClient {
+import ui.ITool;
+import ui.ToolMgr;
+import ui.parts.SoundsPart;
+import scratch.ScratchSound;
+
+public class WaveformView extends Sprite implements ITool {
 
 	private const backgroundColor:int = 0xF6F6F6;
 	private const selectionColor:int = 0xD0D0FF;
@@ -75,7 +77,7 @@ public class WaveformView extends Sprite implements DragClient {
 		addChild(playCursor = new Shape());
 		addRecordingMessage();
 		playCursor.visible = false;
-		addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
+		addEventListener(MouseEvent.MOUSE_DOWN, mouseHandler);
 		addEventListener(Event.ENTER_FRAME, step);
 	}
 
@@ -569,50 +571,56 @@ public class WaveformView extends Sprite implements DragClient {
 
 	private var selectMode:String; // when not dragging, null; when dragging, one of: new, start, end
 	private var startOffset:int; // offset where drag started
+	public function mouseHandler(evt:MouseEvent):void {
+		switch(evt.type) {
+			case MouseEvent.MOUSE_DOWN:
+				ToolMgr.activateTool(this);
+				// Decide how to make or adjust the selection.
+				const close:int = 8;
+				startOffset = Math.max(0, offsetAtMouse() - 1);
+				selectMode = 'new';
+				if (emptySelection()) {
+					if (Math.abs(startOffset - selectionStart) < close) startOffset = selectionStart;
+					if (mousePastEnd()) startOffset = condensedSamples.length;
+				} else {
+					// Clicking close to the start or end of a selection adjusts the selection.
+					if (Math.abs(startOffset - selectionStart) < close) selectMode = 'start';
+					else if (Math.abs(startOffset - selectionEnd) < close) selectMode = 'end';
+				}
 
-	public function mouseDown(evt:MouseEvent):void { Scratch(root).gh.setDragClient(this, evt) }
+			case MouseEvent.MOUSE_MOVE:
+				var thisOffset:int = offsetAtMouse();
+				if ('start' == selectMode) {
+					selectionStart = thisOffset;
+					selectionEnd = Math.max(thisOffset, selectionEnd);
+				}
+				if ('end' == selectMode) {
+					selectionStart = Math.min(selectionStart, thisOffset);
+					selectionEnd = thisOffset;
+				}
+				if ('new' == selectMode) {
+					if (thisOffset < startOffset) {
+						selectionStart = thisOffset;
+						selectionEnd = startOffset;
+					} else {
+						selectionStart = startOffset;
+						selectionEnd = thisOffset;
+					}
+				}
+				drawWave();
+				break;
 
-	public function dragBegin(evt:MouseEvent):void {
-		// Decide how to make or adjust the selection.
-		const close:int = 8;
-		startOffset = Math.max(0, offsetAtMouse() - 1);
-		selectMode = 'new';
-		if (emptySelection()) {
-			if (Math.abs(startOffset - selectionStart) < close) startOffset = selectionStart;
-			if (mousePastEnd()) startOffset = condensedSamples.length;
-		} else {
-			// Clicking close to the start or end of a selection adjusts the selection.
-			if (Math.abs(startOffset - selectionStart) < close) selectMode = 'start';
-			else if (Math.abs(startOffset - selectionEnd) < close) selectMode = 'end';
+			case MouseEvent.MOUSE_UP:
+				selectMode = null;
+				ToolMgr.deactivateTool(this);
+				break;
 		}
-		dragMove(evt);
 	}
 
-	private function emptySelection():Boolean { return (selectionEnd - selectionStart) <= 1 }
-
-	public function dragMove(evt:MouseEvent):void {
-		var thisOffset:int = offsetAtMouse();
-		if ('start' == selectMode) {
-			selectionStart = thisOffset;
-			selectionEnd = Math.max(thisOffset, selectionEnd);
-		}
-		if ('end' == selectMode) {
-			selectionStart = Math.min(selectionStart, thisOffset);
-			selectionEnd = thisOffset;
-		}
-		if ('new' == selectMode) {
-			if (thisOffset < startOffset) {
-				selectionStart = thisOffset;
-				selectionEnd = startOffset;
-			} else {
-				selectionStart = startOffset;
-				selectionEnd = thisOffset;
-			}
-		}
-		drawWave();
+	public function shutdown():void {}
+	private function emptySelection():Boolean {
+		return (selectionEnd - selectionStart) <= 1;
 	}
-
-	public function dragEnd(evt:MouseEvent):void { selectMode = null }
 
 	private function offsetAtMouse():int {
 		var localX:int = globalToLocal(new Point(stage.mouseX, 0)).x;
@@ -632,7 +640,7 @@ public class WaveformView extends Sprite implements DragClient {
 			var localX:int = globalToLocal(new Point(stage.mouseX, 0)).x;
 			if (localX < 0) scrollTo(scrollStart + (localX / 4));
 			else if (localX > frame.width) scrollTo(scrollStart + ((localX - frame.width) / 4));
-			dragMove(null);
+			mouseHandler(new MouseEvent(MouseEvent.MOUSE_MOVE));
 		}
 		if (soundChannel) {
 			// update the play cursor while playing

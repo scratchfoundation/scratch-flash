@@ -24,14 +24,11 @@
 // The client can supply an optional function to be called when the value is changed.
 
 package uiwidgets {
-	import flash.display.*;
-	import flash.events.*;
-	import flash.geom.*;
-
+import flash.display.*;
+import flash.events.*;
+import flash.geom.*;
 import ui.ITool;
-
 import ui.ToolMgr;
-import ui.dragdrop.DragClient;
 
 public class Slider extends Sprite implements ITool {
 

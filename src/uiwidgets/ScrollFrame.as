@@ -248,7 +248,6 @@ public class ScrollFrame extends Sprite implements ITool {
 	}
 
 	private function initDrag(evt:MouseEvent):void {
-		//Object(root).gh.setDragClient(this, evt);
 		ToolMgr.activateTool(this);
 		contents.mouseChildren = false; // disable mouse events while scrolling
 	}

@@ -33,7 +33,6 @@ import ui.dragdrop.DropTarget;
 import uiwidgets.*;
 import scratch.ScratchObj;
 import scratch.ScratchComment;
-import util.GestureHandler;
 
 public class BlockPalette extends ScrollFrameContents implements DropTarget {
 

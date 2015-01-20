@@ -18,13 +18,15 @@
  */
 
 package uiwidgets {
-	import flash.display.*;
-	import flash.events.*;
-	import flash.filters.*;
-	import flash.geom.Point;
-	import ui.dragdrop.DragClient;
+import flash.display.*;
+import flash.events.*;
+import flash.filters.*;
+import flash.geom.Point;
 
-public class ResizeableFrame extends Sprite implements DragClient {
+import ui.ITool;
+import ui.ToolMgr;
+
+public class ResizeableFrame extends Sprite implements ITool {
 
 	public var w:int;
 	public var h:int;
@@ -116,19 +118,28 @@ public class ResizeableFrame extends Sprite implements DragClient {
 	public function mouseDown(evt:MouseEvent):void {
 		if ((root is Scratch) && !(root as Scratch).editMode) return;
 		if (resizer && resizer.hitTestPoint(evt.stageX, evt.stageY)) {
-			Scratch(root).gh.setDragClient(this, evt);
+			ToolMgr.activateTool(this);
 		}
 	}
 
-	public function dragBegin(evt:MouseEvent):void { }
-	public function dragEnd(evt:MouseEvent):void { }
+	public function mouseHandler(evt:MouseEvent):void {
+		switch (evt.type) {
+			case MouseEvent.MOUSE_DOWN:
+				break;
 
-	public function dragMove(evt:MouseEvent):void {
-		var pt:Point = this.globalToLocal(new Point(evt.stageX, evt.stageY));
-		var newW:int = Math.max(minWidth, pt.x + 3);
-		var newH:int = Math.max(minHeight, pt.y + 3);
-		setWidthHeight(newW, newH);
-		if (parent && ('fixLayout' in parent)) (parent as Object).fixLayout();
+			case MouseEvent.MOUSE_MOVE:
+				var pt:Point = this.globalToLocal(new Point(evt.stageX, evt.stageY));
+				var newW:int = Math.max(minWidth, pt.x + 3);
+				var newH:int = Math.max(minHeight, pt.y + 3);
+				setWidthHeight(newW, newH);
+				if (parent && ('fixLayout' in parent)) (parent as Object).fixLayout();
+				break;
+
+			case MouseEvent.MOUSE_UP:
+				ToolMgr.deactivateTool(this);
+				break;
+		}
 	}
 
+	public function shutdown():void {}
 }}

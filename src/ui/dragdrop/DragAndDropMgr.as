@@ -99,8 +99,8 @@ public class DragAndDropMgr implements ITool{
 	private var dragOffset:Point = new Point();
 	public function drag(original:IDraggable, mouseDownX:Number, mouseDownY:Number, event:MouseEvent):void {
 		if (!ToolMgr.isToolActive()) {
-			var mouseX:Number = event.stageX;
-			var mouseY:Number = event.stageY;
+			var mouseX:Number = isNaN(event.stageX) ? stage.mouseX : event.stageX;
+			var mouseY:Number = isNaN(event.stageY) ? stage.mouseY : event.stageY;
 			var spr:Sprite = original.getSpriteToDrag();
 			if (!spr) return;
 
@@ -159,9 +159,6 @@ public class DragAndDropMgr implements ITool{
 		originalObj = null;
 		currentDropTarget = null;
 	}
-
-	// Stay active until we're done and don't allow mouse events to get to buttons
-//	public function isSticky():Boolean { return true; }
 
 	private var currentDropTarget:DropTarget;
 	public function mouseHandler(e:MouseEvent):void {

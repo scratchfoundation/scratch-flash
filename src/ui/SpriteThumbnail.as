@@ -32,8 +32,6 @@ import ui.media.MediaInfo;
 import ui.parts.LibraryPart;
 import uiwidgets.*;
 
-import util.GestureHandler;
-
 public class SpriteThumbnail extends Sprite implements DropTarget {
 
 	private const frameW:int = 73;
