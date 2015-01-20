@@ -206,7 +206,10 @@ public class ScratchComment extends Sprite {
 		dup.x = x + deltaX;
 		dup.y = y + deltaY;
 		parent.addChild(dup);
-		Scratch.app.gh.grabOnMouseUp(dup);
+
+		// TODO: fix
+		// ToolMgr.activateTool(this);
+		//Scratch.app.gh.grabOnMouseUp(dup);
 	}
 
 	private function mouseDown(evt:MouseEvent):void {

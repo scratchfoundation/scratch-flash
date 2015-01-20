@@ -118,6 +118,13 @@ public class Scratch extends Sprite {
 
 		// This one must finish before most other queries can start, so do it separately
 		determineJSAccess();
+		stage.addEventListener(MouseEvent.MOUSE_DOWN, mouseHandler, true, 10, true);
+		stage.addEventListener(MouseEvent.MOUSE_UP, mouseHandler, true, 10, true);
+	}
+
+	public var mouseIsDown:Boolean;
+	private function mouseHandler(e:MouseEvent):void {
+		mouseIsDown = (e.type == MouseEvent.MOUSE_DOWN);
 	}
 
 	protected function initialize():void {
@@ -148,10 +155,6 @@ public class Scratch extends Sprite {
 		playerBG = new Shape(); // create, but don't add
 		addParts();
 
-//		stage.addEventListener(MouseEvent.MOUSE_DOWN, gh.mouseDown);
-//		stage.addEventListener(MouseEvent.MOUSE_MOVE, gh.mouseMove);
-//		stage.addEventListener(MouseEvent.MOUSE_UP, gh.mouseUp);
-//		stage.addEventListener(MouseEvent.MOUSE_WHEEL, gh.mouseWheel);
 //		stage.addEventListener('rightClick', gh.rightMouseClick);
 		stage.addEventListener(KeyboardEvent.KEY_DOWN, runtime.keyDown);
 		stage.addEventListener(KeyboardEvent.KEY_UP, runtime.keyUp);
@@ -889,7 +892,8 @@ public class Scratch extends Sprite {
 	public function showBubble(text:String, x:* = null, y:* = null, width:Number = 0):void {
 		if (x == null) x = stage.mouseX;
 		if (y == null) y = stage.mouseY;
-		gh.showBubble(text, Number(x), Number(y), width);
+		// TODO: fix
+		//gh.showBubble(text, Number(x), Number(y), width);
 	}
 
 	// -----------------------------

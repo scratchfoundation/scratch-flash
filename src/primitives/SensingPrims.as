@@ -49,7 +49,7 @@ public class SensingPrims {
 		primTable['doAsk']				= primAsk;
 		primTable['answer']				= function(b:*):* { return app.runtime.lastAnswer };
 
-		primTable['mousePressed']		= function(b:*):* { return app.gh.mouseIsDown };
+		primTable['mousePressed']		= function(b:*):* { return app.mouseIsDown };
 		primTable['mouseX']				= function(b:*):* { return app.stagePane.scratchMouseX() };
 		primTable['mouseY']				= function(b:*):* { return app.stagePane.scratchMouseY() };
 		primTable['timer']				= function(b:*):* { return app.runtime.timer() };

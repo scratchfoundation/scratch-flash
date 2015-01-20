@@ -135,8 +135,10 @@ public class ScratchStage extends ScratchObj implements DropTarget, ITool {
 		}
 		var app:Scratch = parent as Scratch;
 		if (app != null) {
-			var spr:ScratchSprite = app.gh.carriedObj as ScratchSprite;
-			if (spr && (spr.objName == spriteName)) result.push(spr);
+			var draggedObjs:Array = DragAndDropMgr.getDraggedObjs();
+			for each(var spr:ScratchSprite in draggedObjs) {
+				if (spr && (spr.objName == spriteName)) result.push(spr);
+			}
 		}
 		return result;
 	}

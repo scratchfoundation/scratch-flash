@@ -836,7 +836,9 @@ public class Block extends Sprite implements IDraggable {
 		newStack.x = x + deltaX;
 		newStack.y = y + deltaY;
 		parent.addChild(newStack);
-		Scratch.app.gh.grabOnMouseUp(newStack);
+
+		// TODO: fix
+		//Scratch.app.gh.grabOnMouseUp(newStack);
 	}
 
 	public function deleteStack():Boolean {

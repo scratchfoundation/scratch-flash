@@ -35,6 +35,8 @@ import filters.FilterPack;
 import interpreter.Variable;
 import translation.Translator;
 
+import ui.ToolMgr;
+
 import uiwidgets.Menu;
 import util.*;
 import watchers.ListWatcher;
@@ -492,7 +494,9 @@ public class ScratchSprite extends ScratchObj {
 			if (app) {
 				app.setSaveNeeded();
 				app.updateSpriteLibrary();
-				if (grab) app.gh.grabOnMouseUp(dup);
+				// TODO: fix!
+				//
+//				if (grab) app.gh.grabOnMouseUp(dup);
 			}
 		}
 	}

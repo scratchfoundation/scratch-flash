@@ -27,6 +27,7 @@ package scratch {
 	import sound.*;
 	import translation.Translator;
 	import ui.ProcedureSpecEditor;
+import ui.ToolMgr;
 import ui.dragdrop.DragClient;
 
 import uiwidgets.*;
@@ -243,7 +244,8 @@ public class BlockMenus implements DragClient {
 	}
 
 	protected function colorPicker(evt:MouseEvent):void {
-		app.gh.setDragClient(this, evt);
+		// TODO: fix!
+//		app.gh.setDragClient(this, evt);
 	}
 
 	protected function costumeMenu(evt:MouseEvent):void {
@@ -703,7 +705,10 @@ public class BlockMenus implements DragClient {
 			app.stage.removeEventListener(Event.RESIZE, fixColorPickerLayout);
 		} else {
 			pickingColor = true;
-			app.gh.setDragClient(this, evt);
+
+			// TODO: fix
+			//ToolMgr.activateTool(this);
+			//app.gh.setDragClient(this, evt);
 			Mouse.cursor = MouseCursor.BUTTON;
 			app.stage.addEventListener(Event.RESIZE, fixColorPickerLayout);
 			app.stage.addChild(colorPickerSprite = new Sprite);
