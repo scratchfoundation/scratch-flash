@@ -291,5 +291,4 @@ public class SpriteThumbnail extends Sprite implements DropTarget {
 		var lib:LibraryPart = parent.parent.parent as LibraryPart;
 		if (lib) lib.showSpriteDetails(true);
 	}
-
 }}
