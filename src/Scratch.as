@@ -59,7 +59,7 @@ import watchers.ListWatcher;
 
 public class Scratch extends Sprite {
 	// Version
-	public static const versionString:String = 'v431';
+	public static const versionString:String = 'v432';
 	public static var app:Scratch; // static reference to the app, used for debugging
 
 	// Display modes
@@ -970,6 +970,7 @@ public class Scratch extends Sprite {
 		spr.setScratchXY(int(200 * Math.random() - 100), int(100 * Math.random() - 50));
 		if (atMouse) spr.setScratchXY(stagePane.scratchMouseX(), stagePane.scratchMouseY());
 		stagePane.addChild(spr);
+		spr.updateCostume();
 		selectSprite(spr);
 		setTab(showImages ? 'images' : 'scripts');
 		setSaveNeeded(true);
