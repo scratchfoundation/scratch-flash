@@ -166,7 +166,6 @@ public class Scrollbar extends Sprite implements ITool {
 				positionFraction = Math.max(0, Math.min(positionFraction, 1));
 				drawSlider();
 				if (scrollFunction != null) scrollFunction(positionFraction);
-				trace('scrolled');
 				break;
 
 			case MouseEvent.MOUSE_UP:

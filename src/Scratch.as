@@ -724,6 +724,7 @@ public class Scratch extends Sprite {
 		libraryPart.updateTranslation();
 		tabsPart.updateTranslation();
 		updatePalette(false);
+		scriptsPart.resetCategory();
 		imagesPart.updateTranslation();
 		soundsPart.updateTranslation();
 	}

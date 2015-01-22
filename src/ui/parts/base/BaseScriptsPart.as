@@ -104,7 +104,11 @@ public class BaseScriptsPart extends UIPart implements IScriptsPart {
 		return new PaletteSelector(app);
 	}
 
-	public function resetCategory():void { selector.select(Specs.motionCategory) }
+	public function resetCategory():void {
+		selector.selectedCategory = -1;
+		selector.select(Specs.motionCategory);
+	}
+
 	public function updatePalette():void {
 		selector.updateTranslation();
 		selector.select(selector.selectedCategory);

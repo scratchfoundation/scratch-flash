@@ -103,16 +103,14 @@ public class Server implements IServer {
 			Scratch.app.log('Server failed to load thumbnail: ' + md5);
 		}
 		function imageLoaded(e:Event):void {
-			whenDone(makeThumbnail(e.target.content.bitmapData));
+			whenDone(makeThumbnail(e.target.content.bitmapData, w, h));
 		}
 		var ext:String = md5.slice(-3);
 		if (['gif', 'png', 'jpg'].indexOf(ext) > -1) getAsset(md5, gotAsset);
 		return null;
 	}
 
-	private function makeThumbnail(bm:BitmapData):BitmapData {
-		const tnWidth:int = 120;
-		const tnHeight:int = 90;
+	protected function makeThumbnail(bm:BitmapData, tnWidth:int = 120, tnHeight:int = 90):BitmapData {
 		var result:BitmapData = new BitmapData(tnWidth, tnHeight, true, 0);
 		if ((bm.width == 0) || (bm.height == 0)) return result;
 		var scale:Number = Math.min(tnWidth/ bm.width, tnHeight / bm.height);
