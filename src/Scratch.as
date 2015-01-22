@@ -970,6 +970,7 @@ public class Scratch extends Sprite {
 		spr.setScratchXY(int(200 * Math.random() - 100), int(100 * Math.random() - 50));
 		if (atMouse) spr.setScratchXY(stagePane.scratchMouseX(), stagePane.scratchMouseY());
 		stagePane.addChild(spr);
+		spr.updateCostume();
 		selectSprite(spr);
 		setTab(showImages ? 'images' : 'scripts');
 		setSaveNeeded(true);
