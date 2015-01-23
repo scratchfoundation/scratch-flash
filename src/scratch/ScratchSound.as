@@ -146,7 +146,7 @@ Scratch.app.log('Converting MP3 to WAV: ' + soundName);
 	}
 
 	public function sndplayer():ScratchSoundPlayer {
-		var player:ScratchSoundPlayer
+		var player:ScratchSoundPlayer;
 		if (format == 'squeak') player = new SqueakSoundPlayer(soundData, bitsPerSample, rate);
 		else if ((format == '') || (format == 'adpcm')) player = new ScratchSoundPlayer(soundData);
 		else player = new ScratchSoundPlayer(WAVFile.empty()); // player on empty sound
