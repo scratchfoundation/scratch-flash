@@ -88,4 +88,13 @@ public class ScrollFrameContents extends Sprite {
 		if (parent is ScrollFrame) (parent as ScrollFrame).updateScrollbarVisibility();
 	}
 
+	protected function scrollToChild(item:DisplayObject):void {
+		var frame:ScrollFrame = parent as ScrollFrame;
+		if (!frame || !item || item.parent != this) return;
+		var itemTop:int = item.y + y - 1;
+		var itemBottom:int = itemTop + item.height;
+		y -= Math.max(0, itemBottom - frame.visibleH());
+		y -= Math.min(0, itemTop);
+		frame.updateScrollbars();
+	}
 }}

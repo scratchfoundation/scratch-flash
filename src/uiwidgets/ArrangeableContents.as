@@ -4,6 +4,8 @@
 package uiwidgets {
 import com.greensock.TweenLite;
 import com.greensock.easing.Linear;
+
+import flash.display.Sprite;
 import flash.events.Event;
 import flash.geom.Point;
 import scratch.ScratchSprite;
@@ -176,6 +178,16 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 		contentChanged = true;
 	}
 
+	protected function replaceContents(newItems:Array):void {
+		removeAllItems();
+		for each (var item:MediaInfo in newItems) {
+			addChild(item);
+			DragAndDropMgr.setDraggable(item);
+		}
+		updateSize();
+		x = y = 0; // reset scroll offset
+	}
+
 	private function getIndexFromPoint(pt:Point, forAdding:Boolean = false):int {
 		var loc:Point = globalToLocal(pt);
 		var i:int = 0;
@@ -214,9 +226,9 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 
 	public function removeContent(which:*):void {
 		if (which is MediaInfo)
-			removeChild(which as MediaInfo);
+			DragAndDropMgr.setDraggable(removeChild(which as MediaInfo) as Sprite, false);
 		else if (which is Number)
-			removeChildAt(which as Number);
+			DragAndDropMgr.setDraggable(removeChildAt(which as Number) as Sprite, false);
 		else
 			throw new ArgumentError();
 
@@ -225,7 +237,7 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 
 	public function removeAllItems():void {
 		// TODO: Fix to only remove children that are itemClass instances?
-		while (numChildren > 0) removeContent(0);
+		while (numChildren > 0) DragAndDropMgr.setDraggable(removeChildAt(0) as Sprite, false);
 	}
 
 	override public function setWidthHeight(w:Number, h:Number):void {
