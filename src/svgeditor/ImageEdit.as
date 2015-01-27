@@ -95,6 +95,7 @@ package svgeditor {
 			var initialColors:DrawProperties = new DrawProperties();
 			initialColors.color = 0xFF000000;
 			initialColors.strokeWidth = 2;
+			initialColors.eraserWidth = initialColors.strokeWidth * 4;
 			initialColors.filledShape = (this is BitmapEdit);
 			drawPropsUI.updateUI(initialColors);
 
