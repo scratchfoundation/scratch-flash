@@ -213,7 +213,7 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 			var rowLen:int = w / (MediaInfo.frameWidth + itemPadding);
 			var index:int = Math.max(0, Math.min(rowLen-1, Math.floor(px / (MediaInfo.frameWidth + itemPadding))) + rowLen * Math.floor(py / (MediaInfo.frameHeight + itemPadding)));
 			var items:Array = allItems();
-			if (items.length && ((index < items.length && items[index].owner != null) || index == items.length))
+			if (items.length && ((index < items.length && items[index].objType != 'ui') || index == items.length))
 				return forAdding ?
 						(index < items.length ? getChildIndex(items[index]) : numChildren) :
 						index;
