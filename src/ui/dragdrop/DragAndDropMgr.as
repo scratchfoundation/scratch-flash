@@ -161,7 +161,7 @@ public class DragAndDropMgr implements ITool{
 	}
 
 	private var currentDropTarget:DropTarget;
-	public function mouseHandler(e:MouseEvent):void {
+	public function mouseHandler(e:MouseEvent):Boolean {
 		switch (e.type) {
 			case MouseEvent.MOUSE_MOVE:
 				var dropTarget:DropTarget = getCurrentDropTarget();
@@ -192,6 +192,8 @@ public class DragAndDropMgr implements ITool{
 				ToolMgr.deactivateTool(this);
 				break;
 		}
+
+		return true;
 	}
 
 	private function getCurrentDropTarget():DropTarget {

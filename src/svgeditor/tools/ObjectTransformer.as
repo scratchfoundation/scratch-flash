@@ -127,7 +127,7 @@ public class ObjectTransformer extends SVGEditTool {
 		alpha = 0.65;
 	}
 
-	override public function mouseHandler(event:MouseEvent):void {
+	override public function mouseHandler(e:MouseEvent):Boolean {
 //		if (event.type != MouseEvent.MOUSE_MOVE)
 //		switch (mouseHandlerFunc) {
 //			case moveHandler:           trace('moveHandler '+event); break;
@@ -135,12 +135,14 @@ public class ObjectTransformer extends SVGEditTool {
 //			case rotateHandler:         trace('rotateHandler '+event); break;
 //			case resizeHandler:         trace('resizeHandler '+event); break;
 //		}
-		if (mouseHandlerFunc == selectionBoxHandler && event.type == MouseEvent.MOUSE_DOWN) {
-			super.mouseHandler(event);
+		if (mouseHandlerFunc == selectionBoxHandler && e.type == MouseEvent.MOUSE_DOWN) {
+			super.mouseHandler(e);
 		}
 
-		else if (mouseHandlerFunc == selectionBoxHandler || event.type == MouseEvent.MOUSE_DOWN || isTransforming)
-				mouseHandlerFunc(event);
+		else if (mouseHandlerFunc == selectionBoxHandler || e.type == MouseEvent.MOUSE_DOWN || isTransforming)
+			mouseHandlerFunc(e);
+
+		return true;
 	}
 
 	private function getStage():Stage {

@@ -29,7 +29,7 @@
 // Note: The client should call updateSize() after adding or removing contents.
 
 package uiwidgets {
-	import flash.display.*;
+import flash.display.*;
 
 public class ScrollFrameContents extends Sprite {
 

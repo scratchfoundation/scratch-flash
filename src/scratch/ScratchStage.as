@@ -23,27 +23,34 @@
 // A Scratch stage object. Supports a drawing surface for the pen commands.
 
 package scratch {
+import blocks.Block;
+
+import by.blooddy.crypto.MD5;
+import by.blooddy.crypto.image.PNG24Encoder;
+import by.blooddy.crypto.image.PNGFilter;
+
+import filters.FilterPack;
+
 import flash.display.*;
+import flash.events.MouseEvent;
 import flash.geom.*;
 import flash.media.*;
-import flash.events.*;
+import flash.net.FileReference;
 import flash.system.Capabilities;
 import flash.utils.ByteArray;
-import flash.net.FileReference;
-import blocks.Block;
-import filters.FilterPack;
+
 import translation.Translator;
 
 import ui.ITool;
 import ui.dragdrop.DragAndDropMgr;
 import ui.dragdrop.DropTarget;
-import uiwidgets.Menu;
 import ui.media.MediaInfo;
+
+import uiwidgets.Menu;
+
 import util.*;
+
 import watchers.*;
-import by.blooddy.crypto.image.PNG24Encoder;
-import by.blooddy.crypto.image.PNGFilter;
-import by.blooddy.crypto.MD5;
 
 public class ScratchStage extends ScratchObj implements DropTarget, ITool {
 
@@ -88,7 +95,7 @@ public class ScratchStage extends ScratchObj implements DropTarget, ITool {
 //	public function isSticky():Boolean { return true; }
 	public function shutdown():void {}
 
-	public function mouseHandler(e:MouseEvent):void {
+	public function mouseHandler(e:MouseEvent):Boolean {
 		visible = true;
 		for (var i:int = numChildren - 1; i > 0; --i) {
 			var o:DisplayObject = getChildAt(i) as DisplayObject;
@@ -99,6 +106,8 @@ public class ScratchStage extends ScratchObj implements DropTarget, ITool {
 			}
 		}
 		visible = false;
+
+		return true;
 	}
 
 	public function setTempo(bpm:Number):void {
@@ -656,7 +665,7 @@ public class ScratchStage extends ScratchObj implements DropTarget, ITool {
 	public function savePenLayer():void {
 		penLayerID = -1;
 		penLayerPNG = PNG24Encoder.encode(penLayer.bitmapData, PNGFilter.PAETH);
-		penLayerMD5 = by.blooddy.crypto.MD5.hashBytes(penLayerPNG) + '.png';
+		penLayerMD5 = MD5.hashBytes(penLayerPNG) + '.png';
 	}
 
 	public function clearPenLayer():void {

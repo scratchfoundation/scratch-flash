@@ -24,11 +24,14 @@
 
 package ui.parts {
 import flash.display.*;
-import flash.events.*;
+import flash.events.MouseEvent;
 import flash.geom.*;
 import flash.text.*;
+
 import scratch.*;
+
 import translation.Translator;
+
 import ui.ITool;
 import ui.ToolMgr;
 
@@ -394,18 +397,20 @@ public class SpriteInfoPart extends UIPart implements ITool {
 		mouseHandler(evt);
 	}
 
-	public function mouseHandler(evt:MouseEvent):void {
+	public function mouseHandler(e:MouseEvent):Boolean {
 		var spr:ScratchSprite = app.viewedObj() as ScratchSprite;
-		if (!spr) return;
+		if (!spr) return false;
 		var p:Point = dirWheel.localToGlobal(new Point(0, 0));
-		var dx:int = evt.stageX - p.x;
-		var dy:int = evt.stageY - p.y;
-		if ((dx == 0) && (dy == 0)) return;
+		var dx:int = e.stageX - p.x;
+		var dy:int = e.stageY - p.y;
+		if ((dx == 0) && (dy == 0)) return false;
 		var degrees:Number = 90 + ((180 / Math.PI) * Math.atan2(dy, dx));
 		spr.setDirection(degrees);
 
-		if (evt.type == MouseEvent.MOUSE_UP)
+		if (e.type == MouseEvent.MOUSE_UP)
 			ToolMgr.deactivateTool(this);
+
+		return true;
 	}
 
 	public function shutdown():void {}

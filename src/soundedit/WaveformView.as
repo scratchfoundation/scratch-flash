@@ -26,6 +26,8 @@
 // undo/redo and a small set of "effects" that can be applied to the selection.
 
 package soundedit {
+import assets.Resources;
+
 import flash.display.*;
 import flash.events.Event;
 import flash.events.MouseEvent;
@@ -33,12 +35,12 @@ import flash.events.SampleDataEvent;
 import flash.geom.Point;
 import flash.media.*;
 import flash.text.*;
-import assets.Resources;
+
+import scratch.ScratchSound;
 
 import ui.ITool;
 import ui.ToolMgr;
 import ui.parts.SoundsPart;
-import scratch.ScratchSound;
 
 public class WaveformView extends Sprite implements ITool {
 
@@ -571,8 +573,8 @@ public class WaveformView extends Sprite implements ITool {
 
 	private var selectMode:String; // when not dragging, null; when dragging, one of: new, start, end
 	private var startOffset:int; // offset where drag started
-	public function mouseHandler(evt:MouseEvent):void {
-		switch(evt.type) {
+	public function mouseHandler(e:MouseEvent):Boolean {
+		switch(e.type) {
 			case MouseEvent.MOUSE_DOWN:
 				ToolMgr.activateTool(this);
 				// Decide how to make or adjust the selection.
@@ -615,6 +617,8 @@ public class WaveformView extends Sprite implements ITool {
 				ToolMgr.deactivateTool(this);
 				break;
 		}
+
+		return true;
 	}
 
 	public function shutdown():void {}

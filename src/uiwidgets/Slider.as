@@ -27,6 +27,7 @@ package uiwidgets {
 import flash.display.*;
 import flash.events.*;
 import flash.geom.*;
+
 import ui.ITool;
 import ui.ToolMgr;
 
@@ -121,21 +122,21 @@ public class Slider extends Sprite implements ITool {
 		ToolMgr.activateTool(this);
 	}
 
-	public function mouseHandler(evt:MouseEvent):void {
-		switch (evt.type) {
+	public function mouseHandler(e:MouseEvent):Boolean {
+		switch (e.type) {
 			case MouseEvent.MOUSE_DOWN:
 				var sliderOrigin:Point = knob.localToGlobal(new Point(0, 0));
 				if (isVertical) {
-					dragOffset = evt.stageY - sliderOrigin.y;
+					dragOffset = e.stageY - sliderOrigin.y;
 					dragOffset = Math.max(5, Math.min(dragOffset, knob.height - 5));
 				} else {
-					dragOffset = evt.stageX - sliderOrigin.x;
+					dragOffset = e.stageX - sliderOrigin.x;
 					dragOffset = Math.max(5, Math.min(dragOffset, knob.width - 5));
 				}
 
 			case MouseEvent.MOUSE_MOVE:
 				var range:int;
-				var localP:Point = globalToLocal(new Point(evt.stageX, evt.stageY));
+				var localP:Point = globalToLocal(new Point(e.stageX, e.stageY));
 				if (isVertical) {
 					range = slot.height - knob.height;
 					positionFraction = 1 - (localP.y - dragOffset) / range;
@@ -153,6 +154,8 @@ public class Slider extends Sprite implements ITool {
 				ToolMgr.deactivateTool(this);
 				break;
 		}
+
+		return true;
 	}
 
 	public function shutdown():void {}

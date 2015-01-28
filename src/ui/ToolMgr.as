@@ -61,9 +61,7 @@ public class ToolMgr {
 		var currentTool:ITool = currentTools[ScratchTablet.currentTouchID];
 		var toolArea:DisplayObject = toolAreas[ScratchTablet.currentTouchID];
 		if (currentTool && (!toolArea || toolArea.hitTestPoint(e.stageX, e.stageY, true))) {
-			currentTool.mouseHandler(e);
-
-			if (!currentTool) {//} || !currentTool.isSticky()) {
+			if (currentTool.mouseHandler(e)) {
 				e.stopImmediatePropagation();
 				e.preventDefault();
 			}

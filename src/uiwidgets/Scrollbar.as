@@ -139,23 +139,23 @@ public class Scrollbar extends Sprite implements ITool {
 		else removeEventListener(MouseEvent.MOUSE_DOWN, mouseHandler);
 	}
 
-	public function mouseHandler(evt:MouseEvent):void {
-		switch (evt.type) {
+	public function mouseHandler(e:MouseEvent):Boolean {
+		switch (e.type) {
 			case MouseEvent.MOUSE_DOWN:
 				ToolMgr.activateTool(this);
 				var sliderOrigin:Point = slider.localToGlobal(new Point(0, 0));
 				if (isVertical) {
-					dragOffset = evt.stageY - sliderOrigin.y;
+					dragOffset = e.stageY - sliderOrigin.y;
 					dragOffset = Math.max(5, Math.min(dragOffset, slider.height - 5));
 				} else {
-					dragOffset = evt.stageX - sliderOrigin.x;
+					dragOffset = e.stageX - sliderOrigin.x;
 					dragOffset = Math.max(5, Math.min(dragOffset, slider.width - 5));
 				}
 				dispatchEvent(new Event(Event.SCROLL));
 
 			case MouseEvent.MOUSE_MOVE:
 				var range:int, frac:Number;
-				var localP:Point = globalToLocal(new Point(evt.stageX, evt.stageY));
+				var localP:Point = globalToLocal(new Point(e.stageX, e.stageY));
 				if (isVertical) {
 					range = base.height - slider.height;
 					positionFraction = (localP.y - dragOffset) / range;
@@ -172,6 +172,8 @@ public class Scrollbar extends Sprite implements ITool {
 				ToolMgr.deactivateTool(this);
 				break;
 		}
+
+		return true;
 	}
 
 	public function shutdown():void {

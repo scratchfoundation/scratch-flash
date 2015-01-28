@@ -79,8 +79,8 @@ public class SVGCreateTool extends SVGTool
 		super.cancel();
 	}
 
-	override public function mouseHandler(e:MouseEvent):void {
-		if(!contentLayer) return;
+	override public function mouseHandler(e:MouseEvent):Boolean {
+		if(!contentLayer) return false;
 		var p:Point = new Point(contentLayer.mouseX, contentLayer.mouseY);
 		p.x = Math.min(ImageCanvas.canvasWidth, Math.max(0, p.x));
 		p.y = Math.min(ImageCanvas.canvasHeight, Math.max(0, p.y));
@@ -100,7 +100,7 @@ public class SVGCreateTool extends SVGTool
 			lastPos = p;
 		} else if(e.type == MouseEvent.MOUSE_UP) {
 			//editor.toggleZoomUI(true);
-			if(!stage) return;
+			if(!stage) return false;
 
 			// If the mouse came up outside of the canvas, use the last mouse position within the canvas
 			if(!editor.getCanvasLayer().hitTestPoint(stage.mouseX, stage.mouseY, true))
@@ -109,5 +109,7 @@ public class SVGCreateTool extends SVGTool
 			mouseUp(p);
 			if(isQuick) editor.endCurrentTool(newObject);
 		}
+
+		return true;
 	}
 }}

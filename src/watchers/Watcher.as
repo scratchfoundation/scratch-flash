@@ -24,23 +24,26 @@
 // Represents a variable display.
 
 package watchers {
-	import flash.display.*;
-	import flash.filters.BevelFilter;
-	import flash.events.MouseEvent;
-	import flash.geom.Point;
-	import flash.text.*;
-	import interpreter.*;
-	import scratch.*;
+import blocks.Block;
+
+import flash.display.*;
+import flash.events.MouseEvent;
+import flash.filters.BevelFilter;
+import flash.geom.Point;
+import flash.text.*;
+
+import interpreter.*;
+
+import scratch.*;
+
+import translation.Translator;
 
 import ui.ITool;
 import ui.ToolMgr;
 
-import ui.dragdrop.DragAndDropMgr;
-
 import uiwidgets.*;
-	import util.*;
-	import blocks.Block;
-	import translation.Translator;
+
+import util.*;
 
 public class Watcher extends Sprite implements ITool {
 
@@ -418,10 +421,10 @@ public class Watcher extends Sprite implements ITool {
 		}
 	}
 
-	public function mouseHandler(evt:MouseEvent):void {
-		var p:Point = globalToLocal(new Point(evt.stageX, evt.stageY));
+	public function mouseHandler(e:MouseEvent):Boolean {
+		var p:Point = globalToLocal(new Point(e.stageX, e.stageY));
 
-		switch (evt.type) {
+		switch (e.type) {
 			case MouseEvent.MOUSE_DOWN:
 				mouseMoved = false;
 				break;
@@ -437,6 +440,8 @@ public class Watcher extends Sprite implements ITool {
 				ToolMgr.deactivateTool(this);
 				break;
 		}
+
+		return true;
 	}
 
 	private function clickAt(localX:Number):void {

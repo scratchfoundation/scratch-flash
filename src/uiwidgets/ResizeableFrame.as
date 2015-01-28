@@ -19,7 +19,7 @@
 
 package uiwidgets {
 import flash.display.*;
-import flash.events.*;
+import flash.events.MouseEvent;
 import flash.filters.*;
 import flash.geom.Point;
 
@@ -122,13 +122,13 @@ public class ResizeableFrame extends Sprite implements ITool {
 		}
 	}
 
-	public function mouseHandler(evt:MouseEvent):void {
-		switch (evt.type) {
+	public function mouseHandler(e:MouseEvent):Boolean {
+		switch (e.type) {
 			case MouseEvent.MOUSE_DOWN:
 				break;
 
 			case MouseEvent.MOUSE_MOVE:
-				var pt:Point = this.globalToLocal(new Point(evt.stageX, evt.stageY));
+				var pt:Point = this.globalToLocal(new Point(e.stageX, e.stageY));
 				var newW:int = Math.max(minWidth, pt.x + 3);
 				var newH:int = Math.max(minHeight, pt.y + 3);
 				setWidthHeight(newW, newH);
@@ -139,6 +139,8 @@ public class ResizeableFrame extends Sprite implements ITool {
 				ToolMgr.deactivateTool(this);
 				break;
 		}
+
+		return true;
 	}
 
 	public function shutdown():void {}

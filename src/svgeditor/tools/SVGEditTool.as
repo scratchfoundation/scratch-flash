@@ -85,9 +85,13 @@ public class SVGEditTool extends SVGTool
 			setObject(null);
 	}
 
-	override public function mouseHandler(event:MouseEvent):void {
-		if (event.type == MouseEvent.MOUSE_DOWN)
-			mouseDown(event);
+	override public function mouseHandler(e:MouseEvent):Boolean {
+		if (e.type == MouseEvent.MOUSE_DOWN) {
+			mouseDown(e);
+			return true;
+		}
+
+		return false;
 	}
 
 	public function mouseDown(event:MouseEvent):void {

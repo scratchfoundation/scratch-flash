@@ -229,12 +229,13 @@ public class ScrollFrame extends Sprite implements ITool {
 	private function mouseDown(evt:MouseEvent):void {
 		if (evt.shiftKey || !dragScrolling) return;
 		ToolMgr.activateTool(this);
-		contents.mouseChildren = false; // disable mouse events while scrolling
 		mouseHandler(evt);
 	}
 
-	public function mouseHandler(evt:MouseEvent):void {
-		switch (evt.type) {
+	private var scrolled:Boolean;
+	public function mouseHandler(e:MouseEvent):Boolean {
+		var captureEvent:Boolean = false;
+		switch (e.type) {
 			case MouseEvent.MOUSE_DOWN:
 				xHistory = [mouseX, mouseX, mouseX];
 				yHistory = [mouseY, mouseY, mouseY];
@@ -247,6 +248,7 @@ public class ScrollFrame extends Sprite implements ITool {
 				if (vScrollbar) vScrollbar.allowDragging(false);
 
 				removeEventListener(Event.ENTER_FRAME, step);
+				scrolled = false;
 				break;
 
 			case MouseEvent.MOUSE_MOVE:
@@ -257,6 +259,10 @@ public class ScrollFrame extends Sprite implements ITool {
 				if (allowHorizontalScrollbar) contents.x = mouseX - xOffset;
 				contents.y = mouseY - yOffset;
 				constrainScroll();
+				scrolled = scrolled || (xOffset != 0 || yOffset != 0);
+				if (scrolled && contents.mouseChildren)
+					contents.mouseChildren = false; // disable mouse events while scrolling
+				captureEvent = true;
 				break;
 
 			case MouseEvent.MOUSE_UP:
@@ -267,10 +273,13 @@ public class ScrollFrame extends Sprite implements ITool {
 				}
 				addEventListener(Event.ENTER_FRAME, step);
 				ToolMgr.deactivateTool(this);
+				captureEvent = scrolled;
+				contents.mouseChildren = true;
 				break;
 		}
 
 		updateScrollbars();
+		return captureEvent;
 	}
 
 	public function shutdown():void {}
