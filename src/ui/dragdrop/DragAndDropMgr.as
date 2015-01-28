@@ -199,7 +199,6 @@ public class DragAndDropMgr implements ITool{
 		//possibleTargets.reverse();
 		for (var l:int=possibleTargets.length, i:int=l-1; i>-1; --i) {
 			var o:DisplayObject = possibleTargets[i];
-			trace('Checking '+ScratchTablet.getAncestry(o));
 			while (o) { // see if some parent can handle the drop
 				if (o is DropTarget) {
 					return o as DropTarget;
