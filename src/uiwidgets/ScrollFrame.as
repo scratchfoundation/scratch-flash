@@ -228,28 +228,9 @@ public class ScrollFrame extends Sprite implements ITool {
 
 	private function mouseDown(evt:MouseEvent):void {
 		if (evt.shiftKey || !dragScrolling) return;
-		if (xVelocity || yVelocity) {
-			initDrag(evt);
-		} else {
-			stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
-			stage.addEventListener(MouseEvent.MOUSE_UP, mouseUp);
-		}
-	}
-
-	private function mouseMove(evt:MouseEvent):void {
-		initDrag(evt);
-		stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
-		stage.removeEventListener(MouseEvent.MOUSE_UP, mouseUp);
-	}
-
-	private function mouseUp(evt:MouseEvent):void {
-		stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
-		stage.removeEventListener(MouseEvent.MOUSE_UP, mouseUp);
-	}
-
-	private function initDrag(evt:MouseEvent):void {
 		ToolMgr.activateTool(this);
 		contents.mouseChildren = false; // disable mouse events while scrolling
+		mouseHandler(evt);
 	}
 
 	public function mouseHandler(evt:MouseEvent):void {
