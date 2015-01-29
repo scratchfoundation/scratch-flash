@@ -249,10 +249,12 @@ public class ScrollFrame extends Sprite implements ITool {
 				xOffset = mouseX - contents.x;
 				yOffset = mouseY - contents.y;
 
-				if (visibleW() < contents.width) showHScrollbar(allowHorizontalScrollbar);
-				if (visibleH() < contents.height) showVScrollbar(true);
-				if (hScrollbar) hScrollbar.allowDragging(false);
-				if (vScrollbar) vScrollbar.allowDragging(false);
+				if (!dragScrolling) {
+					if (visibleW() < contents.width) showHScrollbar(allowHorizontalScrollbar);
+					if (visibleH() < contents.height) showVScrollbar(true);
+					if (hScrollbar) hScrollbar.allowDragging(false);
+					if (vScrollbar) vScrollbar.allowDragging(false);
+				}
 
 				removeEventListener(Event.ENTER_FRAME, step);
 				scrolled = false;

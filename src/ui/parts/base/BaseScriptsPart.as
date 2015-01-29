@@ -65,7 +65,7 @@ public class BaseScriptsPart extends UIPart implements IScriptsPart {
 	private const readoutLabelFormat:TextFormat = new TextFormat(CSS.font, 12, CSS.textColor, true);
 	private const readoutFormat:TextFormat = new TextFormat(CSS.font, 12, CSS.textColor);
 
-	function BaseScriptsPart(app:Scratch) {
+	function BaseScriptsPart(app:Scratch, dragScroll:Boolean = false) {
 		this.app = app;
 		addChild(shape = new Shape());
 		addChild(spriteWatermark = new Bitmap());
@@ -74,13 +74,13 @@ public class BaseScriptsPart extends UIPart implements IScriptsPart {
 
 		var palette:BlockPalette = new BlockPalette();
 		palette.color = CSS.tabColor;
-		paletteFrame = new ScrollFrame();
+		paletteFrame = new ScrollFrame(dragScroll);
 		paletteFrame.allowHorizontalScrollbar = false;
 		paletteFrame.setContents(palette);
 		addChild(paletteFrame);
 
 		var scriptsPane:ScriptsPane = getScriptsPane();
-		scriptsFrame = new ScrollFrame();
+		scriptsFrame = new ScrollFrame(dragScroll);
 		scriptsFrame.setContents(scriptsPane);
 		addChild(scriptsFrame);
 
