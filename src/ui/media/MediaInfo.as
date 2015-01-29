@@ -79,10 +79,12 @@ public class MediaInfo extends DraggableSprite {
 		mysprite = obj as ScratchSprite;
 		if (mycostume) {
 			objType = 'image';
+			mycostume.prepareToSave();
 			objName = mycostume.costumeName;
 			md5 = mycostume.baseLayerMD5;
 		} else if (mysound) {
 			objType = 'sound';
+			mysound.prepareToSave();
 			objName = mysound.soundName;
 			md5 = mysound.md5;
 			if (owner) frameHeightOverride = 75; // use a shorter frame for sounds in a MediaPane

@@ -75,6 +75,7 @@ public class ScrollFrame extends Sprite implements ITool {
 		setWidthHeight(100, 100);
 		setContents(new ScrollFrameContents());
 		addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
+		addEventListener(Event.OPEN, cancelScrolling);
 		enableScrollWheel('vertical');
 	}
 
@@ -90,6 +91,11 @@ public class ScrollFrame extends Sprite implements ITool {
 		g.beginFill(0xFF00, 1);
 		g.drawRect(0, 0, w, h);
 		g.endFill();
+	}
+
+	private function cancelScrolling(e:Event):void {
+		if (ToolMgr.deactivateTool(this))
+			mouseHandler(new MouseEvent(MouseEvent.MOUSE_UP));
 	}
 
 	private function addShadowFrame():void {
@@ -237,6 +243,7 @@ public class ScrollFrame extends Sprite implements ITool {
 		var captureEvent:Boolean = false;
 		switch (e.type) {
 			case MouseEvent.MOUSE_DOWN:
+				// TODO: Use the event to get the mouse position to support multi-touch
 				xHistory = [mouseX, mouseX, mouseX];
 				yHistory = [mouseY, mouseY, mouseY];
 				xOffset = mouseX - contents.x;
