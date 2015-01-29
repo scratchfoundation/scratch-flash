@@ -442,11 +442,11 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 	protected function startLoadingThumbnails():void {
 		function loadSomeThumbnails():void {
 			var count:int = 10 - inProgress;
-			while ((next < allItems.length) && (count-- > 0)) {
+			while (next < allItems.length && count-- > 0) {
 				inProgress++;
 				allItems[next++].loadThumbnail(loadDone);
 			}
-			if ((next < allItems.length) || inProgress) setTimeout(loadSomeThumbnails, 40);
+			if (next < allItems.length || inProgress) setTimeout(loadSomeThumbnails, 40);
 		}
 		function loadDone():void { inProgress-- }
 
