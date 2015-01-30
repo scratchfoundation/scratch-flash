@@ -36,6 +36,7 @@ public class Translator {
 
 	public static var rightToLeft:Boolean;
 	public static var rightToLeftMath:Boolean; // true only for Arabic
+	public static var scale:Number = 1.0;
 
 	private static const font12:Array = ['fa', 'he','ja','ja_HIRA', 'zh_CN'];
 	private static const font13:Array = ['ar'];
@@ -108,15 +109,14 @@ public class Translator {
 
 	private static function setFontsFor(lang:String):void {
 		// Set the rightToLeft flag and font sizes the given language.
-
 		currentLang = lang;
 
 		const rtlLanguages:Array = ['ar', 'fa', 'he'];
 		rightToLeft = rtlLanguages.indexOf(lang) > -1;
 		rightToLeftMath = ('ar' == lang);
-		Block.setFonts(10, 9, true, 0); // default font settings
-		if (font12.indexOf(lang) > -1) Block.setFonts(11, 10, false, 0);
-		if (font13.indexOf(lang) > -1) Block.setFonts(13, 12, false, 0);
+		if (font12.indexOf(lang) > -1) Block.setFonts(11 * scale, 10 * scale, false, 0);
+		if (font13.indexOf(lang) > -1) Block.setFonts(13 * scale, 12 * scale, false, 0);
+		else Block.setFonts(10 * scale, 9 * scale, true, 0); // default font settings
 	}
 
 	public static function map(s:String, context:Dictionary=null):String {

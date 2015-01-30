@@ -174,16 +174,16 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 		else addChild(item);
 
 		if (item is EditableItem) (item as EditableItem).toggleEditMode(editMode);
-		DragAndDropMgr.setDraggable(item, true);
+//		if (item.objType != 'ui') DragAndDropMgr.setDraggable(item, true);
 		contentChanged = true;
 	}
 
 	protected function replaceContents(newItems:Array):void {
 		removeAllItems();
-		for each (var item:MediaInfo in newItems) {
-			addChild(item);
-			DragAndDropMgr.setDraggable(item);
-		}
+		for each (var item:MediaInfo in newItems)
+			addContent(item);
+
+		contentChanged = false;
 		updateSize();
 		x = y = 0; // reset scroll offset
 	}
@@ -237,7 +237,9 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 
 	public function removeAllItems():void {
 		// TODO: Fix to only remove children that are itemClass instances?
+//		while (numChildren > 0) removeChildAt(0);
 		while (numChildren > 0) DragAndDropMgr.setDraggable(removeChildAt(0) as Sprite, false);
+		dropPos = -1;
 	}
 
 	override public function setWidthHeight(w:Number, h:Number):void {

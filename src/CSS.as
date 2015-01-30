@@ -45,7 +45,7 @@ public class CSS {
 
 	// Fonts
 	public static const font:String = Resources.chooseFont(['Arial', 'Verdana', 'DejaVu Sans']);
-	public static const menuFontSize:int = 12;
+	public static var menuFontSize:int = 12;
 	public static const normalTextFormat:TextFormat = new TextFormat(font, 12, textColor);
 	public static const topBarButtonFormat:TextFormat = new TextFormat(font, 12, white, true);
 	public static const titleFormat:TextFormat = new TextFormat(font, 14, textColor);

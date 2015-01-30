@@ -69,7 +69,7 @@ public class DragAndDropMgr implements ITool{
 		var mouseDownX:Number = e.stageX;
 		var mouseDownY:Number = e.stageY;
 		function startDragHandler(evt:MouseEvent):void {
-			if (evt.type == MouseEvent.MOUSE_MOVE)
+			if (evt.type == MouseEvent.MOUSE_MOVE && !ToolMgr.isToolActive())
 				new DragAndDropMgr().drag(ct as IDraggable, mouseDownX, mouseDownY, e);
 
 			ct.removeEventListener(MouseEvent.MOUSE_MOVE, startDragHandler);
@@ -78,6 +78,7 @@ public class DragAndDropMgr implements ITool{
 
 		ct.addEventListener(MouseEvent.MOUSE_MOVE, startDragHandler, false, 0, true);
 		ct.addEventListener(MouseEvent.MOUSE_UP, startDragHandler, false, 0, true);
+		e.stopPropagation();
 	}
 
 	static public function startDragging(original:IDraggable, mouseDownX:Number, mouseDownY:Number, event:MouseEvent):void {
@@ -190,6 +191,7 @@ public class DragAndDropMgr implements ITool{
 				currentDropTarget = null;
 
 				ToolMgr.deactivateTool(this);
+				instances.splice(instances.indexOf(this), 1);
 				break;
 		}
 

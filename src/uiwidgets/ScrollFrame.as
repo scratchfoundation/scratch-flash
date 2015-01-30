@@ -234,8 +234,8 @@ public class ScrollFrame extends Sprite implements ITool {
 
 	private function mouseDown(evt:MouseEvent):void {
 		if (evt.shiftKey || !dragScrolling) return;
-		ToolMgr.activateTool(this);
-		mouseHandler(evt);
+		if (ToolMgr.activateTool(this))
+			mouseHandler(evt);
 	}
 
 	private var scrolled:Boolean;

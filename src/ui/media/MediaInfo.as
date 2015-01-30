@@ -28,7 +28,7 @@
 package ui.media {
 import by.blooddy.crypto.MD5;
 
-import ui.dragdrop.DraggableSprite;
+import ui.dragdrop.IDraggable;
 
 import util.JSON;
 import flash.display.*;
@@ -43,7 +43,7 @@ import translation.Translator;
 import ui.parts.*;
 import uiwidgets.*;
 
-public class MediaInfo extends DraggableSprite {
+public class MediaInfo extends Sprite implements IDraggable {
 
 	public static var frameWidth:int = 81;
 	public static var frameHeight:int = 94;
@@ -307,7 +307,7 @@ public class MediaInfo extends DraggableSprite {
 //		return result;
 //	}
 
-	override public function getSpriteToDrag():Sprite {
+	public function getSpriteToDrag():Sprite {
 		var result:MediaInfo = Scratch.app.createMediaInfo({
 			type: objType,
 			name: objName,
