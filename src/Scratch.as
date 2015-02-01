@@ -846,6 +846,7 @@ public class Scratch extends Sprite {
 		}
 		function fileSaved(e:Event):void {
 			if (!fromJS) setProjectName(e.target.name);
+			saveNeeded = false;
 		}
 		if (loadInProgress) return;
 		var projIO:ProjectIO = new ProjectIO(this);
