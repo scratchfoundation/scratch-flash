@@ -293,7 +293,6 @@ public class MotionAndPenPrims {
 		var oldX:Number = s.scratchX;
 		var oldY:Number = s.scratchY;
 		s.setScratchXY(newX, newY);
-		s.keepOnStage();
 		if (s.penIsDown) stroke(s, oldX, oldY, s.scratchX, s.scratchY);
 		if ((s.penIsDown) || (s.visible)) interp.redraw();
 	}
