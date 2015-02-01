@@ -82,6 +82,11 @@ public class ScratchComment extends Sprite {
 		drawTitleBar();
 	}
 
+	public function startEditText(): void {
+		contents.setSelection(0, contents.text.length);
+		stage.focus = contents;
+	}
+
 	private function drawTitleBar():void {
 		// Draw darker yellow title area used when comment expanded.
 		var g:Graphics = titleBar.graphics;
