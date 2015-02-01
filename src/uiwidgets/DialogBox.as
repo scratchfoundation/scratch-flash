@@ -421,6 +421,7 @@ public class DialogBox extends Sprite {
 
 	private function keyDown(evt:KeyboardEvent):void {
 		if ((evt.keyCode == 10) || (evt.keyCode == 13)) accept();
+		if (evt.keyCode == 27) cancel();
 	}
 
 }}
