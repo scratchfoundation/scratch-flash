@@ -456,6 +456,7 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 		addChild(c);
 		saveScripts();
 		updateSize();
+		c.startEditText();
 	}
 
 	public function fixCommentLayout():void {
