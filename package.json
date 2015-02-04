@@ -10,7 +10,8 @@
     "url": "git://github.com/LLK/scratch-flash.git"
   },
   "scripts": {
-    "test": "node tests/build.js"
+    "test": "node tests/build.js",
+    "build": "node build.js"
   },
   "engines": {
     "node": ">= 0.10"
