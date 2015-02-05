@@ -57,7 +57,7 @@ public class BaseStagePart extends UIPart implements IDraggable {
 		addRunStopButtons();
 		addFullScreenButton();
 		addStageSizeButton();
-		app.stage.addEventListener(MouseEvent.MOUSE_DOWN, handleMouseEvent, false, 0, true);
+		app.stage.addEventListener(MouseEvent.MOUSE_DOWN, handleMouseEvent, true, 0, true);
 		app.stage.addEventListener(MouseEvent.MOUSE_UP, handleMouseEvent, false, 0, true);
 		addEventListener(DragEvent.DRAG_START, handleDragEvent, false, 0, true);
 		addEventListener(DragEvent.DRAG_STOP, handleDragEvent, false, 0, true);
