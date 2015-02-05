@@ -67,15 +67,20 @@ public class Button extends Sprite {
 
 	public function setMinWidthHeight(minW:int, minH:int):void {
 		if (labelOrIcon != null) {
+			var w:Number = labelOrIcon.width;
+			var h:Number = labelOrIcon.height;
 			if (labelOrIcon is TextField) {
-				minW = Math.max(minWidth, labelOrIcon.width + 11);
-				minH = compact ? 20 : 25;
+				var tf:TextField = (labelOrIcon as TextField);
+				minW = Math.max(minWidth, tf.textWidth + 11);
+				minH = tf.textHeight + (compact ? 0 : 5);
+				w = tf.textWidth;
+				h = tf.textHeight;
 			} else {
 				minW = Math.max(minWidth, labelOrIcon.width + 12);
 				minH = Math.max(minH, labelOrIcon.height + 11);
 			}
-			labelOrIcon.x = ((minW - labelOrIcon.width) / 2);
-			labelOrIcon.y = ((minH - labelOrIcon.height) / 2);
+			labelOrIcon.x = ((minW - w) / 2);
+			labelOrIcon.y = ((minH - h) / 2);
 		}
 		// outline
 		graphics.clear();
