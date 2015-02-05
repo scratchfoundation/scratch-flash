@@ -307,15 +307,14 @@ public class ScrollFrame extends Sprite /*implements ITool*/ {
 //		return captureEvent;
 //	}
 
-	private function onPanGestureBegan(event:GestureEvent):void {
+	protected function onPanGestureBegan(event:GestureEvent):void {
 		xHistory = [0,0,0];
 		yHistory = [0,0,0];
 		contents.mouseChildren = false;
 		removeEventListener(Event.ENTER_FRAME, step);
-		onPanGestureChanged(event);
 	}
 
-	private function onPanGestureChanged(event:GestureEvent):void {
+	protected function onPanGestureChanged(event:GestureEvent):void {
 		var panGesture:PanGesture = event.target as PanGesture;
 
 		var offsetX:Number = allowHorizontalScrollbar ? panGesture.offsetX : 0;
@@ -333,7 +332,7 @@ public class ScrollFrame extends Sprite /*implements ITool*/ {
 		updateScrollbars();
 	}
 
-	private function onPanGestureEnded(event:GestureEvent):void {
+	protected function onPanGestureEnded(event:GestureEvent):void {
 		xVelocity = (xHistory[2] - xHistory[0]) / 1.5;
 		yVelocity = (yHistory[2] - yHistory[0]) / 1.5;
 		if ((Math.abs(xVelocity) < 2) && (Math.abs(yVelocity) < 2)) {
