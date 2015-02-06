@@ -48,8 +48,8 @@ public class ScrollFrame extends Sprite {
 	public var contents:ScrollFrameContents;
 	public var allowHorizontalScrollbar:Boolean = true;
 
-	private const decayFactor:Number = 0.95;	// velocity decay (make zero to stop instantly)
-	private const stopThreshold:Number = 0.4;	// stop when velocity is below threshold
+	private static const decayFactor:Number = 0.95;	// velocity decay (make zero to stop instantly)
+	private static const stopThreshold:Number = 0.4;	// stop when velocity is below threshold
 	private const cornerRadius:int = 0;
 	private const useFrame:Boolean = false;
 
@@ -282,8 +282,16 @@ public class ScrollFrame extends Sprite {
 	}
 
 	protected function onPanGestureEnded(event:GestureEvent):void {
-		xVelocity = (xHistory[2] - xHistory[0]) / 1.5;
-		yVelocity = (yHistory[2] - yHistory[0]) / 1.5;
+		var historyLength:uint = xHistory.length;
+		xVelocity = yVelocity = 0;
+		for (var i:uint = 0; i < historyLength; ++i) {
+			xVelocity += xHistory[i];
+			yVelocity += yHistory[i];
+		}
+		var scaleBy:Number = 0.75 / historyLength;
+		xVelocity *= scaleBy;
+		yVelocity *= scaleBy;
+
 		if ((Math.abs(xVelocity) < 2) && (Math.abs(yVelocity) < 2)) {
 			xVelocity = yVelocity = 0;
 		}
