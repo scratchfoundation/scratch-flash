@@ -26,6 +26,7 @@ import flash.geom.*;
 import flash.utils.Dictionary;
 
 import org.gestouch.events.GestureEvent;
+import org.gestouch.gestures.Gesture;
 import org.gestouch.gestures.TransformGesture;
 
 public class DragAndDropMgr {
@@ -45,7 +46,7 @@ public class DragAndDropMgr {
 		stage = scratchApp.stage;
 	}
 
-	static public function setDraggable(sprite:Sprite, draggable:Boolean = true):void {
+	static public function setDraggable(sprite:Sprite, draggable:Boolean = true, shouldDragBeginCallback:Function = null):void {
 		function dragBegan(event:GestureEvent):void {
 			new DragAndDropMgr().onTransformBegan(event);
 		}
@@ -53,6 +54,8 @@ public class DragAndDropMgr {
 		if (draggable) {
 			if (!(sprite in draggableItems)) {
 				transformGesture = new TransformGesture(sprite);
+				transformGesture.gestureShouldBeginCallback = shouldDragBeginCallback;
+				transformGesture.gesturesShouldRecognizeSimultaneouslyCallback = shouldDragSimultaneously;
 				transformGesture.addEventListener(GestureEvent.GESTURE_BEGAN, dragBegan);
 				draggableItems[sprite] = transformGesture;
 			}
@@ -65,6 +68,11 @@ public class DragAndDropMgr {
 				delete draggableItems[sprite];
 			}
 		}
+	}
+
+	private static function shouldDragSimultaneously(gesture:Gesture, otherGesture:Gesture):Boolean {
+		// Allow drag to cooperate with another gesture on this same target, like a long-press in the tablet lobby.
+		return gesture.target == otherGesture.target;
 	}
 
 	private static var originPt:Point = new Point();
