@@ -28,7 +28,8 @@ function errorCheckThen(nextCall) {
 function compile(src, dest, callback, lib_paths, extra_args) {
     var args = [
         '-output', dest,
-        '-debug=false'
+        '-debug=false',
+        '-accessible'
     ];
 
     if(lib_paths) {
