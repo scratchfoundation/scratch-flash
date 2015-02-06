@@ -40,7 +40,9 @@ package blocks {
 	import flash.events.*;
 	import flash.filters.BevelFilter;
 	import flash.text.*;
-	import scratch.BlockMenus;
+import flash.utils.setTimeout;
+
+import scratch.BlockMenus;
 	import translation.Translator;
 
 import ui.dragdrop.DragAndDropMgr;
@@ -274,7 +276,9 @@ public class BlockArg extends Sprite {
 			var b:DisplayObject = parent;
 			while (!(b is Block) && b) b = b.parent;
 			if (b is Block)
-				DragAndDropMgr.cancelDrag(b as Block);
+				setTimeout(function():void {
+					DragAndDropMgr.cancelDrag(b as Block);
+				}, 0);
 		}
 	}
 
