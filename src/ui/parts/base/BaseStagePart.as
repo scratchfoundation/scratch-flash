@@ -82,6 +82,7 @@ public class BaseStagePart extends UIPart implements IDraggable {
 		}
 	}
 
+	// TODO: Make these properties per touch
 	private var dragTarget:ScratchSprite;
 	private var dragPos:Point;
 	private var dragOrigPos:Point;
