@@ -38,10 +38,12 @@ import flash.events.Event;
 import flash.events.MouseEvent;
 import flash.filters.GlowFilter;
 
+import org.gestouch.core.Touch;
 import org.gestouch.events.GestureEvent;
+import org.gestouch.gestures.Gesture;
 import org.gestouch.gestures.PanGesture;
 
-public class ScrollFrame extends Sprite /*implements ITool*/ {
+public class ScrollFrame extends Sprite {
 
 	public var contents:ScrollFrameContents;
 	public var allowHorizontalScrollbar:Boolean = true;
@@ -77,14 +79,14 @@ public class ScrollFrame extends Sprite /*implements ITool*/ {
 		if (useFrame) addShadowFrame(); // adds a shadow to top and left
 		setWidthHeight(100, 100);
 		setContents(new ScrollFrameContents());
-//		addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
-//		addEventListener(Event.OPEN, cancelScrolling);
+		addEventListener(Event.OPEN, cancelScrolling);
 		enableScrollWheel('vertical');
 		if (dragScrolling) {
 			panGesture = new PanGesture(this);
+			panGesture.gestureShouldReceiveTouchCallback = shouldPanReceiveTouch;
 			panGesture.addEventListener(GestureEvent.GESTURE_BEGAN, onPanGestureBegan);
 			panGesture.addEventListener(GestureEvent.GESTURE_CHANGED, onPanGestureChanged);
-			panGesture.addEventListener(GestureEvent.GESTURE_ENDED, onPanGestureEnded);
+			panGesture.addEventListener(GestureEvent.GESTURE_ENDED, cancelScrolling);
 		}
 	}
 
@@ -108,11 +110,6 @@ public class ScrollFrame extends Sprite /*implements ITool*/ {
 		g.drawRect(0, 0, w, h);
 		g.endFill();
 	}
-
-//	private function cancelScrolling(e:Event):void {
-//		if (ToolMgr.deactivateTool(this))
-//			mouseHandler(new MouseEvent(MouseEvent.MOUSE_UP));
-//	}
 
 	private function addShadowFrame():void {
 		// Adds a shadow on top and left to make contents appear inset.
@@ -248,64 +245,9 @@ public class ScrollFrame extends Sprite /*implements ITool*/ {
 		contents.y = Math.max(-maxScrollV(), Math.min(contents.y, 0));
 	}
 
-//	private function mouseDown(evt:MouseEvent):void {
-//		if (evt.shiftKey || !dragScrolling) return;
-//		if (ToolMgr.activateTool(this))
-//			mouseHandler(evt);
-//	}
-
-//	private var scrolled:Boolean;
-//	public function mouseHandler(e:MouseEvent):Boolean {
-//		var captureEvent:Boolean = false;
-//		switch (e.type) {
-//			case MouseEvent.MOUSE_DOWN:
-//				// TODO: Use the event to get the mouse position to support multi-touch
-//				xHistory = [mouseX, mouseX, mouseX];
-//				yHistory = [mouseY, mouseY, mouseY];
-//				xOffset = mouseX - contents.x;
-//				yOffset = mouseY - contents.y;
-//
-//				if (!dragScrolling) {
-//					if (visibleW() < contents.width) showHScrollbar(allowHorizontalScrollbar);
-//					if (visibleH() < contents.height) showVScrollbar(true);
-//					if (hScrollbar) hScrollbar.allowDragging(false);
-//					if (vScrollbar) vScrollbar.allowDragging(false);
-//				}
-//
-//				removeEventListener(Event.ENTER_FRAME, step);
-//				scrolled = false;
-//				break;
-//
-//			case MouseEvent.MOUSE_MOVE:
-//				xHistory.push(mouseX);
-//				yHistory.push(mouseY);
-//				xHistory.shift();
-//				yHistory.shift();
-//				if (allowHorizontalScrollbar) contents.x = mouseX - xOffset;
-//				contents.y = mouseY - yOffset;
-//				constrainScroll();
-//				scrolled = scrolled || (xOffset != 0 || yOffset != 0);
-//				if (scrolled && contents.mouseChildren)
-//					contents.mouseChildren = false; // disable mouse events while scrolling
-//				captureEvent = true;
-//				break;
-//
-//			case MouseEvent.MOUSE_UP:
-//				xVelocity = (xHistory[2] - xHistory[0]) / 1.5;
-//				yVelocity = (yHistory[2] - yHistory[0]) / 1.5;
-//				if ((Math.abs(xVelocity) < 2) && (Math.abs(yVelocity) < 2)) {
-//					xVelocity = yVelocity = 0;
-//				}
-//				addEventListener(Event.ENTER_FRAME, step);
-//				ToolMgr.deactivateTool(this);
-//				captureEvent = scrolled;
-//				contents.mouseChildren = true;
-//				break;
-//		}
-//
-//		updateScrollbars();
-//		return captureEvent;
-//	}
+	protected function shouldPanReceiveTouch(gesture:Gesture, touch:Touch):Boolean {
+		return touch.target == this || touch.target == this.contents;
+	}
 
 	protected function onPanGestureBegan(event:GestureEvent):void {
 		xHistory = [0,0,0];
@@ -332,15 +274,13 @@ public class ScrollFrame extends Sprite /*implements ITool*/ {
 		updateScrollbars();
 	}
 
-	protected function onPanGestureEnded(event:GestureEvent):void {
+	protected function cancelScrolling(event:Event):void {
 		xVelocity = (xHistory[2] - xHistory[0]) / 1.5;
 		yVelocity = (yHistory[2] - yHistory[0]) / 1.5;
 		if ((Math.abs(xVelocity) < 2) && (Math.abs(yVelocity) < 2)) {
 			xVelocity = yVelocity = 0;
 		}
 		addEventListener(Event.ENTER_FRAME, step);
-		//ToolMgr.deactivateTool(this);
-		//captureEvent = scrolled;
 		contents.mouseChildren = true;
 	}
 
