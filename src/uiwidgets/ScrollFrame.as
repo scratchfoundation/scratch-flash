@@ -254,6 +254,7 @@ public class ScrollFrame extends Sprite {
 		yHistory = [0,0,0];
 		contents.mouseChildren = false;
 		removeEventListener(Event.ENTER_FRAME, step);
+		onPanGestureChanged(event);
 	}
 
 	protected function onPanGestureChanged(event:GestureEvent):void {
