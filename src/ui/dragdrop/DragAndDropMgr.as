@@ -37,6 +37,7 @@ public class DragAndDropMgr {
 	static private var app:Scratch;
 	static private var draggableItems:Dictionary = new Dictionary(true);
 	static private var instances:Array = [];
+	static private var canceledDrags:Object = {};
 	public function DragAndDropMgr() {
 		instances.push(this);
 	}
@@ -132,6 +133,11 @@ public class DragAndDropMgr {
 
 		if (originalObj != draggedObj && draggedObj.parent == stage)
 			stage.removeChild(draggedObj);
+	}
+
+	public static function cancelDrag(item:Sprite):void {
+		var tg:TransformGesture = draggableItems[item] as TransformGesture;
+		if (tg) tg.reset();
 	}
 
 	public function shutdown():void {
