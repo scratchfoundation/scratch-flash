@@ -86,7 +86,7 @@ public class ScrollFrame extends Sprite {
 			panGesture.gestureShouldReceiveTouchCallback = shouldPanReceiveTouch;
 			panGesture.addEventListener(GestureEvent.GESTURE_BEGAN, onPanGestureBegan);
 			panGesture.addEventListener(GestureEvent.GESTURE_CHANGED, onPanGestureChanged);
-			panGesture.addEventListener(GestureEvent.GESTURE_ENDED, cancelScrolling);
+			panGesture.addEventListener(GestureEvent.GESTURE_ENDED, onPanGestureEnded);
 		}
 	}
 
@@ -109,6 +109,12 @@ public class ScrollFrame extends Sprite {
 		g.beginFill(0xFF00, 1);
 		g.drawRect(0, 0, w, h);
 		g.endFill();
+	}
+
+	private function cancelScrolling(event:Event):void {
+		if (panGesture) {
+			panGesture.reset();
+		}
 	}
 
 	private function addShadowFrame():void {
@@ -275,7 +281,7 @@ public class ScrollFrame extends Sprite {
 		updateScrollbars();
 	}
 
-	protected function cancelScrolling(event:Event):void {
+	protected function onPanGestureEnded(event:GestureEvent):void {
 		xVelocity = (xHistory[2] - xHistory[0]) / 1.5;
 		yVelocity = (yHistory[2] - yHistory[0]) / 1.5;
 		if ((Math.abs(xVelocity) < 2) && (Math.abs(yVelocity) < 2)) {
