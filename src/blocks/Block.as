@@ -110,6 +110,9 @@ public class Block extends Sprite {
 		this.type = type;
 		this.op = op;
 
+		// allow users to tab to select blocks
+		this.tabIndex = 1;
+
 		if ((Specs.CALL == op) ||
 			(Specs.GET_LIST == op) ||
 			(Specs.GET_PARAM == op) ||
@@ -897,7 +900,6 @@ public class Block extends Sprite {
 	}
 
 	private function focusChange(evt:FocusEvent):void {
-		evt.preventDefault();
 		if (evt.target.parent.parent != this) return; // make sure the target TextField is in this block, not a child block
 		if (args.length == 0) return;
 		var i:int, focusIndex:int = -1;
