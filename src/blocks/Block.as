@@ -66,6 +66,7 @@ public class Block extends Sprite implements IDraggable {
 	protected static var useEmbeddedFont:Boolean = false;
 
 	public static var MenuHandlerFunction:Function;	// optional function to handle block and blockArg menus
+	public static var MenuClass:Class = Menu;	// optional function to handle block and blockArg menus
 
 	public var spec:String;
 	public var type:String;

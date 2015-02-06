@@ -407,7 +407,7 @@ public class BlockMenus implements DragClient {
 			Scratch.app.setSaveNeeded();
 		}
 		var spriteNames:Array = [];
-		var m:Menu = new Menu(setSpriteArg, 'sprite');
+		var m:Menu = new Block.MenuClass(setSpriteArg, 'sprite');
 		if (includeMouse) m.addItem(Translator.map('mouse-pointer'), 'mouse-pointer');
 		if (includeEdge) m.addItem(Translator.map('edge'), 'edge');
 		m.addLine();
@@ -437,7 +437,7 @@ public class BlockMenus implements DragClient {
 			block.type = block.isTerminal ? 'f' : ' ';
 			Scratch.app.setSaveNeeded();
 		}
-		var m:Menu = new Menu(setStopType, 'stop');
+		var m:Menu = new Block.MenuClass(setStopType, 'stop');
 		if (!block.nextBlock) {
 			m.addItem('all');
 			m.addItem('this script');
@@ -447,14 +447,14 @@ public class BlockMenus implements DragClient {
 	}
 
 	protected function stageOrThisSpriteMenu(evt:MouseEvent):void {
-		var m:Menu = new Menu(setBlockArg, 'stageOrThis');
+		var m:Menu = new Block.MenuClass(setBlockArg, 'stageOrThis');
 		m.addItem(app.stagePane.objName);
 		if (!app.viewedObj().isStage) m.addItem('this sprite');
 		showMenu(m);
 	}
 
 	protected function timeAndDateMenu(evt:MouseEvent):void {
-		var m:Menu = new Menu(setBlockArg, 'timeAndDate');
+		var m:Menu = new Block.MenuClass(setBlockArg, 'timeAndDate');
 		m.addItem('year');
 		m.addItem('month');
 		m.addItem('date');
@@ -470,7 +470,7 @@ public class BlockMenus implements DragClient {
 			if ('video motion' == s) app.libraryPart.showVideoButton();
 			setBlockArg(s);
 		}
-		var m:Menu = new Menu(setTriggerType, 'triggerSensor');
+		var m:Menu = new Block.MenuClass(setTriggerType, 'triggerSensor');
 		m.addItem('loudness');
 		m.addItem('timer');
 		m.addItem('video motion');
@@ -478,14 +478,14 @@ public class BlockMenus implements DragClient {
 	}
 
 	protected function videoMotionTypeMenu(evt:MouseEvent):void {
-		var m:Menu = new Menu(setBlockArg, 'videoMotion');
+		var m:Menu = new Block.MenuClass(setBlockArg, 'videoMotion');
 		m.addItem('motion');
 		m.addItem('direction');
 		showMenu(m);
 	}
 
 	protected function videoStateMenu(evt:MouseEvent):void {
-		var m:Menu = new Menu(setBlockArg, 'videoState');
+		var m:Menu = new Block.MenuClass(setBlockArg, 'videoState');
 		m.addItem('off');
 		m.addItem('on');
 		m.addItem('on-flipped');
@@ -496,7 +496,7 @@ public class BlockMenus implements DragClient {
 
 	protected function genericBlockMenu(evt:MouseEvent):void {
 		if (!block || block.isEmbeddedParameter()) return;
-		var m:Menu = new Menu(null, 'genericBlock');
+		var m:Menu = new Block.MenuClass(null, 'genericBlock');
 		addGenericBlockItems(m);
 		showMenu(m);
 	}
@@ -526,7 +526,7 @@ public class BlockMenus implements DragClient {
 			block.changeOperator(selection);
 		}
 		if (!block) return;
-		var m:Menu = new Menu(opMenu, 'changeOp');
+		var m:Menu = new Block.MenuClass(opMenu, 'changeOp');
 		addGenericBlockItems(m);
 		if (!isInPalette(block)) for each (var op:String in opList) m.addItem(op);
 		showMenu(m);
@@ -535,7 +535,7 @@ public class BlockMenus implements DragClient {
 	// ***** Procedure menu (for procedure definition hats and call blocks) *****
 
 	protected function procMenu(evt:MouseEvent):void {
-		var m:Menu = new Menu(null, 'proc');
+		var m:Menu = new Block.MenuClass(null, 'proc');
 		addGenericBlockItems(m);
 		m.addItem('edit', editProcSpec);
 		showMenu(m);
@@ -585,7 +585,7 @@ public class BlockMenus implements DragClient {
 	// ***** Variable and List menus *****
 
 	protected function listMenu(evt:MouseEvent):void {
-		var m:Menu = new Menu(varOrListSelection, 'list');
+		var m:Menu = new Block.MenuClass(varOrListSelection, 'list');
 		var isGetter:Boolean = block.op == Specs.GET_LIST;
 		if (isGetter) {
 			if (isInPalette(block)) m.addItem('delete list', deleteVarOrList); // list reporter in palette
@@ -607,7 +607,7 @@ public class BlockMenus implements DragClient {
 	}
 
 	protected function varMenu(evt:MouseEvent):void {
-		var m:Menu = new Menu(varOrListSelection, 'var');
+		var m:Menu = new Block.MenuClass(varOrListSelection, 'var');
 		var isGetter:Boolean = (block.op == Specs.GET_VAR);
 		if (isGetter && isInPalette(block)) { // var reporter in palette
 			m.addItem('rename variable', renameVar);
@@ -756,7 +756,7 @@ public class BlockMenus implements DragClient {
 		if (msgNames.indexOf('message1') <= -1) msgNames.push('message1');
 		msgNames.sort();
 
-		var m:Menu = new Menu(broadcastMenuSelection, 'broadcast');
+		var m:Menu = new Block.MenuClass(broadcastMenuSelection, 'broadcast');
 		for each (var msg:String in msgNames) m.addItem(msg);
 		m.addLine();
 		m.addItem('new message...', newBroadcast);
@@ -786,7 +786,7 @@ public class BlockMenus implements DragClient {
 			if (selection == 'clear senders/receivers') sprites = [];
 			app.highlightSprites(sprites);
 		}
-		var m:Menu = new Menu(showBroadcasts, 'broadcastInfo');
+		var m:Menu = new Block.MenuClass(showBroadcasts, 'broadcastInfo');
 		addGenericBlockItems(m);
 		if (!isInPalette(block)) {
 			m.addItem('show senders');
