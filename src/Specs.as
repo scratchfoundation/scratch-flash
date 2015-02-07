@@ -220,6 +220,7 @@ public class Specs {
 		// triggers
 		["when @greenFlag clicked",				"h", 5, "whenGreenFlag"],
 		["when %m.key key pressed",				"h", 5, "whenKeyPressed", 		"space"],
+		["when %m.key key released",				"h", 5, "whenKeyReleased", 		"space"],
 		["when this sprite clicked",			"h", 5, "whenClicked"],
 		["when backdrop switches to %m.backdrop", "h", 5, "whenSceneStarts", 	"backdrop1"],
 		["--"],
