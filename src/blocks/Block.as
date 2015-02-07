@@ -33,7 +33,6 @@
 package blocks {
 import extensions.ExtensionManager;
 
-import mixins.*;
 
 import flash.display.*;
 	import flash.events.*;
@@ -48,15 +47,6 @@ import flash.display.*;
 	import scratch.*;
 
 public class Block extends Sprite {
-
-	public static function Initialize() : Boolean {
-		var p = Block.prototype;
-		Interactable.initialize(p);
-
-		return true;
-	}
-
-	static var mixedIn:Boolean = Block.Initialize();
 
 	private const minCommandWidth:int = 36;
 	private const minHatWidth:int = 80;
@@ -184,6 +174,7 @@ public class Block extends Sprite {
 		setSpec(this.spec, defaultArgs);
 
 		addEventListener(FocusEvent.KEY_FOCUS_CHANGE, focusChange);
+		addEventListener(KeyboardEvent.KEY_UP, keyDown);
 	}
 
 	public function setSpec(newSpec:String, defaultArgs:Array = null):void {
@@ -889,6 +880,11 @@ public class Block extends Sprite {
 	}
 
 	/* Events */
+
+	public function keyDown(evt:KeyboardEvent):void {
+		trace("tracing");
+		dispatchEvent(new Event(MouseEvent.DOUBLE_CLICK));
+	}
 
 	public function click(evt:MouseEvent):void {
 		if (editArg(evt)) return;
