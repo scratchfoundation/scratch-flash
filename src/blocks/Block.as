@@ -33,6 +33,8 @@
 package blocks {
 import extensions.ExtensionManager;
 
+import mixins.*;
+
 import flash.display.*;
 	import flash.events.*;
 	import flash.filters.GlowFilter;
@@ -46,6 +48,15 @@ import flash.display.*;
 	import scratch.*;
 
 public class Block extends Sprite {
+
+	public static function Initialize() : Boolean {
+		var p = Block.prototype;
+		Interactable.initialize(p);
+
+		return true;
+	}
+
+	static var mixedIn:Boolean = Block.Initialize();
 
 	private const minCommandWidth:int = 36;
 	private const minHatWidth:int = 80;
