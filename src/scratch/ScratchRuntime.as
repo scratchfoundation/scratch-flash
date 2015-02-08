@@ -369,9 +369,8 @@ public class ScratchRuntime {
 			installProjectFromFile(fileName, data);
 		}
 		stopAll();
-		var filter1:FileFilter = new FileFilter('Scratch 1.4 Project', '*.sb');
-		var filter2:FileFilter = new FileFilter('Scratch 2 Project', '*.sb2');
-		Scratch.loadSingleFile(fileLoadHandler, [filter1, filter2])
+		var filter1:FileFilter = new FileFilter('Scratch Project', '*.sb;*.sb2');
+		Scratch.loadSingleFile(fileLoadHandler, filter1)
 	}
 
 	public function installProjectFromFile(fileName:String, data:ByteArray):void {
