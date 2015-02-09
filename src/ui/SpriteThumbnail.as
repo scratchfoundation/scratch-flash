@@ -58,6 +58,7 @@ public class SpriteThumbnail extends Sprite {
 		this.targetObj = targetObj;
 		this.app = app;
 
+		addFrame();
 		addSelectedFrame();
 		addHighlightFrame();
 
@@ -90,6 +91,18 @@ public class SpriteThumbnail extends Sprite {
 		detailsButton.isMomentary = true;
 		detailsButton.visible = false;
 		addChild(detailsButton);
+	}
+
+	private function addFrame():void {
+		if (targetObj.isStage) return;
+
+		var frame:Shape = new Shape();
+		var g:Graphics = frame.graphics;
+		g.lineStyle(NaN);
+		g.beginFill(0xFFFFFF);
+		g.drawRoundRect(0, 0, frameW, frameH, 12, 12);
+		g.endFill();
+		addChild(frame);
 	}
 
 	private function addSelectedFrame():void {
