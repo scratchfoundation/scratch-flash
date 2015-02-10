@@ -74,7 +74,7 @@ public class BaseScriptsPart extends UIPart implements IScriptsPart {
 
 		var palette:BlockPalette = new BlockPalette();
 		palette.color = CSS.tabColor;
-		paletteFrame = new ScrollFrame(dragScroll);
+		paletteFrame = getPaletteFrame(dragScroll);
 		paletteFrame.allowHorizontalScrollbar = false;
 		paletteFrame.setContents(palette);
 		addChild(paletteFrame);
@@ -88,6 +88,10 @@ public class BaseScriptsPart extends UIPart implements IScriptsPart {
 		app.scriptsPane = scriptsPane;
 
 		addChild(zoomWidget = new ZoomWidget(scriptsPane));
+	}
+
+	protected function getPaletteFrame(dragScroll:Boolean):ScrollFrame {
+		return new ScrollFrame(dragScroll);
 	}
 
 	protected function getScriptsPane():ScriptsPane {

@@ -47,16 +47,24 @@ public class DragAndDropMgr {
 		stage = scratchApp.stage;
 	}
 
-	static public function setDraggable(sprite:Sprite, draggable:Boolean = true, shouldDragBeginCallback:Function = null):void {
+	// The 'transformGesture' parameter allows you to supply a custom transform gesture if necessary.
+	// That gesture's target will be replaced and gesturesShouldRecognizeSimultaneouslyCallback will be added if empty.
+	// Please note that dispose() will be called on the gesture when dragging is disabled with this function.
+	static public function setDraggable(sprite:Sprite, draggable:Boolean = true, transformGesture:TransformGesture = null):void {
 		function dragBegan(event:GestureEvent):void {
 			new DragAndDropMgr().onTransformBegan(event);
 		}
-		var transformGesture:TransformGesture;
 		if (draggable) {
 			if (!(sprite in draggableItems)) {
-				transformGesture = new TransformGesture(sprite);
-				transformGesture.gestureShouldBeginCallback = shouldDragBeginCallback;
-				transformGesture.gesturesShouldRecognizeSimultaneouslyCallback = shouldDragSimultaneously;
+				if (!transformGesture) {
+					transformGesture = new TransformGesture(sprite);
+				}
+				else {
+					transformGesture.target = sprite;
+				}
+				if (!transformGesture.gesturesShouldRecognizeSimultaneouslyCallback) {
+					transformGesture.gesturesShouldRecognizeSimultaneouslyCallback = shouldDragSimultaneously;
+				}
 				transformGesture.addEventListener(GestureEvent.GESTURE_BEGAN, dragBegan);
 				draggableItems[sprite] = transformGesture;
 			}

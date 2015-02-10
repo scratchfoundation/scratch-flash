@@ -41,7 +41,7 @@ import flash.filters.GlowFilter;
 import org.gestouch.core.Touch;
 import org.gestouch.events.GestureEvent;
 import org.gestouch.gestures.Gesture;
-import org.gestouch.gestures.PanGesture;
+import org.gestouch.gestures.TransformGesture;
 
 public class ScrollFrame extends Sprite {
 
@@ -68,7 +68,7 @@ public class ScrollFrame extends Sprite {
 	private var xVelocity:Number = 0;
 	private var yVelocity:Number = 0;
 
-	private var panGesture:PanGesture;
+	private var panGesture:TransformGesture;
 
 	public function ScrollFrame(dragScrolling:Boolean = false, scrollbarStyle:int = 0) {
 		this.scrollbarStyle = scrollbarStyle || Scrollbar.STYLE_DEFAULT;
@@ -82,12 +82,18 @@ public class ScrollFrame extends Sprite {
 		addEventListener(Event.OPEN, cancelScrolling);
 		enableScrollWheel('vertical');
 		if (dragScrolling) {
-			panGesture = new PanGesture(this);
-			panGesture.gestureShouldReceiveTouchCallback = shouldPanReceiveTouch;
-			panGesture.addEventListener(GestureEvent.GESTURE_BEGAN, onPanGestureBegan);
-			panGesture.addEventListener(GestureEvent.GESTURE_CHANGED, onPanGestureChanged);
-			panGesture.addEventListener(GestureEvent.GESTURE_ENDED, onPanGestureEnded);
+			enableDragScrolling();
 		}
+	}
+
+	public function enableDragScrolling(dragGesture:TransformGesture = null):void {
+		panGesture = dragGesture || new TransformGesture(this);
+		if (!panGesture.gestureShouldReceiveTouchCallback) {
+			panGesture.gestureShouldReceiveTouchCallback = shouldPanReceiveTouch;
+		}
+		panGesture.addEventListener(GestureEvent.GESTURE_BEGAN, onPanGestureBegan);
+		panGesture.addEventListener(GestureEvent.GESTURE_CHANGED, onPanGestureChanged);
+		panGesture.addEventListener(GestureEvent.GESTURE_ENDED, onPanGestureEnded);
 	}
 
 	public function dispose():void {
@@ -264,7 +270,7 @@ public class ScrollFrame extends Sprite {
 	}
 
 	protected function onPanGestureChanged(event:GestureEvent):void {
-		var panGesture:PanGesture = event.target as PanGesture;
+		var panGesture:TransformGesture = event.target as TransformGesture;
 
 		var offsetX:Number = allowHorizontalScrollbar ? panGesture.offsetX : 0;
 		var offsetY:Number = panGesture.offsetY;

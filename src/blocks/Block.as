@@ -128,7 +128,11 @@ public class Block extends Sprite implements IDraggable {
 		addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, menu);
 		addEventListener(DragEvent.DRAG_START, handleDragEvent);
 		addEventListener(DragEvent.DRAG_CANCEL, handleDragEvent);
-		DragAndDropMgr.setDraggable(this);
+		setDraggable(true);
+	}
+
+	protected function setDraggable(draggable:Boolean):void {
+		DragAndDropMgr.setDraggable(this, draggable);
 	}
 
 	protected function setType(type:String, color:int):void {
