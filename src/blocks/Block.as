@@ -41,7 +41,10 @@ import flash.display.*;
 	import flash.net.URLLoader;
 	import flash.text.*;
 	import assets.Resources;
-	import translation.Translator;
+
+import flash.ui.Keyboard;
+
+import translation.Translator;
 	import util.*;
 	import uiwidgets.*;
 	import scratch.*;
@@ -882,8 +885,21 @@ public class Block extends Sprite {
 	/* Events */
 
 	public function keyDown(evt:KeyboardEvent):void {
-		trace("tracing");
-		dispatchEvent(new Event(MouseEvent.DOUBLE_CLICK));
+		switch (evt.keyCode) {
+            case (Keyboard.ENTER):
+            {
+                Scratch.app.runtime.interp.toggleThread(topBlock(), Scratch.app.viewedObj(), 1);
+                evt.preventDefault();
+            }
+            case (Keyboard.SPACE):
+            {
+                //Engage targeting menu
+                evt.preventDefault();
+            }
+            default: {
+
+            }
+        }
 	}
 
 	public function click(evt:MouseEvent):void {
