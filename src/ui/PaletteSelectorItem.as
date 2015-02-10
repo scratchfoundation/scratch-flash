@@ -44,6 +44,7 @@ public class PaletteSelectorItem extends Sprite {
 		addEventListener(MouseEvent.MOUSE_OVER, mouseOver);
 		addEventListener(MouseEvent.MOUSE_OUT, mouseOut);
 		addEventListener(MouseEvent.CLICK, mouseUp);
+        this.tabIndex = 1;
 	}
 
 	private function addLabel(s:String):void {

@@ -893,7 +893,7 @@ public class Block extends Sprite {
             }
             case (Keyboard.SPACE):
             {
-                //Engage targeting menu
+                //TODO: Engage targeting menu
                 evt.preventDefault();
             }
             default: {

@@ -32,6 +32,7 @@ public class TextPane extends Sprite {
 	public var scrollbar:Scrollbar;
 
 	public function TextPane() {
+        this.tabIndex = 1;
 		addTextField();
 		scrollbar = new Scrollbar(scrollbarWidth, textField.height, scrollTextField);
 		setWidthHeight(400, 500);

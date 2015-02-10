@@ -44,6 +44,7 @@ public class EditableLabel extends Sprite {
 
 	public function EditableLabel(textChanged:Function, format:TextFormat = null) {
 		this.textChanged = textChanged;
+        this.tabIndex = 1;
 		bezel = new Shape();
 		addChild(bezel);
 		addFilter();

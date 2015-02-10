@@ -60,6 +60,7 @@ public class Menu extends Sprite {
 		this.menuName = menuName;
 		this.color = color;
 		this.itemHeight = itemHeight;
+        this.tabIndex = 1;
 	}
 
 	public function addItem(label:*, value:* = null, enabled:Boolean = true, checkmark:Boolean = false):void {

@@ -53,6 +53,7 @@ public class Slider extends Sprite implements DragClient {
 		setWidthHeight(w, h);
 		moveKnob();
 		addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
+        this.tabIndex = 1;
 	}
 
 	public function get min():Number { return minValue; }
