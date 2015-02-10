@@ -175,6 +175,7 @@ public class GestureHandler {
 	}
 
 	public function mouseDown(evt:MouseEvent):void {
+		handleMouseDown(evt);
 		if(inIE && app.editMode && app.jsEnabled)
 			app.externalCall('tip_bar_api.fixIE');
 
@@ -417,6 +418,14 @@ public class GestureHandler {
 		evt.updateAfterEvent();
 		if ('click' in mouseTarget) mouseTarget.click(evt);
 		gesture = 'click';
+	}
+
+	private function handleMouseDown(evt:MouseEvent):void {
+		var mouseTarget_ = findMouseTarget(evt, evt.target);
+
+		if (mouseTarget_ == null) return;
+		evt.updateAfterEvent();
+		if ('mousedown' in mouseTarget_) mouseTarget_.mousedown(evt);
 	}
 
 	private function handleDoubleClick(evt:MouseEvent):void {

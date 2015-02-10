@@ -252,7 +252,7 @@ public class MediaLibraryItem extends Sprite {
 	// User interaction
 	//------------------------------
 
-	public function click(evt:MouseEvent):void {
+	public function mousedown(evt:MouseEvent):void {
 		if (!evt.shiftKey) unhighlightAll();
 		toggleHighlight();
 	}
