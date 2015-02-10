@@ -92,7 +92,7 @@ public class BaseStagePart extends UIPart implements IDraggable {
 		var rect:Rectangle = app.stageObj().getRect(stage);
 		if (e.type == MouseEvent.MOUSE_DOWN && rect.contains(stage.mouseX, stage.mouseY))
 			dragTarget = findMouseTargetOnStage(stage.mouseX, stage.mouseY) as ScratchSprite;
-		else
+		else if (DragAndDropMgr.getDraggedObjs().indexOf(dragTarget) == -1)
 			dragTarget = null;
 	}
 
@@ -127,13 +127,16 @@ public class BaseStagePart extends UIPart implements IDraggable {
 	}
 
 	public function getSpriteToDrag():Sprite {
-		if(dragTarget) {
+		var dragSprite:Sprite = (app.editMode || (dragTarget && dragTarget.isDraggable)) ? dragTarget : null;
+		if(dragSprite) {
 			dragOrigPos = new Point(dragTarget.x, dragTarget.y);
 			dragPos = dragTarget.localToGlobal(new Point);
 			dragStageScale = dragTarget.transform.concatenatedMatrix.a;
 			dragOrigScale = dragTarget.scaleX;
+			trace('orig scale = '+dragOrigScale);
 		}
-		return  (app.editMode || (dragTarget && dragTarget.isDraggable)) ? dragTarget : null;
+
+		return dragSprite;
 	}
 
 	public function projectName():String { return projectTitle; }
