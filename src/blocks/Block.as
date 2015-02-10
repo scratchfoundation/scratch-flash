@@ -105,7 +105,7 @@ public class Block extends Sprite {
 
 	private var originalParent:DisplayObjectContainer, originalRole:int, originalIndex:int, originalPosition:Point;
 
-	public function Block(spec:String, type:String = " ", color:int = 0xD00000, op:* = 0, defaultArgs:Array = null) {
+	public function Block(spec:String, type:String = " ", color:int = 0xD00000, op:* = 0, defaultArgs:Array = null, underlined:Boolean = false) {
 		this.spec = Translator.map(spec);
 		this.type = type;
 		this.op = op;
@@ -167,12 +167,12 @@ public class Block extends Sprite {
 			base = new BlockShape(BlockShape.RectShape, color);
 		}
 		addChildAt(base, 0);
-		setSpec(this.spec, defaultArgs);
+		setSpec(this.spec, defaultArgs, underlined);
 
 		addEventListener(FocusEvent.KEY_FOCUS_CHANGE, focusChange);
 	}
 
-	public function setSpec(newSpec:String, defaultArgs:Array = null):void {
+	public function setSpec(newSpec:String, defaultArgs:Array = null, underlined:Boolean = false):void {
 		for each (var o:DisplayObject in labelsAndArgs) {
 			if (o.parent != null) o.parent.removeChild(o);
 		}
@@ -191,7 +191,9 @@ public class Block extends Sprite {
 			var b:Block;
 			labelsAndArgs.push(b = declarationBlock());
 		} else if (op == Specs.GET_VAR || op == Specs.GET_LIST) {
-			labelsAndArgs = [makeLabel(spec)];
+			var label:TextField = makeLabel(spec);
+			label.setTextFormat(new TextFormat(null, null, null, null, null, underlined));
+			labelsAndArgs = [label];
 		} else {
 			const loopBlocks:Array = ['doForever', 'doForeverIf', 'doRepeat', 'doUntil'];
 			base.hasLoopArrow = (loopBlocks.indexOf(op) >= 0);

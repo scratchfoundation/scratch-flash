@@ -153,11 +153,11 @@ public class PaletteBuilder {
 
 		// variable buttons, reporters, and set/change blocks
 		addItem(new Button(Translator.map('Make a Variable'), makeVariable));
-		var varNames:Array = app.runtime.allVarNames().sort();
+		var varNames:Array = app.runtime.allVarNames().sortOn("name");
 		if (varNames.length > 0) {
-			for each (var n:String in varNames) {
-				addVariableCheckbox(n, false);
-				addItem(new Block(n, 'r', catColor, Specs.GET_VAR), true);
+			for each (var n:RenderedVariable in varNames) {
+				addVariableCheckbox(n.name, false);
+				addItem(new Block(n.name, 'r', catColor, Specs.GET_VAR, null, !n.local), true);
 			}
 			nextY += 10;
 			addBlocksForCategory(Specs.dataCategory, catColor);
@@ -170,9 +170,9 @@ public class PaletteBuilder {
 
 		var listNames:Array = app.runtime.allListNames().sort();
 		if (listNames.length > 0) {
-			for each (n in listNames) {
-				addVariableCheckbox(n, true);
-				addItem(new Block(n, 'r', catColor, Specs.GET_LIST), true);
+			for each (var n:RenderedVariable in listNames) {
+				addVariableCheckbox(n.name, true);
+				addItem(new Block(n.name, 'r', catColor, Specs.GET_LIST), true);
 			}
 			nextY += 10;
 			addBlocksForCategory(Specs.listCategory, catColor);
