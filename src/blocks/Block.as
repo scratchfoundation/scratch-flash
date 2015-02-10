@@ -33,6 +33,7 @@
 package blocks {
 import extensions.ExtensionManager;
 
+
 import flash.display.*;
 	import flash.events.*;
 	import flash.filters.GlowFilter;
@@ -40,7 +41,10 @@ import flash.display.*;
 	import flash.net.URLLoader;
 	import flash.text.*;
 	import assets.Resources;
-	import translation.Translator;
+
+import flash.ui.Keyboard;
+
+import translation.Translator;
 	import util.*;
 	import uiwidgets.*;
 	import scratch.*;
@@ -110,6 +114,9 @@ public class Block extends Sprite {
 		this.type = type;
 		this.op = op;
 
+		// allow users to tab to select blocks
+		this.tabIndex = 1;
+
 		if ((Specs.CALL == op) ||
 			(Specs.GET_LIST == op) ||
 			(Specs.GET_PARAM == op) ||
@@ -170,6 +177,7 @@ public class Block extends Sprite {
 		setSpec(this.spec, defaultArgs);
 
 		addEventListener(FocusEvent.KEY_FOCUS_CHANGE, focusChange);
+		addEventListener(KeyboardEvent.KEY_UP, keyDown);
 	}
 
 	public function setSpec(newSpec:String, defaultArgs:Array = null):void {
@@ -876,6 +884,24 @@ public class Block extends Sprite {
 
 	/* Events */
 
+	public function keyDown(evt:KeyboardEvent):void {
+		switch (evt.keyCode) {
+            case (Keyboard.ENTER):
+            {
+                Scratch.app.runtime.interp.toggleThread(topBlock(), Scratch.app.viewedObj(), 1);
+                evt.preventDefault();
+            }
+            case (Keyboard.SPACE):
+            {
+                //TODO: Engage targeting menu
+                evt.preventDefault();
+            }
+            default: {
+
+            }
+        }
+	}
+
 	public function click(evt:MouseEvent):void {
 		if (editArg(evt)) return;
 		Scratch.app.runtime.interp.toggleThread(topBlock(), Scratch.app.viewedObj(), 1);
@@ -897,7 +923,6 @@ public class Block extends Sprite {
 	}
 
 	private function focusChange(evt:FocusEvent):void {
-		evt.preventDefault();
 		if (evt.target.parent.parent != this) return; // make sure the target TextField is in this block, not a child block
 		if (args.length == 0) return;
 		var i:int, focusIndex:int = -1;

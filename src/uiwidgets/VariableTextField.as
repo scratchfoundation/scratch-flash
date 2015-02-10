@@ -21,10 +21,17 @@ import flash.text.TextField;
 import flash.text.TextFormat;
 import flash.utils.Dictionary;
 
+import uiwidgets.VariableTextField;
+
 import util.StringUtils;
 
 public class VariableTextField extends TextField {
 	private var originalText:String;
+
+    public function VariableTextField() {
+        super();
+        this.tabIndex = 1;
+    }
 
 	override public function set text(value:String):void {
 		throw Error('Call setText() instead');

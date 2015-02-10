@@ -2,6 +2,7 @@
 .actionScriptProperties
 .flexLibProperties
 .project
+npm-debug.log
 *.iml
 local.properties
 .idea/
@@ -11,3 +12,4 @@ bin-release/
 html-template/
 libs/RenderIn3D.swf
 bin/*
+node_modules

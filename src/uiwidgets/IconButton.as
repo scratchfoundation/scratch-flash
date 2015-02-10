@@ -49,6 +49,7 @@ public class IconButton extends Sprite {
 	public function IconButton(clickFunction:Function, onImageOrName:*, offImageObj:DisplayObject = null, isRadioButton:Boolean = false) {
 		this.clickFunction = clickFunction;
 		this.isRadioButton = isRadioButton;
+        this.tabIndex = 1;
 		useDefaultImages();
 		setImage(onImageOrName, offImageObj);
 		addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);

@@ -57,6 +57,7 @@ public class MenuItem extends Sprite {
 			addEventListener(MouseEvent.MOUSE_OUT, mouseOut);
 			addEventListener(MouseEvent.MOUSE_UP, mouseUp);
 		}
+        this.tabIndex = 1;
 	}
 
 	public function setWidthHeight(w:int, itemHeight:int):void {
