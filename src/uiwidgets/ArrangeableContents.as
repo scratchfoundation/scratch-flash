@@ -2,6 +2,8 @@
  * Created by shanemc on 9/12/14.
  */
 package uiwidgets {
+import assets.ResourcesTablet;
+
 import com.greensock.TweenLite;
 import com.greensock.easing.Linear;
 
@@ -26,7 +28,7 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 
 	// Fixed state variables
 	private var type:uint = 0;
-	private var itemPadding:uint = 5;
+	private var itemPadding:uint = ResourcesTablet.pixelsPerCM * 0.1;
 
 	// Dynamic state variables
 	private var w:uint;
@@ -296,13 +298,16 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 
 		nextX = itemPadding * 2;
 		nextY = itemPadding * 2;
+		var realWidth:int = w - itemPadding * 4;
+		var colCount:int = realWidth / (MediaInfo.frameWidth + itemPadding);
+		var extraPadding:int = (realWidth - colCount * (MediaInfo.frameWidth + itemPadding)) / colCount;
 		return function(item:MediaInfo, index:int, arr:Array):void {
 			// Jump another position if we're on the dropPos
 			if (index == dropPos) arguments.callee(null, -2, arr);
 			if (item) moveItem(item, nextX, nextY, animate);
 
-			nextX += MediaInfo.frameWidth + itemPadding;
-			if (nextX > w - MediaInfo.frameWidth) {
+			nextX += MediaInfo.frameWidth + itemPadding + extraPadding;
+			if (nextX > w - (MediaInfo.frameWidth + itemPadding)) {
 				nextX = itemPadding * 2;
 				nextY += MediaInfo.frameHeight + itemPadding;
 			}

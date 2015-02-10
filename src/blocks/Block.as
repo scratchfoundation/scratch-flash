@@ -66,6 +66,7 @@ public class Block extends Sprite implements IDraggable {
 	protected static var useEmbeddedFont:Boolean = false;
 
 	public static var MenuHandlerFunction:Function;	// optional function to handle block and blockArg menus
+	public static var MenuClass:Class = Menu;	// optional function to handle block and blockArg menus
 
 	public var spec:String;
 	public var type:String;
@@ -127,7 +128,11 @@ public class Block extends Sprite implements IDraggable {
 		addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, menu);
 		addEventListener(DragEvent.DRAG_START, handleDragEvent);
 		addEventListener(DragEvent.DRAG_CANCEL, handleDragEvent);
-		DragAndDropMgr.setDraggable(this);
+		setDraggable(true);
+	}
+
+	protected function setDraggable(draggable:Boolean):void {
+		DragAndDropMgr.setDraggable(this, draggable);
 	}
 
 	protected function setType(type:String, color:int):void {

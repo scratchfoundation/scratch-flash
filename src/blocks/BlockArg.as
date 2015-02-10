@@ -40,9 +40,14 @@ package blocks {
 	import flash.events.*;
 	import flash.filters.BevelFilter;
 	import flash.text.*;
-	import scratch.BlockMenus;
+import flash.utils.setTimeout;
+
+import scratch.BlockMenus;
 	import translation.Translator;
-	import util.Color;
+
+import ui.dragdrop.DragAndDropMgr;
+
+import util.Color;
 
 public class BlockArg extends Sprite {
 
@@ -268,7 +273,12 @@ public class BlockArg extends Sprite {
 		if ((menuIcon != null) && (evt.localX <= menuIcon.x)) return;
 		if (Block.MenuHandlerFunction != null) {
 			Block.MenuHandlerFunction(evt, parent, this, menuName);
-			evt.stopImmediatePropagation();
+			var b:DisplayObject = parent;
+			while (!(b is Block) && b) b = b.parent;
+			if (b is Block)
+				setTimeout(function():void {
+					DragAndDropMgr.cancelDrag(b as Block);
+				}, 0);
 		}
 	}
 

@@ -34,19 +34,22 @@
 
 package uiwidgets {
 import flash.display.*;
-import flash.events.*;
+import flash.events.Event;
+import flash.events.MouseEvent;
 import flash.filters.GlowFilter;
 
-import ui.ITool;
-import ui.ToolMgr;
+import org.gestouch.core.Touch;
+import org.gestouch.events.GestureEvent;
+import org.gestouch.gestures.Gesture;
+import org.gestouch.gestures.TransformGesture;
 
-public class ScrollFrame extends Sprite implements ITool {
+public class ScrollFrame extends Sprite {
 
 	public var contents:ScrollFrameContents;
 	public var allowHorizontalScrollbar:Boolean = true;
 
-	private const decayFactor:Number = 0.95;	// velocity decay (make zero to stop instantly)
-	private const stopThreshold:Number = 0.4;	// stop when velocity is below threshold
+	private static const decayFactor:Number = 0.95;	// velocity decay (make zero to stop instantly)
+	private static const stopThreshold:Number = 0.4;	// stop when velocity is below threshold
 	private const cornerRadius:int = 0;
 	private const useFrame:Boolean = false;
 
@@ -65,6 +68,8 @@ public class ScrollFrame extends Sprite implements ITool {
 	private var xVelocity:Number = 0;
 	private var yVelocity:Number = 0;
 
+	private var panGesture:TransformGesture;
+
 	public function ScrollFrame(dragScrolling:Boolean = false, scrollbarStyle:int = 0) {
 		this.scrollbarStyle = scrollbarStyle || Scrollbar.STYLE_DEFAULT;
 		this.dragScrolling = dragScrolling;
@@ -74,9 +79,28 @@ public class ScrollFrame extends Sprite implements ITool {
 		if (useFrame) addShadowFrame(); // adds a shadow to top and left
 		setWidthHeight(100, 100);
 		setContents(new ScrollFrameContents());
-		addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
 		addEventListener(Event.OPEN, cancelScrolling);
 		enableScrollWheel('vertical');
+		if (dragScrolling) {
+			enableDragScrolling();
+		}
+	}
+
+	public function enableDragScrolling(dragGesture:TransformGesture = null):void {
+		panGesture = dragGesture || new TransformGesture(this);
+		if (!panGesture.gestureShouldReceiveTouchCallback) {
+			panGesture.gestureShouldReceiveTouchCallback = shouldPanReceiveTouch;
+		}
+		panGesture.addEventListener(GestureEvent.GESTURE_BEGAN, onPanGestureBegan);
+		panGesture.addEventListener(GestureEvent.GESTURE_CHANGED, onPanGestureChanged);
+		panGesture.addEventListener(GestureEvent.GESTURE_ENDED, onPanGestureEnded);
+	}
+
+	public function dispose():void {
+		if (panGesture) {
+			panGesture.dispose();
+			panGesture = null;
+		}
 	}
 
 	public function setWidthHeight(w:int, h:int):void {
@@ -93,9 +117,10 @@ public class ScrollFrame extends Sprite implements ITool {
 		g.endFill();
 	}
 
-	private function cancelScrolling(e:Event):void {
-		if (ToolMgr.deactivateTool(this))
-			mouseHandler(new MouseEvent(MouseEvent.MOUSE_UP));
+	private function cancelScrolling(event:Event):void {
+		if (panGesture) {
+			panGesture.reset();
+		}
 	}
 
 	private function addShadowFrame():void {
@@ -232,63 +257,52 @@ public class ScrollFrame extends Sprite implements ITool {
 		contents.y = Math.max(-maxScrollV(), Math.min(contents.y, 0));
 	}
 
-	private function mouseDown(evt:MouseEvent):void {
-		if (evt.shiftKey || !dragScrolling) return;
-		if (ToolMgr.activateTool(this))
-			mouseHandler(evt);
+	protected function shouldPanReceiveTouch(gesture:Gesture, touch:Touch):Boolean {
+		return touch.target == this || touch.target == this.contents;
 	}
 
-	private var scrolled:Boolean;
-	public function mouseHandler(e:MouseEvent):Boolean {
-		var captureEvent:Boolean = false;
-		switch (e.type) {
-			case MouseEvent.MOUSE_DOWN:
-				// TODO: Use the event to get the mouse position to support multi-touch
-				xHistory = [mouseX, mouseX, mouseX];
-				yHistory = [mouseY, mouseY, mouseY];
-				xOffset = mouseX - contents.x;
-				yOffset = mouseY - contents.y;
+	protected function onPanGestureBegan(event:GestureEvent):void {
+		xHistory = [0,0,0];
+		yHistory = [0,0,0];
+		contents.mouseChildren = false;
+		removeEventListener(Event.ENTER_FRAME, step);
+		onPanGestureChanged(event);
+	}
 
-				if (!dragScrolling) {
-					if (visibleW() < contents.width) showHScrollbar(allowHorizontalScrollbar);
-					if (visibleH() < contents.height) showVScrollbar(true);
-					if (hScrollbar) hScrollbar.allowDragging(false);
-					if (vScrollbar) vScrollbar.allowDragging(false);
-				}
+	protected function onPanGestureChanged(event:GestureEvent):void {
+		var panGesture:TransformGesture = event.target as TransformGesture;
 
-				removeEventListener(Event.ENTER_FRAME, step);
-				scrolled = false;
-				break;
+		var offsetX:Number = allowHorizontalScrollbar ? panGesture.offsetX : 0;
+		var offsetY:Number = panGesture.offsetY;
 
-			case MouseEvent.MOUSE_MOVE:
-				xHistory.push(mouseX);
-				yHistory.push(mouseY);
-				xHistory.shift();
-				yHistory.shift();
-				if (allowHorizontalScrollbar) contents.x = mouseX - xOffset;
-				contents.y = mouseY - yOffset;
-				constrainScroll();
-				scrolled = scrolled || (xOffset != 0 || yOffset != 0);
-				if (scrolled && contents.mouseChildren)
-					contents.mouseChildren = false; // disable mouse events while scrolling
-				captureEvent = true;
-				break;
+		xHistory.push(panGesture.offsetX);
+		yHistory.push(panGesture.offsetY);
+		xHistory.shift();
+		yHistory.shift();
 
-			case MouseEvent.MOUSE_UP:
-				xVelocity = (xHistory[2] - xHistory[0]) / 1.5;
-				yVelocity = (yHistory[2] - yHistory[0]) / 1.5;
-				if ((Math.abs(xVelocity) < 2) && (Math.abs(yVelocity) < 2)) {
-					xVelocity = yVelocity = 0;
-				}
-				addEventListener(Event.ENTER_FRAME, step);
-				ToolMgr.deactivateTool(this);
-				captureEvent = scrolled;
-				contents.mouseChildren = true;
-				break;
-		}
+		contents.x += offsetX;
+		contents.y += offsetY;
+		constrainScroll();
 
 		updateScrollbars();
-		return captureEvent;
+	}
+
+	protected function onPanGestureEnded(event:GestureEvent):void {
+		var historyLength:uint = xHistory.length;
+		xVelocity = yVelocity = 0;
+		for (var i:uint = 0; i < historyLength; ++i) {
+			xVelocity += xHistory[i];
+			yVelocity += yHistory[i];
+		}
+		var scaleBy:Number = 0.75 / historyLength;
+		xVelocity *= scaleBy;
+		yVelocity *= scaleBy;
+
+		if ((Math.abs(xVelocity) < 2) && (Math.abs(yVelocity) < 2)) {
+			xVelocity = yVelocity = 0;
+		}
+		addEventListener(Event.ENTER_FRAME, step);
+		contents.mouseChildren = true;
 	}
 
 	public function shutdown():void {}
