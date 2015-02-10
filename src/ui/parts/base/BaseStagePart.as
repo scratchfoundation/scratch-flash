@@ -133,7 +133,6 @@ public class BaseStagePart extends UIPart implements IDraggable {
 			dragPos = dragTarget.localToGlobal(new Point);
 			dragStageScale = dragTarget.transform.concatenatedMatrix.a;
 			dragOrigScale = dragTarget.scaleX;
-			trace('orig scale = '+dragOrigScale);
 		}
 
 		return dragSprite;

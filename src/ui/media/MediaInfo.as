@@ -49,6 +49,7 @@ public class MediaInfo extends Sprite implements IDraggable {
 	public static var frameHeight:int = 94;
 	protected static var thumbnailWidth:int = 68;
 	protected static var thumbnailHeight:int = 51;
+	protected static var infoHeight:int = 28;
 
 	// at most one of the following is non-null:
 	private var frameHeightOverride:int = -1;
@@ -127,11 +128,12 @@ public class MediaInfo extends Sprite implements IDraggable {
 		return ['Backdrop', 'Costume', 'Script', 'Sound', 'Sprite', 'save to local file'];
 	}
 
-	public static function setFrameSize(w:int, h:int):void {
+	public static function setFrameWidth(w:uint):void {
 		frameWidth = w;
-		frameHeight = h;
-		thumbnailWidth = w * 0.87;
-		thumbnailHeight = (h - 28) * 0.9;
+		frameHeight = Math.floor(1.161 * w);
+		thumbnailWidth = Math.floor(0.84 * w);
+		thumbnailHeight = Math.floor(0.543 * frameHeight);
+		infoHeight = Math.floor(0.3 * frameHeight);
 	}
 
 	// -----------------------------
@@ -380,7 +382,7 @@ public class MediaInfo extends Sprite implements IDraggable {
 	protected function addThumbnail():void {
 		if ('sound' == objType) {
 			thumbnail = Resources.createBmp('speakerOff');
-			thumbnail.x = 18;
+			thumbnail.x = (frameWidth - thumbnail.width) / 2;
 			thumbnail.y = 16;
 		} else {
 			thumbnail = Resources.createBmp('questionMark');
@@ -393,10 +395,10 @@ public class MediaInfo extends Sprite implements IDraggable {
 
 	protected function addLabelAndInfo():void {
 		label = Resources.makeLabel('', CSS.thumbnailFormat);
-		label.y = getFrameHeight() - 28;
+		label.y = getFrameHeight() - infoHeight;
 		addChild(label);
 		info = Resources.makeLabel('', CSS.thumbnailExtraInfoFormat);
-		info.y = getFrameHeight() - 14;
+		info.y = getFrameHeight() - Math.floor(infoHeight * 0.5);
 		addChild(info);
 	}
 
