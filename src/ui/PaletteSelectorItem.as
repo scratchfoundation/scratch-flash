@@ -25,8 +25,10 @@
 
 package ui {
 	import flash.display.*;
-	import flash.events.MouseEvent;
+import flash.events.KeyboardEvent;
+import flash.events.MouseEvent;
 	import flash.text.*;
+import flash.ui.Keyboard;
 
 public class PaletteSelectorItem extends Sprite {
 
@@ -45,7 +47,22 @@ public class PaletteSelectorItem extends Sprite {
 		addEventListener(MouseEvent.MOUSE_OUT, mouseOut);
 		addEventListener(MouseEvent.CLICK, mouseUp);
         this.tabIndex = 1;
+
+        addEventListener(KeyboardEvent.KEY_DOWN, keyDown);
 	}
+    public function keyDown(evt:KeyboardEvent):void {
+        switch (evt.keyCode) {
+            case (Keyboard.ENTER):
+            {
+                PaletteSelector(parent).select(categoryID, false);
+                evt.preventDefault();
+            }
+            default: {
+
+            }
+        }
+    }
+
 
 	private function addLabel(s:String):void {
 		label = new TextField();
