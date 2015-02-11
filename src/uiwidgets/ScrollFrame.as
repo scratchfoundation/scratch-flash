@@ -38,9 +38,7 @@ import flash.events.Event;
 import flash.events.MouseEvent;
 import flash.filters.GlowFilter;
 
-import org.gestouch.core.Touch;
 import org.gestouch.events.GestureEvent;
-import org.gestouch.gestures.Gesture;
 import org.gestouch.gestures.TransformGesture;
 
 public class ScrollFrame extends Sprite {
@@ -87,9 +85,12 @@ public class ScrollFrame extends Sprite {
 	}
 
 	public function enableDragScrolling(dragGesture:TransformGesture = null):void {
-		panGesture = dragGesture || new TransformGesture(this);
-		if (!panGesture.gestureShouldReceiveTouchCallback) {
-			panGesture.gestureShouldReceiveTouchCallback = shouldPanReceiveTouch;
+		if (dragGesture) {
+			panGesture = dragGesture;
+			panGesture.target = this;
+		}
+		else {
+			panGesture = new TransformGesture(this);
 		}
 		panGesture.addEventListener(GestureEvent.GESTURE_BEGAN, onPanGestureBegan);
 		panGesture.addEventListener(GestureEvent.GESTURE_CHANGED, onPanGestureChanged);
@@ -255,10 +256,6 @@ public class ScrollFrame extends Sprite {
 	public function constrainScroll():void {
 		contents.x = Math.max(-maxScrollH(), Math.min(contents.x, 0));
 		contents.y = Math.max(-maxScrollV(), Math.min(contents.y, 0));
-	}
-
-	protected function shouldPanReceiveTouch(gesture:Gesture, touch:Touch):Boolean {
-		return touch.target == this || touch.target == this.contents;
 	}
 
 	protected function onPanGestureBegan(event:GestureEvent):void {
