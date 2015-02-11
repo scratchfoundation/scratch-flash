@@ -27,9 +27,7 @@
 
 package ui.media {
 import by.blooddy.crypto.MD5;
-
 import ui.dragdrop.IDraggable;
-
 import util.JSON;
 import flash.display.*;
 import flash.events.*;
@@ -132,8 +130,8 @@ public class MediaInfo extends Sprite implements IDraggable {
 		frameWidth = w;
 		frameHeight = Math.floor(1.161 * w);
 		thumbnailWidth = Math.floor(0.84 * w);
-		thumbnailHeight = Math.floor(0.543 * frameHeight);
-		infoHeight = Math.floor(0.3 * frameHeight);
+		thumbnailHeight = Math.floor(0.67 * frameHeight);
+		infoHeight = Math.floor(0.27 * frameHeight);
 	}
 
 	// -----------------------------
@@ -224,6 +222,7 @@ public class MediaInfo extends Sprite implements IDraggable {
 		thumbnail.bitmapData = bm;
 
 		thumbnail.x = (frameWidth - thumbnail.width) / 2;
+		thumbnail.y = (frameHeight - infoHeight - thumbnail.height) / 2;
 	}
 
 	protected function setInfo(s:String):void {
