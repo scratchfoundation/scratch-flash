@@ -30,18 +30,19 @@ import flash.text.TextField;
 import flash.text.TextFormat;
 import flash.utils.getTimer;
 
+import org.gestouch.core.Touch;
+import org.gestouch.gestures.Gesture;
+import org.gestouch.gestures.TransformGesture;
+
 import scratch.ScratchObj;
 import scratch.ScratchSprite;
 
 import ui.BlockPalette;
-
 import ui.PaletteSelector;
-
 import ui.parts.UIPart;
 
 import uiwidgets.IndicatorLight;
 import uiwidgets.ScriptsPane;
-
 import uiwidgets.ScrollFrame;
 import uiwidgets.ZoomWidget;
 
@@ -80,7 +81,12 @@ public class BaseScriptsPart extends UIPart implements IScriptsPart {
 		addChild(paletteFrame);
 
 		var scriptsPane:ScriptsPane = getScriptsPane();
-		scriptsFrame = new ScrollFrame(dragScroll);
+		scriptsFrame = new ScrollFrame(false);
+		if (dragScroll) {
+			var scriptsScrollGesture:TransformGesture = new TransformGesture();
+			scriptsScrollGesture.gestureShouldReceiveTouchCallback = shouldScriptsScrollReceiveTouch;
+			scriptsFrame.enableDragScrolling(scriptsScrollGesture);
+		}
 		scriptsFrame.setContents(scriptsPane);
 		addChild(scriptsFrame);
 
@@ -96,6 +102,10 @@ public class BaseScriptsPart extends UIPart implements IScriptsPart {
 
 	protected function getScriptsPane():ScriptsPane {
 		return new ScriptsPane(app);
+	}
+
+	protected function shouldScriptsScrollReceiveTouch(gesture:Gesture, touch:Touch):Boolean {
+		return touch.target == scriptsFrame || touch.target == scriptsFrame.contents;
 	}
 
 	// Derived classes need to actually do something with the layout
