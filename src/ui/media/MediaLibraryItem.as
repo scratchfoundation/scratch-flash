@@ -90,10 +90,26 @@ public class MediaLibraryItem extends Sprite {
 	// Thumbnail
 	//------------------------------
 
-	public function loadThumbnail(done:Function):void {
+	private var thumbnailRequested:Boolean = false;
+	public function show(shouldShow:Boolean):void {
+		if (visible == shouldShow) {
+			return;
+		}
+
+		// TODO: do more on show/hide?
+		visible = shouldShow;
+		if (shouldShow) {
+			if (!thumbnailRequested) {
+				thumbnailRequested = true;
+				loadThumbnail();
+			}
+		}
+	}
+
+	private function loadThumbnail():void {
 		var ext:String = fileType(dbObj.md5);
-		if (['gif', 'png', 'jpg', 'jpeg', 'svg'].indexOf(ext) > -1) setImageThumbnail(dbObj.md5, done);
-		else if (ext == 'json') setSpriteThumbnail(done);
+		if (['gif', 'png', 'jpg', 'jpeg', 'svg'].indexOf(ext) > -1) setImageThumbnail(dbObj.md5);
+		else if (ext == 'json') setSpriteThumbnail();
 	}
 
 	public function stopLoading():void {
@@ -109,7 +125,7 @@ public class MediaLibraryItem extends Sprite {
 	}
 
 	// all paths must call done() even on failure!
-	private function setImageThumbnail(md5:String, done:Function, spriteMD5:String = null):void {
+	private function setImageThumbnail(md5:String, spriteMD5:String = null):void {
 		var forStage:Boolean = (dbObj.width == 480); // if width is 480, format thumbnail for stage
 		var importer:SVGImporter;
 		function gotSVGData(data:ByteArray):void {
@@ -117,15 +133,11 @@ public class MediaLibraryItem extends Sprite {
 				importer = new SVGImporter(XML(data));
 				importer.loadAllImages(svgImagesLoaded);
 			}
-			else {
-				done();
-			}
 		}
 		function svgImagesLoaded():void {
 			var c:ScratchCostume = new ScratchCostume('', null);
 			c.setSVGRoot(importer.root, false);
 			setThumbnail(c.thumbnail(thumbnailWidth, thumbnailHeight, forStage));
-			done();
 		}
 		function setThumbnail(bm:BitmapData):void {
 			if (bm) {
@@ -133,19 +145,17 @@ public class MediaLibraryItem extends Sprite {
 				if (spriteMD5) thumbnailCache[spriteMD5] = bm;
 				setThumbnailBM(bm);
 			}
-			done();
 		}
 		// first, check the thumbnail cache
 		var cachedBM:BitmapData = thumbnailCache[md5];
-		if (cachedBM) { setThumbnailBM(cachedBM); done(); return; }
+		if (cachedBM) { setThumbnailBM(cachedBM); return; }
 
 		// if not in the thumbnail cache, fetch/compute it
 		if (fileType(md5) == 'svg') loaders.push(Scratch.app.server.getAsset(md5, gotSVGData));
 		else loaders.push(Scratch.app.server.getThumbnail(md5, thumbnailWidth, thumbnailHeight, setThumbnail));
 	}
 
-	// all paths must call done() even on failure!
-	private function setSpriteThumbnail(done:Function):void {
+	private function setSpriteThumbnail():void {
 		function gotJSONData(data:String):void {
 			var md5:String;
 			if (data) {
@@ -164,16 +174,13 @@ public class MediaLibraryItem extends Sprite {
 				}
 			}
 			if (md5) {
-				setImageThumbnail(md5, done, spriteMD5);
-			}
-			else {
-				done();
+				setImageThumbnail(md5, spriteMD5);
 			}
 		}
 		// first, check the thumbnail cache
 		var spriteMD5:String = dbObj.md5;
 		var cachedBM:BitmapData = thumbnailCache[spriteMD5];
-		if (cachedBM) { setThumbnailBM(cachedBM); done(); return; }
+		if (cachedBM) { setThumbnailBM(cachedBM); return; }
 
 		if (spriteCache[spriteMD5]) gotJSONData(spriteCache[spriteMD5]);
 		else loaders.push(Scratch.app.server.getAsset(spriteMD5, gotJSONData));
