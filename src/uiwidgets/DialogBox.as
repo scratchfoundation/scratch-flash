@@ -239,7 +239,7 @@ public class DialogBox extends Sprite {
 		}
 	}
 
-	private function remove():void {
+	protected function remove():void {
 		if (parent != null) parent.removeChild(this);
 	}
 
