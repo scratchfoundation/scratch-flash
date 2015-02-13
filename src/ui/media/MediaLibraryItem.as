@@ -75,22 +75,14 @@ public class MediaLibraryItem extends Sprite {
 		thumbnailHeight = isSound ? 51 : 90;
 
 		addFrame();
-		addThumbnail();
-		addLabel();
-		addInfo();
-		unhighlight();
-		if (isSound) addPlayButton();
+		visible = false; // must call show(true) first
 		addEventListener(MouseEvent.CLICK, click);
 		addEventListener(MouseEvent.DOUBLE_CLICK, doubleClick);
 	}
 
 	public static function strings():Array { return ['Costumes:', 'Scripts:'] }
 
-	// -----------------------------
-	// Thumbnail
-	//------------------------------
-
-	private var thumbnailRequested:Boolean = false;
+	private var visualReady:Boolean = false;
 	public function show(shouldShow:Boolean):void {
 		if (visible == shouldShow) {
 			return;
@@ -99,12 +91,21 @@ public class MediaLibraryItem extends Sprite {
 		// TODO: do more on show/hide?
 		visible = shouldShow;
 		if (shouldShow) {
-			if (!thumbnailRequested) {
-				thumbnailRequested = true;
+			if (!visualReady) {
+				visualReady = true;
+				addThumbnail();
+				addLabel();
+				addInfo();
+				unhighlight();
+				if (isSound) addPlayButton();
 				loadThumbnail();
 			}
 		}
 	}
+
+	// -----------------------------
+	// Thumbnail
+	//------------------------------
 
 	private function loadThumbnail():void {
 		var ext:String = fileType(dbObj.md5);
