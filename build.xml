@@ -20,6 +20,7 @@
 		<mxmlc file="${SRC_DIR}/Scratch.as" output="${DEPLOY_DIR}/ScratchFor10.2.swf"
 		                target-player="10.2" swf-version="11" debug="false">
 			<source-path path-element="${SRC_DIR}" />
+			<library-path file="${LIBS_DIR}/actionjson.swc" />
 			<library-path file="${LIBS_DIR}/blooddy_crypto.swc" />
 			<library-path file="${FLEX_HOME}/frameworks/libs/framework.swc" />
 			<static-link-runtime-shared-libraries>true</static-link-runtime-shared-libraries>
@@ -33,6 +34,7 @@
 		<mxmlc file="${SRC_DIR}/Scratch.as" output="${DEPLOY_DIR}/Scratch.swf"
 		                target-player="11.4" swf-version="17" debug="false">
 			<source-path path-element="${SRC_DIR}" />
+			<library-path file="${LIBS_DIR}/actionjson.swc" />
 			<library-path file="${LIBS_DIR}/blooddy_crypto.swc" />
 			<library-path file="${FLEX_HOME}/frameworks/libs/framework.swc" />
 			<static-link-runtime-shared-libraries>true</static-link-runtime-shared-libraries>
