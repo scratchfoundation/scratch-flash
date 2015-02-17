@@ -23,7 +23,7 @@
 // A variable is a name-value pair.
 
 package interpreter {
-	import util.JSON;
+import util.JSON;
 
 public class Variable {
 
