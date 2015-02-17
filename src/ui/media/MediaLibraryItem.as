@@ -300,14 +300,19 @@ public class MediaLibraryItem extends Sprite {
 	private function highlight():void {
 		if (frame.alpha != 1) {
 			frame.alpha = 1;
-			info.visible = true;
+			if (info) {
+				// TODO: handle highlight before info
+				info.visible = true;
+			}
 		}
 	}
 
 	private function unhighlight():void {
 		if (frame.alpha != 0) {
 			frame.alpha = 0;
-			info.visible = false;
+			if (info) {
+				info.visible = false;
+			}
 		}
 	}
 
