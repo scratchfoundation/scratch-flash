@@ -467,24 +467,33 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 		requestScrollUpdate();
 	}
 
-	private var pendingShowHideOperations:Array = [];
+	// TODO: move to common utility class?
+	private function isDictionaryEmpty(dict:Dictionary):Boolean {
+		for (var key:* in dict) {
+			return false;
+		}
+		return true;
+	}
+
+	private var pendingShowHideOperations:Dictionary = new Dictionary();
 	private function doScrollUpdate():void {
 		pendingScrollUpdate = false;
 
 		var visibleBounds:Rectangle =
 				new Rectangle(-resultsPane.x, -resultsPane.y, resultsFrame.visibleW(), resultsFrame.visibleH());
 
-		var queueWasEmpty:Boolean = (pendingShowHideOperations.length == 0);
+		var queueWasEmpty:Boolean = isDictionaryEmpty(pendingShowHideOperations);
+		var queueIsEmpty:Boolean = queueWasEmpty;
 		var numItems:uint = resultsPane.numChildren;
 		for (var i:uint = 0; i < numItems; ++i) {
 			var item:MediaLibraryItem = resultsPane.getChildAt(i) as MediaLibraryItem;
 			if (item) {
 				var itemBounds:Rectangle = item.getBounds(resultsPane);
 				var shouldShow:Boolean = visibleBounds.intersects(itemBounds);
-				pendingShowHideOperations.push([item, shouldShow]);
+				pendingShowHideOperations[item] = shouldShow;
+				queueIsEmpty = false;
 			}
 		}
-		var queueIsEmpty:Boolean = (pendingShowHideOperations.length == 0);
 		if (queueWasEmpty && !queueIsEmpty) {
 			processShowQueue();
 		}
@@ -495,10 +504,9 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 			// avoid recursion
 			setTimeout(processShowQueue, 0);
 		}
-		var work:Array;
-		while ((work = pendingShowHideOperations.shift()) != null) {
-			var item:MediaLibraryItem = work[0];
-			var shouldShow:Boolean = work[1];
+		for (var item:MediaLibraryItem in pendingShowHideOperations) {
+			var shouldShow:Boolean = pendingShowHideOperations[item];
+			delete pendingShowHideOperations[item];
 			item.show(shouldShow, shouldShow ? callMeLater : null);
 			if (shouldShow) {
 				// hide many, show one
