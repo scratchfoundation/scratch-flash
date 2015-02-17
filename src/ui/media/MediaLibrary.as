@@ -269,7 +269,7 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 		resultsPane.color = CSS.white;
 		resultsPane.hExtra = 0;
 		resultsPane.vExtra = 5;
-		resultsFrame = new ScrollFrame();
+		resultsFrame = new ScrollFrame(true);
 		resultsFrame.setContents(resultsPane);
 		addChild(resultsFrame);
 		resultsPane.addEventListener(ScrollFrameContents.SCROLL_X, resultsDidScroll);
