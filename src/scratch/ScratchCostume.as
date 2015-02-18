@@ -27,7 +27,7 @@
 // Internally, a costume consists of a base image and an optional text layer.
 // If a costume has a text layer, the text image is stored as a separate
 // bitmap and composited with the base image to create the costume bitmap.
-// Storing the text layer separately allows the text to be changed indpendent
+// Storing the text layer separately allows the text to be changed independent
 // of the base image. Saving the text image means that costumes with text
 // do not depend on the fonts available on the viewer's computer. (However,
 // editing the text *does* depend on the user's fonts.)
@@ -59,7 +59,7 @@ public class ScratchCostume {
 	public var baseLayerBitmap:BitmapData;
 	public var baseLayerID:int = -1;
 	public var baseLayerMD5:String;
-	public var baseLayerData:ByteArray;
+	private var __baseLayerData:ByteArray;
 
 	public static const WasEdited:int = -10; // special baseLayerID used to indicate costumes that have been edited
 
@@ -74,7 +74,7 @@ public class ScratchCostume {
 	public var textLayerBitmap:BitmapData;
 	public var textLayerID:int = -1;
 	public var textLayerMD5:String;
-	public var textLayerData:ByteArray;
+	private var __textLayerData:ByteArray;
 
 	public var text:String;
 	public var textRect:Rectangle;
@@ -101,6 +101,24 @@ public class ScratchCostume {
 			setSVGData(data, (centerX == 99999));
 			prepareToSave();
 		}
+	}
+
+	public function get baseLayerData():ByteArray {
+		return __baseLayerData;
+	}
+
+	public function set baseLayerData(data:ByteArray):void {
+		__baseLayerData = data;
+		baseLayerMD5 = null;
+	}
+
+	public function get textLayerData():ByteArray {
+		return __textLayerData;
+	}
+
+	public function set textLayerData(data:ByteArray):void {
+		__textLayerData = data;
+		textLayerMD5 = null;
 	}
 
 	public static function scaleForScratch(bm:BitmapData):BitmapData {
@@ -168,7 +186,7 @@ public class ScratchCostume {
 	public function setSVGData(data:ByteArray, computeCenter:Boolean, fromEditor:Boolean = true):void {
 		// Initialize an SVG costume.
 		function refreshAfterImagesLoaded():void {
-			svgSprite = new SVGDisplayRender().renderAsSprite(svgRoot);
+			svgSprite = new SVGDisplayRender().renderAsSprite(svgRoot, false, true);
 			if (Scratch.app && Scratch.app.viewedObj() && (Scratch.app.viewedObj().currentCostume() == thisC)) {
 				Scratch.app.viewedObj().updateCostume();
 				Scratch.app.refreshImageTab(fromEditor);
@@ -187,7 +205,7 @@ public class ScratchCostume {
 
 	public function setSVGRoot(svg:SVGElement, computeCenter:Boolean):void {
 		svgRoot = svg;
-		svgSprite = new SVGDisplayRender().renderAsSprite(svgRoot);
+		svgSprite = new SVGDisplayRender().renderAsSprite(svgRoot, false, true);
 		var r:Rectangle;
 		var viewBox:Array = svg.getAttribute('viewBox', '').split(' ');
 		if (viewBox.length == 4) r = new Rectangle(viewBox[0], viewBox[1], viewBox[2], viewBox[3]);
@@ -227,7 +245,7 @@ public class ScratchCostume {
 
 	public function displayObj():DisplayObject {
 		if (svgRoot) {
-			if (!svgSprite) svgSprite = new SVGDisplayRender().renderAsSprite(svgRoot);
+			if (!svgSprite) svgSprite = new SVGDisplayRender().renderAsSprite(svgRoot, false, true);
 			return svgSprite;
 		}
 
@@ -269,7 +287,7 @@ public class ScratchCostume {
 		return ((B.x-A.x)*(C.y-A.y)-(B.y-A.y)*(C.x-A.x));
 	}
 
-	/* make a convex hull of boundary of forground object in the binary
+	/* make a convex hull of boundary of foreground object in the binary
 	 image */
 	/* in some case L[0]=R[0], or L[ll]=R[rr] if first line or last line of
 	 object is composed of
@@ -411,11 +429,7 @@ public class ScratchCostume {
 			else if(dispObj is Shape) {
 				var shape:Shape = new Shape();
 				shape.graphics.copyFrom((dispObj as Shape).graphics);
-				shape.x = dispObj.x;
-				shape.y = dispObj.y;
-				shape.scaleX = dispObj.scaleX;
-				shape.scaleY = dispObj.scaleY;
-				shape.rotation = dispObj.rotation;
+				shape.transform = dispObj.transform;
 				clone.addChild(shape);
 			}
 			else if(dispObj is Bitmap) {
@@ -526,7 +540,7 @@ public class ScratchCostume {
 		costumeName = jsonObj.costumeName;
 		baseLayerID = jsonObj.baseLayerID;
 		if (jsonObj.baseLayerID == undefined) {
-			if (jsonObj.imageID) baseLayerID = jsonObj.imageID; // slighly older .sb2 format
+			if (jsonObj.imageID) baseLayerID = jsonObj.imageID; // slightly older .sb2 format
 		}
 		baseLayerMD5 = jsonObj.baseLayerMD5;
 		if (jsonObj.bitmapResolution) bitmapResolution = jsonObj.bitmapResolution;

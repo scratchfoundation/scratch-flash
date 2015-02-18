@@ -84,6 +84,7 @@ public class Block extends Sprite {
 
 	// Blocking operations
 	public var isRequester:Boolean = false;
+	public var forcedRequester:Boolean = false;	// We've forced requester-like treatment on a non-requester block.
 	public var requestState:int = 0;		// 0 - no request made, 1 - awaiting response, 2 - data ready
 	public var response:* = null;
 	public var requestLoader:URLLoader = null;
@@ -129,11 +130,12 @@ public class Block extends Sprite {
 			isReporter = true;
 			indentLeft = 9;
 			indentRight = 7;
-		} else if (type == "r" || type == "R") {
+		} else if (type == "r" || type == "R" || type == "rR") {
 			this.type = 'r';
 			base = new BlockShape(BlockShape.NumberShape, color);
 			isReporter = true;
-			isRequester = (type == 'R');
+			isRequester = ((type == 'R') || (type == 'rR'));
+			forcedRequester = (type == 'rR');
 			indentTop = 2;
 			indentBottom = 2;
 			indentLeft = 6;
@@ -188,6 +190,8 @@ public class Block extends Sprite {
 			labelsAndArgs.push(label);
 			var b:Block;
 			labelsAndArgs.push(b = declarationBlock());
+		} else if (op == Specs.GET_VAR || op == Specs.GET_LIST) {
+			labelsAndArgs = [makeLabel(spec)];
 		} else {
 			const loopBlocks:Array = ['doForever', 'doForeverIf', 'doRepeat', 'doUntil'];
 			base.hasLoopArrow = (loopBlocks.indexOf(op) >= 0);
@@ -228,7 +232,7 @@ public class Block extends Sprite {
 		var font:String = Resources.chooseFont([
 			'Lucida Grande', 'Verdana', 'Arial', 'DejaVu Sans']);
 		blockLabelFormat = new TextFormat(font, labelSize, 0xFFFFFF, boldFlag);
-		argTextFormat = new TextFormat(font, argSize, 0x505050, boldFlag);
+		argTextFormat = new TextFormat(font, argSize, 0x505050, false);
 		Block.vOffset = vOffset;
 	}
 
@@ -292,6 +296,11 @@ public class Block extends Sprite {
 			if (o is TextField) argType = 'label';
 			argTypes.push(argType);
 		}
+	}
+
+	public function argType(arg:DisplayObject):String {
+		var i:int = labelsAndArgs.indexOf(arg);
+		return i == -1 ? '' : argTypes[i];
 	}
 
 	public function allBlocksDo(f:Function):void {
@@ -530,6 +539,7 @@ public class Block extends Sprite {
 		if (op == 'whenClicked') newSpec = forStage ? 'when Stage clicked' : 'when this sprite clicked';
 		var dup:Block = new Block(newSpec, type, (int)(forClone ? -1 : base.color), op);
 		dup.isRequester = isRequester;
+		dup.forcedRequester = forcedRequester;
 		dup.parameterNames = parameterNames;
 		dup.defaultArgValues = defaultArgValues;
 		dup.warpProcFlag = warpProcFlag;
@@ -624,7 +634,7 @@ public class Block extends Sprite {
 				b.requestLoader.close();
 		}
 		topBlock().fixStackLayout();
-		Scratch.app.runtime.checkForGraphicEffects();
+		SCRATCH::allow3d { Scratch.app.runtime.checkForGraphicEffects(); }
 	}
 
 	public function insertBlock(b:Block):void {
@@ -751,7 +761,7 @@ public class Block extends Sprite {
 		//	@<iconName>
 		//	label (any string with no embedded white space that does not start with % or @)
 		//	a token consisting of a single % or @ character is also a label
-		if ((s.length >= 2) && (s.charAt(0) == "%")) { // argument spec
+		if (s.length >= 2 && s.charAt(0) == "%") { // argument spec
 			var argSpec:String = s.charAt(1);
 			if (argSpec == "b") return new BlockArg("b", c);
 			if (argSpec == "c") return new BlockArg("c", c);
@@ -759,11 +769,11 @@ public class Block extends Sprite {
 			if (argSpec == "m") return new BlockArg("m", c, false, s.slice(3));
 			if (argSpec == "n") return new BlockArg("n", c, true);
 			if (argSpec == "s") return new BlockArg("s", c, true);
-		} else if ((s.length >= 2) && (s.charAt(0) == "@")) { // icon spec
+		} else if (s.length >= 2 && s.charAt(0) == "@") { // icon spec
 			var icon:* = Specs.IconNamed(s.slice(1));
 			return (icon) ? icon : makeLabel(s);
 		}
-		return makeLabel(s);
+		return makeLabel(ReadStream.unescape(s));
 	}
 
 	private function makeLabel(label:String):TextField {
@@ -784,7 +794,7 @@ public class Block extends Sprite {
 	/* Menu */
 
 	public function menu(evt:MouseEvent):void {
-		// Note: Unlike most menu() mehtods, this method invokes
+		// Note: Unlike most menu() methods, this method invokes
 		// the menu itself rather than returning a menu to the caller.
 		if (MenuHandlerFunction == null) return;
 		if (isEmbeddedInProcHat()) MenuHandlerFunction(null, parent);
@@ -815,7 +825,7 @@ public class Block extends Sprite {
 	}
 
 	public function duplicateStack(deltaX:Number, deltaY:Number):void {
-		if (isProcDef()) return; // don't duplicate procedure definition
+		if (isProcDef() || op == 'proc_declaration') return; // don't duplicate procedure definition
 		var forStage:Boolean = Scratch.app.viewedObj() && Scratch.app.viewedObj().isStage;
 		var newStack:Block = BlockIO.stringToStack(BlockIO.stackToString(this), forStage);
 		var p:Point = localToGlobal(new Point(0, 0));
@@ -831,7 +841,7 @@ public class Block extends Sprite {
 		if (!state) state = saveState();
 		var app:Scratch = Scratch.app;
 		var top:Block = topBlock();
-		if (op == Specs.PROCEDURE_DEF && app.runtime.allCallsOf(spec, app.viewedObj()).length) {
+		if (op == Specs.PROCEDURE_DEF && app.runtime.allCallsOf(spec, app.viewedObj(), false).length) {
 			DialogBox.notify('Cannot Delete', 'To delete a block definition, first remove all uses of the block.', stage);
 			return false;
 		}
@@ -848,7 +858,7 @@ public class Block extends Sprite {
 		y = top.y;
 		if (top != this) x += top.width + 5;
 		app.scriptsPane.saveScripts();
-		app.runtime.checkForGraphicEffects();
+		SCRATCH::allow3d { app.runtime.checkForGraphicEffects(); }
 		app.updatePalette();
 		return true;
 	}
@@ -903,26 +913,125 @@ public class Block extends Sprite {
 		return false;
 	}
 
-	private function focusChange(evt:Event):void {
+	private function focusChange(evt:FocusEvent):void {
 		evt.preventDefault();
 		if (evt.target.parent.parent != this) return; // make sure the target TextField is in this block, not a child block
 		if (args.length == 0) return;
 		var i:int, focusIndex:int = -1;
 		for (i = 0; i < args.length; i++) {
-			if (stage.focus == args[i].field) focusIndex = i;
+			if (args[i] is BlockArg && stage.focus == args[i].field) focusIndex = i;
 		}
-		i = focusIndex + 1;
-		while (true) {
-			if (i >= args.length) i = 0;
-			var f:TextField = args[i].field;
-			if ((f != null) && f.selectable) {
-				stage.focus = args[i].field;
-				args[i].field.setSelection(0, 10000000);
-				return;
+		var target:Block = this;
+		var delta:int = evt.shiftKey ? -1 : 1;
+		i = focusIndex + delta;
+		for (;;) {
+			if (i >= target.args.length) {
+				var p:Block = target.parent as Block;
+				if (p) {
+					i = p.args.indexOf(target);
+					if (i != -1) {
+						i += delta;
+						target = p;
+						continue;
+					}
+				}
+				if (target.subStack1) {
+					target = target.subStack1;
+				} else if (target.subStack2) {
+					target = target.subStack2;
+				} else {
+					var t:Block = target;
+					target = t.nextBlock;
+					while (!target) {
+						var tp:Block = t.parent as Block;
+						var b:Block = t;
+						while (tp && tp.nextBlock == b) {
+							b = tp;
+							tp = tp.parent as Block;
+						}
+						if (!tp) return;
+						target = tp.subStack1 == b && tp.subStack2 ? tp.subStack2 : tp.nextBlock;
+						t = tp;
+					}
+				}
+				i = 0;
+			} else if (i < 0) {
+				p = target.parent as Block;
+				if (!p) return;
+				i = p.args.indexOf(target);
+				if (i != -1) {
+					i += delta;
+					target = p;
+					continue;
+				}
+				var nested:Block = p.nextBlock == target ? p.subStack2 || p.subStack1 : p.subStack2 == target ? p.subStack1 : null;
+				if (nested) {
+					for (;;) {
+						nested = nested.bottomBlock();
+						var n2:Block = nested.subStack1 || nested.subStack2;
+						if (!n2) break;
+						nested = n2;
+					}
+					target = nested;
+				} else {
+					target = p;
+				}
+				i = target.args.length - 1;
+			} else {
+				if (target.args[i] is Block) {
+					target = target.args[i];
+					i = evt.shiftKey ? target.args.length - 1 : 0;
+				} else {
+					var a:BlockArg = target.args[i] as BlockArg;
+					if (a && a.field && a.isEditable) {
+						a.startEditing();
+						return;
+					}
+					i += delta;
+				}
 			}
-			i++
-			if (i == (focusIndex + 1)) return;
 		}
+	}
+
+	public function getSummary():String {
+		var s:String = type == "r" ? "(" : type == "b" ? "<" : "";
+		var space:Boolean = false;
+		for each (var x:DisplayObject in labelsAndArgs) {
+			if (space) {
+				s += " ";
+			}
+			space = true;
+			var ba:BlockArg, b:Block, tf:TextField;
+			if ((ba = x as BlockArg)) {
+				s += ba.isNumber ? "(" : "[";
+				s += ba.argValue;
+				if (!ba.isEditable) s += " v";
+				s += ba.isNumber ? ")" : "]";
+			} else if ((b = x as Block)) {
+				s += b.getSummary();
+			} else if ((tf = x as TextField)) {
+				s += TextField(x).text;
+			} else {
+				s += "@";
+			}
+		}
+		if (base.canHaveSubstack1()) {
+			s += "\n" + (subStack1 ? indent(subStack1.getSummary()) : "");
+			if (base.canHaveSubstack2()) {
+				s += "\n" + elseLabel.text;
+				s += "\n" + (subStack2 ? indent(subStack2.getSummary()) : "");
+			}
+			s += "\n" + Translator.map("end");
+		}
+		if (nextBlock) {
+			s += "\n" + nextBlock.getSummary();
+		}
+		s += type == "r" ? ")" : type == "b" ? ">" : "";
+		return s;
+	}
+
+	protected static function indent(s:String):String {
+		return s.replace(/^/gm, "    ");
 	}
 
 }}

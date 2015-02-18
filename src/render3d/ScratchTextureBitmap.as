@@ -17,17 +17,19 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package {
+package render3d {
 import flash.display.BitmapData;
-import flash.display3D.*;
-import flash.display3D.textures.Texture;
-import flash.geom.Rectangle;
-import flash.geom.Matrix;
-import flash.geom.Point;
-import org.villekoskela.utils.RectanglePacker;
 
 public class ScratchTextureBitmap extends BitmapData
-{
+{SCRATCH::allow3d{
+
+	import flash.display3D.*;
+	import flash.display3D.textures.Texture;
+	import flash.geom.Rectangle;
+	import flash.geom.Matrix;
+	import flash.geom.Point;
+	import org.villekoskela.utils.RectanglePacker;
+
 	private static var indexOfIDs:Array;
 
 	private var rectPacker:RectanglePacker;
@@ -133,7 +135,7 @@ public class ScratchTextureBitmap extends BitmapData
 		copyPixels(bmd, rect, tmpPt, null, null, false);
 		dirty = true;
 	}
-}
+}}
 }
 
 

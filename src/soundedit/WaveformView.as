@@ -63,7 +63,7 @@ public class WaveformView extends Sprite implements DragClient {
 	private var condensedSamples:Vector.<int> = new Vector.<int>();
 	private var samplesPerCondensedSample:int = 32;
 
-	private var scrollStart:int;		// first visible condensedSample
+	private var scrollStart:int;	// first visible condensedSample
 	private var selectionStart:int;	// first selected condensedSample
 	private var selectionEnd:int;	// last selected condensedSample
 
@@ -275,9 +275,11 @@ public class WaveformView extends Sprite implements DragClient {
 			stopRecording();
 		} else {
 			stopAll();
-			recordSamples = new Vector.<int>();
 			openMicrophone();
-			mic.addEventListener(SampleDataEvent.SAMPLE_DATA, recordData);
+			if(mic) {
+				recordSamples = new Vector.<int>();
+				mic.addEventListener(SampleDataEvent.SAMPLE_DATA, recordData);
+			}
 		}
 		editor.updateIndicators();
 		drawWave();
@@ -317,6 +319,8 @@ public class WaveformView extends Sprite implements DragClient {
 
 	private function openMicrophone():void {
 		mic = Microphone.getMicrophone();
+		if (!mic) return;
+
 		mic.setSilenceLevel(0);
 		mic.setLoopBack(true);
 		mic.soundTransform = new SoundTransform(0, 0);
@@ -558,7 +562,7 @@ public class WaveformView extends Sprite implements DragClient {
 			if (Math.abs(startOffset - selectionStart) < close) startOffset = selectionStart;
 			if (mousePastEnd()) startOffset = condensedSamples.length;
 		} else {
-			// Clicks close to start or end of slection adjust the selection.
+			// Clicking close to the start or end of a selection adjusts the selection.
 			if (Math.abs(startOffset - selectionStart) < close) selectMode = 'start';
 			else if (Math.abs(startOffset - selectionEnd) < close) selectMode = 'end';
 		}

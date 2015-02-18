@@ -41,7 +41,6 @@ public class VariableSettings extends Sprite {
 		addLabels();
 		addButtons();
 		fixLayout();
-		drawLine();
 		updateButtons();
 	}
 
@@ -96,7 +95,7 @@ public class VariableSettings extends Sprite {
 		}
 	}
 
-	private function drawLine():void {
+	protected function drawLine():void {
 		var lineY:int = 36;
 		var w:int = getRect(this).width;
 		if (isStage) w += 10;

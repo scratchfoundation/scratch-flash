@@ -28,12 +28,13 @@ package uiwidgets {
 
 public class DialogBox extends Sprite {
 
-	public var fields:Dictionary = new Dictionary();
-	public var booleanFields:Dictionary = new Dictionary();
+	private var fields:Dictionary = new Dictionary();
+	private var booleanFields:Dictionary = new Dictionary();
 	public var widget:DisplayObject;
-	public var w:int, h:int;
+	private var w:int, h:int;
 	public var leftJustify:Boolean;
 
+	private var context:Dictionary;
 	private var title:TextField;
 	protected var buttons:Array = [];
 	private var labelsAndFields:Array = [];
@@ -46,9 +47,11 @@ public class DialogBox extends Sprite {
 	private const blankLineSpace:int = 7;
 
 	private var acceptFunction:Function; // if not nil, called when menu interaction is accepted
+	private var cancelFunction:Function; // if not nil, called when menu interaction is canceled
 
-	public function DialogBox(acceptFunction:Function = null) {
+	public function DialogBox(acceptFunction:Function = null, cancelFunction:Function = null) {
 		this.acceptFunction = acceptFunction;
+		this.cancelFunction = cancelFunction;
 		addFilters();
 		addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
 		addEventListener(MouseEvent.MOUSE_UP, mouseUp);
@@ -56,29 +59,48 @@ public class DialogBox extends Sprite {
 		addEventListener(FocusEvent.KEY_FOCUS_CHANGE, focusChange);
 	}
 
-	public static function ask(question:String, defaultAnswer:String, stage:Stage = null, resultFunction:Function = null):void {
+	public static function ask(question:String, defaultAnswer:String, stage:Stage = null, resultFunction:Function = null, context:Dictionary = null):void {
 		function done():void { if (resultFunction != null) resultFunction(d.fields['answer'].text) }
 		var d:DialogBox = new DialogBox(done);
 		d.addTitle(question);
 		d.addField('answer', 120, defaultAnswer, false);
 		d.addButton('OK', d.accept);
+		if (context) d.updateContext(context);
 		d.showOnStage(stage ? stage : Scratch.app.stage);
 	}
 
-	public static function confirm(question:String, stage:Stage = null, okFunction:Function = null):void {
-		var d:DialogBox = new DialogBox(okFunction);
+	public static function confirm(question:String, stage:Stage = null, okFunction:Function = null, cancelFunction:Function = null, context:Dictionary = null):void {
+		var d:DialogBox = new DialogBox(okFunction, cancelFunction);
 		d.addTitle(question);
 		d.addAcceptCancelButtons('OK');
+		if (context) d.updateContext(context);
 		d.showOnStage(stage ? stage : Scratch.app.stage);
 	}
 
-	public static function notify(title:String, msg:String, stage:Stage = null, leftJustify:Boolean = false, okFunction:Function = null):void {
-		var d:DialogBox = new DialogBox(okFunction);
+	public static function notify(title:String, msg:String, stage:Stage = null, leftJustify:Boolean = false, okFunction:Function = null, cancelFunction:Function = null, context:Dictionary = null):void {
+		var d:DialogBox = new DialogBox(okFunction, cancelFunction);
 		d.leftJustify = leftJustify;
 		d.addTitle(title);
 		d.addText(msg);
 		d.addButton('OK', d.accept);
+		if (context) d.updateContext(context);
 		d.showOnStage(stage ? stage : Scratch.app.stage);
+	}
+
+	// Updates the context for variable substitution in the dialog's text, or sets it if there was none before.
+	// Make sure any text values in the context are already translated: they will not be translated here.
+	// Calling this will update the text of the dialog immediately.
+	public function updateContext(c:Dictionary):void {
+		if (!context) context = new Dictionary();
+		for (var key:String in c) {
+			context[key] = c[key];
+		}
+		for (var i:int = 0; i < numChildren; ++i) {
+			var f:VariableTextField = getChildAt(i) as VariableTextField;
+			if (f) {
+				f.applyContext(context);
+			}
+		}
 	}
 
 	public function addTitle(s:String):void {
@@ -124,23 +146,23 @@ public class DialogBox extends Sprite {
 		booleanLabelsAndFields.push([l, f]);
 	}
 
-private function getCheckMark(b:Boolean):Sprite{
-	var spr:Sprite = new Sprite();
-	var g:Graphics = spr.graphics;
-	g.clear();
-	g.beginFill(0xFFFFFF);
-	g.lineStyle(1, 0x929497, 1, true);
-	g.drawRoundRect(0, 0, 17, 17, 3, 3);
-	g.endFill();
-	if (b) {
-		g.lineStyle(2, 0x4c4d4f, 1, true);
-		g.moveTo(3,7);
-		g.lineTo(5,7);
-		g.lineTo(8,13);
-		g.lineTo(14,3);
+	private function getCheckMark(b:Boolean):Sprite{
+		var spr:Sprite = new Sprite();
+		var g:Graphics = spr.graphics;
+		g.clear();
+		g.beginFill(0xFFFFFF);
+		g.lineStyle(1, 0x929497, 1, true);
+		g.drawRoundRect(0, 0, 17, 17, 3, 3);
+		g.endFill();
+		if (b) {
+			g.lineStyle(2, 0x4c4d4f, 1, true);
+			g.moveTo(3,7);
+			g.lineTo(5,7);
+			g.lineTo(8,13);
+			g.lineTo(14,3);
+		}
+		return spr;
 	}
-	return spr;
-}
 
 	public function addAcceptCancelButtons(acceptLabel:String = null):void {
 		// Add a cancel button and an optional accept button with the given label.
@@ -150,7 +172,7 @@ private function getCheckMark(b:Boolean):Sprite{
 
 	public function addButton(label:String, action:Function):void {
 		function doAction():void {
-			cancel();
+			remove();
 			if (action != null) action();
 		}
 		var b:Button = new Button(Translator.map(label), doAction);
@@ -196,11 +218,12 @@ private function getCheckMark(b:Boolean):Sprite{
 
 	public function accept():void {
 		if (acceptFunction != null) acceptFunction(this);
-		if (parent != null) parent.removeChild(this);
+		remove();
 	}
 
 	public function cancel():void {
-		if (parent != null) parent.removeChild(this);
+		if (cancelFunction != null) cancelFunction(this);
+		remove();
 	}
 
 	public function getField(fieldName:String):* {
@@ -216,13 +239,17 @@ private function getCheckMark(b:Boolean):Sprite{
 		}
 	}
 
+	private function remove():void {
+		if (parent != null) parent.removeChild(this);
+	}
+
 	private function makeLabel(s:String, forTitle:Boolean = false):TextField {
-		const normalFormat:TextFormat = new TextFormat(CSS.font, 14, CSS.textColor)
-		var result:TextField = new TextField();
+		const normalFormat:TextFormat = new TextFormat(CSS.font, 14, CSS.textColor);
+		var result:VariableTextField = new VariableTextField();
 		result.autoSize = TextFieldAutoSize.LEFT;
 		result.selectable = false;
 		result.background = false;
-		result.text = s;
+		result.setText(s, context);
 		result.setTextFormat(forTitle ? CSS.titleFormat : normalFormat);
 		return result;
 	}
@@ -394,6 +421,7 @@ private function getCheckMark(b:Boolean):Sprite{
 
 	private function keyDown(evt:KeyboardEvent):void {
 		if ((evt.keyCode == 10) || (evt.keyCode == 13)) accept();
+		if (evt.keyCode == 27) cancel();
 	}
 
 }}

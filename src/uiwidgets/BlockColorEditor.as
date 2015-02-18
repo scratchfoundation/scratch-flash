@@ -1,22 +1,3 @@
-/*
- * Scratch Project Editor and Player
- * Copyright (C) 2014 Massachusetts Institute of Technology
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
- */
-
 package uiwidgets {
 import blocks.*;
 
@@ -28,8 +9,8 @@ import flash.text.*;
 import flash.utils.ByteArray;
 
 import ui.parts.UIPart;
-import util.Color;
-import util.JSON;
+
+import util.*;
 
 public class BlockColorEditor extends Sprite {
 
@@ -111,7 +92,7 @@ public class BlockColorEditor extends Sprite {
 			file.load();
 		}
 		function fileLoaded(event:Event):void {
-		var data:ByteArray = FileReference(event.target).data;
+			var data:ByteArray = FileReference(event.target).data;
 			var colors:Object = util.JSON.parse(data.toString());
 			for (var k:String in colors) {
  				setCategoryColor(k, colors[k]);
@@ -121,10 +102,7 @@ public class BlockColorEditor extends Sprite {
  		}
 		var fileList:FileReferenceList = new FileReferenceList();
 		fileList.addEventListener(Event.SELECT, fileSelected);
-		try {
-			// Ignore the exception that happens when you call browse() with the file browser open
-			fileList.browse();
-		} catch(e:*) {}
+		fileList.browse();
 	}
 
 	public function saveColors(b:IconButton):void {

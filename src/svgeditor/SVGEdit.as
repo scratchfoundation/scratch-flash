@@ -271,7 +271,7 @@ package svgeditor {
 			workArea.clearContent();
 
 			if (c.isBitmap()) {
-				insertBitmap(c.baseLayerBitmap.clone(), c.costumeName, true);
+				insertBitmap(c.baseLayerBitmap.clone(), c.costumeName, true, targetCostume.rotationCenterX, targetCostume.rotationCenterY);
 				insertOldTextLayer();
 			} else {
 				if (targetCostume.undoList.length == 0) recordForUndo(c.baseLayerData, c.rotationCenterX, c.rotationCenterY);
@@ -285,21 +285,19 @@ package svgeditor {
 		}
 
 		override public function addCostume(c:ScratchCostume, destP:Point):void {
+			var p:Point = new Point(ImageCanvas.canvasWidth / 2, ImageCanvas.canvasHeight / 2);
+			p = p.subtract(destP);
+			p = p.add(new Point(c.rotationCenterX, c.rotationCenterY));
 			if (c.isBitmap()) {
-				insertBitmap(c.baseLayerBitmap.clone(), c.costumeName, false);
+				insertBitmap(c.baseLayerBitmap.clone(), c.costumeName, false, p.x, p.y);
 				insertOldTextLayer();
 			} else {
-				var p:Point = new Point(ImageCanvas.canvasWidth / 2, ImageCanvas.canvasHeight / 2);
-				p = p.subtract(destP);
-				// TODO: Can we place the loaded SVG better? (Use the actual center instead of the rotation center)
-				//p = p.add(new Point(c.width()/2, c.height()/2));
-				p = p.add(new Point(c.rotationCenterX, c.rotationCenterY));
 				installSVGData(c.baseLayerData, Math.round(p.x), Math.round(p.y), true);
 			}
 			saveContent();
 		}
 
-		private function insertBitmap(bm:BitmapData, name:String, isLoad:Boolean):void {
+		private function insertBitmap(bm:BitmapData, name:String, isLoad:Boolean, destX:Number, destY:Number):void {
 			// Insert the given bitmap.
 			if (!bm.transparent) { // convert to a 32-bit bitmap to support alpha (e.g. eraser tool)
 				var newBM:BitmapData = new BitmapData(bm.width, bm.height, true, 0);
@@ -314,8 +312,8 @@ package svgeditor {
 			imgEl.setAttribute('width', bm.width);
 			imgEl.setAttribute('height', bm.height);
 			if (!isScene) {
-				var xOffset:int = Math.ceil((ImageCanvas.canvasWidth / 2) - targetCostume.rotationCenterX);
-				var yOffset:int = Math.ceil((ImageCanvas.canvasHeight / 2) - targetCostume.rotationCenterY);
+				var xOffset:int = Math.ceil(ImageCanvas.canvasWidth / 2 - destX);
+				var yOffset:int = Math.ceil(ImageCanvas.canvasHeight / 2 - destY);
 				imgEl.transform = new Matrix();
 				imgEl.transform.translate(xOffset, yOffset);
 			}

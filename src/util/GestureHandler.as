@@ -49,7 +49,6 @@
 package util {
 	import flash.display.*;
 	import flash.events.MouseEvent;
-	import flash.external.ExternalInterface;
 	import flash.filters.*;
 	import flash.geom.*;
 	import flash.text.*;
@@ -57,12 +56,17 @@ package util {
 	import blocks.*;
 	import scratch.*;
 	import uiwidgets.*;
+	import svgeditor.*;
 	import watchers.*;
 
 public class GestureHandler {
 
 	private const DOUBLE_CLICK_MSECS:int = 400;
 	private const DEBUG:Boolean = false;
+
+	private const SCROLL_RANGE:Number = 60;
+	private const SCROLL_MAX_SPEED:Number = 1000 / 50;
+	private const SCROLL_MSECS:int = 500;
 
 	public var mouseIsDown:Boolean;
 
@@ -81,6 +85,11 @@ public class GestureHandler {
 	private var objToGrabOnUp:Sprite;
 	private var mouseDownEvent:MouseEvent;
 	private var inIE:Boolean;
+
+	private var scrollTarget:ScrollFrame;
+	private var scrollStartTime:int;
+	private var scrollXVelocity:Number;
+	private var scrollYVelocity:Number;
 
 	private var bubble:TalkBubble;
 	private var bubbleStartX:Number;
@@ -123,6 +132,17 @@ public class GestureHandler {
 				handleClick(mouseDownEvent);
 			}
 		}
+		if (carriedObj && scrollTarget && (getTimer() - scrollStartTime) > SCROLL_MSECS && (scrollXVelocity || scrollYVelocity)) {
+			scrollTarget.contents.x = Math.min(0, Math.max(-scrollTarget.maxScrollH(), scrollTarget.contents.x + scrollXVelocity));
+			scrollTarget.contents.y = Math.min(0, Math.max(-scrollTarget.maxScrollV(), scrollTarget.contents.y + scrollYVelocity));
+			scrollTarget.constrainScroll();
+			scrollTarget.updateScrollbars();
+			var b:Block = carriedObj as Block;
+			if (b) {
+				app.scriptsPane.findTargetsFor(b);
+				app.scriptsPane.updateFeedbackFor(b);
+			}
+		}
 	}
 
 	public function rightMouseClick(evt:MouseEvent):void {
@@ -156,7 +176,7 @@ public class GestureHandler {
 
 	public function mouseDown(evt:MouseEvent):void {
 		if(inIE && app.editMode && app.jsEnabled)
-			ExternalInterface.call('tip_bar_api.fixIE');
+			app.externalCall('tip_bar_api.fixIE');
 
 		evt.updateAfterEvent(); // needed to avoid losing display updates with later version of Flash 11
 		hideBubble();
@@ -227,6 +247,48 @@ public class GestureHandler {
 			spr.scratchX = stageP.x - 240;
 			spr.scratchY = 180 - stageP.y;
 			spr.updateBubble();
+		}
+		var oldTarget:ScrollFrame = scrollTarget;
+		scrollTarget = null;
+		var targets:Array = stage.getObjectsUnderPoint(new Point(stage.mouseX, stage.mouseY));
+		for each (var t:* in targets) {
+			if (t is ScrollFrameContents) {
+				scrollTarget = t.parent as ScrollFrame;
+				if (scrollTarget != oldTarget) {
+					scrollStartTime = getTimer();
+				}
+				break;
+			}
+		}
+		if (scrollTarget) {
+			var p:Point = scrollTarget.localToGlobal(new Point(0, 0));
+			var mx:int = stage.mouseX;
+			var my:int = stage.mouseY;
+			var d:Number = mx - p.x;
+			if (d >= 0 && d <= SCROLL_RANGE && scrollTarget.canScrollLeft()) {
+				scrollXVelocity = (1 - d / SCROLL_RANGE) * SCROLL_MAX_SPEED;
+			} else {
+				d = p.x + scrollTarget.visibleW() - mx;
+				if (d >= 0 && d <= SCROLL_RANGE && scrollTarget.canScrollRight()) {
+					scrollXVelocity = (d / SCROLL_RANGE - 1) * SCROLL_MAX_SPEED;
+				} else {
+					scrollXVelocity = 0;
+				}
+			}
+			d = my - p.y;
+			if (d >= 0 && d <= SCROLL_RANGE && scrollTarget.canScrollUp()) {
+				scrollYVelocity = (1 - d / SCROLL_RANGE) * SCROLL_MAX_SPEED;
+			} else {
+				d = p.y + scrollTarget.visibleH() - my;
+				if (d >= 0 && d <= SCROLL_RANGE && scrollTarget.canScrollDown()) {
+					scrollYVelocity = (d / SCROLL_RANGE - 1) * SCROLL_MAX_SPEED;
+				} else {
+					scrollYVelocity = 0;
+				}
+			}
+			if (!scrollXVelocity && !scrollYVelocity) {
+				scrollStartTime = getTimer();
+			}
 		}
 		if (bubble) {
 			var dx:Number = bubbleStartX - stage.mouseX;
@@ -392,7 +454,7 @@ public class GestureHandler {
 			return;
 		}
 		if (t && 'handleTool' in t) t.handleTool(CursorTool.tool, evt);
-		if (isGrowShrink && (t is Block) && (t.isInPalette)) return; // grow/shrink sticky for scripting area
+		if (isGrowShrink && (t is Block && t.isInPalette || t is ImageCanvas)) return; // grow/shrink sticky for scripting area
 
 		if (!evt.shiftKey) app.clearTool(); // don't clear if shift pressed
 	}
@@ -445,6 +507,7 @@ public class GestureHandler {
 		obj.startDrag();
 		if(obj is DisplayObject) obj.cacheAsBitmap = true;
 		carriedObj = obj;
+		scrollStartTime = getTimer();
 	}
 
 	private function dropHandled(droppedObj:*, evt:MouseEvent):Boolean {

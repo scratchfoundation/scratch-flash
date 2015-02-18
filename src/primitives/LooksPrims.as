@@ -207,6 +207,7 @@ public class LooksPrims {
 	private function primClearEffects(b:Block):void {
 		var s:ScratchObj = interp.targetObj();
 		s.clearFilters();
+		s.applyFilters();
 		if (s.visible || s == Scratch.app.stagePane) interp.redraw();
 	}
 
@@ -235,7 +236,7 @@ public class LooksPrims {
 	private function primSize(b:Block):Number {
 		var s:ScratchSprite = interp.targetSprite();
 		if (s == null) return 100;
-		return Math.round(s.getSize()); // reporter returns rounded size, as in Scrath 1.4
+		return Math.round(s.getSize()); // reporter returns rounded size, as in Scratch 1.4
 	}
 
 	private function primShow(b:Block):void {

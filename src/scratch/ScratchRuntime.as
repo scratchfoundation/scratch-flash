@@ -23,7 +23,6 @@
 package scratch {
 	import flash.display.*;
 	import flash.events.*;
-	import flash.external.ExternalInterface;
 	import flash.geom.Rectangle;
 	import flash.media.*;
 	import flash.net.*;
@@ -79,7 +78,7 @@ public class ScratchRuntime {
 			return;
 		}
 
-		if (recording) saveFrame(); // Recording a Youtube video?  Old / Unused currently.
+		if (recording) saveFrame(); // Recording a YouTube video?  Old / Unused currently.
 		app.extensionManager.step();
 		if (motionDetector) motionDetector.step(); // Video motion detection
 
@@ -183,7 +182,7 @@ public class ScratchRuntime {
 		}
 	}
 
-	private function startKeyHats(ch:int):void {
+	public function startKeyHats(ch:int):void {
 		var keyName:String = null;
 		if (('a'.charCodeAt(0) <= ch) && (ch <= 'z'.charCodeAt(0))) keyName = String.fromCharCode(ch);
 		if (('0'.charCodeAt(0) <= ch) && (ch <= '9'.charCodeAt(0))) keyName = String.fromCharCode(ch);
@@ -246,6 +245,7 @@ public class ScratchRuntime {
 		return !app.extensionManager.isInternal(extName);
 	}
 
+	SCRATCH::allow3d
 	public function hasGraphicEffects():Boolean {
 		var found:Boolean = false;
 		allStacksAndOwnersDo(function (stack:Block, target:ScratchObj):void {
@@ -259,6 +259,7 @@ public class ScratchRuntime {
 		return found;
 	}
 
+	SCRATCH::allow3d
 	private function isGraphicEffectBlock(b:Block):Boolean {
 		return ('op' in b && (b.op == 'changeGraphicEffect:by:' || b.op == 'setGraphicEffect:to:') &&
 				('argValue' in b.args[0]) && b.args[0].argValue != 'ghost' && b.args[0].argValue != 'brightness');
@@ -276,16 +277,17 @@ public class ScratchRuntime {
 	private var activeHats:Array = [];
 	private function startEdgeTriggeredHats(hat:Block, target:ScratchObj):void {
 		if (!hat.isHat || !hat.nextBlock) return; // skip disconnected hats
+
 		var triggerCondition:Boolean = false;
 		if ('whenSensorGreaterThan' == hat.op) {
 			var sensorName:String = interp.arg(hat, 0);
 			var threshold:Number = interp.numarg(hat, 1);
-			triggerCondition = (
-					(('loudness' == sensorName) && (soundLevel() > threshold)) ||
-					(('timer' == sensorName) && (timer() > threshold)) ||
-					(('video motion' == sensorName) && (VideoMotionPrims.readMotionSensor('motion', target) > threshold)));
+			trigger(
+				('loudness' == sensorName && soundLevel() > threshold) ||
+				('timer' == sensorName && timer() > threshold) ||
+				('video motion' == sensorName && target.visible && VideoMotionPrims.readMotionSensor('motion', target) > threshold));
 		} else if ('whenSensorConnected' == hat.op) {
-			triggerCondition = getBooleanSensor(interp.arg(hat, 0));
+			trigger(getBooleanSensor(interp.arg(hat, 0)));
 		} else if (app.jsEnabled) {
 			var dotIndex:int = hat.op.indexOf('.');
 			if (dotIndex > -1) {
@@ -297,18 +299,20 @@ public class ScratchRuntime {
 					for (var i:uint=0; i<args.length; ++i)
 						finalArgs[i] = interp.arg(hat, i);
 
-					if (ExternalInterface.call('ScratchExtensions.getReporter', extName, op, finalArgs)) {
-						triggerCondition = true;
-					}
+					app.externalCall('ScratchExtensions.getReporter', trigger, extName, op, finalArgs);
 				}
 			}
 		}
-		if (triggerCondition) {
-			if (triggeredHats.indexOf(hat) == -1) { // not already trigged
-				// only start the stack if it is not already running
-				if (!interp.isRunning(hat, target)) interp.toggleThread(hat, target);
+
+		// TODO: Is it safe to do this in a callback, or must it happen before we return from startEdgeTriggeredHats?
+		function trigger(triggerCondition:Boolean):void {
+			if (triggerCondition) {
+				if (triggeredHats.indexOf(hat) == -1) { // not already trigged
+					// only start the stack if it is not already running
+					if (!interp.isRunning(hat, target)) interp.toggleThread(hat, target);
+				}
+				activeHats.push(hat);
 			}
-			activeHats.push(hat);
 		}
 	}
 
@@ -328,9 +332,11 @@ public class ScratchRuntime {
 					app.libraryPart.showVideoButton();
 			}
 
-			// Should we go 3D?
-			if(isGraphicEffectBlock(b))
-				app.go3D();
+			SCRATCH::allow3d {
+				// Should we go 3D?
+				if(isGraphicEffectBlock(b))
+					app.go3D();
+			}
 		});
 	}
 
@@ -351,15 +357,10 @@ public class ScratchRuntime {
 	public function selectProjectFile():void {
 		// Prompt user for a file name and load that file.
 		var fileName:String, data:ByteArray;
-		function fileSelected(event:Event):void {
-			if (fileList.fileList.length == 0) return;
-			var file:FileReference = FileReference(fileList.fileList[0]);
-			fileName = file.name;
-			file.addEventListener(Event.COMPLETE, fileLoadHandler);
-			file.load();
-		}
 		function fileLoadHandler(event:Event):void {
-			data = FileReference(event.target).data;
+			var file:FileReference = FileReference(event.target);
+			fileName = file.name;
+			data = file.data;
 			if (app.stagePane.isEmpty()) doInstall();
 			else DialogBox.confirm('Replace contents of the current project?', app.stage, doInstall);
 		}
@@ -367,14 +368,9 @@ public class ScratchRuntime {
 			installProjectFromFile(fileName, data);
 		}
 		stopAll();
-		var fileList:FileReferenceList = new FileReferenceList();
-		fileList.addEventListener(Event.SELECT, fileSelected);
 		var filter1:FileFilter = new FileFilter('Scratch 1.4 Project', '*.sb');
 		var filter2:FileFilter = new FileFilter('Scratch 2 Project', '*.sb2');
-		try {
-			// Ignore the exception that happens when you call browse() with the file browser open
-			fileList.browse([filter1, filter2]);
-		} catch(e:*) {}
+		Scratch.loadSingleFile(fileLoadHandler, [filter1, filter2])
 	}
 
 	public function installProjectFromFile(fileName:String, data:ByteArray):void {
@@ -390,7 +386,7 @@ public class ScratchRuntime {
 		var newProject:ScratchStage;
 		stopAll();
 		data.position = 0;
-		if (data.readUTFBytes(8) != 'ScratchV') {
+		if (data.length < 8 || data.readUTFBytes(8) != 'ScratchV') {
 			data.position = 0;
 			newProject = new ProjectIO(app).decodeProjectFromZipFile(data);
 			if (!newProject) {
@@ -432,7 +428,7 @@ public class ScratchRuntime {
 		if (app.stagePane != null) stopAll();
 		if (app.scriptsPane) app.scriptsPane.viewScriptsFor(null);
 
-		if(app.isIn3D) app.render3D.setStage(project, project.penLayer);
+		SCRATCH::allow3d { if(app.isIn3D) app.render3D.setStage(project, project.penLayer); }
 
 		for each (var obj:ScratchObj in project.allObjects()) {
 			obj.showCostume(obj.currentCostumeIndex);
@@ -455,9 +451,10 @@ public class ScratchRuntime {
 		}
 		app.extensionManager.step();
 		app.projectLoaded();
-		checkForGraphicEffects();
+		SCRATCH::allow3d { checkForGraphicEffects(); }
 	}
 
+	SCRATCH::allow3d
 	public function checkForGraphicEffects():void {
 		if(hasGraphicEffects()) app.go3D();
 		else app.go2D();
@@ -473,13 +470,15 @@ public class ScratchRuntime {
 		p.x = 15;
 		p.y = ScratchObj.STAGEH - p.height - 5;
 		app.stagePane.addChild(p);
-		setTimeout(p.grabKeyboardFocus, 100); // work-dround for Window keyboard event handling
+		setTimeout(p.grabKeyboardFocus, 100); // workaround for Window keyboard event handling
 	}
 
 	public function hideAskPrompt(p:AskPrompter):void {
 		interp.askThread = null;
 		lastAnswer = p.answer();
-		p.parent.removeChild(p);
+		if (p.parent) {
+			p.parent.removeChild(p);
+		}
 		app.stage.focus = null;
 	}
 
@@ -597,19 +596,24 @@ public class ScratchRuntime {
 		return result;
 	}
 
-	public function renameVariable(oldName:String, newName:String, block:Block):void {
+	public function renameVariable(oldName:String, newName:String):void {
+		if (oldName == newName) return;
 		var owner:ScratchObj = app.viewedObj();
-		var v:Variable = owner.lookupVar(oldName);
+		if (!owner.ownsVar(oldName)) owner = app.stagePane;
+		if (owner.hasName(newName)) {
+			DialogBox.notify("Cannot Rename", "That name is already in use.");
+			return;
+		}
 
+		var v:Variable = owner.lookupVar(oldName);
 		if (v != null) {
-			if (!owner.ownsVar(v.name)) owner = app.stagePane;
 			v.name = newName;
 			if (v.watcher) v.watcher.changeVarName(newName);
 		} else {
 			owner.lookupOrCreateVar(newName);
 		}
 		updateVarRefs(oldName, newName, owner);
-		clearAllCaches();
+		app.updatePalette();
 	}
 
 	public function updateVariable(v:Variable):void {}
@@ -681,6 +685,7 @@ public class ScratchRuntime {
 	private function setCostumeName(newName:String):void {
 		var obj:ScratchObj = app.viewedObj();
 		var costume:ScratchCostume = obj.currentCostume();
+        costume.costumeName = '';
 		var oldName:String = costume.costumeName;
 		newName = obj.unusedCostumeName(newName || Translator.map('costume1'));
 		costume.costumeName = newName;
@@ -721,6 +726,7 @@ public class ScratchRuntime {
 	private function setSoundName(s:ScratchSound, newName:String):void {
         var obj:ScratchObj = app.viewedObj();
         var oldName:String = s.soundName;
+        s.soundName = '';
         newName = obj.unusedSoundName(newName || Translator.map('sound1'));
         s.soundName = newName;
         allUsesOfSoundDo(oldName, function (a:BlockArg):void {
@@ -789,8 +795,8 @@ public class ScratchRuntime {
 		var result:Array = [];
 		allStacksAndOwnersDo(function (stack:Block, target:ScratchObj):void {
 			stack.allBlocksDo(function (b:Block):void {
-				for each (var a:BlockArg in b.args) {
-					if (a.menuName == 'backdrop' && a.argValue == backdropName) result.push(a);
+				for each (var a:* in b.args) {
+					if (a is BlockArg && a.menuName == 'backdrop' && a.argValue == backdropName) result.push(a);
 				}
 			});
 		});
@@ -801,8 +807,8 @@ public class ScratchRuntime {
 		var result:Array = [];
 		for each (var stack:Block in app.viewedObj().scripts) {
 			stack.allBlocksDo(function (b:Block):void {
-				for each (var a:BlockArg in b.args) {
-					if (a.menuName == 'costume' && a.argValue == costumeName) result.push(a);
+				for each (var a:* in b.args) {
+					if (a is BlockArg && a.menuName == 'costume' && a.argValue == costumeName) result.push(a);
 				}
 			});
 		}
@@ -815,8 +821,8 @@ public class ScratchRuntime {
 		for each (var stack:Block in allStacks()) {
 			// for each block in stack
 			stack.allBlocksDo(function (b:Block):void {
-				for each (var a:BlockArg in b.args) {
-					if (spriteMenus.indexOf(a.menuName) != -1 && a.argValue == spriteName) result.push(a);
+				for each (var a:* in b.args) {
+					if (a is BlockArg && spriteMenus.indexOf(a.menuName) != -1 && a.argValue == spriteName) result.push(a);
 				}
 			});
 		}
@@ -840,16 +846,17 @@ public class ScratchRuntime {
     public function allUsesOfSoundDo(soundName:String, f:Function):void {
         for each (var stack:Block in app.viewedObj().scripts) {
             stack.allBlocksDo(function (b:Block):void {
-                for each (var a:BlockArg in b.args) {
-                    if (a.menuName == 'sound' && a.argValue == soundName) f(a);
+                for each (var a:* in b.args) {
+                    if (a is BlockArg && a.menuName == 'sound' && a.argValue == soundName) f(a);
                 }
             });
         }
     }
 
-	public function allCallsOf(callee:String, owner:ScratchObj):Array {
+	public function allCallsOf(callee:String, owner:ScratchObj, includeRecursive:Boolean = true):Array {
 		var result:Array = [];
 		for each (var stack:Block in owner.scripts) {
+			if (!includeRecursive && stack.op == Specs.PROCEDURE_DEF && stack.spec == callee) continue;
 			// for each block in stack
 			stack.allBlocksDo(function (b:Block):void {
 				if (b.op == Specs.CALL && b.spec == callee) result.push(b);

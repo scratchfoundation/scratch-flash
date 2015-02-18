@@ -31,15 +31,12 @@ package ui.media {
 	import flash.geom.*;
 	import flash.net.*;
 	import flash.text.*;
-	import flash.utils.*;
 	import assets.Resources;
 	import blocks.*;
 	import scratch.*;
-	import svgutils.SVGImporter;
 	import translation.Translator;
 	import ui.parts.*;
 	import uiwidgets.*;
-	import util.*;
 
 public class MediaInfo extends Sprite {
 
@@ -56,18 +53,18 @@ public class MediaInfo extends Sprite {
 
 	public var objType:String = 'unknown';
 	public var objName:String = '';
+	public var objWidth:int = 0;
 	public var md5:String;
 
 	public var owner:ScratchObj; // object owning a sound or costume in MediaPane; null for other cases
 	public var isBackdrop:Boolean;
+	public var forBackpack:Boolean;
 
 	private var frame:Shape; // visible when selected
 	private var thumbnail:Bitmap;
 	private var label:TextField;
 	private var info:TextField;
 	private var deleteButton:IconButton;
-
-	protected var loaders:Array = []; // list of URLLoaders for stopLoading()
 
 	public function MediaInfo(obj:*, owningObj:ScratchObj = null) {
 		owner = owningObj;
@@ -98,6 +95,7 @@ public class MediaInfo extends Sprite {
 			// initialize from a JSON object
 			objType = obj.type ? obj.type : '';
 			objName = obj.name ? obj.name : '';
+			objWidth = obj.width ? obj.width : 0;
 			scripts = obj.scripts;
 			md5 = ('script' != objType) ? obj.md5 : null;
 		}
@@ -141,19 +139,12 @@ public class MediaInfo extends Sprite {
 	public function thumbnailY():int { return thumbnail.y }
 
 	public function computeThumbnail():Boolean {
-		var ext:String = fileType(md5);
 		if (mycostume) setLocalCostumeThumbnail();
 		else if (mysprite) setLocalSpriteThumbnail();
 		else if (scripts) setScriptThumbnail();
 		else return false;
 
 		return true;
-	}
-
-	public function stopLoading():void {
-		var app:Scratch = root as Scratch;
-		for each (var loader:URLLoader in loaders) if (loader) loader.close(); // loader can be nil when offline
-		loaders = [];
 	}
 
 	private function setLocalCostumeThumbnail():void {
@@ -201,6 +192,7 @@ public class MediaInfo extends Sprite {
 	//------------------------------
 
 	public function updateLabelAndInfo(forBackpack:Boolean):void {
+		this.forBackpack = forBackpack;
 		setText(label, (forBackpack ? backpackTitle() : objName));
 		label.x = ((frameWidth - label.textWidth) / 2) - 2;
 
@@ -243,12 +235,12 @@ public class MediaInfo extends Sprite {
 	}
 
 	private function soundInfoString(msecs:Number):String {
-		// Return a formatted time in MM:SS.T (where T is tenths of a second).
+		// Return a formatted time in MM:SS.HH (where HH is hundredths of a second).
 		function twoDigits(n:int):String { return (n < 10) ? '0' + n : '' + n }
 
 		var secs:int = msecs / 1000;
-		var tenths:int = (msecs % 1000) / 100;
-		return twoDigits(secs / 60) + ':' + twoDigits(secs % 60) + '.' + tenths;
+		var hundredths:int = (msecs % 1000) / 10;
+		return twoDigits(secs / 60) + ':' + twoDigits(secs % 60) + '.' + twoDigits(hundredths);
 	}
 
 	// -----------------------------
@@ -259,6 +251,7 @@ public class MediaInfo extends Sprite {
 		var result:MediaInfo = Scratch.app.createMediaInfo({
 			type: objType,
 			name: objName,
+			width: objWidth,
 			md5: md5
 		});
 		if (mycostume) result = Scratch.app.createMediaInfo(mycostume, owner);
@@ -361,12 +354,14 @@ public class MediaInfo extends Sprite {
 	//------------------------------
 
 	public function click(evt:MouseEvent):void {
-		var app:Scratch = Scratch.app;
-		if (mycostume) {
-			app.viewedObj().showCostumeNamed(mycostume.costumeName);
-			app.selectCostume();
+		if (!getBackpack()) {
+			var app:Scratch = Scratch.app;
+			if (mycostume) {
+				app.viewedObj().showCostumeNamed(mycostume.costumeName);
+				app.selectCostume();
+			}
+			if (mysound) app.selectSound(mysound);
 		}
-		if (mysound) app.selectSound(mysound);
 	}
 
 	public function handleTool(tool:String, evt:MouseEvent):void {
@@ -381,6 +376,7 @@ public class MediaInfo extends Sprite {
 	}
 
 	protected function addMenuItems(m:Menu):void {
+		if (!getBackpack()) m.addItem('duplicate', duplicateMe);
 		m.addItem('delete', deleteMe);
 		m.addLine();
 		if (mycostume) {
@@ -392,7 +388,7 @@ public class MediaInfo extends Sprite {
 	}
 
 	protected function duplicateMe():void {
-		if (owner) {
+		if (owner && !getBackpack()) {
 			if (mycostume) Scratch.app.addCostume(mycostume.duplicate());
 			if (mysound) Scratch.app.addSound(mysound.duplicate());
 		}
@@ -408,7 +404,7 @@ public class MediaInfo extends Sprite {
 			if (mysound) {
 				Scratch.app.runtime.recordDeleteSound(mysound, owner);
 				owner.deleteSound(mysound);
-				Scratch.app.refreshSoundTab()
+				Scratch.app.refreshSoundTab();
 			}
 		}
 	}
@@ -426,5 +422,9 @@ public class MediaInfo extends Sprite {
 		mysound.prepareToSave();
 		var defaultName:String = mysound.soundName + '.wav';
 		new FileReference().save(mysound.soundData, defaultName);
+	}
+
+	protected function getBackpack():UIPart {
+		return null;
 	}
 }}

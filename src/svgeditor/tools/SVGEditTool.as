@@ -90,7 +90,7 @@ package svgeditor.tools
 			}
 		}
 
-		protected function mouseDown(event:MouseEvent):void {
+		public function mouseDown(event:MouseEvent):void {
 			var obj:ISVGEditable = getEditableUnderMouse(!(this is PathEditTool));
 			currentEvent = event;
 			edit(obj, event);

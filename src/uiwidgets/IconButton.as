@@ -187,12 +187,12 @@ public class IconButton extends Sprite {
 		offImage = new Sprite();
 		var g:Graphics = Sprite(offImage).graphics;
 		g.lineStyle(1, color);
-		g.beginFill(0, 0); // transarent fill allows button to get mouse clicks
+		g.beginFill(0, 0); // transparent fill allows button to get mouse clicks
 		g.drawCircle(6, 6, 6);
 		onImage = new Sprite();
 		g = Sprite(onImage).graphics;
 		g.lineStyle(1, color);
-		g.beginFill(0, 0); // transarent fill allows button to get mouse clicks
+		g.beginFill(0, 0); // transparent fill allows button to get mouse clicks
 		g.drawCircle(6, 6, 6);
 		g.beginFill(color);
 		g.drawCircle(6, 6, 4);

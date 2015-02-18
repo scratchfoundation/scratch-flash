@@ -23,6 +23,7 @@ package scratch {
 	import flash.geom.Point;
 	import flash.text.*;
 	import blocks.Block;
+	import translation.*;
 	import uiwidgets.*;
 
 public class ScratchComment extends Sprite {
@@ -47,7 +48,7 @@ public class ScratchComment extends Sprite {
 
 	public var originalState:Array;
 
-	public function ScratchComment(s:String = 'add comment here...', isOpen:Boolean = true, width:int = 150, blockID:int = -1) {
+	public function ScratchComment(s:String = null, isOpen:Boolean = true, width:int = 150, blockID:int = -1) {
 		this.isOpen = isOpen;
 		this.blockID = blockID;
 		addFrame();
@@ -56,7 +57,7 @@ public class ScratchComment extends Sprite {
 		addExpandButton();
 		addTitle();
 		addContents();
-		contents.text = s;
+		contents.text = s || Translator.map('add comment here...');
 		contents.mask = clipMask;
 		frame.setWidthHeight(width, 200);
 		expandedSize = new Point(width, 200);
@@ -81,6 +82,11 @@ public class ScratchComment extends Sprite {
 		g.drawRect(contents.x, contents.y, w, h);
 
 		drawTitleBar();
+	}
+
+	public function startEditText(): void {
+		contents.setSelection(0, contents.text.length);
+		stage.focus = contents;
 	}
 
 	private function drawTitleBar():void {

@@ -56,6 +56,7 @@ public class BlockPalette extends ScrollFrameContents {
 		// Delete blocks and stacks dropped onto the palette.
 		var c:ScratchComment = obj as ScratchComment;
 		if (c) {
+			c.x = c.y = 20; // position for undelete
 			c.deleteComment(true);
 			return true;
 		}

@@ -194,10 +194,10 @@ return 1; // Force integer scaling in both editors for now
 		}
 
 		public function resize(w:uint, h:uint):void {
-			var left:Number = 0;
-			var top:Number = 0;
-			var visibleW:Number = w - vScrollbar.w;
-			var visibleH:Number = h - hScrollbar.h;
+			var left:int = 0;
+			var top:int = 0;
+			var visibleW:int = w - vScrollbar.w;
+			var visibleH:int = h - hScrollbar.h;
 
 			// Set dimensions which fit within the available area and maintain the proper aspect ratio
 			var zoomLevelZero:Number = getZoomLevelZero(visibleW, visibleH);
@@ -372,7 +372,6 @@ return 1; // Force integer scaling in both editors for now
 			if (bitmapEditor && (('grow' == tool) || ('shrink' == tool))) {
 				if ('grow' == tool) bitmapEditor.scaleAll(growthFactor);
 				if ('shrink' == tool) bitmapEditor.scaleAll(1 / growthFactor);
-				if (!evt.shiftKey) editor.app.clearTool(); // don't clear if shift pressed
 			} else {
 				CursorTool.setTool(null);
 			}

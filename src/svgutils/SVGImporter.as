@@ -30,7 +30,7 @@
 // Style attributes (e.g. style="stroke:none; fill:#FF0000") are broken into individual attributes.
 // Attributes with units are converted to unitless numbers in pixels (e.g. "10cm" -> 354.3307).
 // Percentage attributes are converted to simple numbers (e.g. "50%" -> 0.5).
-// Reference attrbutes (e.g. "url(#gradient1)") are resolved by replacing the URL with the
+// Reference attributes (e.g. "url(#gradient1)") are resolved by replacing the URL with the
 // SVGElement to which it refers.
 //
 // All vector elements (circles, ellipses, lines, paths, polygons, polylines, and rects) are converted
@@ -220,7 +220,7 @@ public class SVGImporter {
 	}
 
 	// -----------------------------
-	// Attribute Inheritence
+	// Attribute Inheritance
 	//------------------------------
 
 	private function inheritAttributes(el:SVGElement, parentList:Array):void {
@@ -234,7 +234,7 @@ public class SVGImporter {
 				if (attrVal) el.attributes[k] = attrVal;
 			}
 		}
-		// Compute the cummulative opacity.
+		// Compute the cumulative opacity.
 		var alpha:Number = el.getAttribute('opacity', 1);
 		for each (var parentEl:SVGElement in parentList) {
 			alpha = alpha * parentEl.getAttribute('opacity', 1);
