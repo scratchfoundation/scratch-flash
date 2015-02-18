@@ -30,8 +30,14 @@
 
 package uiwidgets {
 import flash.display.*;
+import flash.events.Event;
 
 public class ScrollFrameContents extends Sprite {
+
+	public static const SCROLL_X:String = 'scrollX';
+	public static const SCROLL_Y:String = 'scrollY';
+	private static const scrollEventX:Event = new Event(SCROLL_X);
+	private static const scrollEventY:Event = new Event(SCROLL_Y);
 
 	public var color:uint = 0xE0E0E0;
 	public var texture:BitmapData;
@@ -39,6 +45,20 @@ public class ScrollFrameContents extends Sprite {
 	// extra padding using in updateSize
 	public var hExtra:int = 10;
 	public var vExtra:int = 10;
+
+	override public function set x(value:Number):void {
+		if (x != value) {
+			super.x = value;
+			dispatchEvent(scrollEventX);
+		}
+	}
+
+	override public function set y(value:Number):void {
+		if (y != value) {
+			super.y = value;
+			dispatchEvent(scrollEventY);
+		}
+	}
 
 	public function clear(scrollToOrigin:Boolean = true):void {
 		while (numChildren > 0) removeChildAt(0);

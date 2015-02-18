@@ -82,22 +82,46 @@ public class MediaLibraryItem extends Sprite {
 		thumbnailHeight = isSound ? 51 : 90;
 
 		addFrame();
-		addThumbnail();
-		addLabel();
-		addInfo();
-		unhighlight();
-		if (isSound) addPlayButton();
+		visible = false; // must call show(true) first
 		addEventListener(MouseEvent.CLICK, click);
 		addEventListener(MouseEvent.DOUBLE_CLICK, doubleClick);
 	}
 
 	public static function strings():Array { return ['Costumes:', 'Scripts:'] }
 
+	private var visualReady:Boolean = false;
+	public function show(shouldShow:Boolean, whenDone:Function = null):void {
+		if (visible == shouldShow) {
+			if (whenDone) whenDone();
+			return;
+		}
+
+		// TODO: do more on show/hide?
+		visible = shouldShow;
+		if (shouldShow) {
+			if (!visualReady) {
+				visualReady = true;
+				addThumbnail();
+				addLabel();
+				addInfo();
+				unhighlight();
+				if (isSound) addPlayButton();
+				loadThumbnail(whenDone);
+			}
+			else {
+				if (whenDone) whenDone();
+			}
+		}
+		else {
+			if (whenDone) whenDone();
+		}
+	}
+
 	// -----------------------------
 	// Thumbnail
 	//------------------------------
 
-	public function loadThumbnail(done:Function):void {
+	private function loadThumbnail(done:Function):void {
 		var ext:String = fileType(dbObj.md5);
 		if (['gif', 'png', 'jpg', 'jpeg', 'svg'].indexOf(ext) > -1) setImageThumbnail(dbObj.md5, done);
 		else if (ext == 'json') setSpriteThumbnail(done);
@@ -125,14 +149,14 @@ public class MediaLibraryItem extends Sprite {
 				importer.loadAllImages(svgImagesLoaded);
 			}
 			else {
-				done();
+				if (done) done();
 			}
 		}
 		function svgImagesLoaded():void {
 			var c:ScratchCostume = new ScratchCostume('', null);
 			c.setSVGRoot(importer.root, false);
 			setThumbnail(c.thumbnail(thumbnailWidth, thumbnailHeight, forStage));
-			done();
+			if (done) done();
 		}
 		function setThumbnail(bm:BitmapData):void {
 			if (bm) {
@@ -140,11 +164,11 @@ public class MediaLibraryItem extends Sprite {
 				if (spriteMD5) thumbnailCache[spriteMD5] = bm;
 				setThumbnailBM(bm);
 			}
-			done();
+			if (done) done();
 		}
 		// first, check the thumbnail cache
 		var cachedBM:BitmapData = thumbnailCache[md5];
-		if (cachedBM) { setThumbnailBM(cachedBM); done(); return; }
+		if (cachedBM) { setThumbnailBM(cachedBM); if (done) done(); return; }
 
 		// if not in the thumbnail cache, fetch/compute it
 		if (fileType(md5) == 'svg') loaders.push(Scratch.app.server.getAsset(md5, gotSVGData));
@@ -174,13 +198,13 @@ public class MediaLibraryItem extends Sprite {
 				setImageThumbnail(md5, done, spriteMD5);
 			}
 			else {
-				done();
+				if (done) done();
 			}
 		}
 		// first, check the thumbnail cache
 		var spriteMD5:String = dbObj.md5;
 		var cachedBM:BitmapData = thumbnailCache[spriteMD5];
-		if (cachedBM) { setThumbnailBM(cachedBM); done(); return; }
+		if (cachedBM) { setThumbnailBM(cachedBM); if (done) done(); return; }
 
 		if (spriteCache[spriteMD5]) gotJSONData(spriteCache[spriteMD5]);
 		else loaders.push(Scratch.app.server.getAsset(spriteMD5, gotJSONData));
@@ -283,14 +307,19 @@ public class MediaLibraryItem extends Sprite {
 	private function highlight():void {
 		if (frame.alpha != 1) {
 			frame.alpha = 1;
-			info.visible = true;
+			if (info) {
+				// TODO: handle highlight before info
+				info.visible = true;
+			}
 		}
 	}
 
 	private function unhighlight():void {
 		if (frame.alpha != 0) {
 			frame.alpha = 0;
-			info.visible = false;
+			if (info) {
+				info.visible = false;
+			}
 		}
 	}
 

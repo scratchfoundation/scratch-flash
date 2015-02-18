@@ -26,6 +26,7 @@ import extensions.ScratchExtension;
 
 import flash.display.*;
 import flash.events.*;
+import flash.geom.Rectangle;
 import flash.media.Sound;
 import flash.net.*;
 import flash.text.*;
@@ -277,9 +278,11 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 		resultsPane.color = CSS.white;
 		resultsPane.hExtra = 0;
 		resultsPane.vExtra = 5;
-		resultsFrame = new ScrollFrame();
+		resultsFrame = new ScrollFrame(true);
 		resultsFrame.setContents(resultsPane);
 		addChild(resultsFrame);
+		resultsPane.addEventListener(ScrollFrameContents.SCROLL_X, resultsDidScroll);
+		resultsPane.addEventListener(ScrollFrameContents.SCROLL_Y, resultsDidScroll);
 	}
 
 	private function addButtons():void {
@@ -323,7 +326,6 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 				}
 			}
 			showFilteredItems();
-			startLoadingThumbnails();
 		}
 		if ('extension' == assetType) {
 			addScratchExtensions();
@@ -348,7 +350,6 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 			}));
 		}
 		showFilteredItems();
-		startLoadingThumbnails();
 	}
 
 	private function stripComments(s:String):String {
@@ -421,6 +422,7 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 		}
 		if (nextX > 5) nextY += item.frameHeight + 2; // if there's anything on this line, start a new one
 		resultsPane.updateSize();
+		doFilterUpdate();
 	}
 
 	public function addSelected():void {
@@ -448,20 +450,78 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 	// Thumbnail loading
 	//------------------------------
 
-	protected function startLoadingThumbnails():void {
-		function loadSomeThumbnails():void {
-			var count:int = 10 - inProgress;
-			while (next < allItems.length && count-- > 0) {
-				inProgress++;
-				allItems[next++].loadThumbnail(loadDone);
-			}
-			if (next < allItems.length || inProgress) setTimeout(loadSomeThumbnails, 40);
-		}
-		function loadDone():void { inProgress-- }
+	private function resultsDidScroll(event:Event):void {
+		requestScrollUpdate();
+	}
 
-		var next:int = 0;
-		var inProgress:int = 0;
-		loadSomeThumbnails();
+	private var pendingScrollUpdate:Boolean = false;
+	private function requestScrollUpdate():void {
+		if (!pendingScrollUpdate) {
+			pendingScrollUpdate = true;
+			setTimeout(doScrollUpdate, 0);
+		}
+	}
+
+	private function doFilterUpdate():void {
+		// Hide items that are not in the filtered results
+		var numItems:uint = allItems.length;
+		for (var i:uint = 0; i < numItems; ++i) {
+			var item:MediaLibraryItem = allItems[i];
+			if (item.parent != resultsPane) {
+				item.show(false);
+			}
+		}
+
+		// Show only those items visible in the scroll frame
+		requestScrollUpdate();
+	}
+
+	// TODO: move to common utility class?
+	private function isDictionaryEmpty(dict:Dictionary):Boolean {
+		for (var key:* in dict) {
+			return false;
+		}
+		return true;
+	}
+
+	private var pendingShowHideOperations:Dictionary = new Dictionary();
+	private function doScrollUpdate():void {
+		pendingScrollUpdate = false;
+
+		var visibleBounds:Rectangle =
+				new Rectangle(-resultsPane.x, -resultsPane.y, resultsFrame.visibleW(), resultsFrame.visibleH());
+
+		var queueWasEmpty:Boolean = isDictionaryEmpty(pendingShowHideOperations);
+		var queueIsEmpty:Boolean = queueWasEmpty;
+		var numItems:uint = resultsPane.numChildren;
+		for (var i:uint = 0; i < numItems; ++i) {
+			var item:MediaLibraryItem = resultsPane.getChildAt(i) as MediaLibraryItem;
+			if (item) {
+				var itemBounds:Rectangle = item.getBounds(resultsPane);
+				var shouldShow:Boolean = visibleBounds.intersects(itemBounds);
+				pendingShowHideOperations[item] = shouldShow;
+				queueIsEmpty = false;
+			}
+		}
+		if (queueWasEmpty && !queueIsEmpty) {
+			processShowQueue();
+		}
+	}
+
+	private function processShowQueue():void {
+		function callMeLater():void {
+			// avoid recursion
+			setTimeout(processShowQueue, 0);
+		}
+		for (var item:MediaLibraryItem in pendingShowHideOperations) {
+			var shouldShow:Boolean = pendingShowHideOperations[item];
+			delete pendingShowHideOperations[item];
+			item.show(shouldShow, shouldShow ? callMeLater : null);
+			if (shouldShow) {
+				// hide many, show one
+				break;
+			}
+		}
 	}
 
 	private function stopLoadingThumbnails():void {
