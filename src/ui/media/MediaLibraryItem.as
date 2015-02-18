@@ -82,6 +82,7 @@ public class MediaLibraryItem extends Sprite {
 		thumbnailHeight = isSound ? 51 : 90;
 
 		addFrame();
+		unhighlight();
 		visible = false; // must call show(true) first
 		addEventListener(MouseEvent.CLICK, click);
 		addEventListener(MouseEvent.DOUBLE_CLICK, doubleClick);
@@ -125,6 +126,7 @@ public class MediaLibraryItem extends Sprite {
 		var ext:String = fileType(dbObj.md5);
 		if (['gif', 'png', 'jpg', 'jpeg', 'svg'].indexOf(ext) > -1) setImageThumbnail(dbObj.md5, done);
 		else if (ext == 'json') setSpriteThumbnail(done);
+		else if(done) done();
 	}
 
 	public function stopLoading():void {
