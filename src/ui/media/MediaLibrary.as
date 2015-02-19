@@ -429,7 +429,14 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 				} else if (assetType == 'sound') {
 					io.fetchSound(md5AndExt, item.dbObj.name, whenDone);
 				} else {
-					io.fetchImage(md5AndExt, item.dbObj.name, 0, whenDone);
+					var obj:Object = {
+						centerX: item.dbObj.info[0],
+						centerY: item.dbObj.info[1],
+						bitmapResolution: 1
+					};
+					if (item.dbObj.info.length == 3)
+						obj.bitmapResolution = item.dbObj.info[2];
+					io.fetchImage(md5AndExt, item.dbObj.name, 0, whenDone, obj);
 				}
 			}
 		}
