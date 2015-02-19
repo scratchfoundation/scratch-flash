@@ -75,7 +75,7 @@ public class MediaLibrary extends Sprite {
 	private var okayButton:Button;
 	private var cancelButton:Button;
 
-	private static var libraryCache:Array; // cache of all mediaLibrary entries
+	private static var libraryCache:Object = {}; // cache of all mediaLibrary entries
 
 	public function MediaLibrary(app:Scratch, type:String, whenDone:Function) {
 		this.app = app;
@@ -287,19 +287,19 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 		function gotLibraryData(data:ByteArray):void {
 			if (!data) return; // failure
 			var s:String = data.readUTFBytes(data.length);
-			libraryCache = util.JSON.parse(stripComments(s)) as Array;
+			libraryCache[assetType] = util.JSON.parse(stripComments(s)) as Array;
 			collectEntries();
 		}
 		function collectEntries():void {
 			allItems = [];
-			for each (var entry:Object in libraryCache) {
+			for each (var entry:Object in libraryCache[assetType]) {
 				if (entry.type == assetType) {
 					if (entry.tags is Array) entry.category = entry.tags[0];
 					var info:Array = entry.info as Array;
 					if (info) {
 						if ((entry.type == 'backdrop') || (assetType == 'costume')) {
-							entry.width = info[0];
-							entry.height = info[1];
+//							entry.width = info[0];
+//							entry.height = info[1];
 						}
 						if (entry.type == 'sound') {
 							entry.seconds = info[0];
@@ -320,7 +320,7 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 			addScratchExtensions();
 			return;
 		}
-		if (!libraryCache) app.server.getMediaLibrary(gotLibraryData);
+		if (!libraryCache[assetType]) app.server.getMediaLibrary(assetType, gotLibraryData);
 		else collectEntries();
 	}
 
