@@ -33,7 +33,7 @@ public interface IServer {
 	// Asset API
 	//------------------------------
 	function getAsset(md5:String, callback:Function):URLLoader;
-	function getMediaLibrary(callback:Function):URLLoader;
+	function getMediaLibrary(type:String, callback:Function):URLLoader;
 	function getThumbnail(md5:String, w:int, h:int, callback:Function):URLLoader;
 
 	// -----------------------------
