@@ -2,6 +2,7 @@
  * Created by shanemc on 9/18/14.
  */
 package ui.parts.base {
+import svgeditor.ImageEdit;
 
 public interface IImagesPart {
 	function updateTranslation():void;
@@ -17,4 +18,5 @@ public interface IImagesPart {
 	function selectCostume():void;
 	function step():void;
 	function shutdownEditor():void;
+	function get editor():ImageEdit;
 }}

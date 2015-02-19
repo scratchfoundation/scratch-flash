@@ -311,7 +311,7 @@ public class ProjectIO {
 	// Fetch a costume or sound from the server
 	//----------------------------
 
-	public function fetchImage(id:String, costumeName:String, width:int, whenDone:Function):URLLoader {
+	public function fetchImage(id:String, costumeName:String, width:int, whenDone:Function, otherData:Object = null):URLLoader {
 		// Fetch an image asset from the server and call whenDone with the resulting ScratchCostume.
 		var c:ScratchCostume;
 		function gotCostumeData(data:ByteArray):void {
@@ -320,7 +320,10 @@ public class ProjectIO {
 				return;
 			}
 			if (ScratchCostume.isSVGData(data)) {
-				c = new ScratchCostume(costumeName, data);
+				if (otherData && otherData.centerX)
+					c = new ScratchCostume(costumeName, data, otherData.centerX, otherData.centerY, otherData.bitmapResolution);
+				else
+					c = new ScratchCostume(costumeName, data);
 				c.baseLayerMD5 = id;
 				whenDone(c);
 			} else {
@@ -334,7 +337,10 @@ public class ProjectIO {
 			app.log('ProjectIO failed to load: ' + id);
 		}
 		function imageLoaded(e:Event):void {
-			c = new ScratchCostume(costumeName, e.target.content.bitmapData);
+			if (otherData && otherData.centerX)
+				c = new ScratchCostume(costumeName, e.target.content.bitmapData, otherData.centerX, otherData.centerY, otherData.bitmapResolution);
+			else
+				c = new ScratchCostume(costumeName, e.target.content.bitmapData);
 			if (width) c.bitmapResolution = c.baseLayerBitmap.width / width;
 			c.baseLayerMD5 = id;
 			whenDone(c);

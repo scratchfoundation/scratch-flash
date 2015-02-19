@@ -86,8 +86,8 @@ public class Server implements IServer {
 		return fetchAsset('media/' + md5, whenDone);
 	}
 
-	public function getMediaLibrary(whenDone:Function):URLLoader {
-		return getAsset('mediaLibrary.json', whenDone);
+	public function getMediaLibrary(type:String, whenDone:Function):URLLoader {
+		return getAsset('libs/'+type+'Library.json', whenDone);
 	}
 
 	public function getThumbnail(md5:String, w:int, h:int, whenDone:Function):URLLoader {

@@ -58,7 +58,7 @@ import watchers.ListWatcher;
 
 public class Scratch extends Sprite {
 	// Version
-	public static const versionString:String = 'v429a';
+	public static const versionString:String = 'v432';
 	public static var app:Scratch; // static reference to the app, used for debugging
 
 	// Display modes
@@ -128,7 +128,7 @@ public class Scratch extends Sprite {
 	}
 
 	protected function initialize():void {
-		isOffline = loaderInfo.url.indexOf('http:') == -1;
+		isOffline = loaderInfo.url.indexOf('http:') == -1 && loaderInfo.url.indexOf('https:') == -1;
 		checkFlashVersion();
 		initServer();
 
@@ -154,6 +154,9 @@ public class Scratch extends Sprite {
 
 		playerBG = new Shape(); // create, but don't add
 		addParts();
+		
+		server.getSelectedLang(Translator.setLanguageValue);
+		
 
 //		stage.addEventListener('rightClick', gh.rightMouseClick);
 		stage.addEventListener(KeyboardEvent.KEY_DOWN, runtime.keyDown);
@@ -996,6 +999,7 @@ public class Scratch extends Sprite {
 		spr.setScratchXY(int(200 * Math.random() - 100), int(100 * Math.random() - 50));
 		if (atMouse) spr.setScratchXY(stagePane.scratchMouseX(), stagePane.scratchMouseY());
 		stagePane.addChild(spr);
+		spr.updateCostume();
 		selectSprite(spr);
 		setTab(showImages ? 'images' : 'scripts');
 		setSaveNeeded(true);

@@ -424,8 +424,10 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 			switchShaders();
 
 			// Throw away the old vertex buffer: it might have the wrong number of streams activated
-			vertexBuffer.dispose();
-			vertexBuffer = null;
+			if (vertexBuffer != null) {
+				vertexBuffer.dispose();
+				vertexBuffer = null;
+			}
 		}
 
 		checkBuffers();

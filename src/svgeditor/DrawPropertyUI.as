@@ -145,7 +145,7 @@ public class DrawPropertyUI extends Sprite {
 	public function set settings(props:DrawProperties):void {
 		currentValues = props;
 		colorPicker.pickColor();
-		strokeWidthSlider.value = props.strokeWidth;
+		strokeWidthSlider.value = eraserStrokeMode ? props.eraserWidth : props.strokeWidth;
 		updateStrokeWidthDisplay();
 	}
 
@@ -208,7 +208,7 @@ public class DrawPropertyUI extends Sprite {
 		strokeWidthSlider.visible = isStroke || isEraser;
 		disableEvents = true;
 		SimpleTooltips.add(strokeWidthSlider.parent, {text: (isEraser ? 'Eraser width' : 'Line width'), direction: 'top'});
-		strokeWidthSlider.value = currentValues.strokeWidth;
+		strokeWidthSlider.value = isEraser ? currentValues.eraserWidth : currentValues.strokeWidth;
 		disableEvents = false;
 		updateStrokeWidthDisplay();
 	}
@@ -442,7 +442,12 @@ public class DrawPropertyUI extends Sprite {
 
 	private function makeStrokeUI():void {
 		function updateStrokeWidth(w:Number):void {
-			currentValues.strokeWidth = w;
+			if (eraserStrokeMode) {
+				currentValues.eraserWidth = w;
+			}
+			else {
+				currentValues.strokeWidth = w;
+			}
 			updateStrokeWidthDisplay();
 			sendChangeEvent();
 		}
@@ -478,7 +483,7 @@ public class DrawPropertyUI extends Sprite {
 	}
 
 	private function updateStrokeWidthDisplay(ignore:* = null):void {
-		var w:Number = currentValues.strokeWidth;
+		var w:Number = eraserStrokeMode ? currentValues.eraserWidth : currentValues.strokeWidth;
 		if (editor is BitmapEdit) {
 			if (19 == w) w = 17;
 			if (29 == w) w = 20;

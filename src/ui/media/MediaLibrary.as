@@ -85,7 +85,7 @@ public class MediaLibrary extends Sprite {
 	private var okayButton:Button;
 	private var cancelButton:Button;
 
-	private static var libraryCache:Array; // cache of all mediaLibrary entries
+	private static var libraryCache:Object = {}; // cache of all mediaLibrary entries
 
 	public function MediaLibrary(app:Scratch, type:String, whenDone:Function) {
 		this.app = app;
@@ -299,19 +299,19 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 		function gotLibraryData(data:ByteArray):void {
 			if (!data) return; // failure
 			var s:String = data.readUTFBytes(data.length);
-			libraryCache = decodeJson(s, true) as Array; // TODO: consider async with JsonDecoderAsync
+			libraryCache[assetType] = decodeJson(s, true) as Array; // TODO: consider async with JsonDecoderAsync
 			collectEntries();
 		}
 		function collectEntries():void {
 			allItems = [];
-			for each (var entry:Object in libraryCache) {
+			for each (var entry:Object in libraryCache[assetType]) {
 				if (entry.type == assetType) {
 					if (entry.tags is Array) entry.category = entry.tags[0];
 					var info:Array = entry.info as Array;
 					if (info) {
 						if ((entry.type == 'backdrop') || (assetType == 'costume')) {
-							entry.width = info[0];
-							entry.height = info[1];
+//							entry.width = info[0];
+//							entry.height = info[1];
 						}
 						if (entry.type == 'sound') {
 							entry.seconds = info[0];
@@ -331,7 +331,7 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 			addScratchExtensions();
 			return;
 		}
-		if (!libraryCache) app.server.getMediaLibrary(gotLibraryData);
+		if (!libraryCache[assetType]) app.server.getMediaLibrary(assetType, gotLibraryData);
 		else collectEntries();
 	}
 
@@ -440,7 +440,14 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 				} else if (assetType == 'sound') {
 					io.fetchSound(md5AndExt, item.dbObj.name, whenDone);
 				} else {
-					io.fetchImage(md5AndExt, item.dbObj.name, 0, whenDone);
+					var obj:Object = {
+						centerX: item.dbObj.info[0],
+						centerY: item.dbObj.info[1],
+						bitmapResolution: 1
+					};
+					if (item.dbObj.info.length == 3)
+						obj.bitmapResolution = item.dbObj.info[2];
+					io.fetchImage(md5AndExt, item.dbObj.name, 0, whenDone, obj);
 				}
 			}
 		}
@@ -744,7 +751,7 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 				data.position = 0;
 				try {
 					sound.loadCompressedDataFromByteArray(data, data.length);
-					MP3Loader.extractSamples(name, sound, sound.length * 44.1, function (out:ScratchSound):void {
+					MP3Loader.extractSamples(origName, sound, sound.length * 44.1, function (out:ScratchSound):void {
 						snd = out;
 						startSoundUpload(out, origName, uploadComplete);
 					});

@@ -125,7 +125,7 @@ public final class BitmapPencilTool extends SVGTool {
 
 	private function getPenProps():void {
 		var props:DrawProperties = editor.getShapeProps();
-		brushSize = Math.max(1, 2 * Math.round(props.strokeWidth));
+		brushSize = Math.max(1, 2 * Math.round(eraseMode ? props.eraserWidth : props.strokeWidth));
 		brushColor = (props.alpha > 0) ? (0xFF000000 | props.color) : 0;
 	}
 

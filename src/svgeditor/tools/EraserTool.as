@@ -49,8 +49,7 @@ public final class EraserTool extends SVGTool
 	{
 		private var eraserShape:Shape;
 		private var lastPos:Point;
-		private var origStrokeWidth:Number;
-		private var strokeWidth:Number;
+		private var eraserWidth:Number;
 		private var erased:Boolean;
 		public function EraserTool(ed:ImageEdit) {
 			super(ed);
@@ -64,11 +63,11 @@ public final class EraserTool extends SVGTool
 
 		public function updateIcon():void {
 			var sp:DrawProperties = editor.getShapeProps();
-			if(strokeWidth != sp.strokeWidth) {
+			if(eraserWidth != sp.eraserWidth) {
 				var bm:Bitmap = Resources.createBmp('eraserOff');
 				var s:Shape = new Shape();
 				s.graphics.lineStyle(1);
-				s.graphics.drawCircle(0, 0, sp.strokeWidth * 0.65);
+				s.graphics.drawCircle(0, 0, sp.eraserWidth * 0.65);
 				var curBM:BitmapData = new BitmapData(32, 32, true, 0);
 				var m:Matrix = new Matrix();
 				m.translate(16, 18);
@@ -76,7 +75,7 @@ public final class EraserTool extends SVGTool
 				m.translate(-cursorHotSpot.x, -cursorHotSpot.y);
 				curBM.draw(bm, m);
 				editor.setCurrentCursor('eraserOff', curBM, new Point(16, 18), false);
-				strokeWidth = sp.strokeWidth;
+				eraserWidth = sp.eraserWidth;
 			}
 		}
 
@@ -85,20 +84,18 @@ public final class EraserTool extends SVGTool
 			editor.getWorkArea().addEventListener(MouseEvent.MOUSE_DOWN, mouseDown, false, 0, true);
 			stage.addChild(eraserShape);
 			updateIcon();
-			origStrokeWidth = editor.getShapeProps().strokeWidth;
 		}
 
 		override protected function stop():void {
 			editor.getWorkArea().removeEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
-			editor.getShapeProps().strokeWidth = origStrokeWidth;
-			super.stop();
+			super.shutdown();
 			stage.removeChild(eraserShape);
 		}
 
 		private function mouseDown(e:MouseEvent):void {
 			editor.getWorkArea().addEventListener(MouseEvent.MOUSE_MOVE, erase, false, 0, true);
 			editor.stage.addEventListener(MouseEvent.MOUSE_UP, mouseUp, false, 0, true);
-			strokeWidth = editor.getShapeProps().strokeWidth;
+			eraserWidth = editor.getShapeProps().eraserWidth;
 			erase();
 		}
 
@@ -163,18 +160,18 @@ public final class EraserTool extends SVGTool
 
 		private function updateEraserShape():void {
 			var g:Graphics = eraserShape.graphics;
-			//var w:Number = strokeWidth * editor.getContentLayer().
+			//var w:Number = eraserWidth * editor.getContentLayer().
 			g.clear();
 			var p:Point = new Point(eraserShape.mouseX, eraserShape.mouseY);
 			if(lastPos) {
-				g.lineStyle(strokeWidth, 0xFF0000, 1, false, LineScaleMode.NORMAL, CapsStyle.ROUND);
+				g.lineStyle(eraserWidth, 0xFF0000, 1, false, LineScaleMode.NORMAL, CapsStyle.ROUND);
 				g.moveTo(lastPos.x, lastPos.y);
 				//var p:Point = obj.globalToLocal(lastPos).subtract(new Point(obj.mouseX, obj.mouseY));
 				g.lineTo(p.x, p.y);
 			} else {
 				g.lineStyle(0, 0, 0);
 				g.beginFill(0xFF0000);
-				g.drawCircle(p.x, p.y, strokeWidth * 0.65);
+				g.drawCircle(p.x, p.y, eraserWidth * 0.65);
 				g.endFill();
 				g.moveTo(p.x, p.y);
 			}

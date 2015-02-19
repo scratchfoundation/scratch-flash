@@ -40,7 +40,7 @@ import uiwidgets.*;
 
 public class ImagesPart extends UIPart implements IImagesPart {
 
-	public var editor:ImageEdit;
+	public var _editor:ImageEdit;
 
 	private const columnWidth:int = 106;
 	private const contentsX:int = columnWidth + 13;
@@ -77,7 +77,7 @@ public class ImagesPart extends UIPart implements IImagesPart {
 		addListFrame();
 		addChild(nameField = new EditableLabel(nameChanged));
 
-		addChild(editor = new SVGEdit(app, this));
+		addChild(_editor = new SVGEdit(app, this));
 
 		addUndoButtons();
 		addFlipButtons();
@@ -95,23 +95,24 @@ public class ImagesPart extends UIPart implements IImagesPart {
 		];
 	}
 
+	public function get editor():ImageEdit { return _editor; }
 	public function shutdownEditor():void {
-		editor.shutdown();
+		_editor.shutdown();
 	}
 
 	public function usingBitmapEditor():Boolean {
-		return editor is BitmapEdit;
+		return _editor is BitmapEdit;
 	}
 
 	public function enableTools(enable:Boolean):void {
-		editor.enableTools(enable);
+		_editor.enableTools(enable);
 	}
 
 	public function updateTranslation():void {
 		clearButton.setLabel(Translator.map('Clear'));
 		libraryButton.setLabel(Translator.map('Add'));
 		editorImportButton.setLabel(Translator.map('Import'));
-		if (editor) editor.updateTranslation();
+		if (_editor) _editor.updateTranslation();
 		updateLabel();
 		fixlayout();
 	}
@@ -200,12 +201,12 @@ public class ImagesPart extends UIPart implements IImagesPart {
 		if (obj == null) return;
 		nameField.setContents(obj.currentCostume().costumeName);
 
-		var zoomAndScroll:Array = editor.getZoomAndScroll();
-		editor.setToolMode('select', true);
+		var zoomAndScroll:Array = _editor.getZoomAndScroll();
+		_editor.setToolMode('select', true);
 		var c:ScratchCostume = obj.currentCostume();
 		useBitmapEditor(c.isBitmap() && !c.text);
-		editor.editCostume(c, obj.isStage);
-		editor.setZoomAndScroll(zoomAndScroll);
+		_editor.editCostume(c, obj.isStage);
+		_editor.setZoomAndScroll(zoomAndScroll);
 		if(changed) app.setSaveNeeded();
 	}
 
@@ -237,39 +238,39 @@ public class ImagesPart extends UIPart implements IImagesPart {
 		// Switch editors based on flag. Do nothing if editor is already of the correct type.
 		// NOTE: After switching editors, the caller must install costume and other state in the new editor.
 		var oldSettings:DrawProperties, oldZoomAndScroll:Array;
-		if (editor) {
-			oldSettings = editor.getShapeProps();
-			oldZoomAndScroll = editor.getWorkArea().getZoomAndScroll();
+		if (_editor) {
+			oldSettings = _editor.getShapeProps();
+			oldZoomAndScroll = _editor.getWorkArea().getZoomAndScroll();
 		}
 		if (flag) {
-			if (editor is BitmapEdit) return;
-			if (editor) {
-				editor.shutdown();
-				if (editor.parent) removeChild(editor);
+			if (_editor is BitmapEdit) return;
+			if (_editor) {
+				_editor.shutdown();
+				if (_editor.parent) removeChild(_editor);
 			}
-			addChild(editor = new BitmapEdit(app, this));
+			addChild(_editor = new BitmapEdit(app, this));
 		} else {
-			if (editor is SVGEdit) return;
-			if (editor) {
-				editor.shutdown();
-				if (editor.parent) removeChild(editor);
+			if (_editor is SVGEdit) return;
+			if (_editor) {
+				_editor.shutdown();
+				if (_editor.parent) removeChild(_editor);
 			}
-			addChild(editor = new SVGEdit(app, this));
+			addChild(_editor = new SVGEdit(app, this));
 		}
 		if (oldSettings) {
-			editor.setShapeProps(oldSettings);
-			editor.getWorkArea().setZoomAndScroll([oldZoomAndScroll[0], 0.5, 0.5]);
+			_editor.setShapeProps(oldSettings);
+			_editor.getWorkArea().setZoomAndScroll([oldZoomAndScroll[0], 0.5, 0.5]);
 		}
-		editor.registerToolButton('setCenter', centerButton);
+		_editor.registerToolButton('setCenter', centerButton);
 		fixEditorLayout();
 	}
 
 	private function fixEditorLayout():void {
 		var contentsW:int = w - contentsX - 15;
-		if (editor) {
-			editor.x = contentsX;
-			editor.y = 45;
-			editor.setWidthHeight(contentsW, h - editor.y - 14);
+		if (_editor) {
+			_editor.x = contentsX;
+			_editor.y = 45;
+			_editor.setWidthHeight(contentsW, h - _editor.y - 14);
 		}
 
 		// import button
@@ -311,29 +312,29 @@ public class ImagesPart extends UIPart implements IImagesPart {
 
 	public function convertToBitmap():void {
 		function finishConverting():void {
-			var c:ScratchCostume = editor.targetCostume;
-			var forStage:Boolean = editor.isScene;
-			var zoomAndScroll:Array = editor.getZoomAndScroll();
+			var c:ScratchCostume = _editor.targetCostume;
+			var forStage:Boolean = _editor.isScene;
+			var zoomAndScroll:Array = _editor.getZoomAndScroll();
 			useBitmapEditor(true);
 
 			var bm:BitmapData = c.bitmapForEditor(forStage);
 			c.setBitmapData(bm, 2 * c.rotationCenterX, 2 * c.rotationCenterY);
 
-			editor.editCostume(c, forStage, true);
-			editor.setZoomAndScroll(zoomAndScroll);
-			editor.saveContent();
+			_editor.editCostume(c, forStage, true);
+			_editor.setZoomAndScroll(zoomAndScroll);
+			_editor.saveContent();
 		}
-		if (editor is BitmapEdit) return;
-		editor.shutdown();
+		if (_editor is BitmapEdit) return;
+		_editor.shutdown();
 		setTimeout(finishConverting, 300); // hack: allow time for SVG embedded bitmaps to be rendered before rendering
 	}
 
 	public function convertToVector():void {
-		if (editor is SVGEdit) return;
-		editor.shutdown();
-		var c:ScratchCostume = editor.targetCostume;
-		var forStage:Boolean = editor.isScene;
-		var zoomAndScroll:Array = editor.getZoomAndScroll();
+		if (_editor is SVGEdit) return;
+		_editor.shutdown();
+		var c:ScratchCostume = _editor.targetCostume;
+		var forStage:Boolean = _editor.isScene;
+		var zoomAndScroll:Array = _editor.getZoomAndScroll();
 		useBitmapEditor(false);
 
 		var svg:SVGElement = new SVGElement('svg');
@@ -342,9 +343,9 @@ public class ImagesPart extends UIPart implements IImagesPart {
 		c.rotationCenterY /= c.bitmapResolution;
 		c.setSVGData(new SVGExport(svg).svgData(), false, false);
 
-		editor.editCostume(c, forStage, true);
-		editor.setZoomAndScroll(zoomAndScroll);
-//		editor.saveContent();
+		_editor.editCostume(c, forStage, true);
+		_editor.setZoomAndScroll(zoomAndScroll);
+//		_editor.saveContent();
 	}
 
 	// -----------------------------
@@ -364,9 +365,9 @@ public class ImagesPart extends UIPart implements IImagesPart {
 		SimpleTooltips.add(clearButton, {text: 'Erase all', direction: 'bottom'});
 	}
 
-	private function undo(b:*):void { editor.undo(b) }
-	private function redo(b:*):void { editor.redo(b) }
-	private function clear():void { editor.clearCanvas() }
+	private function undo(b:*):void { _editor.undo(b) }
+	private function redo(b:*):void { _editor.redo(b) }
+	private function clear():void { _editor.clearCanvas() }
 
 	private function importFromLibrary():void {
 		var type:String = isStage() ? 'backdrop' : 'costume';
@@ -381,13 +382,13 @@ public class ImagesPart extends UIPart implements IImagesPart {
 
 	private function addCostume(c:ScratchCostume):void {
 		var p:Point = new Point(240, 180);
-		editor.addCostume(c, p);
+		_editor.addCostume(c, p);
 	}
 
 	public function refreshUndoButtons():void {
-		undoButton.setDisabled(!editor.canUndo(), 0.5);
-		redoButton.setDisabled(!editor.canRedo(), 0.5);
-		if (editor.canClearCanvas()) {
+		undoButton.setDisabled(!_editor.canUndo(), 0.5);
+		redoButton.setDisabled(!_editor.canRedo(), 0.5);
+		if (_editor.canClearCanvas()) {
 			clearButton.alpha = 1;
 			clearButton.mouseEnabled = true;
 		} else {
@@ -409,17 +410,17 @@ public class ImagesPart extends UIPart implements IImagesPart {
 		SimpleTooltips.add(flipVButton, {text: 'Flip up-down', direction: 'bottom'});
 	}
 
-	private function flipH(ignore:*):void { editor.flipContent(false) }
-	private function flipV(ignore:*):void { editor.flipContent(true) }
+	private function flipH(ignore:*):void { _editor.flipContent(false) }
+	private function flipV(ignore:*):void { _editor.flipContent(true) }
 
 	private function addCenterButton():void {
 		function setCostumeCenter(b:IconButton):void {
-			editor.setToolMode('setCenter');
+			_editor.setToolMode('setCenter');
 			b.lastEvent.stopPropagation();
 		}
 		centerButton = makeTopButton(setCostumeCenter, 'setCenter', true);
 		SimpleTooltips.add(centerButton, {text: 'Set costume center', direction: 'bottom'});
-		editor.registerToolButton('setCenter', centerButton);
+		_editor.registerToolButton('setCenter', centerButton);
 		addChild(centerButton);
 	}
 
@@ -475,7 +476,7 @@ public class ImagesPart extends UIPart implements IImagesPart {
 			}
 			var c:ScratchCostume = new ScratchCostume(Translator.map('photo1'), photo);
 			addAndSelectCostume(c);
-			editor.getWorkArea().zoom();
+			_editor.getWorkArea().zoom();
 		}
 		app.openCameraDialog(savePhotoAsCostume);
 	}
