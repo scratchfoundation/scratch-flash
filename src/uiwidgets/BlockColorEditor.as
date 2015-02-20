@@ -1,8 +1,6 @@
 package uiwidgets {
 import blocks.*;
 
-import com.brokenfunction.json.decodeJson;
-
 import flash.display.*;
 import flash.events.*;
 import flash.geom.*;
@@ -95,7 +93,7 @@ public class BlockColorEditor extends Sprite {
 		}
 		function fileLoaded(event:Event):void {
 			var data:ByteArray = FileReference(event.target).data;
-			var colors:Object = decodeJson(data, true);
+			var colors:Object = util.JSON.parse(data.toString());
 			for (var k:String in colors) {
  				setCategoryColor(k, colors[k]);
 			}

@@ -27,8 +27,6 @@
 // of separate elements.
 
 package util {
-import com.brokenfunction.json.decodeJson;
-
 import flash.display.*;
 import flash.events.*;
 import flash.net.URLLoader;
@@ -155,7 +153,7 @@ public class ProjectIO {
 			if (fName.slice(-5) == '.json') jsonData = contents.readUTFBytes(contents.length);
 		}
 		if (jsonData == null) return null;
-		var jsonObj:Object = decodeJson(jsonData, true);
+		var jsonObj:Object = util.JSON.parse(jsonData);
 		if (jsonObj['children']) { // project JSON
 			var proj:ScratchStage = new ScratchStage();
 			proj.readJSON(jsonObj);
@@ -167,7 +165,7 @@ public class ProjectIO {
 		if (jsonObj['direction'] != null) { // sprite JSON
 			var sprite:ScratchSprite = new ScratchSprite();
 			sprite.readJSON(jsonObj);
-			sprite.instantiateFromJSON(app.stagePane);
+			sprite.instantiateFromJSON(app.stagePane)
 			installImagesAndSounds([sprite]);
 			return sprite;
 		}
@@ -298,7 +296,7 @@ public class ProjectIO {
 			}
 		}
 		projectData.position = 0;
-		var projObject:Object = decodeJson(projectData, true);
+		var projObject:Object = util.JSON.parse(projectData.readUTFBytes(projectData.length));
 		var proj:ScratchStage = new ScratchStage();
 		proj.readJSON(projObject);
 		var assetsToFetch:Array = collectAssetsToFetch(proj.allObjects());
@@ -377,7 +375,7 @@ public class ProjectIO {
 		// Fetch a sprite with the md5 hash.
 		function jsonReceived(data:ByteArray):void {
 			if (!data) return;
-			spr.readJSON(decodeJson(data, true));
+			spr.readJSON(util.JSON.parse(data.readUTFBytes(data.length)));
 			spr.instantiateFromJSON(app.stagePane);
 			fetchSpriteAssets([spr], assetsReceived);
 		}

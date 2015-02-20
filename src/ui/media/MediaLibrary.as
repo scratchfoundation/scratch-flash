@@ -18,24 +18,24 @@
  */
 
 package ui.media {
+<<<<<<< HEAD
 import assets.Resources;
 import extensions.ScratchExtension;
 
+=======
+>>>>>>> Remove actionjson due to license conflict
 import flash.display.*;
 import flash.events.*;
 import flash.media.Sound;
 import flash.net.*;
 import flash.text.*;
 import flash.utils.*;
-
+import assets.Resources;
+import extensions.ScratchExtension;
 import scratch.*;
-
 import sound.mp3.MP3Loader;
-
 import translation.Translator;
-
 import uiwidgets.*;
-
 import util.*;
 
 public class MediaLibrary extends Sprite {

@@ -48,8 +48,7 @@ function compile(src, dest, callback, lib_paths, extra_args) {
 
 var src = path.join(src_dir, 'Scratch.as');
 var libs = [
-    path.join(libs_dir, 'blooddy_crypto.swc'),
-    path.join(libs_dir, 'actionjson.swc')
+    path.join(libs_dir, 'blooddy_crypto.swc')
 ];
 
 function compileWith3D(callback) {
