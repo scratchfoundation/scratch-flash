@@ -18,27 +18,18 @@
  */
 
 package ui.media {
-import assets.Resources;
-
-import com.brokenfunction.json.decodeJson;
-
-import extensions.ScratchExtension;
-
 import flash.display.*;
 import flash.events.*;
 import flash.media.Sound;
 import flash.net.*;
 import flash.text.*;
 import flash.utils.*;
-
+import assets.Resources;
+import extensions.ScratchExtension;
 import scratch.*;
-
 import sound.mp3.MP3Loader;
-
 import translation.Translator;
-
 import uiwidgets.*;
-
 import util.*;
 
 public class MediaLibrary extends Sprite {
@@ -296,7 +287,7 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 		function gotLibraryData(data:ByteArray):void {
 			if (!data) return; // failure
 			var s:String = data.readUTFBytes(data.length);
-			libraryCache = decodeJson(s, true) as Array; // TODO: consider async with JsonDecoderAsync
+			libraryCache = util.JSON.parse(stripComments(s)) as Array;
 			collectEntries();
 		}
 		function collectEntries():void {

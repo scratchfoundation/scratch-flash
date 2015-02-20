@@ -24,26 +24,19 @@
 // a name, thumbnail, and a line of information for the media object it represents.
 
 package ui.media {
-import assets.Resources;
-
-import com.brokenfunction.json.decodeJson;
-
-import flash.display.*;
-import flash.events.MouseEvent;
-import flash.net.URLLoader;
-import flash.text.*;
-import flash.utils.ByteArray;
-
-import scratch.*;
-
-import sound.ScratchSoundPlayer;
-import sound.mp3.MP3SoundPlayer;
-
-import svgutils.SVGImporter;
-
-import translation.Translator;
-
-import uiwidgets.*;
+	import flash.display.*;
+	import flash.events.MouseEvent;
+	import flash.net.URLLoader;
+	import flash.text.*;
+	import flash.utils.ByteArray;
+	import assets.Resources;
+	import scratch.*;
+	import sound.ScratchSoundPlayer;
+	import sound.mp3.MP3SoundPlayer;
+	import svgutils.SVGImporter;
+	import translation.Translator;
+	import uiwidgets.*;
+	import util.*;
 
 public class MediaLibraryItem extends Sprite {
 
@@ -154,7 +147,7 @@ public class MediaLibraryItem extends Sprite {
 		function gotJSONData(data:String):void {
 			var md5:String;
 			if (data) {
-				var sprObj:Object = decodeJson(data, true);
+				var sprObj:Object = util.JSON.parse(data);
 				spriteCache[spriteMD5] = data;
 				dbObj.scriptCount = (sprObj.scripts is Array) ? sprObj.scripts.length : 0;
 				dbObj.costumeCount = (sprObj.costumes is Array) ? sprObj.costumes.length : 0;

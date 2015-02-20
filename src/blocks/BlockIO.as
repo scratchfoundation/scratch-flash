@@ -25,13 +25,9 @@
 // is independent of the internal representation and is easy to convert to/from JSON.
 
 package blocks {
-import com.brokenfunction.json.decodeJson;
-
-import scratch.*;
-
-import translation.*;
-
-import util.*;
+	import scratch.*;
+	import util.*;
+	import translation.*;
 
 public class BlockIO {
 
@@ -40,7 +36,7 @@ public class BlockIO {
 	}
 
 	public static function stringToStack(s:String, forStage:Boolean = false):Block {
-		return arrayToStack(decodeJson(s, true) as Array, forStage);
+		return arrayToStack(util.JSON.parse(s) as Array, forStage);
 	}
 
 	public static function stackToArray(b:Block):Array {
