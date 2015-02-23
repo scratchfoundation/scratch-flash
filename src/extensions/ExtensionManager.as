@@ -24,20 +24,16 @@
 // socket-based communications with local and server-based extension helper applications.
 
 package extensions {
-import blocks.Block;
-
-import com.brokenfunction.json.decodeJson;
-
-import flash.errors.IllegalOperationError;
-import flash.events.*;
-import flash.net.*;
-import flash.utils.Dictionary;
-import flash.utils.getTimer;
-
-import interpreter.*;
-
-import uiwidgets.DialogBox;
-import uiwidgets.IndicatorLight;
+	import flash.errors.IllegalOperationError;
+	import flash.events.*;
+	import flash.net.*;
+	import flash.utils.Dictionary;
+	import flash.utils.getTimer;
+	import blocks.Block;
+	import interpreter.*;
+	import uiwidgets.DialogBox;
+	import uiwidgets.IndicatorLight;
+	import util.*;
 
 public class ExtensionManager {
 
@@ -510,7 +506,7 @@ public class ExtensionManager {
 		function completeHandler(e:Event):void {
 			var specsObj:Object;
 			try {
-				specsObj = decodeJson(loader.data, true);
+				specsObj = util.JSON.parse(loader.data);
 			} catch(e:*) {}
 			if (!specsObj) return;
 			// use the block specs and (optionally) menu returned by the helper app
