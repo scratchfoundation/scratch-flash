@@ -129,6 +129,11 @@ public class ListWatcher extends Sprite {
 		return m;
 	}
 
+	public function changeName(name:String):void {
+		listName = name;
+		updateTitle();
+	}
+
 	private function importList():void {
 		// Prompt user for a file name and import that file.
 		// Each line of the file becomes a list item.

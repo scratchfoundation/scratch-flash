@@ -172,6 +172,24 @@ public class Block extends Sprite {
 		addEventListener(FocusEvent.KEY_FOCUS_CHANGE, focusChange);
 	}
 
+	public function getListName():String {
+		for each (var arg:BlockArg in args) {
+			if (arg.menuName == "list") {
+				return arg.argValue;
+			}
+		}
+
+		return null;
+	}
+
+	public function setListName(listName:String):void {
+		for each (var arg:BlockArg in args) {
+			if (arg.menuName == "list") {
+				arg.setArgValue(listName);
+			}
+		}
+	}
+
 	public function setSpec(newSpec:String, defaultArgs:Array = null):void {
 		for each (var o:DisplayObject in labelsAndArgs) {
 			if (o.parent != null) o.parent.removeChild(o);
