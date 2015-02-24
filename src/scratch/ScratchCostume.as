@@ -503,7 +503,17 @@ public class ScratchCostume {
 		if (!forStage) m.translate(-dispR.x, -dispR.y);
 		m.scale(scale, scale);
 
-		bm.drawWithQuality(dispObj, m, null, null, null, false, StageQuality.LOW);
+		if (SCRATCH::allow3d) {
+			bm.drawWithQuality(dispObj, m, null, null, null, false, StageQuality.LOW);
+		}
+		else {
+			++Scratch.app.ignoreResize;
+			var oldQuality:String = Scratch.app.stage.quality;
+			Scratch.app.stage.quality = StageQuality.LOW;
+			bm.draw(dispObj, m);
+			Scratch.app.stage.quality = oldQuality;
+			--Scratch.app.ignoreResize;
+		}
 
 		return bm;
 	}
