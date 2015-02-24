@@ -71,7 +71,7 @@ public class Scratch extends Sprite {
 	public var render3D:IRenderIn3D;
 	public var isArmCPU:Boolean;
 	public var jsEnabled:Boolean = false; // true when the SWF can talk to the webpage
-	public var ignoreResize:int = 0; // If non-zero, temporarily ignore resize events.
+	public var ignoreResize:Boolean = false; // If true, temporarily ignore resize events.
 
 	// Runtime
 	public var runtime:ScratchRuntime;
