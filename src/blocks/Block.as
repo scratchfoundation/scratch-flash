@@ -172,7 +172,7 @@ public class Block extends Sprite {
 		addEventListener(FocusEvent.KEY_FOCUS_CHANGE, focusChange);
 	}
 
-	public function getListName():String {
+	public function get listName():String {
 		for each (var arg:BlockArg in args) {
 			if (arg.menuName == "list") {
 				return arg.argValue;
@@ -182,7 +182,7 @@ public class Block extends Sprite {
 		return null;
 	}
 
-	public function setListName(listName:String):void {
+	public function set listName(listName:String):void {
 		for each (var arg:BlockArg in args) {
 			if (arg.menuName == "list") {
 				arg.setArgValue(listName);

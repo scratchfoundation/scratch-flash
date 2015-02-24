@@ -690,7 +690,7 @@ public class ScratchRuntime {
 				b.setSpec(newName);
 				b.fixExpressionLayout();
 			} else {
-				b.setListName(newName);
+				b.listName = newName;
 /*				b.args[0].setArgValue(newName);*/
 			}
 		}
@@ -889,7 +889,7 @@ public class ScratchRuntime {
 			if (stack.op == Specs.GET_LIST && stack.spec == listName) result.push(stack);
 			else {
 				stack.allBlocksDo(function (b:Block):void {
-					if (listBlocks.indexOf(b.op) != -1 && b.getListName() == listName) result.push(b);
+					if (listBlocks.indexOf(b.op) != -1 && b.listName == listName) result.push(b);
 				});
 			}
 		}
