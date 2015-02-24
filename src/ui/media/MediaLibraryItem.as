@@ -39,7 +39,6 @@ package ui.media {
 	import util.*;
 
 public class MediaLibraryItem extends Sprite {
-
 	public var dbObj:Object;
 	public var isSound:Boolean;
 
@@ -48,8 +47,8 @@ public class MediaLibraryItem extends Sprite {
 	private var thumbnailWidth:int;
 	private var thumbnailHeight:int;
 
-	private const labelFormat:TextFormat = new TextFormat(CSS.font, 14, CSS.textColor);
-	private const infoFormat:TextFormat = new TextFormat(CSS.font, 10, CSS.textColor);
+	private static var labelFormat:TextFormat;
+	private static var infoFormat:TextFormat;
 
 	private static var spriteCache:Object = {}; // maps md5 -> JSON for sprites
 	private static var thumbnailCache:Object = {};
@@ -65,14 +64,25 @@ public class MediaLibraryItem extends Sprite {
 
 	private var loaders:Array = []; // list of URLLoaders for stopLoading()
 
+	private static var defaultScale:Number;
+	private static var itemFrameWidth:Number;
+	private static var itemFrameHeight:Number;
+	private static var soundFrameWidth:Number;
+	private static var soundFrameHeight:Number;
+	private static var itemThumbWidth:Number;
+	private static var itemThumbHeight:Number;
+	private static var soundThumbWidth:Number;
+	private static var soundThumbHeight:Number;
+	setDefaultScale(1); // static init
+
 	public function MediaLibraryItem(dbObject:Object = null) {
 		this.dbObj = dbObject;
 		if (dbObj.seconds) isSound = true;
 
-		frameWidth = isSound ? 115 : 140;
-		frameHeight = isSound ? 95 : 140;
-		thumbnailWidth = isSound ? 68 : 120;
-		thumbnailHeight = isSound ? 51 : 90;
+		frameWidth = isSound ? soundFrameWidth : itemFrameWidth;
+		frameHeight = isSound ? soundFrameHeight : itemFrameHeight;
+		thumbnailWidth = isSound ? soundThumbWidth : itemThumbWidth;
+		thumbnailHeight = isSound ? soundThumbHeight : itemThumbHeight;
 
 		addFrame();
 		visible = false; // must call show(true) first
@@ -81,6 +91,21 @@ public class MediaLibraryItem extends Sprite {
 	}
 
 	public static function strings():Array { return ['Costumes:', 'Scripts:'] }
+
+	public static function setDefaultScale(scale:Number) {
+		// TODO: most or all usage of 'defaultScale' should be rephrased in terms of frameWidth or thumbnailWidth.
+		defaultScale = scale;
+		itemFrameWidth = 140 * scale;
+		itemFrameHeight = 140 * scale;
+		soundFrameWidth = 115 * scale;
+		soundFrameHeight = 95 * scale;
+		itemThumbWidth = 120 * scale;
+		itemThumbHeight = 90 * scale;
+		soundThumbWidth = 68 * scale;
+		soundThumbHeight = 51 * scale;
+		labelFormat = new TextFormat(CSS.font, 14 * scale, CSS.textColor);
+		infoFormat = new TextFormat(CSS.font, 10 * scale, CSS.textColor);
+	}
 
 	private var visualReady:Boolean = false;
 	public function show(shouldShow:Boolean, whenDone:Function = null):void {
@@ -220,9 +245,9 @@ public class MediaLibraryItem extends Sprite {
 	private function addFrame():void {
 		frame = new Shape();
 		var g:Graphics = frame.graphics;
-		g.lineStyle(3, CSS.overColor, 1, true);
+		g.lineStyle(3 * defaultScale, CSS.overColor, 1, true);
 		g.beginFill(CSS.itemSelectedColor);
-		g.drawRoundRect(0, 0, frameWidth, frameHeight, 12, 12);
+		g.drawRoundRect(0, 0, frameWidth, frameHeight, 12 * defaultScale, 12 * defaultScale);
 		g.endFill();
 		addChild(frame);
 	}
@@ -230,13 +255,13 @@ public class MediaLibraryItem extends Sprite {
 	protected function addThumbnail():void {
 		if (isSound) {
 			thumbnail = Resources.createBmp('speakerOff');
-			thumbnail.x = 22;
-			thumbnail.y = 25;
+			thumbnail.x = 22 * defaultScale;
+			thumbnail.y = 25 * defaultScale;
 		} else {
 			var blank:BitmapData = new BitmapData(1, 1, true, 0);
 			thumbnail = new Bitmap(blank);
 			thumbnail.x = (frameWidth - thumbnail.width) / 2;
-			thumbnail.y = 13;
+			thumbnail.y = 13 * defaultScale;
 		}
 		addChild(thumbnail);
 	}
@@ -245,28 +270,28 @@ public class MediaLibraryItem extends Sprite {
 		var objName:String = dbObj.name ? dbObj.name : '';
 		var tf:TextField = Resources.makeLabel(objName, labelFormat);
 		label = tf;
-		label.x = ((frameWidth - tf.textWidth) / 2) - 2;
-		label.y = frameHeight - 32;
+		label.x = ((frameWidth - tf.textWidth) / 2) - 2 * defaultScale;
+		label.y = frameHeight - 32 * defaultScale;
 		addChild(label);
 	}
 
 	private function addInfo():void {
 		info = Resources.makeLabel('', infoFormat);
 		info.x = Math.max(0, (frameWidth - info.textWidth) / 2);
-		info.y = frameHeight - 17;
+		info.y = frameHeight - 17 * defaultScale;
 		addChild(info);
 	}
 
 	private function addPlayButton():void {
 		playButton = new IconButton(toggleSoundPlay, 'play');
-		playButton.x = 75;
-		playButton.y = 28;
+		playButton.x = 75 * defaultScale;
+		playButton.y = 28 * defaultScale;
 		addChild(playButton);
 	}
 
 	private function setText(tf:TextField, s:String):void {
 		// Set the text of the given TextField, truncating if necessary.
-		var desiredWidth:int = frame.width - 6;
+		var desiredWidth:int = frame.width - 6 * defaultScale;
 		tf.text = s;
 		while ((tf.textWidth > desiredWidth) && (s.length > 0)) {
 			s = s.substring(0, s.length - 1);
