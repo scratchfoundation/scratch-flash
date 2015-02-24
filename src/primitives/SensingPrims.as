@@ -29,6 +29,7 @@ package primitives {
 	import blocks.Block;
 	import interpreter.*;
 	import scratch.*;
+	import util.DebugUtils;
 
 public class SensingPrims {
 
@@ -72,6 +73,16 @@ public class SensingPrims {
 		primTable['hideVariable:']		= primHideWatcher;
 		primTable['showList:']			= primShowListWatcher;
 		primTable['hideList:']			= primHideListWatcher;
+
+		if (DebugUtils.IsDebug) {
+			primTable['version'] = function(b:*):* { return DebugUtils.version; };
+			primTable['os'] = function(b:*):* { return DebugUtils.os; };
+			primTable['playertype'] = function(b:*):* { return DebugUtils.playerType; };
+			primTable['language'] = function(b:*):* { return DebugUtils.language; };
+			primTable['manufacturer'] = function(b:*):* { return DebugUtils.manufacturer; };
+			primTable['hasmp3'] = function(b:*):* { return DebugUtils.hasmp3; };
+		}
+
 	}
 
 	// TODO: move to stage

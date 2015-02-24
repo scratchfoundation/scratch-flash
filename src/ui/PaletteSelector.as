@@ -28,12 +28,17 @@ package ui {
 	import flash.display.*;
 	import translation.Translator;
 	import scratch.PaletteBuilder;
+	import util.DebugUtils;
 
 public class PaletteSelector extends Sprite {
 
 	private static const categories:Array = [
 		'Motion', 'Looks', 'Sound', 'Pen', 'Data', // column 1
 		'Events', 'Control', 'Sensing', 'Operators', 'More Blocks']; // column 2
+
+	if (DebugUtils.IsDebug) {
+		categories.push("Debug");
+	}
 
 	public var selectedCategory:int = 0;
 	private var app:Scratch;

@@ -22,6 +22,7 @@ package util {
 import flash.utils.getQualifiedClassName;
 import flash.display.DisplayObjectContainer;
 import flash.display.DisplayObject;
+import flash.system.Capabilities;
 
 public class DebugUtils {
 
@@ -40,6 +41,34 @@ public class DebugUtils {
 		for (i = 0; i < container.numChildren; i++) {
 			printSubtree(container.getChildAt(i), indent + 1, out);
 		}
+	}
+
+	public static function get IsDebug():Boolean {
+		return Capabilities.isDebugger && new Error().getStackTrace().search(/:[0-9]+]$/m) > -1;
+	}
+
+	public static function get version(): String {
+		return Capabilities.version;
+	}
+
+	public static function get os(): String {
+		return Capabilities.os;
+	}
+
+	public static function get playerType(): String {
+		return Capabilities.playerType;
+	}
+
+	public static function get language(): String {
+		return Capabilities.language;
+	}
+
+	public static function get hasmp3(): Boolean {
+		return Capabilities.hasMP3;
+	}
+
+	public static function get manufacturer(): String {
+		return Capabilities.manufacturer;
 	}
 
 }}
