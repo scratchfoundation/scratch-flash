@@ -86,6 +86,7 @@ public class MediaLibraryItem extends Sprite {
 
 		addFrame();
 		visible = false; // must call show(true) first
+		unhighlight();
 		addEventListener(MouseEvent.CLICK, click);
 		addEventListener(MouseEvent.DOUBLE_CLICK, doubleClick);
 	}
