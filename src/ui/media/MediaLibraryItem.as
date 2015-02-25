@@ -144,6 +144,7 @@ public class MediaLibraryItem extends Sprite {
 		var ext:String = fileType(dbObj.md5);
 		if (['gif', 'png', 'jpg', 'jpeg', 'svg'].indexOf(ext) > -1) setImageThumbnail(dbObj.md5, done);
 		else if (ext == 'json') setSpriteThumbnail(done);
+		else if (done) done();
 	}
 
 	public function stopLoading():void {
