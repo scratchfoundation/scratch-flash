@@ -239,7 +239,6 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 
 	public function removeAllItems():void {
 		// TODO: Fix to only remove children that are itemClass instances?
-//		while (numChildren > 0) removeChildAt(0);
 		while (numChildren > 0) DragAndDropMgr.setDraggable(removeChildAt(0) as Sprite, false);
 		dropPos = -1;
 	}
