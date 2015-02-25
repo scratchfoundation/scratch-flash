@@ -37,6 +37,7 @@ import flash.display.*;
 import flash.events.Event;
 import flash.events.MouseEvent;
 import flash.filters.GlowFilter;
+import flash.geom.Rectangle;
 
 import org.gestouch.events.GestureEvent;
 import org.gestouch.gestures.TransformGesture;
@@ -77,10 +78,24 @@ public class ScrollFrame extends Sprite {
 		if (useFrame) addShadowFrame(); // adds a shadow to top and left
 		setWidthHeight(100, 100);
 		setContents(new ScrollFrameContents());
-		addEventListener(ScrollFrameContents.INTERACTION_BEGAN, cancelScrolling);
+		addEventListener(ScrollFrameContents.INTERACTION_BEGAN, handleContentInteraction);
 		enableScrollWheel('vertical');
 		if (dragScrolling) {
 			enableDragScrolling();
+		}
+	}
+
+	private function handleContentInteraction(event:Event):void {
+		// Stop any scrolling
+		if (panGesture) {
+			panGesture.reset();
+		}
+
+		// Make sure the content is visible
+		var b:Rectangle = event.target.getBounds(mask);
+		if (b.bottom > mask.height) {
+			contents.y -= b.bottom - mask.height;
+			constrainScroll();
 		}
 	}
 
@@ -116,12 +131,6 @@ public class ScrollFrame extends Sprite {
 		g.beginFill(0xFF00, 1);
 		g.drawRect(0, 0, w, h);
 		g.endFill();
-	}
-
-	private function cancelScrolling(event:Event):void {
-		if (panGesture) {
-			panGesture.reset();
-		}
 	}
 
 	private function addShadowFrame():void {

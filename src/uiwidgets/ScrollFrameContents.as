@@ -39,7 +39,7 @@ public class ScrollFrameContents extends Sprite {
 	public static const SCROLL_Y:String = 'scrollY';
 	private static const scrollEventY:Event = new Event(SCROLL_Y);
 	public static const INTERACTION_BEGAN:String = 'interactionBegan';
-	private static const interactionBeganEvent:Event = new Event(INTERACTION_BEGAN);
+	private static const interactionBeganEvent:Event = new Event(INTERACTION_BEGAN, true);
 
 	public var color:uint = 0xE0E0E0;
 	public var texture:BitmapData;
@@ -62,8 +62,8 @@ public class ScrollFrameContents extends Sprite {
 		}
 	}
 
-	protected function contentInteraction():void {
-		dispatchEvent(interactionBeganEvent);
+	protected function contentInteraction(target:DisplayObject):void {
+		target.dispatchEvent(interactionBeganEvent);
 	}
 
 	public function clear(scrollToOrigin:Boolean = true):void {
