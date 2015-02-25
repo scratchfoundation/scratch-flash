@@ -23,6 +23,9 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 	public static const TYPE_GRID:uint = 0;
 	public static const TYPE_STRIP_HORIZONTAL:uint = 1;
 	public static const TYPE_STRIP_VERTICAL:uint = 2;
+
+	public static const ORDER_CHANGE:String = 'orderChange';
+	public static const CONTENT_CHANGE:String = 'contentChange';
 	private static const leftBehindAlpha:Number = 0.6;
 	private static const animationDuration:Number = 0.25;
 
@@ -166,7 +169,10 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 	}
 
 	private var contentChanged:Boolean;
+	private var orderChanged:Boolean;
 	public function addContent(item:MediaInfo, where:* = null):void {
+		orderChanged = (item.parent == this);
+
 		if (where is Number && where >= 0) addChildAt(item, where as Number);
 		else if (dropPos > -1) {
 			var index:int = (dropPos < numChildren) ? getChildIndex(allItems()[dropPos]) : numChildren;
@@ -186,6 +192,7 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 			addContent(item);
 
 		contentChanged = false;
+		orderChanged = false;
 		updateSize();
 		x = y = 0; // reset scroll offset
 	}
@@ -210,10 +217,13 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 		}
 		else {
 			// Grid layout
-			var px:Number = loc.x - itemPadding;
-			var py:Number = loc.y - itemPadding;
-			var rowLen:int = w / (MediaInfo.frameWidth + itemPadding);
-			var index:int = Math.max(0, Math.min(rowLen-1, Math.floor(px / (MediaInfo.frameWidth + itemPadding))) + rowLen * Math.floor(py / (MediaInfo.frameHeight + itemPadding)));
+			var px:Number = loc.x - itemPadding * 2;
+			var py:Number = loc.y - itemPadding * 2;
+			var realWidth:int = w - itemPadding * 4;
+			var rowLen:int = realWidth / (MediaInfo.frameWidth + itemPadding);
+			var extraPadding:int = (realWidth - rowLen * (MediaInfo.frameWidth + itemPadding)) / rowLen;
+			var index:int = Math.max(0, Math.min(rowLen-1, Math.floor(px / (MediaInfo.frameWidth + itemPadding + extraPadding))) +
+													rowLen * Math.floor(py / (MediaInfo.frameHeight + itemPadding)));
 			var items:Array = allItems();
 			if (items.length && ((index < items.length && items[index].objType != 'ui') || index == items.length))
 				return forAdding ?
@@ -262,8 +272,9 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 
 	public function arrangeItems(animate:Boolean = false):void {
 		if (contentChanged) {
+			dispatchEvent(new Event(orderChanged ? ORDER_CHANGE : CONTENT_CHANGE));
 			contentChanged = false;
-			dispatchEvent(new Event(Event.CHANGE));
+			orderChanged = false;
 		}
 		if (numChildren == 0) return;
 
