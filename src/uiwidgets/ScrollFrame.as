@@ -77,7 +77,7 @@ public class ScrollFrame extends Sprite {
 		if (useFrame) addShadowFrame(); // adds a shadow to top and left
 		setWidthHeight(100, 100);
 		setContents(new ScrollFrameContents());
-		addEventListener(Event.OPEN, cancelScrolling);
+		addEventListener(ScrollFrameContents.INTERACTION_BEGAN, cancelScrolling);
 		enableScrollWheel('vertical');
 		if (dragScrolling) {
 			enableDragScrolling();
