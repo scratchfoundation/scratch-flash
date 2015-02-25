@@ -419,7 +419,8 @@ public class MediaInfo extends Sprite implements IDraggable {
 		if (!getBackpack()) {
 			var app:Scratch = Scratch.app;
 			if (mycostume) {
-				app.viewedObj().showCostumeNamed(mycostume.costumeName);
+				var s:ScratchObj = app.viewedObj();
+				s.showCostume(s.indexOfCostume(mycostume));
 				app.selectCostume();
 			}
 			if (mysound) app.selectSound(mysound);

@@ -116,6 +116,13 @@ public class ScratchObj extends Sprite {
 		return -1;
 	}
 
+	public function indexOfCostume(c:ScratchCostume):int {
+		for (var i:int = 0; i < costumes.length; i++) {
+			if (costumes[i] === c) return i;
+		}
+		return -1;
+	}
+
 	public function showCostume(costumeIndex:Number):void {
 		if (isNaNOrInfinity(costumeIndex)) costumeIndex = 0;
 		currentCostumeIndex = costumeIndex % costumes.length;
