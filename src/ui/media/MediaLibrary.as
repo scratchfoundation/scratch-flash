@@ -18,12 +18,6 @@
  */
 
 package ui.media {
-<<<<<<< HEAD
-import assets.Resources;
-import extensions.ScratchExtension;
-
-=======
->>>>>>> Remove actionjson due to license conflict
 import flash.display.*;
 import flash.events.*;
 import flash.media.Sound;
