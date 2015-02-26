@@ -86,7 +86,7 @@ public class ScratchCostume {
 	public var undoList:Array = [];
 	public var undoListIndex:int;
 
-	public function ScratchCostume(name:String, data:*, centerX:int = 99999, centerY:int = 99999) {
+	public function ScratchCostume(name:String, data:*, centerX:int = 99999, centerY:int = 99999, bmRes:int = 1) {
 		costumeName = name;
 		rotationCenterX = centerX;
 		rotationCenterY = centerY;
@@ -94,6 +94,7 @@ public class ScratchCostume {
 			rotationCenterX = rotationCenterY = 0;
 		} else if (data is BitmapData) {
 			bitmap = baseLayerBitmap = data;
+			bitmapResolution = bmRes;
 			if (centerX == 99999) rotationCenterX = bitmap.rect.width / 2;
 			if (centerY == 99999) rotationCenterY = bitmap.rect.height / 2;
 			prepareToSave();
