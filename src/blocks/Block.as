@@ -228,6 +228,17 @@ public class Block extends Sprite {
 		fixArgLayout();
 	}
 
+	public function changeTextAndOperator(newText: String, newOp:String):void {
+		// Used to switch among a family of comparison operators (e.g. <, ≤, =, ≠, >, and ≥).
+		// Note: This does not deal with translation, so it only works for symbolic operators.
+		for each (var item:* in labelsAndArgs) {
+			if (item is TextField) item.text = newText;
+		}
+		op = newOp;
+		opFunction = null;
+		fixArgLayout();
+	}
+
 	public static function setFonts(labelSize:int, argSize:int, boldFlag:Boolean, vOffset:int):void {
 		var font:String = Resources.chooseFont([
 			'Lucida Grande', 'Verdana', 'Arial', 'DejaVu Sans']);
