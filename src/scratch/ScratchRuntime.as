@@ -757,12 +757,28 @@ public class ScratchRuntime {
 		return result;
 	}
 
+	public function renameBroadcast(oldMsg:String, newMsg:String):void {
+		if (oldMsg == newMsg) return;
+
+		if (allSendersOfBroadcast(newMsg).length > 0 ||
+			allReceiversOfBroadcast(newMsg).length > 0) {
+			DialogBox.notify("Cannot Rename", "That name is already in use.");
+			return;
+		}
+
+		for each(var obj:Block in allBroadcastBlocksWithMsg(oldMsg)) {
+				Block(obj).broadcastMsg = newMsg;
+		}
+
+		app.updatePalette();
+	}
+
 	private function sendsBroadcast(obj:ScratchObj, msg:String):Boolean {
 		for each (var stack:Block in obj.scripts) {
 			var found:Boolean;
 			stack.allBlocksDo(function (b:Block):void {
-				if ((b.op == 'broadcast:') || (b.op == 'doBroadcastAndWait')) {
-					if (b.args[0].argValue == msg) found = true;
+				if (b.isBroadcastSender) {
+					if (b.broadcastMsg == msg) found = true;
 				}
 			});
 			if (found) return true;
@@ -775,13 +791,27 @@ public class ScratchRuntime {
 		for each (var stack:Block in obj.scripts) {
 			var found:Boolean;
 			stack.allBlocksDo(function (b:Block):void {
-				if (b.op == 'whenIReceive') {
-					if (b.args[0].argValue.toLowerCase() == msg) found = true;
+				if (b.isBroadcastReceiver) {
+					if (b.broadcastMsg.toLowerCase() == msg) found = true;
 				}
 			});
 			if (found) return true;
 		}
 		return false;
+	}
+
+	private function allBroadcastBlocksWithMsg(msg:String):Array {
+		var result:Array = [];
+		for each (var o:ScratchObj in app.stagePane.allObjects()) {
+			for each (var stack:Block in o.scripts) {
+				stack.allBlocksDo(function (b:Block):void {
+					if (b.isBroadcastSender || b.isBroadcastReceiver) {
+						if (b.broadcastMsg == msg) result.push(b);
+					}
+				});
+			}
+		}
+		return result;
 	}
 
 	public function allUsesOfBackdrop(backdropName:String):Array {

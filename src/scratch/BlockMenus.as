@@ -740,6 +740,21 @@ public class BlockMenus implements DragClient {
 
 	// ***** Broadcast menu *****
 
+	private function renameBroadcast():void {
+		function doVarRename(dialog:DialogBox):void {
+			var newName:String = dialog.getField('New name').replace(/^\s+|\s+$/g, '');
+			if (newName.length == 0) return;
+			var oldName:String = block.broadcastMsg;
+
+			app.runtime.renameBroadcast(oldName, newName);
+		}
+		var d:DialogBox = new DialogBox(doVarRename);
+		d.addTitle(Translator.map('Rename') + ' ' + block.broadcastMsg);
+		d.addField('New name', 120, block.broadcastMsg);
+		d.addAcceptCancelButtons('OK');
+		d.showOnStage(app.stage);
+	}
+
 	private function broadcastMenu(evt:MouseEvent):void {
 		function broadcastMenuSelection(selection:*):void {
 			if (selection is Function) selection();
@@ -782,6 +797,7 @@ public class BlockMenus implements DragClient {
 		var m:Menu = new Menu(showBroadcasts, 'broadcastInfo');
 		addGenericBlockItems(m);
 		if (!isInPalette(block)) {
+			m.addItem('rename broadcast', renameBroadcast);
 			m.addItem('show senders');
 			m.addItem('show receivers');
 			m.addItem('clear senders/receivers');
