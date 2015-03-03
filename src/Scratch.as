@@ -122,6 +122,10 @@ public class Scratch extends Sprite {
 		stage.addEventListener(MouseEvent.MOUSE_UP, mouseHandler, true, 10, true);
 	}
 
+	public function getVersionString():String {
+		return versionString;
+	}
+
 	public var mouseIsDown:Boolean;
 	private function mouseHandler(e:MouseEvent):void {
 		mouseIsDown = (e.type == MouseEvent.MOUSE_DOWN);
@@ -154,9 +158,6 @@ public class Scratch extends Sprite {
 
 		playerBG = new Shape(); // create, but don't add
 		addParts();
-		
-		server.getSelectedLang(Translator.setLanguageValue);
-		
 
 //		stage.addEventListener('rightClick', gh.rightMouseClick);
 		stage.addEventListener(KeyboardEvent.KEY_DOWN, runtime.keyDown);
@@ -172,6 +173,7 @@ public class Scratch extends Sprite {
 		else runtime.installEmptyProject();
 
 		fixLayout();
+		server.getSelectedLang(Translator.setLanguage);
 		//Analyze.collectAssets(0, 119110);
 		//Analyze.checkProjects(56086, 64220);
 		//Analyze.countMissingAssets();
@@ -485,6 +487,7 @@ public class Scratch extends Sprite {
 		libraryPart.step();
 		scriptsPart.step();
 		imagesPart.step();
+		if (render3D) render3D.onRender(e);
 	}
 
 	public function updateSpriteLibrary(sortByIndex:Boolean = false):void { libraryPart.refresh() }
