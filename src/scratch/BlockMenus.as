@@ -18,20 +18,17 @@
  */
 
 package scratch {
-	import flash.display.*;
-	import flash.events.*;
-	import flash.geom.*;
-	import flash.ui.*;
-	import blocks.*;
-	import filters.*;
-	import sound.*;
-	import translation.Translator;
-	import ui.ProcedureSpecEditor;
-import ui.ToolMgr;
+import flash.display.*;
+import flash.events.*;
+import flash.geom.*;
+import flash.ui.*;
+import blocks.*;
+import filters.*;
+import sound.*;
+import translation.Translator;
+import ui.ProcedureSpecEditor;
 import ui.dragdrop.DragClient;
-
 import uiwidgets.*;
-	import util.*;
 
 public class BlockMenus implements DragClient {
 
@@ -213,7 +210,7 @@ public class BlockMenus implements DragClient {
 			obj = app.stagePane.objNamed(block.args[1].argValue);
 		}
 		var attributes:Array = obj is ScratchStage ? stageAttributes : spriteAttributes;
-		var m:Menu = new Menu(setBlockArg, 'attribute');
+		var m:Menu = new Block.MenuClass(setBlockArg, 'attribute');
 		for each (var s:String in attributes) m.addItem(s);
 		if (obj is ScratchObj) {
 			m.addLine();
@@ -223,7 +220,7 @@ public class BlockMenus implements DragClient {
 	}
 
 	protected function backdropMenu(evt:MouseEvent):void {
-		var m:Menu = new Menu(setBlockArg, 'backdrop');
+		var m:Menu = new Block.MenuClass(setBlockArg, 'backdrop');
 		for each (var scene:ScratchCostume in app.stageObj().costumes) {
 			m.addItem(scene.costumeName);
 		}
@@ -238,7 +235,7 @@ public class BlockMenus implements DragClient {
 	protected function booleanSensorMenu(evt:MouseEvent):void {
 		var sensorNames:Array = [
 			'button pressed', 'A connected', 'B connected', 'C connected', 'D connected'];
-		var m:Menu = new Menu(setBlockArg, 'booleanSensor');
+		var m:Menu = new Block.MenuClass(setBlockArg, 'booleanSensor');
 		for each (var s:String in sensorNames) m.addItem(s);
 		showMenu(m);
 	}
@@ -249,7 +246,7 @@ public class BlockMenus implements DragClient {
 	}
 
 	protected function costumeMenu(evt:MouseEvent):void {
-		var m:Menu = new Menu(setBlockArg, 'costume');
+		var m:Menu = new Block.MenuClass(setBlockArg, 'costume');
 		if (app.viewedObj() == null) return;
 		for each (var c:ScratchCostume in app.viewedObj().costumes) {
 			m.addItem(c.costumeName);
@@ -258,7 +255,7 @@ public class BlockMenus implements DragClient {
 	}
 
 	protected function dirMenu(evt:MouseEvent):void {
-		var m:Menu = new Menu(setBlockArg, 'direction');
+		var m:Menu = new Block.MenuClass(setBlockArg, 'direction');
 		m.addItem('(90) ' + Translator.map('right'), 90);
 		m.addItem('(-90) ' + Translator.map('left'), -90);
 		m.addItem('(0) ' + Translator.map('up'), 0);
@@ -267,7 +264,7 @@ public class BlockMenus implements DragClient {
 	}
 
 	protected function drumMenu(evt:MouseEvent):void {
-		var m:Menu = new Menu(setBlockArg, 'drum');
+		var m:Menu = new Block.MenuClass(setBlockArg, 'drum');
 		for (var i:int = 1; i <= SoundBank.drumNames.length; i++) {
 			m.addItem('(' + i + ') ' + Translator.map(SoundBank.drumNames[i - 1]), i);
 		}
@@ -275,7 +272,7 @@ public class BlockMenus implements DragClient {
 	}
 
 	protected function effectMenu(evt:MouseEvent):void {
-		var m:Menu = new Menu(setBlockArg, 'effect');
+		var m:Menu = new Block.MenuClass(setBlockArg, 'effect');
 		if (app.viewedObj() == null) return;
 		for each (var s:String in FilterPack.filterNames) m.addItem(s);
 		showMenu(m);
@@ -284,14 +281,14 @@ public class BlockMenus implements DragClient {
 	protected function extensionMenu(evt:MouseEvent, menuName:String):Boolean {
 		var items:Array = app.extensionManager.menuItemsFor(block.op, menuName);
 		if (!items) return false;
-		var m:Menu = new Menu(setBlockArg);
+		var m:Menu = new Block.MenuClass(setBlockArg);
 		for each (var s:String in items) m.addItem(s);
 		showMenu(m);
 		return true;
 	}
 
 	protected function instrumentMenu(evt:MouseEvent):void {
-		var m:Menu = new Menu(setBlockArg, 'instrument');
+		var m:Menu = new Block.MenuClass(setBlockArg, 'instrument');
 		for (var i:int = 1; i <= SoundBank.instrumentNames.length; i++) {
 			m.addItem('(' + i + ') ' + Translator.map(SoundBank.instrumentNames[i - 1]), i);
 		}
@@ -301,7 +298,7 @@ public class BlockMenus implements DragClient {
 	protected function keyMenu(evt:MouseEvent):void {
 		var ch:int;
 		var namedKeys:Array = ['up arrow', 'down arrow', 'right arrow', 'left arrow', 'space'];
-		var m:Menu = new Menu(setBlockArg, 'key');
+		var m:Menu = new Block.MenuClass(setBlockArg, 'key');
 		for each (var s:String in namedKeys) m.addItem(s);
 		for (ch = 97; ch < 123; ch++) m.addItem(String.fromCharCode(ch)); // a-z
 		for (ch = 48; ch < 58; ch++) m.addItem(String.fromCharCode(ch)); // 0-9
@@ -309,7 +306,7 @@ public class BlockMenus implements DragClient {
 	}
 
 	protected function listItem(evt:MouseEvent, forDelete:Boolean):void {
-		var m:Menu = new Menu(setBlockArg, 'listItem');
+		var m:Menu = new Block.MenuClass(setBlockArg, 'listItem');
 		m.addItem('1');
 		m.addItem('last');
 		if (forDelete) {
@@ -323,14 +320,14 @@ public class BlockMenus implements DragClient {
 
 	protected function mathOpMenu(evt:MouseEvent):void {
 		var ops:Array = ['abs', 'floor', 'ceiling', 'sqrt', 'sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'ln', 'log', 'e ^', '10 ^'];
-		var m:Menu = new Menu(setBlockArg, 'mathOp');
+		var m:Menu = new Block.MenuClass(setBlockArg, 'mathOp');
 		for each (var op:String in ops) m.addItem(op);
 		showMenu(m);
 	}
 
 	protected function motorDirectionMenu(evt:MouseEvent):void {
 		var ops:Array = ['this way', 'that way', 'reverse'];
-		var m:Menu = new Menu(setBlockArg, 'motorDirection');
+		var m:Menu = new Block.MenuClass(setBlockArg, 'motorDirection');
 		for each (var s:String in ops) m.addItem(s);
 		showMenu(m);
 	}
@@ -346,7 +343,7 @@ public class BlockMenus implements DragClient {
 
 	protected function rotationStyleMenu(evt:MouseEvent):void {
 		const rotationStyles:Array = ['left-right', "don't rotate", 'all around'];
-		var m:Menu = new Menu(setBlockArg, 'rotationStyle');
+		var m:Menu = new Block.MenuClass(setBlockArg, 'rotationStyle');
 		for each (var s:String in rotationStyles) m.addItem(s);
 		showMenu(m);
 	}
@@ -354,7 +351,7 @@ public class BlockMenus implements DragClient {
 	protected function scrollAlignMenu(evt:MouseEvent):void {
 		const options:Array = [
 			'bottom-left', 'bottom-right', 'middle', 'top-left', 'top-right'];
-		var m:Menu = new Menu(setBlockArg, 'scrollAlign');
+		var m:Menu = new Block.MenuClass(setBlockArg, 'scrollAlign');
 		for each (var s:String in options) m.addItem(s);
 		showMenu(m);
 	}
@@ -363,7 +360,7 @@ public class BlockMenus implements DragClient {
 		var sensorNames:Array = [
 			'slider', 'light', 'sound',
 			'resistance-A', 'resistance-B', 'resistance-B', 'resistance-C', 'resistance-D'];
-		var m:Menu = new Menu(setBlockArg, 'sensor');
+		var m:Menu = new Block.MenuClass(setBlockArg, 'sensor');
 		for each (var s:String in sensorNames) m.addItem(s);
 		showMenu(m);
 	}
@@ -373,7 +370,7 @@ public class BlockMenus implements DragClient {
 			if (s is Function) s()
 			else setBlockArg(s);
 		}
-		var m:Menu = new Menu(setSoundArg, 'sound');
+		var m:Menu = new Block.MenuClass(setSoundArg, 'sound');
 		if (app.viewedObj() == null) return;
 		for (var i:int = 0; i < app.viewedObj().sounds.length; i++) {
 			m.addItem(app.viewedObj().sounds[i].soundName);
