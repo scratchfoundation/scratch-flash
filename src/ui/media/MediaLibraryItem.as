@@ -60,7 +60,7 @@ public class MediaLibraryItem extends Sprite {
 	private var playButton:IconButton;
 
 	private var sndData:ByteArray;
-	private var sndPlayer:ScratchSoundPlayer;
+	private static var sndPlayer:ScratchSoundPlayer;
 
 	private var loaders:Array = []; // list of URLLoaders for stopLoading()
 
@@ -106,6 +106,11 @@ public class MediaLibraryItem extends Sprite {
 		soundThumbHeight = 51 * scale;
 		labelFormat = new TextFormat(CSS.font, 14 * scale, CSS.textColor);
 		infoFormat = new TextFormat(CSS.font, 10 * scale, CSS.textColor);
+	}
+
+	public static function stopSounds():void {
+		if (sndPlayer) sndPlayer.stopPlaying();
+		sndPlayer = null;
 	}
 
 	private var visualReady:Boolean = false;
@@ -358,8 +363,11 @@ public class MediaLibraryItem extends Sprite {
 	//------------------------------
 
 	private function toggleSoundPlay(b:IconButton):void {
-		if (sndPlayer) stopPlayingSound(null);
-		else startPlayingSound();
+		if (sndPlayer && sndData && sndPlayer.isPlaying(sndData)) stopPlayingSound(null);
+		else {
+			if (sndPlayer) stopSounds();
+			startPlayingSound();
+		}
 	}
 
 	private function stopPlayingSound(ignore:*):void {

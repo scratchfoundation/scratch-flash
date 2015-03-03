@@ -128,6 +128,7 @@ public class MediaLibrary extends Sprite {
 
 	public function close(ignore:* = null):void {
 		stopLoadingThumbnails();
+		MediaLibraryItem.stopSounds();
 		parent.removeChild(this);
 		app.mediaLibrary = null;
 		app.reopenTips();

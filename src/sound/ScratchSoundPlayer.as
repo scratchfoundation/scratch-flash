@@ -85,12 +85,18 @@ public class ScratchSoundPlayer {
 		}
 	}
 
+	public function isPlaying(snd:ByteArray = null):Boolean {
+		return (activeSounds.indexOf(this) > -1 && (!snd || soundData == snd));
+	}
+
 	public function atEnd():Boolean { return soundChannel == null }
 
 	public function stopPlaying():void {
 		if (soundChannel != null) {
-			soundChannel.stop();
+			var sc:SoundChannel = soundChannel;
 			soundChannel = null;
+			sc.stop();
+			sc.dispatchEvent(new Event(Event.SOUND_COMPLETE));
 		}
 		var i:int = activeSounds.indexOf(this);
 		if (i >= 0) activeSounds.splice(i, 1);
