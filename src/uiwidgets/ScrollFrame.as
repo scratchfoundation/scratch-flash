@@ -95,7 +95,6 @@ public class ScrollFrame extends Sprite {
 		var b:Rectangle = event.target.getBounds(mask);
 		if (b.bottom > mask.height) {
 			contents.y -= b.bottom - mask.height;
-			constrainScroll();
 		}
 	}
 
