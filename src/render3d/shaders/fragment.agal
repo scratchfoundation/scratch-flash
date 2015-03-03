@@ -326,7 +326,7 @@ ft5.z *= ft2.z //ft5.z = ft5.z * v;
 ft5.w = ft2.z //mov ft5.w, v; // v
 
 /*** FIX i to be an integer on Intel Graphics 3000 with Chrome Pepper Flash ***/
-ft3.x += 0.5 // fix i?
+ft3.x += 0.001 // fix i?
 ft3.y = frc(ft3.x) // fix i?
 ft3.x -= ft3.y // fix i?
 

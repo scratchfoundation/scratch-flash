@@ -104,14 +104,22 @@ package render3d {
 		}
 
 		public function needsResize(w:Number, h:Number):Boolean {
-			if(w > orig_width && Math.ceil(w) > width) {
-				return true;
-			}
-			if(h > orig_height && Math.ceil(h) > height) {
+//			if(w > orig_width && Math.ceil(w) > width) {
+//				return true;
+//			}
+//			if(h > orig_height && Math.ceil(h) > height) {
+//				return true;
+//			}
+			if(!closeTo(w, orig_width) || !closeTo(h, orig_height)) {
 				return true;
 			}
 
 			return false;
+		}
+
+		[inline]
+		private function closeTo(a:Number, b:Number):Boolean {
+			return Math.abs(a-b) < 2;
 		}
 
 		public function needsRender(dispObj:DisplayObject, w:Number, h:Number, penLayer:DisplayObject):Boolean {

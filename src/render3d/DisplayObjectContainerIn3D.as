@@ -20,6 +20,7 @@
 package render3d {
 
 import flash.display.Sprite;
+import flash.display.StageQuality;
 
 import ui.dragdrop.DragAndDropMgr;
 
@@ -27,7 +28,7 @@ import ui.dragdrop.DragAndDropMgr;
  *   A display object container which renders in 3D instead
  *   @author Shane M. Clements, shane.m.clements@gmail.com
  */
-public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {SCRATCH::allow3d{
+public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 
 	import com.adobe.utils.*;
 
@@ -97,6 +98,9 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 	/** Vertex data for all sprites */
 	//private var vertexData:Vector.<Number> = new <Number>[];
 	private var vertexData:ByteArray = new ByteArray();
+
+	private var perQuadData:ByteArray = new ByteArray();
+
 	private var projMatrix:Matrix3D;
 
 	private var textureCount:int;
@@ -132,6 +136,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		shaderCache = {};
 		fragmentShaderAssembler = new AGALMacroAssembler();
 		vertexShaderAssembler = new AGALMacroAssembler();
+		perQuadData.endian = Endian.LITTLE_ENDIAN;
 		bitmapsByID = {};
 		textureIndexByID = {};
 		textures = [];
@@ -221,7 +226,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		uiContainer.transform.matrix = scratchStage.transform.matrix.clone();
 		scratchStage.stage.addEventListener(Event.RESIZE, onStageResize, false, 0, true);
 //		scratchStage.stage.addEventListener(KeyboardEvent.KEY_DOWN, toggleTextureDebug, false, 0, true);
-		scratchStage.addEventListener(Event.ENTER_FRAME, onRender, false, 0, true);
+//		scratchStage.addEventListener(Event.ENTER_FRAME, onRender, false, 0, true);
 
 		penPacked = false;
 		if(!__context) {
@@ -257,7 +262,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		//trace('Dying!');
 		scratchStage.stage.removeEventListener(Event.RESIZE, onStageResize);
 //			scratchStage.stage.removeEventListener(KeyboardEvent.KEY_DOWN, toggleTextureDebug);
-		scratchStage.removeEventListener(Event.ENTER_FRAME, onRender);
+//		scratchStage.removeEventListener(Event.ENTER_FRAME, onRender);
 
 		onContextLoss(e);
 		if(__context) {
@@ -408,7 +413,6 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 
 	private var childrenDrawn:int = 0;
 	private var tlPoint:Point;
-
 	private function draw():void {
 		var textureDirty:Boolean = false;
 		var numChildren:uint = scratchStage.numChildren;
@@ -432,25 +436,24 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 
 		checkBuffers();
 
-			if(childrenChanged) {
-				if(debugTexture) {
+		if(childrenChanged) {
+			if(debugTexture) {
 				uiContainer.graphics.clear();
 				uiContainer.graphics.lineStyle(2, 0xFFCCCC);
 			}
-				for(i=0; i<numChildren; ++i) {
+			for(i=0; i<numChildren; ++i) {
 				dispObj = scratchStage.getChildAt(i);
-					if(dispObj.visible)
+				if(dispObj.visible)
 					textureDirty = checkChildRender(dispObj) || textureDirty;
 			}
 		}
 		else
-				for(var child:Object in unrenderedChildren)
-					if((child as DisplayObject).visible)
+			for(var child:Object in unrenderedChildren)
+				if((child as DisplayObject).visible)
 					textureDirty = checkChildRender(child as DisplayObject) || textureDirty;
 
-			if(textureDirty) {
+		if(textureDirty)
 			packTextureBitmaps();
-		}
 
 		if (childrenChanged || effectsChanged) {
 			vertexData.position = 0;
@@ -472,7 +475,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 	}
 
 	private function uploadBuffers():void {
-			if(!indexBufferUploaded) {
+		if(!indexBufferUploaded) {
 			indexBuffer.uploadFromByteArray(indexData, 0, 0, indexData.length >> 1);
 			indexBufferUploaded = true;
 		}
@@ -481,7 +484,6 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 	}
 
 	private var boundsDict:Dictionary = new Dictionary();
-
 	private function drawChild(dispObj:DisplayObject):void {
 		// Setup the geometry data
 		var rot:Number = dispObj.rotation;
@@ -535,7 +537,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		const texIndex:int = textureIndexByID[bmID];
 		const texture:ScratchTextureBitmap = textures[texIndex];
 		const rect:Rectangle = texture.getRect(bmID);
-			var forcePixelate:Boolean = pixelateAll || (renderOpts && rot % 90 == 0 && (w == rect.width || renderOpts.bitmap!=null));
+		var forcePixelate:Boolean = pixelateAll || (renderOpts && rot % 90 == 0 && (closeTo(w, rect.width) || renderOpts.bitmap!=null));
 		var left:Number = rect.left / texture.width;
 		var right:Number = rect.right / texture.width;
 		var top:Number = rect.top / texture.height;
@@ -587,8 +589,8 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 			pixelY *= rect.height / srcHeight;
 		}
 
-		var perQuadData:ByteArray = new ByteArray();
-		perQuadData.endian = Endian.LITTLE_ENDIAN;
+		perQuadData.position = 0;
+		perQuadData.length = 5;
 		perQuadData.writeFloat(left);			// u0
 		perQuadData.writeFloat(top);			// v0
 		perQuadData.writeFloat(right - left);	// w
@@ -666,7 +668,8 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 			setBounds = true;
 			unrenderedChildren[dispObj] = !bitmapsByID[renderID];
 		}
-			if(renderOpts) {
+
+		if(renderOpts) {
 			var oldEffects:Object = spriteRenderOpts[dispObj] ? spriteRenderOpts[dispObj].effects : null;
 //				var oldBM:BitmapData = spriteRenderOpts[dispObj] ? spriteRenderOpts[dispObj].bitmap : null;
 			var opts:Object = spriteRenderOpts[dispObj] || (spriteRenderOpts[dispObj] = {});
@@ -701,7 +704,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 //				}
 			}
 
-				for(var prop:String in renderOpts)
+			for(var prop:String in renderOpts)
 				opts[prop] = renderOpts[prop];
 		}
 
@@ -710,7 +713,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 //		}
 
 		// Bitmaps can update their renders
-			if(dispObj is Bitmap)
+		if(dispObj is Bitmap)
 			unrenderedChildren[dispObj] = true;
 	}
 
@@ -782,9 +785,9 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		var mosaic:uint;
 		var scale:Number = 1;
 		var isNew:Boolean = false;
-			if(renderOpts) {
+		if(renderOpts) {
 			effects = renderOpts.effects;
-				if(renderOpts.bitmap != null) {
+			if(renderOpts.bitmap != null) {
 				isNew = !bitmapsByID[id];
 				bitmapsByID[id] = renderOpts.bitmap;//renderOpts.sub_bitmap ? renderOpts.sub_bitmap : renderOpts.bitmap;
 
@@ -799,7 +802,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 				scale = 1 / mosaic;
 			}
 		}
-			else if(dispObj is Bitmap) { // Remove else to allow graphics effects on video layer
+		else if(dispObj is Bitmap) { // Remove else to allow graphics effects on video layer
 			isNew = !bitmapsByID[id];
 			bitmapsByID[id] = (dispObj as Bitmap).bitmapData;
 				if(unrenderedChildren[dispObj] && textureIndexByID.hasOwnProperty(id)) {
@@ -816,26 +819,25 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		var width:Number = dw * scale;
 		var height:Number = dh * scale;
 		var bmd:BitmapData = bitmapsByID[id];
-			if(bmd) {
-			// If the bitmap changed or the sprite is now large than the stored render then re-render it
-			//trace(width +'x'+ height + ' vs '+bmd.width+'x'+bmd.height);
-				if((id.indexOf('bm') != 0 || !unrenderedChildren[dispObj]) && bmd.width >= width && bmd.height >= height) {
-				//trace('USING existing bitmap');
-
+		if(bmd) {
+		// If the bitmap changed or the sprite is now large than the stored render then re-render it
+//			trace(width +'x'+ height + ' vs '+bmd.width+'x'+bmd.height);
+			if((id.indexOf('bm') != 0 || !unrenderedChildren[dispObj]) && closeTo(bmd.width, width) && closeTo(bmd.height, height)) {
+//					trace('USING existing bitmap: '+width +'x'+ height + '(Costume) vs '+bmd.width+'x'+bmd.height+'(BM)');
 				scratchStage.visible = false;
 				return false;
 			}
-				else if(bmd is ChildRender) {
-					if((bmd as ChildRender).needsResize(width, height)) {
+			else if(bmd is ChildRender) {
+				if((bmd as ChildRender).needsResize(width, height)) {
 					bmd.dispose();
 					bmd = null;
 				}
-					else if((bmd as ChildRender).needsRender(dispObj, width, height, stagePenLayer)) {
+				else if((bmd as ChildRender).needsRender(dispObj, width, height, stagePenLayer)) {
 					(bmd as ChildRender).reset(dispObj, stagePenLayer);
-						if('clearCachedBitmap' in dispObj)
+					if('clearCachedBitmap' in dispObj)
 						(dispObj as Object).clearCachedBitmap();
 
-						trace('Re-rendering part of large sprite! '+Dbg.printObj(dispObj));
+					trace('Re-rendering part of large sprite! '+Dbg.printObj(dispObj));
 				}
 				else {
 					scratchStage.visible = false;
@@ -884,7 +886,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		dispObj.visible = true;
 //if('objName' in dispObj)
 //trace(Dbg.printObj(dispObj)+' ('+(dispObj as Object).objName+' - '+id+') rendered @ '+bmd.width+'x'+bmd.height+'  --  '+bounds+' -- '+(dispObj as Object).getVisibleBounds(dispObj));
-		bmd.draw(dispObj, drawMatrix, null, null, null, false);
+		bmd.drawWithQuality(dispObj, drawMatrix, null, null, null, false, StageQuality.BEST);
 
 		dispObj.visible = oldVis;
 		dispObj.alpha = oldAlpha;
@@ -906,6 +908,11 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		return !updateTexture;
 	}
 
+	[inline]
+	private function closeTo(a:Number, b:Number):Boolean {
+		return Math.abs(a-b) < 2;
+	}
+
 	public function spriteIsLarge(dispObj:DisplayObject):Boolean {
 		var id:String = spriteBitmaps[dispObj];
 			if(!id) return false;
@@ -914,7 +921,6 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 	}
 
 	public var debugTexture:Boolean = false;
-
 	private function toggleTextureDebug(evt:KeyboardEvent):void {
 			if(evt.ctrlKey && evt.charCode == 108) {
 			debugTexture = !debugTexture;
@@ -1028,7 +1034,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 
 	private var drawCount:uint = 0;
 	//private var lastTime:int = 0;
-	private function onRender(e:Event):void {
+	public function onRender(e:Event):void {
 			if(!scratchStage) return;
 		//trace('frame was '+(getTimer() - lastTime)+'ms.');
 		//lastTime = getTimer();
@@ -1518,7 +1524,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 
 		stage3D.addEventListener(Event.CONTEXT3D_CREATE, context3DCreated, false, 0, true);
 		stage3D.addEventListener(ErrorEvent.ERROR, onStage3DError, false, 0, true);
-		stage3D.requestContext3D(Context3DRenderMode.AUTO);
+		stage3D.requestContext3D(Context3DRenderMode.AUTO, Context3DProfile.BASELINE);
 		contextRequested = true;
 	}
 
