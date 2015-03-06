@@ -220,6 +220,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 			}
 		}
 		uiContainer.transform.matrix = scratchStage.transform.matrix.clone();
+		uiContainer.scrollRect = scratchStage.scrollRect;
 		scratchStage.stage.addEventListener(Event.RESIZE, onStageResize, false, 0, true);
 //			scratchStage.stage.addEventListener(KeyboardEvent.KEY_DOWN, toggleTextureDebug, false, 0, true);
 		scratchStage.addEventListener(Event.ENTER_FRAME, onRender, false, 0, true);
