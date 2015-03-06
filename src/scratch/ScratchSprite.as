@@ -36,12 +36,15 @@ import interpreter.Variable;
 import translation.Translator;
 
 import ui.ToolMgr;
+import ui.dragdrop.DragAndDropMgr;
+import ui.dragdrop.DragEvent;
+import ui.dragdrop.IDraggable;
 
 import uiwidgets.Menu;
 import util.*;
 import watchers.ListWatcher;
 
-public class ScratchSprite extends ScratchObj {
+public class ScratchSprite extends ScratchObj implements IDraggable {
 
 	public var scratchX:Number;
 	public var scratchY:Number;
@@ -81,6 +84,10 @@ public class ScratchSprite extends ScratchObj {
 		showCostume(0);
 		setScratchXY(0, 0);
 		addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, menu);
+		DragAndDropMgr.setDraggable(this);
+		addEventListener(DragEvent.DRAG_START, handleDragEvent, false, 0, true);
+		addEventListener(DragEvent.DRAG_STOP, handleDragEvent, false, 0, true);
+		addEventListener(DragEvent.DRAG_CANCEL, handleDragEvent, false, 0, true);
 	}
 
 	private function initMedia():void {
@@ -695,19 +702,25 @@ public class ScratchSprite extends ScratchObj {
 		return b;
 	}
 
-	public function prepareToDrag():void {
-		// Force rendering with PixelBender for a dragged sprite
-		applyFilters(true);
+	public function getSpriteToDrag():Sprite {
+		return (Scratch.app.editMode || isDraggable) ? this : null;
 	}
 
-	override public function startDrag(lockCenter:Boolean = false,bounds:flash.geom.Rectangle = null):void {
-		super.startDrag(lockCenter, bounds);
-
-		prepareToDrag();
-	}
-
-	override public function stopDrag():void {
-		super.stopDrag();
-		applyFilters();
+	private var preDragScale:Number;
+	private function handleDragEvent(e:DragEvent):void {
+		if (e.type == DragEvent.DRAG_START) {
+			// Force rendering with PixelBender for a dragged sprite
+			applyFilters(true);
+			preDragScale = scaleX;
+			scaleX = scaleY = transform.concatenatedMatrix.a;
+		}
+		else {
+			scaleX = scaleY = preDragScale;
+			if (e.type == DragEvent.DRAG_CANCEL) {
+				var oldX:Number = scratchX, oldY:Number = scratchY;
+				Scratch.app.stagePane.handleDrop(this);
+				setScratchXY(oldX, oldY);
+			}
+		}
 	}
 }}

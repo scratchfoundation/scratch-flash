@@ -25,13 +25,6 @@
 // since it is referred from many places.
 
 package ui.parts.base {
-import flash.geom.Point;
-import flash.geom.Rectangle;
-
-import ui.dragdrop.DragAndDropMgr;
-import ui.dragdrop.DragEvent;
-
-import ui.dragdrop.IDraggable;
 import ui.parts.*;
 import flash.display.*;
 import flash.events.*;
@@ -39,7 +32,7 @@ import flash.media.*;
 import scratch.*;
 import uiwidgets.*;
 
-public class BaseStagePart extends UIPart implements IDraggable {
+public class BaseStagePart extends UIPart {
 
 	protected var outline:Shape;
 	protected var runButton:IconButton;
@@ -57,43 +50,6 @@ public class BaseStagePart extends UIPart implements IDraggable {
 		addRunStopButtons();
 		addFullScreenButton();
 		addStageSizeButton();
-		app.stage.addEventListener(MouseEvent.MOUSE_DOWN, handleMouseEvent, true, 0, true);
-		app.stage.addEventListener(MouseEvent.MOUSE_UP, handleMouseEvent, false, 0, true);
-		addEventListener(DragEvent.DRAG_START, handleDragEvent, false, 0, true);
-		addEventListener(DragEvent.DRAG_STOP, handleDragEvent, false, 0, true);
-		addEventListener(DragEvent.DRAG_CANCEL, handleDragEvent, false, 0, true);
-
-		DragAndDropMgr.setDraggable(this);
-	}
-
-	private function handleDragEvent(e:DragEvent):void {
-		if (e.type == DragEvent.DRAG_START) {
-			dragTarget.x = dragPos.x;
-			dragTarget.y = dragPos.y;
-			dragTarget.scaleX = dragTarget.scaleY = dragStageScale;
-		}
-		else if (e.draggedObject == dragTarget) {
-			dragTarget.scaleX = dragTarget.scaleY = dragOrigScale;
-			if (e.type == DragEvent.DRAG_CANCEL) {
-				dragTarget.x = dragOrigPos.x;
-				dragTarget.y = dragOrigPos.y;
-				app.stagePane.addChild(dragTarget);
-			}
-		}
-	}
-
-	// TODO: Make these properties per touch
-	private var dragTarget:ScratchSprite;
-	private var dragPos:Point;
-	private var dragOrigPos:Point;
-	private var dragStageScale:Number;
-	private var dragOrigScale:Number;
-	private function handleMouseEvent(e:MouseEvent):void {
-		var rect:Rectangle = app.stageObj().getRect(stage);
-		if (e.type == MouseEvent.MOUSE_DOWN && rect.contains(stage.mouseX, stage.mouseY))
-			dragTarget = findMouseTargetOnStage(stage.mouseX, stage.mouseY) as ScratchSprite;
-		else if (DragAndDropMgr.getDraggedObjs().indexOf(dragTarget) == -1)
-			dragTarget = null;
 	}
 
 	private function findMouseTargetOnStage(globalX:int, globalY:int):DisplayObject {
@@ -124,18 +80,6 @@ public class BaseStagePart extends UIPart implements IDraggable {
 
 		if(app.isIn3D) app.stagePane.visible = false;
 		return null;
-	}
-
-	public function getSpriteToDrag():Sprite {
-		var dragSprite:Sprite = (app.editMode || (dragTarget && dragTarget.isDraggable)) ? dragTarget : null;
-		if(dragSprite) {
-			dragOrigPos = new Point(dragTarget.x, dragTarget.y);
-			dragPos = dragTarget.localToGlobal(new Point);
-			dragStageScale = dragTarget.transform.concatenatedMatrix.a;
-			dragOrigScale = dragTarget.scaleX;
-		}
-
-		return dragSprite;
 	}
 
 	public function projectName():String { return projectTitle; }

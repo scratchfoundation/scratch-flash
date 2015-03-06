@@ -194,8 +194,14 @@ public class DragAndDropMgr {
 		transformGesture.removeEventListener(GestureEvent.GESTURE_ENDED, onTransformEnded);
 	}
 
-	private static function getDropTarget(stagePoint:Point):DropTarget {
+	private function getDropTarget(stagePoint:Point):DropTarget {
+		if (Scratch.app.isIn3D && Scratch.app.stagePane.getBounds(stage).containsPoint(stagePoint))
+			return Scratch.app.stagePane;
+
+		draggedObj.visible = false;
 		var possibleTargets:Array = stage.getObjectsUnderPoint(stagePoint);
+		draggedObj.visible = true;
+
 		//possibleTargets.reverse();
 		for (var l:int=possibleTargets.length, i:int=l-1; i>-1; --i) {
 			var o:DisplayObject = possibleTargets[i];
@@ -207,6 +213,7 @@ public class DragAndDropMgr {
 			}
 		}
 
+		trace('currentDropTarget = ' + null);
 		return null;
 	}
 }}
