@@ -106,11 +106,11 @@ public class ScratchSoundPlayer {
 		flashSnd.addEventListener(SampleDataEvent.SAMPLE_DATA, writeSampleData);
 		soundChannel = flashSnd.play();
 		if (soundChannel) {
-			if (doneFunction != null) soundChannel.addEventListener(Event.SOUND_COMPLETE, doneFunction);
+			if (doneFunction) soundChannel.addEventListener(Event.SOUND_COMPLETE, doneFunction);
 		} else {
 			// User has no sound card or too many sounds already playing.
 			stopPlaying();
-			doneFunction();
+			if (doneFunction) doneFunction();
 		}
 	}
 
