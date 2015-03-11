@@ -182,7 +182,8 @@ public class ScratchObj extends Sprite {
 	}
 
 	protected function updateRenderDetails(reason:uint):void {
-		if(((parent && parent is ScratchStage) || this is ScratchStage)) {
+	SCRATCH::allow3d {
+		if(this is ScratchStage || this is ScratchSprite || (parent && parent is ScratchStage)) {
 			var renderOpts:Object = {};
 			var costume:ScratchCostume = currentCostume();
 
@@ -210,12 +211,9 @@ public class ScratchObj extends Sprite {
 				else
 					renderOpts.bounds = getBounds(this);
 			}
-
-			if(parent is ScratchStage)
-				(parent as ScratchStage).updateRender(this, id, renderOpts);
-			else
-				(this as ScratchStage).updateRender(img, id, renderOpts);
+			if (Scratch.app.isIn3D) Scratch.app.render3D.updateRender((this is ScratchStage ? img : this), id, renderOpts);
 		}
+	}
 	}
 
 	protected function adjustForRotationCenter():void {
