@@ -96,14 +96,14 @@ package svgeditor.tools
 
 		private function mouseDown(e:MouseEvent):void {
 			editor.getWorkArea().addEventListener(MouseEvent.MOUSE_MOVE, erase, false, 0, true);
-			editor.stage.addEventListener(MouseEvent.MOUSE_UP, mouseUp, false, 0, true);
+			Scratch.app.stage.addEventListener(MouseEvent.MOUSE_UP, mouseUp, false, 0, true);
 			eraserWidth = editor.getShapeProps().eraserWidth;
 			erase();
 		}
 
 		private function mouseUp(e:MouseEvent):void {
 			editor.getWorkArea().removeEventListener(MouseEvent.MOUSE_MOVE, erase);
-			editor.stage.removeEventListener(MouseEvent.MOUSE_UP, mouseUp);
+			Scratch.app.stage.removeEventListener(MouseEvent.MOUSE_UP, mouseUp);
 			erase();
 			lastPos = null;
 			dispatchEvent(new Event(Event.CHANGE));

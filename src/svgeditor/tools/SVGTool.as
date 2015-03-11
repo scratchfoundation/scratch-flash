@@ -89,9 +89,7 @@ package svgeditor.tools
 		}
 
 		static public function staticGetEditableUnderMouse(editor:ImageEdit, includeGroups:Boolean = true, currentTool:SVGTool = null):ISVGEditable {
-			if(!editor.stage) return null;
-
-			var objs:Array = editor.stage.getObjectsUnderPoint(new Point(editor.stage.mouseX, editor.stage.mouseY));
+			var objs:Array = Scratch.app.stage.getObjectsUnderPoint(new Point(Scratch.app.stage.mouseX, Scratch.app.stage.mouseY));
 
 			// Select the top object that is ISVGEditable
 			if(objs.length) {

@@ -129,15 +129,8 @@ package svgeditor.tools  {
 			alpha = 0.65;
 		}
 
-		private function getStage():Stage {
-			if (editor && editor.stage) {
-				return editor.stage;
-			}
-			return stage;
-		}
-
 		override protected function shutdown():void {
-			var stageObject:Stage = getStage();
+			var stageObject:Stage = Scratch.app.stage;
 
 			// Remove event handlers
 			removeSelectionEventHandlers();
@@ -344,7 +337,7 @@ package svgeditor.tools  {
 		}
 
 		private function removeSelectionEventHandlers():void {
-			var stageObject:Stage = getStage();
+			var stageObject:Stage = Scratch.app.stage;
 			if (stageObject) {
 				stageObject.removeEventListener(MouseEvent.MOUSE_UP, moveHandler);
 				stageObject.removeEventListener(MouseEvent.MOUSE_UP, resizeHandler);

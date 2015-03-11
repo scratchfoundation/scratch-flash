@@ -504,7 +504,7 @@ public class ScratchCostume {
 		if (!forStage) m.translate(-dispR.x, -dispR.y);
 		m.scale(scale, scale);
 
-		if (SCRATCH::allow3d) {
+		if ("drawWithQuality" in bm) {
 			bm.drawWithQuality(dispObj, m, null, null, null, false, StageQuality.LOW);
 		}
 		else {

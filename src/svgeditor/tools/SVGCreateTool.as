@@ -97,8 +97,8 @@ package svgeditor.tools
 				mouseDown(p);
 				if(isQuick && !isShuttingDown) {
 					// Add the mouse event handlers
-					editor.stage.addEventListener(MouseEvent.MOUSE_MOVE, eventHandler, false, 0, true);
-					editor.stage.addEventListener(MouseEvent.MOUSE_UP, eventHandler, false, 0, true);
+					Scratch.app.stage.addEventListener(MouseEvent.MOUSE_MOVE, eventHandler, false, 0, true);
+					Scratch.app.stage.addEventListener(MouseEvent.MOUSE_UP, eventHandler, false, 0, true);
 				}
 				lastPos = p;
 			} else if(e.type == MouseEvent.MOUSE_MOVE) {
@@ -120,17 +120,15 @@ package svgeditor.tools
 		private function addEventHandlers():void  {
 			editor.getCanvasLayer().addEventListener(MouseEvent.MOUSE_DOWN, eventHandler, false, 0, true);
 			if(!isQuick) {
-				editor.stage.addEventListener(MouseEvent.MOUSE_MOVE, eventHandler, false, 0, true);
-				editor.stage.addEventListener(MouseEvent.MOUSE_UP, eventHandler, false, 0, true);
+				Scratch.app.stage.addEventListener(MouseEvent.MOUSE_MOVE, eventHandler, false, 0, true);
+				Scratch.app.stage.addEventListener(MouseEvent.MOUSE_UP, eventHandler, false, 0, true);
 			}
 		}
 
 		private function removeEventHandlers():void {
 			editor.getCanvasLayer().removeEventListener(MouseEvent.MOUSE_DOWN, eventHandler);
-			if(editor.stage) {
-				editor.stage.removeEventListener(MouseEvent.MOUSE_MOVE, eventHandler);
-				editor.stage.removeEventListener(MouseEvent.MOUSE_UP, eventHandler);
-			}
+			Scratch.app.stage.removeEventListener(MouseEvent.MOUSE_MOVE, eventHandler);
+			Scratch.app.stage.removeEventListener(MouseEvent.MOUSE_UP, eventHandler);
 		}
 	}
 }

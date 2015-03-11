@@ -72,10 +72,8 @@ package svgeditor.tools
 		}
 
 		override protected function shutdown():void {
-			if(editor.stage) {
-				editor.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyPress);
-				editor.stage.removeEventListener(KeyboardEvent.KEY_UP, onKeyRelease);
-			}
+			Scratch.app.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyPress);
+			Scratch.app.stage.removeEventListener(KeyboardEvent.KEY_UP, onKeyRelease);
 			editor.getToolsLayer().mouseEnabled = true;
 			PathEndPointManager.removeEndPoints();
 			if(previewShape.parent) previewShape.parent.removeChild(previewShape);
