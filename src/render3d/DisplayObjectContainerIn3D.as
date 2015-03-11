@@ -357,7 +357,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 	private function checkBuffers():void {
 		var resized:Boolean = false;
 		var numChildren:uint = scratchStage.numChildren;
-		var vertexDataMinSize:int = numChildren * 4 * shaderConfig.vertexSizeBytes; // 4 verts per child
+		var vertexDataMinSize:int = numChildren * 4 * shaderConfig.vertexSizeBytes * 2; // 4 verts per child
 		if (vertexDataMinSize > vertexData.length) {
 			// Increase and fill in the index buffer
 			var index:uint = indexData.length;
@@ -398,6 +398,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 			}
 
 			if (vertexBuffer == null) {
+				//trace('creating vertexBuffer when indexData length = '+indexData.length);
 				vertexBuffer = __context.createVertexBuffer((indexData.length / 12) * 4, shaderConfig.vertexComponents);
 				vertexBufferUploaded = false;
 			}
@@ -422,15 +423,9 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 			if (!!oldEffectRefs[effectName] != !!effectRefs[effectName]) effectsChanged = true;
 			oldEffectRefs[effectName] = effectRefs[effectName];
 		});
-		if (effectsChanged) {
-			switchShaders();
 
-			// Throw away the old vertex buffer: it might have the wrong number of streams activated
-			if (vertexBuffer != null) {
-				vertexBuffer.dispose();
-				vertexBuffer = null;
-			}
-		}
+		if (effectsChanged)
+			switchShaders();
 
 		checkBuffers();
 
@@ -468,7 +463,13 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 				drawChild(dispObj);
 				++childrenDrawn;
 			}
+			//trace('drew '+childrenDrawn+' children (vertexData.length = '+vertexData.length+')');
 		}
+//		trace('quadCount = '+childrenDrawn);
+//		trace('numChildren = '+scratchStage.numChildren);
+//		trace('vertexComponents = '+shaderConfig.vertexComponents);
+//		trace('vertexData.length = '+vertexData.length);
+//		trace('indexData.length = '+indexData.length);
 
 		movedChildren = new Dictionary();
 		unrenderedChildren = new Dictionary();
@@ -476,9 +477,12 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 
 	private function uploadBuffers():void {
 		if (!indexBufferUploaded) {
+//			trace('uploading indexBuffer when indexData length = '+indexData.length);
 			indexBuffer.uploadFromByteArray(indexData, 0, 0, indexData.length >> 1);
 			indexBufferUploaded = true;
 		}
+//		trace('uploading vertexBuffer when indexData length = '+indexData.length);
+//		trace('uploadFromByteArray(vertexData, 0, 0, '+((indexData.length / 12) * 4)+')');
 		vertexBuffer.uploadFromByteArray(vertexData, 0, 0, (indexData.length / 12) * 4);
 		vertexBufferUploaded = true;
 	}
@@ -1402,6 +1406,12 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 				vertexSizeBytes: 4 * vertexComponents,
 				effectActive: effectActive
 			};
+		}
+
+		// Throw away the old vertex buffer: it probably has the wong data size per vertex
+		if (vertexBuffer != null) {
+			vertexBuffer.dispose();
+			vertexBuffer = null;
 		}
 	}
 
