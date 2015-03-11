@@ -87,20 +87,26 @@ public class MotionAndPenPrims {
 
 	private function primTurnRight(b:Block):void {
 		var s:ScratchSprite = interp.targetSprite();
-		if (s != null) s.setDirection(s.direction + interp.numarg(b, 0));
-		if (s.visible) interp.redraw();
+		if (s != null) {
+			s.setDirection(s.direction + interp.numarg(b, 0));
+			if (s.visible) interp.redraw();
+		}
 	}
 
 	private function primTurnLeft(b:Block):void {
 		var s:ScratchSprite = interp.targetSprite();
-		if (s != null) s.setDirection(s.direction - interp.numarg(b, 0));
-		if (s.visible) interp.redraw();
+		if (s != null) {
+			s.setDirection(s.direction - interp.numarg(b, 0));
+			if (s.visible) interp.redraw();
+		}
 	}
 
 	private function primSetDirection(b:Block):void {
 		var s:ScratchSprite = interp.targetSprite();
-		if (s != null) s.setDirection(interp.numarg(b, 0));
-		if (s.visible) interp.redraw();
+		if (s != null) {
+			s.setDirection(interp.numarg(b, 0));
+			if (s.visible) interp.redraw();
+		}
 	}
 
 	private function primPointTowards(b:Block):void {
