@@ -99,8 +99,6 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 	//private var vertexData:Vector.<Number> = new <Number>[];
 	private var vertexData:ByteArray = new ByteArray();
 
-	private var perQuadData:ByteArray = new ByteArray();
-
 	private var projMatrix:Matrix3D;
 
 	private var textureCount:int;
@@ -136,7 +134,6 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		shaderCache = {};
 		fragmentShaderAssembler = new AGALMacroAssembler();
 		vertexShaderAssembler = new AGALMacroAssembler();
-		perQuadData.endian = Endian.LITTLE_ENDIAN;
 		bitmapsByID = {};
 		textureIndexByID = {};
 		textures = [];
@@ -547,7 +544,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		var right:Number = rect.right / texture.width;
 		var top:Number = rect.top / texture.height;
 		var bottom:Number = rect.bottom / texture.height;
-			if(debugTexture) {
+		if(debugTexture) {
 			uiContainer.graphics.moveTo(TLx, TLy);
 			uiContainer.graphics.lineTo(TRx, TRy);
 			uiContainer.graphics.lineTo(BRx, BRy);
@@ -594,68 +591,115 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 			pixelY *= rect.height / srcHeight;
 		}
 
-		perQuadData.position = 0;
-		perQuadData.length = 5;
-		perQuadData.writeFloat(left);			// u0
-		perQuadData.writeFloat(top);			// v0
-		perQuadData.writeFloat(right - left);	// w
-		perQuadData.writeFloat(bottom - top); 	// h
-		perQuadData.writeFloat(texIndex); // TODO: fudge tex index by 0.01, 0.02, 0.03, 0.04
-		if (shaderConfig.effectActive[FX_PIXELATE]) {
-			perQuadData.writeFloat(pixelX);
-			perQuadData.writeFloat(pixelY);
-		}
-		if (shaderConfig.effectActive[FX_COLOR]) perQuadData.writeFloat(hueShift);
-		if (shaderConfig.effectActive[FX_FISHEYE]) perQuadData.writeFloat(fisheye);
-		if (shaderConfig.effectActive[FX_WHIRL]) perQuadData.writeFloat(radians);
-		if (shaderConfig.effectActive[FX_MOSAIC]) perQuadData.writeFloat(mosaic);
-		if (shaderConfig.effectActive[FX_BRIGHTNESS]) perQuadData.writeFloat(brightnessShift);
-		if (shaderConfig.effectActive[FX_GHOST]) perQuadData.writeFloat(alpha);
+		var pixelateActive:Boolean = shaderConfig.effectActive[FX_PIXELATE];
+		var fisheyeActive:Boolean = shaderConfig.effectActive[FX_FISHEYE];
+		var colorActive:Boolean = shaderConfig.effectActive[FX_COLOR];
+		var whirlActive:Boolean = shaderConfig.effectActive[FX_WHIRL];
+		var mosaicActive:Boolean = shaderConfig.effectActive[FX_MOSAIC];
+		var brightnessActive:Boolean = shaderConfig.effectActive[FX_BRIGHTNESS];
+		var ghostActive:Boolean = shaderConfig.effectActive[FX_GHOST];
 
-			vertexData.writeFloat(TLx);				// x
-			vertexData.writeFloat(TLy);				// y
+		vertexData.writeFloat(TLx);				// x
+		vertexData.writeFloat(TLy);				// y
 		vertexData.writeFloat(0);				// z - use index?
 		vertexData.writeFloat(0);				// u
 		vertexData.writeFloat(0);				// v
-		vertexData.writeBytes(perQuadData);
+		vertexData.writeFloat(left);			// u0
+		vertexData.writeFloat(top);			// v0
+		vertexData.writeFloat(right - left);	// w
+		vertexData.writeFloat(bottom - top); 	// h
+		vertexData.writeFloat(texIndex + 0.01);
+		if (pixelateActive) {
+			vertexData.writeFloat(pixelX);
+			vertexData.writeFloat(pixelY);
+		}
+		if (colorActive) vertexData.writeFloat(hueShift);
+		if (fisheyeActive) vertexData.writeFloat(fisheye);
+		if (whirlActive) vertexData.writeFloat(radians);
+		if (mosaicActive) vertexData.writeFloat(mosaic);
+		if (brightnessActive) vertexData.writeFloat(brightnessShift);
+		if (ghostActive) vertexData.writeFloat(alpha);
 
-			vertexData.writeFloat(BLx);				// x
-			vertexData.writeFloat(BLy);				// y
+
+		vertexData.writeFloat(BLx);				// x
+		vertexData.writeFloat(BLy);				// y
 		vertexData.writeFloat(0);
 		vertexData.writeFloat(0);				// u
 		vertexData.writeFloat(1);				// v
-		vertexData.writeBytes(perQuadData);
+		vertexData.writeFloat(left);			// u0
+		vertexData.writeFloat(top);			// v0
+		vertexData.writeFloat(right - left);	// w
+		vertexData.writeFloat(bottom - top); 	// h
+		vertexData.writeFloat(texIndex + 0.02);
+		if (pixelateActive) {
+			vertexData.writeFloat(pixelX);
+			vertexData.writeFloat(pixelY);
+		}
+		if (colorActive) vertexData.writeFloat(hueShift);
+		if (fisheyeActive) vertexData.writeFloat(fisheye);
+		if (whirlActive) vertexData.writeFloat(radians);
+		if (mosaicActive) vertexData.writeFloat(mosaic);
+		if (brightnessActive) vertexData.writeFloat(brightnessShift);
+		if (ghostActive) vertexData.writeFloat(alpha);
 
-			vertexData.writeFloat(BRx);				// x
-			vertexData.writeFloat(BRy);				// y
+		vertexData.writeFloat(BRx);				// x
+		vertexData.writeFloat(BRy);				// y
 		vertexData.writeFloat(0);
 		vertexData.writeFloat(1);				// u
 		vertexData.writeFloat(1);				// v
-		vertexData.writeBytes(perQuadData);
+		vertexData.writeFloat(left);			// u0
+		vertexData.writeFloat(top);			// v0
+		vertexData.writeFloat(right - left);	// w
+		vertexData.writeFloat(bottom - top); 	// h
+		vertexData.writeFloat(texIndex + 0.03);
+		if (pixelateActive) {
+			vertexData.writeFloat(pixelX);
+			vertexData.writeFloat(pixelY);
+		}
+		if (colorActive) vertexData.writeFloat(hueShift);
+		if (fisheyeActive) vertexData.writeFloat(fisheye);
+		if (whirlActive) vertexData.writeFloat(radians);
+		if (mosaicActive) vertexData.writeFloat(mosaic);
+		if (brightnessActive) vertexData.writeFloat(brightnessShift);
+		if (ghostActive) vertexData.writeFloat(alpha);
 
-			vertexData.writeFloat(TRx);				// x
-			vertexData.writeFloat(TRy);				// y
+		vertexData.writeFloat(TRx);				// x
+		vertexData.writeFloat(TRy);				// y
 		vertexData.writeFloat(0);
 		vertexData.writeFloat(1);				// u
 		vertexData.writeFloat(0);				// v
-		vertexData.writeBytes(perQuadData);
+		vertexData.writeFloat(left);			// u0
+		vertexData.writeFloat(top);			// v0
+		vertexData.writeFloat(right - left);	// w
+		vertexData.writeFloat(bottom - top); 	// h
+		vertexData.writeFloat(texIndex + 0.04);
+		if (pixelateActive) {
+			vertexData.writeFloat(pixelX);
+			vertexData.writeFloat(pixelY);
+		}
+		if (colorActive) vertexData.writeFloat(hueShift);
+		if (fisheyeActive) vertexData.writeFloat(fisheye);
+		if (whirlActive) vertexData.writeFloat(radians);
+		if (mosaicActive) vertexData.writeFloat(mosaic);
+		if (brightnessActive) vertexData.writeFloat(brightnessShift);
+		if (ghostActive) vertexData.writeFloat(alpha);
 	}
 
-		private function cleanUpUnusedBitmaps():void {
+	private function cleanUpUnusedBitmaps():void {
 		var deletedBMs:Array = [];
 		for (var k:Object in bitmapsByID) {
 			var bmID:String = k as String;
 			var isUsed:Boolean = false;
 
-				for(var spr:Object in spriteBitmaps) {
-					if(spriteBitmaps[spr] == bmID) {
+			for(var spr:Object in spriteBitmaps) {
+				if(spriteBitmaps[spr] == bmID) {
 					isUsed = true;
 					break;
 				}
 			}
 
-				if(!isUsed) {
-					if(bitmapsByID[bmID] is ChildRender)
+			if(!isUsed) {
+				if(bitmapsByID[bmID] is ChildRender)
 					bitmapsByID[bmID].dispose();
 				deletedBMs.push(bmID);
 			}
@@ -679,7 +723,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 //				var oldBM:BitmapData = spriteRenderOpts[dispObj] ? spriteRenderOpts[dispObj].bitmap : null;
 			var opts:Object = spriteRenderOpts[dispObj] || (spriteRenderOpts[dispObj] = {});
 
-				if(renderOpts.bounds) {
+			if(renderOpts.bounds) {
 				boundsDict[dispObj] = (renderOpts.raw_bounds && renderOpts.bitmap ? renderOpts.raw_bounds : renderOpts.bounds);
 				// Handle bitmaps that need cropping
 //				if(renderOpts.raw_bounds) {
@@ -743,7 +787,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 //	}
 
 	// Calls perEffect(effectName:String) for each supported effect name.
-	private static function forEachEffect(perEffect:Function): void {
+	private function forEachEffect(perEffect:Function): void {
 		for (var i:int = 0; i < effectNames.length; ++i) {
 			var effectName:String = effectNames[i];
 			perEffect(effectName);
