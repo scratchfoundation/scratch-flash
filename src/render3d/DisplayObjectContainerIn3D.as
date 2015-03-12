@@ -224,6 +224,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 			}
 		}
 		uiContainer.transform.matrix = scratchStage.transform.matrix.clone();
+		uiContainer.scrollRect = scratchStage.scrollRect;
 		scratchStage.stage.addEventListener(Event.RESIZE, onStageResize, false, 0, true);
 //		scratchStage.stage.addEventListener(KeyboardEvent.KEY_DOWN, toggleTextureDebug, false, 0, true);
 //		scratchStage.addEventListener(Event.ENTER_FRAME, onRender, false, 0, true);
@@ -360,8 +361,8 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 	private function checkBuffers():void {
 		var resized:Boolean = false;
 		var numChildren:uint = scratchStage.numChildren;
-		var vertexDataMinSize:int = numChildren * 4 * shaderConfig.vertexSizeBytes; // 4 verts per child
-			if(vertexDataMinSize > vertexData.length) {
+		var vertexDataMinSize:int = numChildren * 4 * shaderConfig.vertexSizeBytes * 2; // 4 verts per child
+		if (vertexDataMinSize > vertexData.length) {
 			// Increase and fill in the index buffer
 			var index:uint = indexData.length;
 				var base:int = (index/12)*4;
@@ -401,6 +402,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 			}
 
 			if (vertexBuffer == null) {
+				//trace('creating vertexBuffer when indexData length = '+indexData.length);
 				vertexBuffer = __context.createVertexBuffer((indexData.length / 12) * 4, shaderConfig.vertexComponents);
 				vertexBufferUploaded = false;
 			}
@@ -424,15 +426,9 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 			if (!!oldEffectRefs[effectName] != !!effectRefs[effectName]) effectsChanged = true;
 			oldEffectRefs[effectName] = effectRefs[effectName];
 		});
-		if (effectsChanged) {
-			switchShaders();
 
-			// Throw away the old vertex buffer: it might have the wrong number of streams activated
-			if (vertexBuffer != null) {
-				vertexBuffer.dispose();
-				vertexBuffer = null;
-			}
-		}
+		if (effectsChanged)
+			switchShaders();
 
 		checkBuffers();
 
@@ -468,17 +464,26 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 				drawChild(dispObj);
 				++childrenDrawn;
 			}
+			//trace('drew '+childrenDrawn+' children (vertexData.length = '+vertexData.length+')');
 		}
+//		trace('quadCount = '+childrenDrawn);
+//		trace('numChildren = '+scratchStage.numChildren);
+//		trace('vertexComponents = '+shaderConfig.vertexComponents);
+//		trace('vertexData.length = '+vertexData.length);
+//		trace('indexData.length = '+indexData.length);
 
 		for (var key:Object in unrenderedChildren)
 			delete unrenderedChildren[key];
 	}
 
 	private function uploadBuffers():void {
-		if(!indexBufferUploaded) {
+		if (!indexBufferUploaded) {
+//			trace('uploading indexBuffer when indexData length = '+indexData.length);
 			indexBuffer.uploadFromByteArray(indexData, 0, 0, indexData.length >> 1);
 			indexBufferUploaded = true;
 		}
+//		trace('uploading vertexBuffer when indexData length = '+indexData.length);
+//		trace('uploadFromByteArray(vertexData, 0, 0, '+((indexData.length / 12) * 4)+')');
 		vertexBuffer.uploadFromByteArray(vertexData, 0, 0, (indexData.length / 12) * 4);
 		vertexBufferUploaded = true;
 	}
@@ -1428,57 +1433,12 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 				effectActive: effectActive
 			};
 		}
-/*
-		fragmentShaderAssembler.assemble( Context3DProgramType.FRAGMENT,
-				// Move the texture coordinates into the sub-texture space
-						"mul ft0.xyzw, v0.xyxy, v1.xyxy\n" +
-						"add ft0.xy, ft0.xy, v0.zw\n" +
 
-						"frc ft3.xyzw, v3.wwww\n"+
-						"sub ft3.x, v3.w, ft3.x\n"+
-
-						"seq ft5, ft3.x, fc0.z\n"+	// Use texture 0?
-						"tex ft2, ft0, fs0 <2d,clamp,linear,nomip>\n"+
-						"mul ft2, ft2, ft5\n"+
-						"mov ft1, ft2\n"+
-
-						"seq ft5, ft3.x, fc0.x\n"+	// Use texture 1?
-						"tex ft2, ft0, fs1 <2d,clamp,linear,nomip>\n"+
-						"mul ft2, ft2, ft5\n"+
-						"add ft1, ft1, ft2\n"+
-
-						"seq ft5, ft3.x, fc0.y\n"+	// Use texture 2?
-						"tex ft2, ft0, fs2 <2d,clamp,linear,nomip>\n"+
-						"mul ft2, ft2, ft5\n"+
-						"add ft1, ft1, ft2\n"+
-
-						"seq ft5, ft3.x, fc2.y\n"+	// Use texture 3?
-						"tex ft2, ft0, fs3 <2d,clamp,linear,nomip>\n"+
-						"mul ft2, ft2, ft5\n"+
-						"add ft1, ft1, ft2\n"+
-
-						"seq ft5, ft3.x, fc2.z\n"+	// Use texture 4?
-						"tex ft2, ft0, fs4 <2d,clamp,linear,nomip>\n"+
-						"mul ft2, ft2, ft5\n"+
-						"add ft1, ft1, ft2\n" +
-
-						// De-multiply the alpha
-						"seq ft3.y, ft1.w, fc0.z\n"+ //int alpha_eq_zero = (alpha == 0);	alpha_eq_zero	= ft3.y
-						"sne ft3.z, ft1.w, fc0.z\n"+ //int alpha_neq_zero = (alpha != 0);	alpha_neq_zero	= ft3.z
-						"mul ft3.x, fc3.w, ft3.y\n"+ //tiny = 0.000001 * alpha_eq_zero;		tiny		= ft3.x
-						"add ft1.w, ft1.w, ft3.x\n"+ //alpha = alpha + tiny;				Avoid division by zero, alpha != 0
-						"div ft2.xyz, ft1.xyz, ft1.www\n"+ //new_rgb = rgb / alpha
-						"mul ft2.xyz, ft2.xyz, ft3.zzz\n"+ //new_rgb = new_rgb * alpha_neq_zero
-
-						"mul ft1.xyz, ft1.xyz, ft3.yyy\n"+ //rgb = rgb * alpha_eq_zero
-						"add ft1.xyz, ft1.xyz, ft2.xyz\n"+ //rgb = rgb + new_rgb
-
-					// Clamp the color
-						"sat oc, ft1\n"
-
-				//"tex oc, ft0, fs0 <2d,clamp,linear,nomip>\n"
-		);
-*/
+		// Throw away the old vertex buffer: it probably has the wong data size per vertex
+		if (vertexBuffer != null) {
+			vertexBuffer.dispose();
+			vertexBuffer = null;
+		}
 	}
 
 	private function context3DCreated(e:Event):void {

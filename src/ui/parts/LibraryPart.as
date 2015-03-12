@@ -23,23 +23,22 @@
 // This part holds the Sprite Library and the UI elements around it.
 
 package ui.parts {
-	import flash.display.*;
-	import flash.text.*;
-	import flash.utils.*;
-	import scratch.*;
-	import translation.Translator;
-
+import flash.display.*;
+import flash.text.*;
+import flash.utils.*;
+import scratch.*;
+import translation.Translator;
 import ui.dragdrop.DropTarget;
 import ui.media.*;
-	import ui.SpriteThumbnail;
-	import ui.parts.base.ILibraryPart;
-	import uiwidgets.*;
+import ui.SpriteThumbnail;
+import ui.parts.base.ILibraryPart;
+import uiwidgets.*;
 
 public class LibraryPart extends UIPart implements ILibraryPart, DropTarget {
 
 	private const smallTextFormat:TextFormat = new TextFormat(CSS.font, 10, CSS.textColor);
 
-	private const bgColor:int = 0xFFFFFF;
+	private const bgColor:int = CSS.tabColor;
 	private const stageAreaWidth:int = 77;
 	protected const updateInterval:int = 200; // msecs between thumbnail updates
 
@@ -130,7 +129,7 @@ public class LibraryPart extends UIPart implements ILibraryPart, DropTarget {
 		g.lineStyle();
 		g.beginFill(CSS.tabColor);
 		g.drawRect(1, CSS.titleBarH + 1, stageAreaWidth - 1, h - CSS.titleBarH - 1);
-		g.endFill()
+		g.endFill();
 		fixLayout();
 		if (app.viewedObj()) refresh(); // refresh, but not during initialization
 	}

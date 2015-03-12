@@ -147,12 +147,23 @@ public class BitmapEdit extends ImageEdit {
 		}
 	}
 
-	public function deletingSelection():void {
-		if (app.runtime.shiftIsDown) {
+	public function cropToSelection():void {
+		var sel:Selection;
+		var transformTool:ObjectTransformer = currentTool as ObjectTransformer;
+		if (transformTool) {
+			sel = transformTool.getSelection();
+		}
+		if (sel) {
 			var bm:BitmapData = workArea.getBitmap().bitmapData;
 			bm.fillRect(bm.rect, 0);
 			app.runtime.shiftIsDown = false;
 			bakeIntoBitmap(false);
+		}
+	}
+
+	public function deletingSelection():void {
+		if (app.runtime.shiftIsDown) {
+			cropToSelection();
 		}
 	}
 

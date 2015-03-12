@@ -576,6 +576,7 @@ public class BlockMenus implements DragClient {
 			}
 		}
 		app.runtime.updateCalls();
+		app.scriptsPane.fixCommentLayout();
 		app.updatePalette();
 	}
 

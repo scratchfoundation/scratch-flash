@@ -495,6 +495,7 @@ public class ScriptsPane extends ScrollFrameContents implements DropTarget {
 		addChild(c);
 		saveScripts();
 		updateSize();
+		c.startEditText();
 	}
 
 	public function fixCommentLayout():void {
