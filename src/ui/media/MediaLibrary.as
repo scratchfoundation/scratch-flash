@@ -512,7 +512,7 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 			// avoid recursion
 			setTimeout(processShowQueue, 0);
 		}
-		for (var item:MediaLibraryItem in pendingShowHideOperations) {
+		for (var item:Object in pendingShowHideOperations) {
 			var shouldShow:Boolean = pendingShowHideOperations[item];
 			delete pendingShowHideOperations[item];
 			item.show(shouldShow, shouldShow ? callMeLater : null);
