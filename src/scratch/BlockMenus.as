@@ -182,6 +182,8 @@ public class BlockMenus implements DragClient {
 		case 'var':
 			if (isGeneric(item)) return true;
 			return ['delete variable', 'rename variable'].indexOf(item) > -1;
+		case 'appEdit':
+			return item.slice(-1) != ' ';
 		}
 		return true;
 	}

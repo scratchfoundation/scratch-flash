@@ -29,8 +29,7 @@ package scratch {
 	import flash.system.System;
 	import flash.text.TextField;
 	import flash.utils.*;
-	import blocks.Block;
-	import blocks.BlockArg;
+	import blocks.*;
 	import interpreter.*;
 	import primitives.VideoMotionPrims;
 	import sound.ScratchSoundPlayer;
@@ -678,6 +677,12 @@ public class ScratchRuntime {
 	//------------------------------
 
 	public function renameCostume(newName:String):void {
+		if (newName == app.viewedObj().currentCostume().costumeName) return;
+		recordRenameCostume(newName);
+		setCostumeName(newName);
+	}
+
+	private function setCostumeName(newName:String):void {
 		var obj:ScratchObj = app.viewedObj();
 		var costume:ScratchCostume = obj.currentCostume();
         costume.costumeName = '';
@@ -688,6 +693,12 @@ public class ScratchRuntime {
 	}
 
 	public function renameSprite(newName:String):void {
+		if (newName == app.viewedObj().objName) return;
+		recordRenameSprite(newName);
+		setSpriteName(newName);
+	}
+
+	private function setSpriteName(newName:String):void {
 		var obj:ScratchObj = app.viewedObj();
 		var oldName:String = obj.objName;
 		obj.objName = '';
@@ -707,6 +718,12 @@ public class ScratchRuntime {
 	}
 
     public function renameSound(s:ScratchSound, newName:String):void {
+		if (newName == s.soundName) return;
+		recordRenameSound(s, newName);
+		setSoundName(s, newName);
+	}
+
+	private function setSoundName(s:ScratchSound, newName:String):void {
         var obj:ScratchObj = app.viewedObj();
         var oldName:String = s.soundName;
         s.soundName = '';
@@ -1038,66 +1055,503 @@ public class ScratchRuntime {
 	}
 
 	// -----------------------------
-	// Undelete support
+	// Undo support
 	//------------------------------
 
-	private var lastDelete:Array; // object, x, y, owner (for blocks/stacks/costumes/sounds)
+	private var done:Array = [];
+	private var undone:Array = [];
 
-	public function canUndelete():Boolean { return lastDelete != null }
-	public function clearLastDelete():void { lastDelete = null }
+	public function canUndo():Boolean {
+		return !!done.length && !app.gh.carriedObj;
+	}
+	public function canRedo():Boolean {
+		return !!undone.length && !app.gh.carriedObj;
+	}
 
-	public function recordForUndelete(obj:*, x:int, y:int, index:int, owner:* = null):void {
-		if (obj is Block) {
-			var comments:Array = (obj as Block).attachedCommentsIn(app.scriptsPane);
-			if (comments.length) {
-				for each (var c:ScratchComment in comments) {
-					c.parent.removeChild(c);
-				}
-				app.scriptsPane.fixCommentLayout();
-				obj = [obj, comments];
+	public function undoLabel():String {
+		return actionListLabel('Undo', done);
+	}
+	public function redoLabel():String {
+		return actionListLabel('Redo', undone);
+	}
+	private function actionListLabel(prefix:String, a:Array):String {
+		var action:String = a.length ? getActionName(a[a.length - 1]) : '';
+		return Translator.map(prefix) + ' ' + action;
+	}
+
+	public function undo():Boolean {
+		if (!canUndo()) return false;
+		var a:Array = done.pop();
+		unperform(a);
+		undone.push(a);
+		return true;
+	}
+
+	public function redo():Boolean {
+		if (!canRedo()) return false;
+		var a:Array = undone.pop();
+		perform(a);
+		done.push(a);
+		return true;
+	}
+
+	private static const DROP_BLOCK:int = 1;
+	private static const REPLACE_ARG:int = 2;
+	private static const INSERT_BLOCK:int = 3;
+	private static const INSERT_BLOCK_ABOVE:int = 4;
+	private static const INSERT_BLOCK_SUB1:int = 5;
+	private static const INSERT_BLOCK_SUB2:int = 6;
+	private static const INSERT_BLOCK_AROUND:int = 7;
+	private static const DROP_INTO_THUMBNAIL:int = 8;
+	private static const DELETE_BLOCK:int = 9;
+	private static const CLEAN_UP:int = 10;
+	private static const DELETE_SPRITE:int = 11;
+	private static const ADD_SPRITE:int = 12;
+	private static const CHANGE_INPUT:int = 13;
+	private static const RENAME_SPRITE:int = 14;
+	private static const RENAME_COSTUME:int = 15;
+	private static const RENAME_SOUND:int = 16;
+	private static const EDIT_SOUND:int = 17;
+	private static const DELETE_COMMENT:int = 18;
+	private static const ADD_COMMENT:int = 19;
+	private static const DROP_COMMENT:int = 20;
+	private static const CHANGE_COMMENT:int = 21;
+	private static const ADD_SOUND:int = 22;
+	private static const DELETE_SOUND:int = 23;
+	private static const ADD_COSTUME:int = 24;
+	private static const DELETE_COSTUME:int = 25;
+
+	public function recordDropBlock(b:Block):void {
+		recordAction([DROP_BLOCK, app.viewedObj(), b.parent, b, b.originalState, b.saveState()]);
+	}
+	public function recordReplaceArg(a:DisplayObject, b:Block):void {
+		recordAction([REPLACE_ARG, app.viewedObj(), a.parent, a, b, Block(a.parent).argIndex(a), b.originalState]);
+	}
+	public function recordInsertBlock(t:Block, b:Block):void {
+		recordAction([INSERT_BLOCK, app.viewedObj(), t, b, t.nextBlock, b.originalState]);
+	}
+	public function recordInsertBlockAbove(t:Block, b:Block):void {
+		recordAction([INSERT_BLOCK_ABOVE, app.viewedObj(), t, b, t.saveState(), b.originalState]);
+	}
+	public function recordInsertBlockSub1(t:Block, b:Block):void {
+		recordAction([INSERT_BLOCK_SUB1, app.viewedObj(), t, b, t.subStack1, b.originalState]);
+	}
+	public function recordInsertBlockSub2(t:Block, b:Block):void {
+		recordAction([INSERT_BLOCK_SUB2, app.viewedObj(), t, b, t.subStack2, b.originalState]);
+	}
+	public function recordInsertBlockAround(t:Block, b:Block):void {
+		recordAction([INSERT_BLOCK_AROUND, app.viewedObj(), t, b, t.saveState(), b.originalState]);
+	}
+	public function recordDropIntoThumbnail(t:ScratchObj, b:Block):void {
+		recordAction([DROP_INTO_THUMBNAIL, t, b]);
+	}
+	public function recordDeleteBlock(b:Block, state:BlockState):void {
+		if (state.role == Block.ROLE_NONE) return;
+		var comments:Array = b.attachedCommentsIn(app.scriptsPane);
+		if (comments.length) {
+			for each (var c:ScratchComment in comments) {
+				c.parent.removeChild(c);
 			}
+			app.scriptsPane.fixCommentLayout();
 		}
-		lastDelete = [obj, x, y, index, owner];
+		recordAction([DELETE_BLOCK, app.viewedObj(), b, state, comments]);
+	}
+	public function recordCleanUp():void {
+		var obj:ScratchObj = app.viewedObj();
+		var positions:Array = [];
+		for each (var s:Block in obj.scripts) {
+			positions.push([s, s.x, s.y]);
+		}
+		recordAction([CLEAN_UP, obj, positions]);
+	}
+	public function recordDeleteSprite(s:ScratchSprite):void {
+		recordAction([DELETE_SPRITE, s, s.scratchX, s.scratchY]);
+	}
+	public function recordAddSprite(s:ScratchSprite):void {
+		recordAction([ADD_SPRITE, s]);
+	}
+	public function recordChangeInput(i:BlockArg, old:String):void {
+		if (old == i.field.text) return;
+		recordAction([CHANGE_INPUT, app.viewedObj(), i, old, i.field.text]);
+	}
+	public function recordRenameSprite(name:String):void {
+		var obj:ScratchObj = app.viewedObj();
+		recordAction([RENAME_SPRITE, obj, obj.objName, name]);
+	}
+	public function recordRenameCostume(name:String):void {
+		var obj:ScratchObj = app.viewedObj();
+		var costume:ScratchCostume = obj.currentCostume();
+		recordAction([RENAME_COSTUME, obj, costume, costume.costumeName, name]);
+	}
+	public function recordRenameSound(s:ScratchSound, name:String):void {
+		var obj:ScratchObj = app.viewedObj();
+		recordAction([RENAME_SOUND, obj, s, s.soundName, name]);
+	}
+	public function recordEditSound(s:ScratchSound, action:String, record:Array):void {
+		var obj:ScratchObj = app.viewedObj();
+		var d:Object = s.editorData;
+		recordAction([EDIT_SOUND, obj, s, action, [d.samples, d.condensedSamples, d.samplesPerCondensedSample], record]);
+	}
+	public function recordDeleteComment(c:ScratchComment, x:Number, y:Number):void {
+		if (!c.originalState[0]) return;
+		recordAction([DELETE_COMMENT, app.viewedObj(), c, x, y]);
+	}
+	public function recordAddComment(c:ScratchComment):void {
+		recordAction([ADD_COMMENT, app.viewedObj(), c, c.x, c.y, c.blockRef]);
+	}
+	public function recordDropComment(c:ScratchComment):void {
+		recordAction([DROP_COMMENT, app.viewedObj(), c, c.originalState, c.saveState()]);
+	}
+	public function recordChangeComment(c:ScratchComment, old:String, text:String):void {
+		if (old == text) return;
+		recordAction([CHANGE_COMMENT, app.viewedObj(), c, old, text]);
+	}
+	public function recordAddSound(s:ScratchSound, obj:ScratchObj):void {
+		recordAction([ADD_SOUND, obj, s, obj.sounds.length]);
+	}
+	public function recordDeleteSound(s:ScratchSound, obj:ScratchObj):void {
+		recordAction([DELETE_SOUND, obj, s, obj.sounds.indexOf(s)]);
+	}
+	public function recordAddCostume(c:ScratchCostume, obj:ScratchObj):void {
+		recordAction([ADD_COSTUME, obj, c, obj.costumes.length]);
+	}
+	public function recordDeleteCostume(c:ScratchCostume, obj:ScratchObj):void {
+		recordAction([DELETE_COSTUME, obj, c, obj.costumes.indexOf(c)]);
 	}
 
-	public function undelete():void {
-		if (!lastDelete) return;
-		var obj:* = lastDelete[0];
-		var x:int = lastDelete[1];
-		var y:int = lastDelete[2];
-		var index:int = lastDelete[3];
-		var previousOwner:* = lastDelete[4];
-		doUndelete(obj, x, y, previousOwner);
-		lastDelete = null;
+	private function recordAction(a:Array):void {
+		done.push(a);
+		undone.length = 0;
 	}
 
-	protected function doUndelete(obj:*, x:int, y:int, prevOwner:*):void {
-		if (obj is MediaInfo) {
-			if (prevOwner is ScratchObj) {
-				app.selectSprite(prevOwner);
-				if (obj.mycostume) app.addCostume(obj.mycostume as ScratchCostume);
-				if (obj.mysound) app.addSound(obj.mysound as ScratchSound);
+	private static const scriptActions:Array = [DROP_BLOCK, REPLACE_ARG, INSERT_BLOCK, INSERT_BLOCK_ABOVE, INSERT_BLOCK_SUB1, INSERT_BLOCK_SUB2, INSERT_BLOCK_AROUND, DELETE_BLOCK, CLEAN_UP, CHANGE_INPUT, RENAME_SPRITE, DELETE_COMMENT, ADD_COMMENT, DROP_COMMENT, CHANGE_COMMENT];
+	private function unperform(a:Array):void {
+		selectSpriteForAction(a);
+		switch (a[0]) {
+		case DROP_BLOCK:
+			removeBlock(a[3]);
+			a[3].restoreState(a[4]);
+			break;
+		case REPLACE_ARG:
+			a[2].replaceArg(a[5], a[3]);
+			a[4].restoreState(a[6]);
+			break;
+		case INSERT_BLOCK:
+			removeBlock(a[3]);
+			if (a[4]) {
+				removeBlock(a[4]);
+				a[2].insertBlock(a[4]);
 			}
-		} else if (obj is ScratchSprite) {
-			app.addNewSprite(obj);
-			obj.setScratchXY(x, y);
-			app.selectSprite(obj);
-		} else if ((obj is Array) || (obj is Block) || (obj is ScratchComment)) {
-			app.selectSprite(prevOwner);
-			app.setTab('scripts');
-			var b:DisplayObject = obj is Array ? obj[0] : obj;
-			b.x = app.scriptsPane.padding;
-			b.y = app.scriptsPane.padding;
-			if (b is Block) b.cacheAsBitmap = true;
-			app.scriptsPane.addChild(b);
-			if (obj is Array) {
-				for each (var c:ScratchComment in obj[1]) {
-					app.scriptsPane.addChild(c);
-				}
+			a[3].restoreState(a[5]);
+			break;
+		case INSERT_BLOCK_ABOVE:
+			removeBlock(a[2]);
+			removeBlock(a[3]);
+			a[2].restoreState(a[4]);
+			a[3].restoreState(a[5]);
+			break;
+		case INSERT_BLOCK_SUB1:
+			removeBlock(a[3]);
+			if (a[4]) {
+				removeBlock(a[4]);
+				a[2].insertBlockSub1(a[4]);
 			}
+			a[3].restoreState(a[5]);
+			break;
+		case INSERT_BLOCK_SUB2:
+			removeBlock(a[3]);
+			if (a[4]) {
+				removeBlock(a[4]);
+				a[2].insertBlockSub2(a[4]);
+			}
+			a[3].restoreState(a[5]);
+			break;
+		case INSERT_BLOCK_AROUND:
+			removeBlock(a[2]);
+			removeBlock(a[3]);
+			a[2].restoreState(a[4]);
+			a[3].restoreState(a[5]);
+			break;
+		case DROP_INTO_THUMBNAIL:
+			selectSpriteIfNeeded(a[1]);
+			selectTabIfNeeded('scripts');
+			if (a[2].parent) a[2].parent.removeChild(a[2]);
+			break;
+		case DELETE_BLOCK:
+			a[2].restoreState(a[3]);
+			for each (var c:ScratchComment in a[4]) {
+				app.scriptsPane.addChild(c);
+			}
+			break;
+		case CLEAN_UP:
+			for each (var s:Array in a[2]) {
+				s[0].x = s[1];
+				s[0].y = s[2];
+			}
+			break;
+		case DELETE_SPRITE:
+			app.addSprite(a[1]);
+			a[1].setScratchXY(a[2], a[3]);
+			break;
+		case ADD_SPRITE:
+			a[1].deleteSprite();
+			break;
+		case CHANGE_INPUT:
+			a[2].setArgValue(a[3]);
+			break;
+		case RENAME_SPRITE:
+			selectSpriteIfNeeded(a[1]);
+			setSpriteName(a[2]);
+			app.libraryPart.refresh();
+			break;
+		case RENAME_COSTUME:
+			selectSpriteIfNeeded(a[1]);
+			selectTabIfNeeded('images');
+			a[1].currentCostumeIndex = a[1].costumes.indexOf(a[2]);
+			setCostumeName(a[3]);
+			app.imagesPart.refresh();
+			break;
+		case RENAME_SOUND:
+			selectSpriteIfNeeded(a[1]);
+			selectTabIfNeeded('sounds');
+			setSoundName(a[2], a[3]);
+			app.soundsPart.selectSound(a[2]);
+			break;
+		case EDIT_SOUND:
+			selectSpriteIfNeeded(a[1]);
+			selectTabIfNeeded('sounds');
+			app.soundsPart.selectSound(a[2]);
+			app.soundsPart.editor.waveform.installUndoRecord(a[4]);
+			break;
+		case DELETE_COMMENT:
+			app.scriptsPane.addChild(a[2]);
+			a[2].x = a[3];
+			a[2].y = a[4];
+			break;
+		case ADD_COMMENT:
+			app.scriptsPane.removeChild(a[2]);
+			break;
+		case DROP_COMMENT:
+			a[2].restoreState(a[3]);
+			break;
+		case CHANGE_COMMENT:
+			a[2].setContents(a[3]);
+			break;
+		case ADD_SOUND:
+			selectSpriteIfNeeded(a[1]);
+			selectTabIfNeeded('sounds');
+			a[1].deleteSound(a[2]);
+			app.soundsPart.refresh();
+			break;
+		case DELETE_SOUND:
+			selectSpriteIfNeeded(a[1]);
+			selectTabIfNeeded('sounds');
+			a[1].sounds.splice(a[3], 0, a[2]);
+			app.soundsPart.selectSound(a[2]);
+			break;
+		case ADD_COSTUME:
+			selectSpriteIfNeeded(a[1]);
+			selectTabIfNeeded('images');
+			a[1].deleteCostume(a[2]);
+			app.imagesPart.refresh();
+			break;
+		case DELETE_COSTUME:
+			selectSpriteIfNeeded(a[1]);
+			selectTabIfNeeded('images');
+			a[1].costumes.splice(a[3], 0, a[2]);
+			a[1].currentCostumeIndex = a[3];
+			app.imagesPart.refresh();
+			break;
+		}
+		saveForAction(a);
+	}
+
+	private function perform(a:Array):void {
+		selectSpriteForAction(a);
+		switch (a[0]) {
+		case DROP_BLOCK:
+			removeBlock(a[3]);
+			a[3].restoreState(a[5]);
+			break;
+		case REPLACE_ARG:
+			removeBlock(a[4]);
+			a[2].replaceArgWithBlock(a[3], a[4], app.scriptsPane);
+			break;
+		case INSERT_BLOCK:
+			removeBlock(a[3]);
+			a[2].insertBlock(a[3]);
+			break;
+		case INSERT_BLOCK_ABOVE:
+			removeBlock(a[3]);
+			a[2].insertBlockAbove(a[3]);
+			break;
+		case INSERT_BLOCK_SUB1:
+			removeBlock(a[3]);
+			a[2].insertBlockSub1(a[3]);
+			break;
+		case INSERT_BLOCK_SUB2:
+			removeBlock(a[3]);
+			a[2].insertBlockSub2(a[3]);
+			break;
+		case INSERT_BLOCK_AROUND:
+			removeBlock(a[3]);
+			a[2].insertBlockAround(a[3]);
+			break;
+		case DROP_INTO_THUMBNAIL:
+			selectSpriteIfNeeded(a[1]);
+			selectTabIfNeeded('scripts');
+			a[2].x = app.scriptsPane.padding;
+			a[2].y = app.scriptsPane.padding;
+			app.scriptsPane.addChild(a[2]);
+			break;
+		case DELETE_BLOCK:
+			removeBlock(a[2]);
+			if (a[2].parent) a[2].parent.removeChild(a[2]);
+			for each (var c:ScratchComment in a[4]) {
+				app.scriptsPane.removeChild(c);
+			}
+			break;
+		case CLEAN_UP:
+			app.scriptsPane.cleanup();
+			break;
+		case DELETE_SPRITE:
+			a[1].deleteSprite();
+			break;
+		case ADD_SPRITE:
+			app.addSprite(a[1]);
+			break;
+		case CHANGE_INPUT:
+			a[2].setArgValue(a[4]);
+			break;
+		case RENAME_SPRITE:
+			selectSpriteIfNeeded(a[1]);
+			setSpriteName(a[3]);
+			app.libraryPart.refresh();
+			break;
+		case RENAME_COSTUME:
+			selectSpriteIfNeeded(a[1]);
+			selectTabIfNeeded('images');
+			a[1].currentCostumeIndex = a[1].costumes.indexOf(a[2]);
+			setCostumeName(a[4]);
+			app.imagesPart.refresh();
+			break;
+		case RENAME_SOUND:
+			selectSpriteIfNeeded(a[1]);
+			selectTabIfNeeded('sounds');
+			setSoundName(a[2], a[4]);
+			app.soundsPart.selectSound(a[2]);
+			break;
+		case EDIT_SOUND:
+			selectSpriteIfNeeded(a[1]);
+			selectTabIfNeeded('sounds');
+			app.soundsPart.selectSound(a[2]);
+			app.soundsPart.editor.waveform.installUndoRecord(a[5]);
+			break;
+		case DELETE_COMMENT:
+			if (a[2].parent) a[2].parent.removeChild(a[2]);
+			break;
+		case ADD_COMMENT:
+			app.scriptsPane.addChild(a[2]);
+			a[2].x = a[3];
+			a[2].y = a[4];
+			a[2].blockRef = a[5];
+			break;
+		case DROP_COMMENT:
+			a[2].restoreState(a[4]);
+			break;
+		case CHANGE_COMMENT:
+			a[2].setContents(a[4]);
+			break;
+		case ADD_SOUND:
+			selectSpriteIfNeeded(a[1]);
+			selectTabIfNeeded('sounds');
+			a[1].sounds.splice(a[3], 0, a[2]);
+			app.soundsPart.selectSound(a[2]);
+			break;
+		case DELETE_SOUND:
+			selectSpriteIfNeeded(a[1]);
+			selectTabIfNeeded('sounds');
+			a[1].deleteSound(a[2]);
+			app.soundsPart.refresh();
+			break;
+		case ADD_COSTUME:
+			selectSpriteIfNeeded(a[1]);
+			selectTabIfNeeded('images');
+			a[1].costumes.splice(a[3], 0, a[2]);
+			a[1].currentCostumeIndex = a[3];
+			app.imagesPart.refresh();
+			break;
+		case DELETE_COSTUME:
+			selectSpriteIfNeeded(a[1]);
+			selectTabIfNeeded('images');
+			a[1].deleteCostume(a[2]);
+			app.imagesPart.refresh();
+			break;
+		}
+		saveForAction(a);
+	}
+
+	public function getActionName(a:Array):String {
+		switch (a[0]) {
+		case DROP_BLOCK:
+		case REPLACE_ARG:
+		case INSERT_BLOCK:
+		case INSERT_BLOCK_ABOVE:
+		case INSERT_BLOCK_SUB1:
+		case INSERT_BLOCK_SUB2:
+		case INSERT_BLOCK_AROUND: return Translator.map('drop block');
+		case DROP_INTO_THUMBNAIL: return Translator.map('copy block');
+		case DELETE_BLOCK: return Translator.map('delete block');
+		case DELETE_SPRITE: return Translator.map('delete sprite');
+		case CLEAN_UP: return Translator.map('clean up');
+		case ADD_SPRITE: return Translator.map('add sprite');
+		case CHANGE_INPUT: return Translator.map('edit input');
+		case RENAME_SPRITE: return Translator.map('rename sprite');
+		case RENAME_COSTUME: return a[1].isStage ? Translator.map('rename backdrop') : Translator.map('rename costume');
+		case RENAME_SOUND: return Translator.map('rename sound');
+		case EDIT_SOUND: return Translator.map(a[3]);
+		case DELETE_COMMENT: return Translator.map('delete comment');
+		case ADD_COMMENT: return Translator.map('add comment');
+		case DROP_COMMENT: return Translator.map('drop comment');
+		case CHANGE_COMMENT: return Translator.map('edit comment');
+		case ADD_SOUND: return Translator.map('add sound');
+		case DELETE_SOUND: return Translator.map('delete sound');
+		case ADD_COSTUME: return a[1].isStage ? Translator.map('add backdrop') : Translator.map('add costume');
+		case DELETE_COSTUME: return a[1].isStage ? Translator.map('delete backdrop') : Translator.map('delete costume');
+		}
+		return '';
+	}
+
+	private function selectSpriteForAction(a:Array):void {
+		if (scriptActions.indexOf(a[0]) != -1) {
+			selectSpriteIfNeeded(a[1]);
+			selectTabIfNeeded('scripts');
+		}
+	}
+
+	private function saveForAction(a:Array):void {
+		if (scriptActions.indexOf(a[0]) != -1) {
 			app.scriptsPane.saveScripts();
-			if (b is Block) app.updatePalette();
+			app.scriptsPane.updateSize();
+		} else {
+			app.setSaveNeeded();
 		}
+	}
+
+	private function selectSpriteIfNeeded(s:ScratchObj):void {
+		if (app.viewedObj() != s) {
+			app.selectSprite(s);
+		}
+	}
+
+	private function selectTabIfNeeded(t:String):void {
+		if (app.lastTab != t) {
+			app.setTab(t);
+		}
+	}
+
+	private function removeBlock(b:Block):void {
+		if (b.parent is Block) Block(b.parent).removeBlock(b);
 	}
 
 }}

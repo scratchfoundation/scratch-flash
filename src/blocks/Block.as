@@ -47,6 +47,13 @@ import flash.display.*;
 
 public class Block extends Sprite {
 
+	public static var ROLE_NONE:int = 0;
+	public static var ROLE_ABSOLUTE:int = 1;
+	public static var ROLE_EMBEDDED:int = 2;
+	public static var ROLE_NEXT:int = 3;
+	public static var ROLE_SUBSTACK1:int = 4;
+	public static var ROLE_SUBSTACK2:int = 5;
+
 	private const minCommandWidth:int = 36;
 	private const minHatWidth:int = 80;
 	private const minLoopWidth:int = 80;
@@ -96,14 +103,7 @@ public class Block extends Sprite {
 	private var indentTop:int = 2, indentBottom:int = 3;
 	private var indentLeft:int = 4, indentRight:int = 3;
 
-	private static var ROLE_NONE:int = 0;
-	private static var ROLE_ABSOLUTE:int = 1;
-	private static var ROLE_EMBEDDED:int = 2;
-	private static var ROLE_NEXT:int = 3;
-	private static var ROLE_SUBSTACK1:int = 4;
-	private static var ROLE_SUBSTACK2:int = 5;
-
-	private var originalParent:DisplayObjectContainer, originalRole:int, originalIndex:int, originalPosition:Point;
+	public var originalState:BlockState;
 
 	public function Block(spec:String, type:String = " ", color:int = 0xD00000, op:* = 0, defaultArgs:Array = null) {
 		this.spec = Translator.map(spec);
@@ -342,43 +342,51 @@ public class Block extends Sprite {
 	}
 
 	public function saveOriginalState():void {
-		originalParent = parent;
+		originalState = saveState();
+	}
+
+	public function saveState():BlockState {
+		var s:BlockState = new BlockState;
+		s.parent = parent;
 		if (parent) {
 			var b:Block = parent as Block;
 			if (b == null) {
-				originalRole = ROLE_ABSOLUTE;
+				s.role = ROLE_ABSOLUTE;
+				s.position = new Point(x, y);
 			} else if (isReporter) {
-				originalRole = ROLE_EMBEDDED;
-				originalIndex = b.args.indexOf(this);
+				s.role = ROLE_EMBEDDED;
+				s.index = b.args.indexOf(this);
 			} else if (b.nextBlock == this) {
-				originalRole = ROLE_NEXT;
+				s.role = ROLE_NEXT;
 			} else if (b.subStack1 == this) {
-				originalRole = ROLE_SUBSTACK1;
+				s.role = ROLE_SUBSTACK1;
 			} else if (b.subStack2 == this) {
-				originalRole = ROLE_SUBSTACK2;
+				s.role = ROLE_SUBSTACK2;
 			}
-			originalPosition = localToGlobal(new Point(0, 0));
 		} else {
-			originalRole = ROLE_NONE;
-			originalPosition = null;
+			s.role = ROLE_NONE;
+			s.position = null;
 		}
+		return s;
 	}
 
 	public function restoreOriginalState():void {
-		var b:Block = originalParent as Block;
-		scaleX = scaleY = 1;
-		switch (originalRole) {
+		restoreState(originalState);
+	}
+
+	public function restoreState(s:BlockState):void {
+		var b:Block = s.parent as Block;
+		switch (s.role) {
 		case ROLE_NONE:
 			if (parent) parent.removeChild(this);
 			break;
 		case ROLE_ABSOLUTE:
-			originalParent.addChild(this);
-			var p:Point = originalParent.globalToLocal(originalPosition);
-			x = p.x;
-			y = p.y;
+			s.parent.addChild(this);
+			x = s.position.x;
+			y = s.position.y;
 			break;
 		case ROLE_EMBEDDED:
-			b.replaceArgWithBlock(b.args[originalIndex], this, Scratch.app.scriptsPane);
+			b.replaceArgWithBlock(b.args[s.index], this, Scratch.app.scriptsPane);
 			break;
 		case ROLE_NEXT:
 			b.insertBlock(this);
@@ -390,10 +398,6 @@ public class Block extends Sprite {
 			b.insertBlockSub2(this);
 			break;
 		}
-	}
-
-	public function originalPositionIn(p:DisplayObject):Point {
-		return originalPosition && p.globalToLocal(originalPosition);
 	}
 
 	private function setDefaultArgs(defaults:Array):void {
@@ -703,6 +707,18 @@ public class Block extends Sprite {
 		topBlock().fixStackLayout();
 	}
 
+	public function argIndex(a:DisplayObject):int {
+		return labelsAndArgs.indexOf(a);
+	}
+
+	public function replaceArg(i:int, a:DisplayObject):void {
+		removeChild(labelsAndArgs[i]);
+		labelsAndArgs[i] = a;
+		addChild(a);
+		fixExpressionLayout();
+		topBlock().fixStackLayout();
+	}
+
 	private function appendBlock(b:Block):void {
 		if (base.canHaveSubstack1() && !subStack1) {
 			insertBlockSub1(b);
@@ -818,10 +834,11 @@ public class Block extends Sprite {
 		Scratch.app.gh.grabOnMouseUp(newStack);
 	}
 
-	public function deleteStack():Boolean {
+	public function deleteStack(state:BlockState = null):Boolean {
 		if (op == 'proc_declaration') {
 			return (parent as Block).deleteStack();
 		}
+		if (!state) state = saveState();
 		var app:Scratch = Scratch.app;
 		var top:Block = topBlock();
 		if (op == Specs.PROCEDURE_DEF && app.runtime.allCallsOf(spec, app.viewedObj(), false).length) {
@@ -831,6 +848,7 @@ public class Block extends Sprite {
 		if (top == this && app.interp.isRunning(top, app.viewedObj())) {
 			app.interp.toggleThread(top, app.viewedObj());
 		}
+		app.runtime.recordDeleteBlock(this, state);
 		// TODO: Remove any waiting reporter data in the Scratch.app.extensionManager
 		if (parent is Block) Block(parent).removeBlock(this);
 		else if (parent) parent.removeChild(this);
@@ -839,7 +857,6 @@ public class Block extends Sprite {
 		x = top.x;
 		y = top.y;
 		if (top != this) x += top.width + 5;
-		app.runtime.recordForUndelete(this, x, y, 0, app.viewedObj());
 		app.scriptsPane.saveScripts();
 		SCRATCH::allow3d { app.runtime.checkForGraphicEffects(); }
 		app.updatePalette();

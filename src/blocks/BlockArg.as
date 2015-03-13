@@ -51,6 +51,7 @@ public class BlockArg extends Sprite {
 	public var type:String;
 	public var base:BlockShape;
 	public var argValue:* = '';
+	private var oldValue:String;
 	public var isNumber:Boolean;
 	public var isEditable:Boolean;
 	public var field:TextField;
@@ -173,6 +174,7 @@ public class BlockArg extends Sprite {
 
 	public function startEditing():void {
 		if (isEditable) {
+			oldValue = field.text;
 			field.type = TextFieldType.INPUT;
 			field.selectable = true;
 			if (field.text.length == 0) field.text = '  ';
@@ -184,6 +186,9 @@ public class BlockArg extends Sprite {
 	private function stopEditing(ignore:*):void {
 		field.type = TextFieldType.DYNAMIC;
 		field.selectable = false;
+		if (!Block(parent).isInPalette() && stage) {
+			Scratch.app.runtime.recordChangeInput(this, oldValue);
+		}
 	}
 
 	private function blockArgFilters():Array {

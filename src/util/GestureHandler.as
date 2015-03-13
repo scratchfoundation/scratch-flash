@@ -73,7 +73,7 @@ public class GestureHandler {
 	// Grab-n-drop support:
 	public var carriedObj:Sprite;
 	private var originalParent:DisplayObjectContainer;
-	private var originalPosition:Point;
+	public var originalPosition:Point;
 	private var originalScale:Number;
 
 	private var app:Scratch;
@@ -480,6 +480,7 @@ public class GestureHandler {
 			app.scriptsPane.prepareToDrag(b);
 		} else if (obj is ScratchComment) {
 			var c:ScratchComment = ScratchComment(obj);
+			c.saveOriginalState();
 			if (c.parent != null) c.parent.removeChild(c);
 			app.scriptsPane.prepareToDragComment(c);
 		} else {
@@ -543,6 +544,8 @@ public class GestureHandler {
 		if (!dropHandled(carriedObj, evt)) {
 			if (carriedObj is Block) {
 				Block(carriedObj).restoreOriginalState();
+			} else if (carriedObj is ScratchComment) {
+				ScratchComment(carriedObj).restoreOriginalState();
 			} else if (originalParent) { // put carriedObj back where it came from
 				carriedObj.x = originalPosition.x;
 				carriedObj.y = originalPosition.y;

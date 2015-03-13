@@ -57,12 +57,12 @@ public class BlockPalette extends ScrollFrameContents {
 		var c:ScratchComment = obj as ScratchComment;
 		if (c) {
 			c.x = c.y = 20; // position for undelete
-			c.deleteComment();
+			c.deleteComment(true);
 			return true;
 		}
 		var b:Block = obj as Block;
 		if (b) {
-			return b.deleteStack();
+			return b.deleteStack(b.originalState);
 		}
 		return false;
 	}

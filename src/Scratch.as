@@ -61,6 +61,7 @@ public class Scratch extends Sprite {
 	// Version
 	public static const versionString:String = 'v433a';
 	public static var app:Scratch; // static reference to the app, used for debugging
+	public static var isOSX:Boolean = Capabilities.os.indexOf("Mac OS") != -1;
 
 	// Display modes
 	public var editMode:Boolean; // true when project editor showing, false when only the player is showing
@@ -89,7 +90,7 @@ public class Scratch extends Sprite {
 
 	protected var autostart:Boolean;
 	private var viewedObject:ScratchObj;
-	private var lastTab:String = 'scripts';
+	public var lastTab:String = 'scripts';
 	protected var wasEdited:Boolean; // true if the project was edited and autosaved
 	private var _usesUserNameBlock:Boolean = false;
 	protected var languageChanged:Boolean; // set when language changed
@@ -144,9 +145,9 @@ public class Scratch extends Sprite {
 
 		playerBG = new Shape(); // create, but don't add
 		addParts();
-		
+
 		server.getSelectedLang(Translator.setLanguageValue);
-		
+
 
 		stage.addEventListener(MouseEvent.MOUSE_DOWN, gh.mouseDown);
 		stage.addEventListener(MouseEvent.MOUSE_MOVE, gh.mouseMove);
@@ -422,21 +423,29 @@ public class Scratch extends Sprite {
 
 	private function keyDown(evt:KeyboardEvent):void {
 		// Escape exists presentation mode.
-		if ((evt.charCode == 27) && stagePart.isInPresentationMode()) {
+		if (evt.charCode == 27 && stagePart.isInPresentationMode()) {
 			setPresentationMode(false);
 			stagePart.exitPresentationMode();
-		}
 		// Handle enter key
-//		else if(evt.keyCode == 13 && !stage.focus) {
+//		} else if(evt.keyCode == 13 && !stage.focus) {
 //			stagePart.playButtonPressed(null);
 //			evt.preventDefault();
 //			evt.stopImmediatePropagation();
-//		}
-		// Handle ctrl-m and toggle 2d/3d mode
-		else if(evt.ctrlKey && evt.charCode == 109) {
-			SCRATCH::allow3d { isIn3D ? go2D() : go3D(); }
-			evt.preventDefault();
-			evt.stopImmediatePropagation();
+		} else if (evt.ctrlKey) {
+			var handled:Boolean = true;
+			if (evt.charCode == 122) {
+				runtime.undo();
+			} else if (evt.charCode == (isOSX ? 90 : 121)) {
+				runtime.redo();
+			} else if (evt.charCode == 109) {
+				SCRATCH::allow3d { isIn3D ? go2D() : go3D(); }
+			} else {
+				handled = false;
+			}
+			if (handled) {
+				evt.preventDefault();
+				evt.stopImmediatePropagation();
+			}
 		}
 	}
 
@@ -753,7 +762,8 @@ public class Scratch extends Sprite {
 
 	public function showEditMenu(b:*):void {
 		var m:Menu = new Menu(null, 'More', CSS.topBarColor, 28);
-		m.addItem('Undelete', runtime.undelete, runtime.canUndelete());
+		m.addItem(runtime.undoLabel() + ' ', runtime.undo, runtime.canUndo());
+		m.addItem(runtime.redoLabel() + ' ', runtime.redo, runtime.canRedo());
 		m.addLine();
 		m.addItem('Small stage layout', toggleSmallStage, true, stageIsContracted);
 		m.addItem('Turbo mode', toggleTurboMode, true, interp.turboMode);
@@ -959,17 +969,13 @@ public class Scratch extends Sprite {
 	protected function canUndoRevert():Boolean { return revertUndo != null }
 	private function clearRevertUndo():void { revertUndo = null }
 
-	public function addNewSprite(spr:ScratchSprite, showImages:Boolean = false, atMouse:Boolean = false):void {
+	public function addSprite(spr:ScratchSprite, showImages:Boolean = false):void {
 		var c:ScratchCostume, byteCount:int;
 		for each (c in spr.costumes) {
-			if (!c.baseLayerData) c.prepareToSave()
+			if (!c.baseLayerData) c.prepareToSave();
 			byteCount += c.baseLayerData.length;
 		}
 		if (!okayToAdd(byteCount)) return; // not enough room
-		spr.objName = stagePane.unusedSpriteName(spr.objName);
-		spr.indexInLibrary = 1000000; // add at end of library
-		spr.setScratchXY(int(200 * Math.random() - 100), int(100 * Math.random() - 50));
-		if (atMouse) spr.setScratchXY(stagePane.scratchMouseX(), stagePane.scratchMouseY());
 		stagePane.addChild(spr);
 		spr.updateCostume();
 		selectSprite(spr);
@@ -981,22 +987,32 @@ public class Scratch extends Sprite {
 		}
 	}
 
+	public function addNewSprite(spr:ScratchSprite, showImages:Boolean = false, atMouse:Boolean = false):void {
+		spr.objName = stagePane.unusedSpriteName(spr.objName);
+		spr.indexInLibrary = 1000000; // add at end of library
+		spr.setScratchXY(int(200 * Math.random() - 100), int(100 * Math.random() - 50));
+		if (atMouse) spr.setScratchXY(stagePane.scratchMouseX(), stagePane.scratchMouseY());
+		runtime.recordAddSprite(spr);
+		addSprite(spr, showImages);
+	}
+
 	public function addSound(snd:ScratchSound, targetObj:ScratchObj = null):void {
-		if (snd.soundData && !okayToAdd(snd.soundData.length)) return; // not enough room
 		if (!targetObj) targetObj = viewedObj();
+		runtime.recordAddSound(snd, targetObj);
+		if (snd.soundData && !okayToAdd(snd.soundData.length)) return; // not enough room
 		snd.soundName = targetObj.unusedSoundName(snd.soundName);
 		targetObj.sounds.push(snd);
 		setSaveNeeded(true);
-		if (targetObj == viewedObj()) {
-			soundsPart.selectSound(snd);
-			setTab('sounds');
-		}
+		if (targetObj != viewedObj()) selectSprite(targetObj);
+		soundsPart.selectSound(snd);
+		setTab('sounds');
 	}
 
 	public function addCostume(c:ScratchCostume, targetObj:ScratchObj = null):void {
 		if (!c.baseLayerData) c.prepareToSave();
 		if (!okayToAdd(c.baseLayerData.length)) return; // not enough room
 		if (!targetObj) targetObj = viewedObj();
+		runtime.recordAddCostume(c, targetObj);
 		c.costumeName = targetObj.unusedCostumeName(c.costumeName);
 		targetObj.costumes.push(c);
 		targetObj.showCostumeNamed(c.costumeName);

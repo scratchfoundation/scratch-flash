@@ -19,7 +19,7 @@
 
 package scratch {
 	import flash.display.*;
-	import flash.events.MouseEvent;
+	import flash.events.*;
 	import flash.geom.Point;
 	import flash.text.*;
 	import blocks.Block;
@@ -45,6 +45,8 @@ public class ScratchComment extends Sprite {
 	private var clipMask:Shape;
 	private var isOpen:Boolean;
 	private var expandedSize:Point;
+
+	public var originalState:Array;
 
 	public function ScratchComment(s:String = null, isOpen:Boolean = true, width:int = 150, blockID:int = -1) {
 		this.isOpen = isOpen;
@@ -198,18 +200,19 @@ public class ScratchComment extends Sprite {
 		if (tool == 'cut') deleteComment();
 	}
 
-	public function deleteComment():void {
+	public function deleteComment(original:Boolean = false):void {
+		var app:Scratch = Scratch.app;
+		app.runtime.recordDeleteComment(this, original ? originalState[1] : x, original ? originalState[2] : y);
 		if (parent) parent.removeChild(this);
-		Scratch.app.runtime.recordForUndelete(this, x, y, 0, Scratch.app.viewedObj());
-		Scratch.app.scriptsPane.saveScripts();
+		app.scriptsPane.saveScripts();
 	}
 
 	public function duplicateComment(deltaX:Number, deltaY:Number):void {
 		if (!parent) return;
 		var dup:ScratchComment = new ScratchComment(contents.text, isOpen);
-		dup.x = x + deltaX;
-		dup.y = y + deltaY;
-		parent.addChild(dup);
+		var p:Point = localToGlobal(new Point(0, 0));
+		dup.x = p.x + deltaX;
+		dup.y = p.y + deltaY;
 		Scratch.app.gh.grabOnMouseUp(dup);
 	}
 
@@ -251,6 +254,21 @@ public class ScratchComment extends Sprite {
 		contents.autoSize = TextFieldAutoSize.LEFT;
 		contents.defaultTextFormat = contentsFormat;
 		addChild(contents);
+		contents.addEventListener(FocusEvent.FOCUS_IN, focusIn);
+		contents.addEventListener(FocusEvent.FOCUS_OUT, focusOut);
+	}
+
+	private var oldContents:String;
+	private function focusIn(evt:FocusEvent):void {
+		oldContents = contents.text;
+	}
+
+	private function focusOut(evt:FocusEvent):void {
+		Scratch.app.runtime.recordChangeComment(this, oldContents, contents.text);
+	}
+
+	public function setContents(s:String):void {
+		contents.text = s;
 	}
 
 	private function addExpandButton():void {
@@ -280,6 +298,29 @@ public class ScratchComment extends Sprite {
 		}
 		g.endFill();
 		return icon;
+	}
+
+	public function saveOriginalState():void {
+		originalState = saveState();
+	}
+
+	public function saveState():Array {
+		return [parent, x, y, blockRef];
+	}
+
+	public function restoreOriginalState():void {
+		restoreState(originalState);
+	}
+
+	public function restoreState(s:Array):void {
+		if (s[0]) {
+			s[0].addChild(this);
+			x = s[1];
+			y = s[2];
+			blockRef = s[3];
+		} else if (parent) {
+			parent.removeChild(this);
+		}
 	}
 
 }}

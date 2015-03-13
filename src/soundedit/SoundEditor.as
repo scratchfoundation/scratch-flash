@@ -186,9 +186,6 @@ public class SoundEditor extends Sprite {
 
 	private function editMenu(b:IconButton):void {
 		var m:Menu = new Menu();
-		m.addItem('undo', waveform.undo);
-		m.addItem('redo', waveform.redo);
-		m.addLine();
 		m.addItem('cut', waveform.cut);
 		m.addItem('copy', waveform.copy);
 		m.addItem('paste', waveform.paste);
@@ -229,8 +226,6 @@ public class SoundEditor extends Sprite {
 			case 'C': waveform.copy(); break;
 			case 'V': waveform.paste(); break;
 			case 'X': waveform.cut(); break;
-			case 'Y': waveform.redo(); break;
-			case 'Z': waveform.undo(); break;
 			}
 		}
 		if (!evt.ctrlKey) {

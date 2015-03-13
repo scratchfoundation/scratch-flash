@@ -485,6 +485,7 @@ public class ImagesPart extends UIPart {
 		if (!c.baseLayerData) c.prepareToSave();
 		if (!app.okayToAdd(c.baseLayerData.length)) return; // not enough room
 		c.costumeName = obj.unusedCostumeName(c.costumeName);
+		app.runtime.recordAddCostume(c, obj);
 		obj.costumes.push(c);
 		obj.showCostume(obj.costumes.length - 1);
 		app.setSaveNeeded(true);
