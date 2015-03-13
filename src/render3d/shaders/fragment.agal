@@ -23,10 +23,8 @@ macro sqt(x) { sqt out, x }
 // These aliases are always used
 // FX-related aliases are generated and prepended by AS3
 alias v0.xyxy, Tex_uv
-alias v0.zwzw, Tex_u0v0
-alias v1.xyxy, Tex_wh
-alias v1.zzzz, Tex_index
-
+alias fc5.xyxy, Tex_u0v0
+alias fc5.zwzw, Tex_wh
 
 /*** Mosaic effect ***/
 #if ENABLE_mosaic
@@ -119,51 +117,8 @@ ft0.xy += ft2.xy
 ft0.xyzw *= Tex_wh
 ft0.xy += Tex_u0v0
 
-/*** Floor the texture index ***/
-ft3.xyzw = frc(Tex_index)
-ft3.x = Tex_index - ft3.x
-
-/*** Select texture to use ***/
 // Get the texture pixel using ft0.xy as the coordinates
-ft5 = ft3.x == 0 // Use texture 0?
-ft2 = tex<2d,clamp,linear,nomip>(ft0, fs0)
-ft2 *= ft5
-ft1 = ft2
-
-#if MAXTEXTURE > 0
-ft5 = ft3.x == 1 // Use texture 1?
-ft2 = tex<2d,clamp,linear,nomip>(ft0, fs1)
-ft2 *= ft5
-ft1 += ft2
-#endif // MAXTEXTURE > 0
-
-#if MAXTEXTURE > 1
-ft5 = ft3.x == 2 // Use texture 2?
-ft2 = tex<2d,clamp,linear,nomip>(ft0, fs2)
-ft2 *= ft5
-ft1 += ft2
-#endif // MAXTEXTURE > 1
-
-#if MAXTEXTURE > 2
-ft5 = ft3.x == 3 // Use texture 3?
-ft2 = tex<2d,clamp,linear,nomip>(ft0, fs3)
-ft2 *= ft5
-ft1 += ft2
-#endif // MAXTEXTURE > 2
-
-#if MAXTEXTURE > 3
-ft5 = ft3.x == 4 // Use texture 4?
-ft2 = tex<2d,clamp,linear,nomip>(ft0, fs4)
-ft2 *= ft5
-ft1 += ft2
-#endif // MAXTEXTURE > 3
-
-#if MAXTEXTURE > 4
-ft5 = ft3.x == 5 // Use texture 5?
-ft2 = tex<2d,clamp,linear,nomip>(ft0, fs5)
-ft2 *= ft5
-ft1 += ft2
-#endif // MAXTEXTURE > 4
+ft1 = tex<2d,clamp,linear,nomip>(ft0, fs0)
 
 /*** ft1 == (r, g, b, a) ***/
 // Now de-multiply the color values that Flash pre-multiplied

@@ -1,12 +1,2 @@
 op = mul4x4(va0, vc0) // pos to clipspace
-v0 = va1 // copy u,v, u0, v0
-v1 = va2 // copy w, h, texture index
-
-#if ACTIVE_EFFECTS > 0
-v2 = va3
-#endif // ACTIVE_EFFECTS > 0
-
-#if ACTIVE_EFFECTS > 4
-v3 = va4
-#endif // ACTIVE_EFFECTS > 4
-
+v0 = va1 // copy u,v

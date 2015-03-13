@@ -21,8 +21,7 @@ package render3d {
 
 import flash.display.Sprite;
 import flash.display.StageQuality;
-
-import ui.dragdrop.DragAndDropMgr;
+import flash.geom.Matrix3D;
 
 /**
  *   A display object container which renders in 3D instead
@@ -53,10 +52,10 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 	import flash.utils.Dictionary;
 	import flash.utils.Endian;
 
+	private static const FX_PIXELATE:String = 'pixelate';
 	private static const FX_COLOR:String = 'color';
 	private static const FX_FISHEYE:String = 'fisheye';
 	private static const FX_WHIRL:String = 'whirl';
-	private static const FX_PIXELATE:String = 'pixelate';
 	private static const FX_MOSAIC:String = 'mosaic';
 	private static const FX_BRIGHTNESS:String = 'brightness';
 	private static const FX_GHOST:String = 'ghost';
@@ -211,7 +210,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		scratchStage.parent.addChildAt(uiContainer, scratchStage.parent.getChildIndex(scratchStage)+1);
 		for(var i:uint=0; i<scratchStage.numChildren; ++i) {
 			var dispObj:DisplayObject = scratchStage.getChildAt(i);
-				if(isUI(dispObj)) {
+			if(isUI(dispObj)) {
 				uiContainer.addChild(dispObj);
 				--i;
 			}
@@ -290,7 +289,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		var width:uint = Math.ceil(480*appScale),
 				height:uint = Math.ceil(360*appScale);
 		var rect:Rectangle = new Rectangle(0, 0, width, height);
-			if(stage3D.context3D && (!scissorRect || !scissorRect.equals(rect))) {
+		if(stage3D.context3D && (!scissorRect || !scissorRect.equals(rect))) {
 			scissorRect = rect;
 			projMatrix = createOrthographicProjectionMatrix(480, 360, 0, 0);
 			stage3D.context3D.setScissorRectangle(scissorRect);
@@ -357,30 +356,47 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 
 	private function checkBuffers():void {
 		var resized:Boolean = false;
-		var numChildren:uint = scratchStage.numChildren;
-		var vertexDataMinSize:int = numChildren * 4 * shaderConfig.vertexSizeBytes * 2; // 4 verts per child
+		var vertexDataMinSize:int = 4 * 5; // 4 verts per child
 		if (vertexDataMinSize > vertexData.length) {
-			// Increase and fill in the index buffer
-			var index:uint = indexData.length;
-				var base:int = (index/12)*4;
-			indexData.length = numChildren * 12;
-			indexData.position = index;
-			var numAdded:int = (indexData.length - index) / 12;
-				for(var i:int=0; i<numAdded; ++i) {
-				indexData.writeShort(base);
-					indexData.writeShort(base+1);
-					indexData.writeShort(base+2);
-					indexData.writeShort(base+2);
-					indexData.writeShort(base+3);
-				indexData.writeShort(base);
-				base += 4;
-			}
+			indexData.length = 12;
+			indexData.position = 0;
+			indexData.writeShort(0);
+			indexData.writeShort(1);
+			indexData.writeShort(2);
+			indexData.writeShort(2);
+			indexData.writeShort(3);
+			indexData.writeShort(0);
 
-			vertexData.length = vertexDataMinSize;
+			vertexData.position = 0;
+			// Top left
+			vertexData.writeFloat(0);				// x
+			vertexData.writeFloat(0);				// y
+			vertexData.writeFloat(0);				// z - use index?
+			vertexData.writeFloat(0);				// u
+			vertexData.writeFloat(0);				// v
+			// Bottom left
+			vertexData.writeFloat(0);				// x
+			vertexData.writeFloat(1);				// y
+			vertexData.writeFloat(0);
+			vertexData.writeFloat(0);				// u
+			vertexData.writeFloat(1);				// v
+			// Bottom right
+			vertexData.writeFloat(1);				// x
+			vertexData.writeFloat(1);				// y
+			vertexData.writeFloat(0);
+			vertexData.writeFloat(1);				// u
+			vertexData.writeFloat(1);				// v
+			// Top right
+			vertexData.writeFloat(1);				// x
+			vertexData.writeFloat(0);				// y
+			vertexData.writeFloat(0);
+			vertexData.writeFloat(1);				// u
+			vertexData.writeFloat(0);				// v
+
 			resized = true;
 		}
 
-			if(__context) {
+		if(__context) {
 			if (resized)  {
 				if (indexBuffer) {
 					indexBuffer.dispose();
@@ -394,15 +410,18 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 
 			if (indexBuffer == null) {
 				indexBuffer = __context.createIndexBuffer(indexData.length >> 1);
+				//for (var i:int=0; i<indexData.length)
 				indexBuffer.uploadFromByteArray(indexData, 0, 0, indexData.length >> 1);
 				indexBufferUploaded = true;
 			}
 
 			if (vertexBuffer == null) {
-				//trace('creating vertexBuffer when indexData length = '+indexData.length);
-				vertexBuffer = __context.createVertexBuffer((indexData.length / 12) * 4, shaderConfig.vertexComponents);
+				//trace('creating vertexBuffer of length = '+(indexData.length / 3));
+				vertexBuffer = __context.createVertexBuffer(indexData.length / 3, 5);
 				vertexBufferUploaded = false;
 			}
+
+			uploadBuffers();
 		}
 		else {
 			indexBufferUploaded = false;
@@ -427,8 +446,6 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		if (effectsChanged)
 			switchShaders();
 
-		checkBuffers();
-
 		if(childrenChanged) {
 			if(debugTexture) {
 				uiContainer.graphics.clear();
@@ -448,18 +465,22 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		if(textureDirty)
 			packTextureBitmaps();
 
+		__context.setProgram(shaderConfig.program);
+		__context.clear(0, 0, 0, 0);
+		checkBuffers();
+
 		if (childrenChanged || effectsChanged) {
 			vertexData.position = 0;
 			childrenDrawn = 0;
 			var skipped:uint = 0;
-				for(i=0; i<numChildren; ++i) {
+			for(i=0; i<numChildren; ++i) {
 				dispObj = scratchStage.getChildAt(i);
-					if(!dispObj.visible) {
+				if(!dispObj.visible) {
 					++skipped;
 					continue;
 				}
-				drawChild(dispObj);
-				++childrenDrawn;
+				if (drawChild(dispObj))
+					++childrenDrawn;
 			}
 			//trace('drew '+childrenDrawn+' children (vertexData.length = '+vertexData.length+')');
 		}
@@ -481,76 +502,75 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		}
 //		trace('uploading vertexBuffer when indexData length = '+indexData.length);
 //		trace('uploadFromByteArray(vertexData, 0, 0, '+((indexData.length / 12) * 4)+')');
-		vertexBuffer.uploadFromByteArray(vertexData, 0, 0, (indexData.length / 12) * 4);
-		vertexBufferUploaded = true;
+		if (!vertexBufferUploaded) {
+			vertexBuffer.uploadFromByteArray(vertexData, 0, 0, indexData.length / 3);
+			vertexBufferUploaded = true;
+		}
 	}
 
 	private var boundsDict:Dictionary = new Dictionary();
-	private function drawChild(dispObj:DisplayObject):void {
+	private var myMatrix:Matrix3D = new Matrix3D();
+	private function drawChild(dispObj:DisplayObject, blend:Boolean = true):Boolean {
 		// Setup the geometry data
 		var rot:Number = dispObj.rotation;
 		const bounds:Rectangle = boundsDict[dispObj];
 		if(!bounds)
-			return;
-
-		var dw:Number = bounds.width * dispObj.scaleX;
-		var w:Number = dw;
-		var dh:Number = bounds.height * dispObj.scaleY;
-		var h:Number = dh;
+			return false;
 
 		const bmID:String = spriteBitmaps[dispObj];
 		const renderOpts:Object = spriteRenderOpts[dispObj];
-		var roundLoc:Boolean = (rot % 90 == 0 && dispObj.scaleX == 1.0 && dispObj.scaleY == 1.0);
-		var boundsX:Number = bounds.left, boundsY:Number = bounds.top;
-		var childRender:ChildRender = bitmapsByID[bmID] as ChildRender;
-		if(childRender && childRender.isPartial()) {
-			boundsX += childRender.inner_x * bounds.width;
-			boundsY += childRender.inner_y * bounds.height;
-			w *= childRender.inner_w;
-			h *= childRender.inner_h;
-		}
-
-		rot *= Math.PI/180;
-		var cos:Number = Math.cos(rot);
-		var sin:Number = Math.sin(rot);
-		var TLx:Number = dispObj.x + (boundsX * cos - boundsY * sin) * dispObj.scaleX;
-		var TLy:Number = dispObj.y + (boundsY * cos + boundsX * sin) * dispObj.scaleY;
-
-		var cosW:Number = cos * w;
-		var sinW:Number = sin * w;
-		var cosH:Number = cos * h;
-		var sinH:Number = sin * h;
-
-		if(roundLoc) {
-			TLx = Math.round(TLx);
-			TLy = Math.round(TLy);
-		}
-
-		var TRx:Number = TLx + cosW;
-		var TRy:Number = TLy + sinW;
-
-		var BRx:Number = TLx + cosW - sinH;
-		var BRy:Number = TLy + sinW + cosH;
-
-		var BLx:Number = TLx - sinH;
-		var BLy:Number = TLy + cosH;
+//		var boundsX:Number = bounds.left, boundsY:Number = bounds.top;
+//		var childRender:ChildRender = bitmapsByID[bmID] as ChildRender;
+//		if(childRender && childRender.isPartial()) {
+//			boundsX += childRender.inner_x * bounds.width;
+//			boundsY += childRender.inner_y * bounds.height;
+//			w *= childRender.inner_w;
+//			h *= childRender.inner_h;
+//		}
 
 		// Setup the texture data
 		const texIndex:int = textureIndexByID[bmID];
 		const texture:ScratchTextureBitmap = textures[texIndex];
+		__context.setTextureAt(0, texture.getTexture(__context));
+		var localScale:Number = dispObj.scaleX;
+
+		myMatrix.identity();
+		myMatrix.appendScale(bounds.width, bounds.height, 1);
+		myMatrix.appendTranslation(bounds.top, bounds.left, 0);
+		myMatrix.appendScale(localScale, localScale, 1);
+		myMatrix.appendRotation(dispObj.rotation, Vector3D.Z_AXIS);
+		myMatrix.appendTranslation(dispObj.x, dispObj.y, 0);
+		//myMatrix.appendScale(scratchStage.scaleX, scratchStage.scaleY, 1);
+		myMatrix.append(projMatrix);
+
+		__context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, myMatrix, true);
+
+		// Constants for the fragment shader
+		__context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, FC0);
+		__context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 1, FC1);
+		__context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 2, FC2);
+		__context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 3, FC3);
+		__context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 4, FC4);
+
+		const dw:Number = bounds.width * localScale;
+		const dh:Number = bounds.height * localScale;
 		const rect:Rectangle = texture.getRect(bmID);
-		var forcePixelate:Boolean = pixelateAll || (renderOpts && rot % 90 == 0 && (closeTo(w, rect.width) || renderOpts.bitmap!=null));
+		var forcePixelate:Boolean = pixelateAll || (renderOpts && rot % 90 == 0 && (closeTo(dw, rect.width) || renderOpts.bitmap!=null));
 		var left:Number = rect.left / texture.width;
 		var right:Number = rect.right / texture.width;
 		var top:Number = rect.top / texture.height;
 		var bottom:Number = rect.bottom / texture.height;
-		if(debugTexture) {
-			uiContainer.graphics.moveTo(TLx, TLy);
-			uiContainer.graphics.lineTo(TRx, TRy);
-			uiContainer.graphics.lineTo(BRx, BRy);
-			uiContainer.graphics.lineTo(BLx, BLy);
-			uiContainer.graphics.lineTo(TLx, TLy);
+		if(renderOpts && renderOpts.costumeFlipped) {
+			var tmp:Number = right;
+			right = left;
+			left = tmp;
 		}
+
+		FC5[0] = left;
+		FC5[1] = top;
+		FC5[2] = right - left;
+		FC5[3] = bottom - top;
+		__context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 5, FC5);
 
 		// Setup the shader data
 		var alpha:Number = dispObj.alpha;
@@ -565,124 +585,80 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 			var scale:Number = ('isStage' in dispObj && dispObj['isStage'] ? 1 : appScale);
 			var srcWidth:Number = dw * scale; // Is this right?
 			var srcHeight:Number = dh * scale;
-			hueShift = ((360.0 * effects[FX_COLOR]) / 200.0) % 360.0;
 
-			var n:Number = Math.max(0, Math.min(effects[FX_GHOST], 100));
-			alpha = 1.0 - (n / 100.0);
+			var index:int = 0;
+			var currVect:Vector.<Number> = FC6;
+			var activeFX:Object = shaderConfig.effectActive;
 
-			mosaic = Math.round((Math.abs(effects[FX_MOSAIC]) + 10) / 10);
-			mosaic = Math.floor(Math.max(1, Math.min(mosaic, Math.min(srcWidth, srcHeight))));
-			pixelate = (Math.abs(effects[FX_PIXELATE] * scale) / 10) + 1;
-			radians = (Math.PI * (effects[FX_WHIRL])) / 180;
-			fisheye = Math.max(0, (effects[FX_FISHEYE] + 100) / 100);
-			brightnessShift = Math.max(-100, Math.min(effects[FX_BRIGHTNESS], 100)) / 100;
+//			private static const FX_GHOST:String = 'ghost';
+
+			if (activeFX[FX_PIXELATE]) {
+				pixelate = (Math.abs(effects[FX_PIXELATE] * scale) / 10) + 1;
+				var pixelX:Number = (pixelate > 1 || forcePixelate ? pixelate / rect.width : -1);
+				var pixelY:Number = (pixelate > 1 || forcePixelate ? pixelate / rect.height : -1);
+				if(pixelate > 1) {
+					pixelX *= rect.width / srcWidth;
+					pixelY *= rect.height / srcHeight;
+				}
+				currVect[index++] = pixelX;
+				currVect[index++] = pixelY;
+			}
+
+			if (activeFX[FX_COLOR]) {
+				hueShift = ((360.0 * effects[FX_COLOR]) / 200.0) % 360.0;
+				currVect[index++] = hueShift;
+			}
+
+			if (activeFX[FX_FISHEYE]) {
+				fisheye = Math.max(0, (effects[FX_FISHEYE] + 100) / 100);
+				currVect[index++] = fisheye;
+				if (index == 4) currVect = FC7;
+			}
+
+			if (activeFX[FX_WHIRL]) {
+				radians = (Math.PI * (effects[FX_WHIRL])) / 180;
+				currVect[index++] = radians;
+				if (index == 4) currVect = FC7;
+			}
+
+			if (activeFX[FX_MOSAIC]) {
+				mosaic = Math.round((Math.abs(effects[FX_MOSAIC]) + 10) / 10);
+				mosaic = Math.floor(Math.max(1, Math.min(mosaic, Math.min(srcWidth, srcHeight))));
+				currVect[index++] = mosaic;
+				if (index == 4) currVect = FC7;
+			}
+
+			if (activeFX[FX_BRIGHTNESS]) {
+				brightnessShift = Math.max(-100, Math.min(effects[FX_BRIGHTNESS], 100)) / 100;
+				currVect[index++] = brightnessShift;
+				if (index == 4) currVect = FC7;
+			}
+
+			if (activeFX[FX_GHOST]) {
+				alpha = 1.0 - (Math.max(0, Math.min(effects[FX_GHOST], 100)) / 100.0);
+				currVect[index] = alpha;
+			}
+
+			__context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 6, FC6);
+			if (currVect == FC7)
+				__context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 7, FC7);
 		}
 
-			if(renderOpts && renderOpts.costumeFlipped) {
-			var tmp:Number = right;
-			right = left;
-			left = tmp;
-		}
+		// x, y, z
+		__context.setVertexBufferAt(0, vertexBuffer, 0, Context3DVertexBufferFormat.FLOAT_3);
 
-		var pixelX:Number = (pixelate > 1 || forcePixelate ? pixelate / rect.width : -1);
-		var pixelY:Number = (pixelate > 1 || forcePixelate ? pixelate / rect.height : -1);
-			if(pixelate > 1) {
-			pixelX *= rect.width / srcWidth;
-			pixelY *= rect.height / srcHeight;
-		}
+		// u, v
+		__context.setVertexBufferAt(1, vertexBuffer, 3, Context3DVertexBufferFormat.FLOAT_2);
 
-		var pixelateActive:Boolean = shaderConfig.effectActive[FX_PIXELATE];
-		var fisheyeActive:Boolean = shaderConfig.effectActive[FX_FISHEYE];
-		var colorActive:Boolean = shaderConfig.effectActive[FX_COLOR];
-		var whirlActive:Boolean = shaderConfig.effectActive[FX_WHIRL];
-		var mosaicActive:Boolean = shaderConfig.effectActive[FX_MOSAIC];
-		var brightnessActive:Boolean = shaderConfig.effectActive[FX_BRIGHTNESS];
-		var ghostActive:Boolean = shaderConfig.effectActive[FX_GHOST];
+		if(blend)
+			__context.setBlendFactors(Context3DBlendFactor.SOURCE_ALPHA, Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA);
+		else
+			__context.setBlendFactors(Context3DBlendFactor.SOURCE_ALPHA, Context3DBlendFactor.ZERO);
 
-		vertexData.writeFloat(TLx);				// x
-		vertexData.writeFloat(TLy);				// y
-		vertexData.writeFloat(0);				// z - use index?
-		vertexData.writeFloat(0);				// u
-		vertexData.writeFloat(0);				// v
-		vertexData.writeFloat(left);			// u0
-		vertexData.writeFloat(top);			// v0
-		vertexData.writeFloat(right - left);	// w
-		vertexData.writeFloat(bottom - top); 	// h
-		vertexData.writeFloat(texIndex + 0.01);
-		if (pixelateActive) {
-			vertexData.writeFloat(pixelX);
-			vertexData.writeFloat(pixelY);
-		}
-		if (colorActive) vertexData.writeFloat(hueShift);
-		if (fisheyeActive) vertexData.writeFloat(fisheye);
-		if (whirlActive) vertexData.writeFloat(radians);
-		if (mosaicActive) vertexData.writeFloat(mosaic);
-		if (brightnessActive) vertexData.writeFloat(brightnessShift);
-		if (ghostActive) vertexData.writeFloat(alpha);
+		// draw all sprites
+		__context.drawTriangles(indexBuffer, 0, 2);
 
-
-		vertexData.writeFloat(BLx);				// x
-		vertexData.writeFloat(BLy);				// y
-		vertexData.writeFloat(0);
-		vertexData.writeFloat(0);				// u
-		vertexData.writeFloat(1);				// v
-		vertexData.writeFloat(left);			// u0
-		vertexData.writeFloat(top);			// v0
-		vertexData.writeFloat(right - left);	// w
-		vertexData.writeFloat(bottom - top); 	// h
-		vertexData.writeFloat(texIndex + 0.02);
-		if (pixelateActive) {
-			vertexData.writeFloat(pixelX);
-			vertexData.writeFloat(pixelY);
-		}
-		if (colorActive) vertexData.writeFloat(hueShift);
-		if (fisheyeActive) vertexData.writeFloat(fisheye);
-		if (whirlActive) vertexData.writeFloat(radians);
-		if (mosaicActive) vertexData.writeFloat(mosaic);
-		if (brightnessActive) vertexData.writeFloat(brightnessShift);
-		if (ghostActive) vertexData.writeFloat(alpha);
-
-		vertexData.writeFloat(BRx);				// x
-		vertexData.writeFloat(BRy);				// y
-		vertexData.writeFloat(0);
-		vertexData.writeFloat(1);				// u
-		vertexData.writeFloat(1);				// v
-		vertexData.writeFloat(left);			// u0
-		vertexData.writeFloat(top);			// v0
-		vertexData.writeFloat(right - left);	// w
-		vertexData.writeFloat(bottom - top); 	// h
-		vertexData.writeFloat(texIndex + 0.03);
-		if (pixelateActive) {
-			vertexData.writeFloat(pixelX);
-			vertexData.writeFloat(pixelY);
-		}
-		if (colorActive) vertexData.writeFloat(hueShift);
-		if (fisheyeActive) vertexData.writeFloat(fisheye);
-		if (whirlActive) vertexData.writeFloat(radians);
-		if (mosaicActive) vertexData.writeFloat(mosaic);
-		if (brightnessActive) vertexData.writeFloat(brightnessShift);
-		if (ghostActive) vertexData.writeFloat(alpha);
-
-		vertexData.writeFloat(TRx);				// x
-		vertexData.writeFloat(TRy);				// y
-		vertexData.writeFloat(0);
-		vertexData.writeFloat(1);				// u
-		vertexData.writeFloat(0);				// v
-		vertexData.writeFloat(left);			// u0
-		vertexData.writeFloat(top);			// v0
-		vertexData.writeFloat(right - left);	// w
-		vertexData.writeFloat(bottom - top); 	// h
-		vertexData.writeFloat(texIndex + 0.04);
-		if (pixelateActive) {
-			vertexData.writeFloat(pixelX);
-			vertexData.writeFloat(pixelY);
-		}
-		if (colorActive) vertexData.writeFloat(hueShift);
-		if (fisheyeActive) vertexData.writeFloat(fisheye);
-		if (whirlActive) vertexData.writeFloat(radians);
-		if (mosaicActive) vertexData.writeFloat(mosaic);
-		if (brightnessActive) vertexData.writeFloat(brightnessShift);
-		if (ghostActive) vertexData.writeFloat(alpha);
+		return true;
 	}
 
 	private function cleanUpUnusedBitmaps():void {
@@ -711,7 +687,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 
 	public function updateRender(dispObj:DisplayObject, renderID:String = null, renderOpts:Object = null):void {
 		var setBounds:Boolean = false;
-			if(renderID && spriteBitmaps[dispObj] != renderID) {
+		if(renderID && spriteBitmaps[dispObj] != renderID) {
 			spriteBitmaps[dispObj] = renderID;
 
 			setBounds = true;
@@ -774,18 +750,6 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		var boundsOffset:Point = bounds.topLeft.subtract(rawBounds.topLeft);
 	}
 
-//	private var costumeBounds:Object = {};
-//	private function getBoundsFromCostume(costume:DisplayObject):void {
-//		var c:Object = costume as Object;
-//		if(!costumeBounds[c.baseLayerMD5]) {
-//			var rawBounds:Rectangle = costume.getBounds(costume);
-//			var s:Shape = c.getShape();
-//			var bounds:Rectangle = s.getBounds(s);
-//			var boundsOffset:Point = bounds.topLeft.subtract(rawBounds.topLeft);
-//
-//		}
-//	}
-
 	// Calls perEffect(effectName:String) for each supported effect name.
 	private function forEachEffect(perEffect:Function): void {
 		for (var i:int = 0; i < effectNames.length; ++i) {
@@ -820,9 +784,9 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 	private function checkChildRender(dispObj:DisplayObject):Boolean {
 		// TODO: Have updateRender send the new id instead of using ScratchSprite's internals
 		var id:String = spriteBitmaps[dispObj];
-			if(!id) {
-				if('img' in dispObj) return false;
-				id = spriteBitmaps[dispObj] = 'bm'+Math.random();
+		if(!id) {
+			if('img' in dispObj) return false;
+			id = spriteBitmaps[dispObj] = 'bm'+Math.random();
 		}
 
 		var renderOpts:Object = spriteRenderOpts[dispObj];
@@ -845,7 +809,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 			else if (effects && FX_MOSAIC in effects) {
 				s = renderOpts.isStage ? 1 : appScale;
 				srcWidth = dw * s;
-					srcHeight =  dh * s;
+				srcHeight =  dh * s;
 				mosaic = Math.round((Math.abs(effects[FX_MOSAIC]) + 10) / 10);
 				mosaic = Math.max(1, Math.min(mosaic, Math.min(srcWidth, srcHeight)));
 				scale = 1 / mosaic;
@@ -854,7 +818,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		else if(dispObj is Bitmap) { // Remove else to allow graphics effects on video layer
 			isNew = !bitmapsByID[id];
 			bitmapsByID[id] = (dispObj as Bitmap).bitmapData;
-				if(unrenderedChildren[dispObj] && textureIndexByID.hasOwnProperty(id)) {
+			if(unrenderedChildren[dispObj] && textureIndexByID.hasOwnProperty(id)) {
 //trace('Should re-render '+Dbg.printObj(dispObj)+' with id '+id);
 				var texture:ScratchTextureBitmap = textures[textureIndexByID[id]];
 				texture.updateBitmap(id, bitmapsByID[id]);
@@ -869,7 +833,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		var height:Number = dh * scale;
 		var bmd:BitmapData = bitmapsByID[id];
 		if(bmd) {
-		// If the bitmap changed or the sprite is now large than the stored render then re-render it
+			// If the bitmap changed or the sprite is now large than the stored render then re-render it
 //			trace(width +'x'+ height + ' vs '+bmd.width+'x'+bmd.height);
 			if((id.indexOf('bm') != 0 || !unrenderedChildren[dispObj]) && closeTo(bmd.width, width) && closeTo(bmd.height, height)) {
 //					trace('USING existing bitmap: '+width +'x'+ height + '(Costume) vs '+bmd.width+'x'+bmd.height+'(BM)');
@@ -899,7 +863,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		// TODO: Remove ability to use sub-renders because it breaks image effects like whirls, mosaic, and fisheye
 		// OR disable whirl, mosaic, and fisheye for subrendered sprites
 		var flipped:Boolean = renderOpts && renderOpts.costumeFlipped;
-			if(flipped) {
+		if(flipped) {
 			(dispObj as Object).setRotationStyle("don't rotate");
 			bounds = (dispObj as Object).getVisibleBounds(dispObj);
 		}
@@ -907,24 +871,21 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		var width2:Number = Math.max(1, width);
 		var height2:Number = Math.max(1, height);
 		var updateTexture:Boolean = !!bmd;
-			if(!bmd) bmd = new ChildRender(width2, height2, dispObj, stagePenLayer, bounds);
+		if(!bmd) bmd = new ChildRender(width2, height2, dispObj, stagePenLayer, bounds);
 		else bmd.fillRect(bmd.rect, 0x00000000);
 
-		var sX:Number = scale, sY:Number = scale;
-		if(bmd is ChildRender) {
-			sX *= (bmd as ChildRender).scaleX;
-			sY *= (bmd as ChildRender).scaleY;
-		}
+		if(bmd is ChildRender)
+			scale *= (bmd as ChildRender).scale;
 
 		var drawMatrix:Matrix = new Matrix(1, 0, 0, 1, -bounds.x, -bounds.y);
-			if(bmd is ChildRender && (bmd as ChildRender).isPartial())
+		if(bmd is ChildRender && (bmd as ChildRender).isPartial())
 			drawMatrix.translate(-(bmd as ChildRender).inner_x * bounds.width, -(bmd as ChildRender).inner_y * bounds.height);
-		drawMatrix.scale(dispObj.scaleX * sX * Math.min(maxScale, appScale * scratchStage.stage.contentsScaleFactor), dispObj.scaleY * sY * Math.min(maxScale, appScale * scratchStage.stage.contentsScaleFactor));
+		drawMatrix.scale(dispObj.scaleX * scale * Math.min(maxScale, appScale * scratchStage.stage.contentsScaleFactor), dispObj.scaleY * scale * Math.min(maxScale, appScale * scratchStage.stage.contentsScaleFactor));
 		var oldAlpha:Number = dispObj.alpha;
 		dispObj.alpha = 1;
 
 		var oldImgTrans:ColorTransform = null;
-			if('img' in dispObj) {
+		if('img' in dispObj) {
 			oldImgTrans = (dispObj as Object).img.transform.colorTransform;
 			(dispObj as Object).img.transform.colorTransform = noTrans;
 		}
@@ -939,16 +900,16 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 
 		dispObj.visible = oldVis;
 		dispObj.alpha = oldAlpha;
-			if('img' in dispObj)
+		if('img' in dispObj)
 			(dispObj as Object).img.transform.colorTransform = oldImgTrans;
 
-			if(flipped)
+		if(flipped)
 			(dispObj as Object).setRotationStyle('left-right');
 
 		scratchStage.visible = false;
 //trace(dispObj.parent.getChildIndex(dispObj)+' '+Dbg.printObj(dispObj)+' Rendered '+Dbg.printObj(bmd)+' with id: '+id+' @ '+bmd.width+'x'+bmd.height);
 //trace('Original render size was '+bounds2);
-			if(updateTexture && textureIndexByID.hasOwnProperty(id))
+		if(updateTexture && textureIndexByID.hasOwnProperty(id))
 			textures[textureIndexByID[id]].updateBitmap(id, bmd);
 		bitmapsByID[id] = bmd;
 
@@ -964,14 +925,14 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 
 	public function spriteIsLarge(dispObj:DisplayObject):Boolean {
 		var id:String = spriteBitmaps[dispObj];
-			if(!id) return false;
+		if(!id) return false;
 		var cr:ChildRender = bitmapsByID[id];
 		return (cr && cr.isPartial());
 	}
 
 	public var debugTexture:Boolean = false;
 	private function toggleTextureDebug(evt:KeyboardEvent):void {
-			if(evt.ctrlKey && evt.charCode == 108) {
+		if(evt.ctrlKey && evt.charCode == 108) {
 			debugTexture = !debugTexture;
 		}
 	}
@@ -979,10 +940,10 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 	private var maxTextures:uint = 5;
 	private function packTextureBitmaps():void {
 		var penID:String = spriteBitmaps[stagePenLayer];
-			if(textures.length < 1)
+		if(textures.length < 1)
 			textures.push(new ScratchTextureBitmap(512, 512));
 
-			if(!penPacked && penID != null) {
+		if(!penPacked && penID != null) {
 			var bmList:Object = {};
 			bmList[penID] = bitmapsByID[penID];
 
@@ -995,24 +956,24 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		var cleanedUnused:Boolean = false;
 		var usedMaxTex:Boolean = false;
 		var size:uint = texSize;
-			while(true) {
+		while(true) {
 			var unpackedBMs:Object = {};
 			var bmsToPack:int = 0;
 
 			for (var k:Object in bitmapsByID)
-					if(k != penID) {// && (!textureIndexByID.hasOwnProperty(k) || textureIndexByID[k] < 0)) {
+				if(k != penID) {// && (!textureIndexByID.hasOwnProperty(k) || textureIndexByID[k] < 0)) {
 					unpackedBMs[k] = bitmapsByID[k];
 					++bmsToPack;
 				}
 
 			//trace('pack textures! ('+bmsToPack+')');
 			for(var i:int=1; i<maxTextures && bmsToPack > 0; ++i) {
-					if(i >= textures.length)
+				if(i >= textures.length)
 					textures.push(new ScratchTextureBitmap(size, size));
 
 				var newTex:ScratchTextureBitmap = textures[i];
 				var packedIDs:Array = newTex.packBitmaps(unpackedBMs);
-					for(var j:int=0; j<packedIDs.length; ++j) {
+				for(var j:int=0; j<packedIDs.length; ++j) {
 					//trace('packed bitmap '+packedIDs[j]+': '+bitmapsByID[packedIDs[j]].rect);
 					textureIndexByID[packedIDs[j]] = i;
 					delete unpackedBMs[packedIDs[j]];
@@ -1020,9 +981,9 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 				bmsToPack -= packedIDs.length;
 			}
 
-				if(bmsToPack > 0) {
-					if(!cleanedUnused) {
-						cleanUpUnusedBitmaps();
+			if(bmsToPack > 0) {
+				if(!cleanedUnused) {
+					cleanUpUnusedBitmaps();
 					cleanedUnused = true;
 				}
 				else if(!usedMaxTex) {
@@ -1084,41 +1045,37 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 	private var drawCount:uint = 0;
 	//private var lastTime:int = 0;
 	public function onRender(e:Event):void {
-			if(!scratchStage) return;
+		if(!scratchStage) return;
 		//trace('frame was '+(getTimer() - lastTime)+'ms.');
 		//lastTime = getTimer();
 
-			if(scratchStage.stage.stage3Ds[0] == null || __context == null ||
-				__context.driverInfo == "Disposed") {
-				if(__context) __context.dispose();
+		if(scratchStage.stage.stage3Ds[0] == null || __context == null || __context.driverInfo == "Disposed") {
+			if(__context) __context.dispose();
 			__context = null;
 			onContextLoss();
 			return;
 		}
 
 		draw();
-		render(childrenDrawn);
 		__context.present();
 		++drawCount;
 
 		// Invalidate cached renders
-			for(var o:Object in cachedOtherRenderBitmaps)
+		for(var o:Object in cachedOtherRenderBitmaps)
 			cachedOtherRenderBitmaps[o].inner_x = Number.NaN;
 	}
 
 	public function getRender(bmd:BitmapData):void {
-		if (scratchStage.stage.stage3Ds[0] == null || __context == null ||
-				__context.driverInfo == "Disposed") {
+		if (scratchStage.stage.stage3Ds[0] == null || __context == null || __context.driverInfo == "Disposed") {
 			return;
 		}
 
-			if(!indexBuffer) checkBuffers();
-		draw();
+		if(!indexBuffer) checkBuffers();
 		__context.configureBackBuffer(bmd.width, bmd.height, 0, false);
-		render(childrenDrawn);
+		draw();
 		__context.drawToBitmapData(bmd);
 		//__context.present();
-		//bmd.draw(uiContainer);
+		bmd.draw(uiContainer);
 		scissorRect = null;
 		setRenderView();
 	}
@@ -1126,11 +1083,11 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 	private var emptyStamp:BitmapData = new BitmapData(1, 1, true, 0);
 
 	public function getRenderedChild(dispObj:DisplayObject, width:Number, height:Number, for_carry:Boolean = false):BitmapData {
-			if(dispObj.parent != scratchStage || !__context)
+		if(dispObj.parent != scratchStage || !__context)
 			return emptyStamp;
 
-			if(!spriteBitmaps[dispObj] || unrenderedChildren[dispObj] || !bitmapsByID[spriteBitmaps[dispObj]]) {
-				if(checkChildRender(dispObj)) {
+		if(!spriteBitmaps[dispObj] || unrenderedChildren[dispObj] || !bitmapsByID[spriteBitmaps[dispObj]]) {
+			if(checkChildRender(dispObj)) {
 				packTextureBitmaps();
 				checkBuffers();
 			}
@@ -1142,27 +1099,27 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		var id:String = spriteBitmaps[dispObj];
 		var iw:int = Math.ceil(Math.round(width * 100) / 100);
 		var ih:int = Math.ceil(Math.round(height * 100) / 100);
-			if(iw<1 || ih<1) return emptyStamp;
+		if(iw<1 || ih<1) return emptyStamp;
 
-			if(stampsByID[id] && !for_carry) {
+		if(stampsByID[id] && !for_carry) {
 			var changed:Boolean = (stampsByID[id].width != iw || stampsByID[id].height != ih);
-				if(!changed) {
+			if(!changed) {
 				var old_fx:Object = stampsByID[id].effects;
 				var prop:String;
-					if(old_fx) {
-						for(prop in old_fx) {
+				if(old_fx) {
+					for(prop in old_fx) {
 						if (prop == FX_GHOST) continue;
-							if(old_fx[prop] == 0 && !effects) continue;
-							if(!effects || old_fx[prop] != effects[prop]) {
+						if(old_fx[prop] == 0 && !effects) continue;
+						if(!effects || old_fx[prop] != effects[prop]) {
 							changed = true;
 							break;
 						}
 					}
 				}
 				else {
-						for(prop in effects) {
+					for(prop in effects) {
 						if (prop == FX_GHOST) continue;
-							if(effects[prop] != 0) {
+						if(effects[prop] != 0) {
 							changed = true;
 							break;
 						}
@@ -1170,7 +1127,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 				}
 			}
 
-				if(!changed)
+			if(!changed)
 				return stampsByID[id];
 		}
 
@@ -1197,23 +1154,21 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		dispObj.x = -bounds.x * dispObj.scaleX;
 		dispObj.y = -bounds.y * dispObj.scaleY;
 		vertexData.position = 0;
-		drawChild(dispObj);
+
+		// assign shader program
+		__context.setProgram(shaderConfig.program);
+		__context.clear(1, 1, 1, 0);
+		__context.setScissorRectangle(new Rectangle(0, 0, bmd.width + 1, bmd.height + 1));
+
+		var drawn:Boolean = drawChild(dispObj, false);
 		dispObj.x = oldX;
 		dispObj.y = oldY;
 		dispObj.scaleX = oldScaleX;
 		dispObj.scaleY = oldScaleY;
 		dispObj.rotation = rot;
 
-			if(vertexData.position == 0)
-			return bmd;
-
-		// TODO: Find out why the index buffer isn't uploaded sometimes
-		indexBufferUploaded = false;
-		uploadBuffers();
-
-		__context.setScissorRectangle(new Rectangle(0, 0, bmd.width + 1, bmd.height + 1));
-		render(1, false);
-		__context.drawToBitmapData(bmd);
+		if(!drawn)
+			__context.drawToBitmapData(bmd);
 
 		if (changeBackBuffer) {
 			scissorRect = null;
@@ -1224,7 +1179,9 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 			__context.setScissorRectangle(scissorRect);
 		}
 
-			if(!for_carry) stampsByID[id] = bmd;
+		if(!for_carry)
+			stampsByID[id] = bmd;
+
 		return bmd;
 	}
 
@@ -1232,22 +1189,22 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 	private var cachedOtherRenderBitmaps:Dictionary;
 
 	public function getOtherRenderedChildren(skipObj:DisplayObject, scale:Number):BitmapData {
-			if(skipObj.parent != scratchStage)
+		if(skipObj.parent != scratchStage)
 			return null;
 
 		var bounds:Rectangle = boundsDict[skipObj];
-			var width:uint = Math.ceil(bounds.width  * skipObj.scaleX * scale);
-			var height:uint = Math.ceil(bounds.height  * skipObj.scaleY * scale);
+		var width:uint = Math.ceil(bounds.width  * skipObj.scaleX * scale);
+		var height:uint = Math.ceil(bounds.height  * skipObj.scaleY * scale);
 		var cr:ChildRender = cachedOtherRenderBitmaps[skipObj];
-			if(cr && cr.width == width && cr.height == height) {
+		if(cr && cr.width == width && cr.height == height) {
 			// TODO: Can we efficiently cache this?  we'd have to check every other position / effect / etc
-				if(cr.inner_x == skipObj.x && cr.inner_y == skipObj.y && cr.inner_w == skipObj.rotation)
+			if(cr.inner_x == skipObj.x && cr.inner_y == skipObj.y && cr.inner_w == skipObj.rotation)
 				return cr;
 			else
 				cr.fillRect(cr.rect, 0x00000000);  // Is this necessary?
 		}
 		else {
-				if(cr) cr.dispose();
+			if(cr) cr.dispose();
 			cr = cachedOtherRenderBitmaps[skipObj] = new ChildRender(width, height, skipObj, stagePenLayer, bounds);
 		}
 
@@ -1267,11 +1224,10 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 
 		skipObj.visible = false;
 		pixelateAll = true;
+		__context.setScissorRectangle(cr.rect);
 		draw();
 		pixelateAll = false;
 		skipObj.visible = vis;
-		__context.setScissorRectangle(cr.rect);
-		render(childrenDrawn);
 		projMatrix = oldProj;
 		__context.drawToBitmapData(cr);
 		__context.setScissorRectangle(scissorRect);
@@ -1292,83 +1248,12 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 	private const FC2:Vector.<Number> = Vector.<Number>([240, 3, 4, 5]);
 	private const FC3:Vector.<Number> = Vector.<Number>([6, 0.11, 0.09, 0.001]);
 	private const FC4:Vector.<Number> = Vector.<Number>([360, 0, 0, 0]);
-
-	private var registersUsed:int = 0;
-	public function render(quadCount:uint, blend:Boolean = true):void {
-		// assign shader program
-		__context.setProgram(shaderConfig.program);
-		__context.clear(0, 0, 0, 0);
-
-		// assign texture to texture sampler 0
-		//__context.setScissorRectangle(getChildAt(0).getRect(stage));
-		for(var i:int=0; i<maxTextures; ++i) {
-			var tIdx:int = (i >= textures.length ? 0 : i);
-			__context.setTextureAt(i, (textures[tIdx] as ScratchTextureBitmap).getTexture(__context));
-		}
-
-		__context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, projMatrix, true);
-
-		// Constants for the fragment shader
-		__context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, FC0);
-		__context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 1, FC1);
-		__context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 2, FC2);
-		__context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 3, FC3);
-		__context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 4, FC4);
-
-		// x, y, z, {unused}
-		__context.setVertexBufferAt(0, vertexBuffer, 0, Context3DVertexBufferFormat.FLOAT_3);
-
-		// u, v, u0, v0
-		__context.setVertexBufferAt(1, vertexBuffer, 3, Context3DVertexBufferFormat.FLOAT_4);
-
-		// w, h, texture index, {unused}
-		__context.setVertexBufferAt(2, vertexBuffer, 7, Context3DVertexBufferFormat.FLOAT_3);
-
-		// allocate space for the rest of the effects, packed as tightly as possible
-		var registerIndex:int = 3;
-		var bufferPosition:int = 10;
-		while (bufferPosition < shaderConfig.vertexComponents) {
-			var format:String;
-			switch (shaderConfig.vertexComponents - bufferPosition) {
-				case 1:
-					format = Context3DVertexBufferFormat.FLOAT_1;
-					break;
-				case 2:
-					format = Context3DVertexBufferFormat.FLOAT_2;
-					break;
-				case 3:
-					format = Context3DVertexBufferFormat.FLOAT_3;
-					break;
-				default: // 4 or more
-					format = Context3DVertexBufferFormat.FLOAT_4;
-					break;
-			}
-			__context.setVertexBufferAt(registerIndex, vertexBuffer, bufferPosition, format);
-			++registerIndex;
-			bufferPosition += 4; // bufferPosition could be incorrect when we leave this loop but that's currently OK.
-		}
-
-		// null out the remaining registers
-		for (; registerIndex < registersUsed; ++registerIndex) {
-			__context.setVertexBufferAt(registerIndex, null);
-		}
-		if (registersUsed < registerIndex) {
-			registersUsed = registerIndex;
-		}
-
-			if(blend)
-			__context.setBlendFactors(Context3DBlendFactor.SOURCE_ALPHA, Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA);
-		else
-			__context.setBlendFactors(Context3DBlendFactor.SOURCE_ALPHA, Context3DBlendFactor.ZERO);
-
-		uploadBuffers();
-
-		// draw all sprites
-		__context.drawTriangles(indexBuffer, 0, quadCount * 2);
-	}
+	private var FC5:Vector.<Number> = Vector.<Number>([0, 0, 0, 0]);
+	private var FC6:Vector.<Number> = Vector.<Number>([0, 0, 0, 0]);
+	private var FC7:Vector.<Number> = Vector.<Number>([0, 0, 0, 0]);
 
 	private function setupContext3D(e:Event = null):void {
-			if(!__context) {
+		if(!__context) {
 			requestContext3D();
 			return;
 		}
@@ -1378,7 +1263,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		//__context.addEventListener(Event.DEACTIVATE, onContextLoss);
 
 		__context.setDepthTest(false, Context3DCompareMode.ALWAYS);
-		__context.enableErrorChecking = true;
+		__context.enableErrorChecking = false;
 
 		switchShaders();
 
@@ -1411,9 +1296,13 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		};
 
 		var availableEffectRegisters:Array = [
-			'v2.xxxx', 'v2.yyyy', 'v2.zzzz', 'v2.wwww',
-			'v3.xxxx', 'v3.yyyy', 'v3.zzzz', 'v3.wwww'
+			'fc5.xxxx', 'fc5.yyyy', 'fc5.zzzz', 'fc5.wwww',
+			'fc6.xxxx', 'fc6.yyyy', 'fc6.zzzz', 'fc6.wwww'
 		];
+//		var availableEffectRegisters:Array = [
+//			'v2.xxxx', 'v2.yyyy', 'v2.zzzz', 'v2.wwww',
+//			'v3.xxxx', 'v3.yyyy', 'v3.zzzz', 'v3.wwww'
+//		];
 
 		// TODO: Bind the minimal number of textures and track the count. The shader must use every bound sampler.
 		const maxTextureNum:int = (maxTextures - 1); // index of the last texture in use
@@ -1439,7 +1328,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 				if (isActive) {
 					vertexComponents += effectVertexComponents[effectName];
 					if (effectName == FX_PIXELATE) {
-						fragmentShaderParts.push('alias v2.xyxy, FX_' + effectName);
+						fragmentShaderParts.push('alias fc5.xyxy, FX_' + effectName);
 						++numEffects; // consume an extra register in the vertex shader
 						availableEffectRegisters.shift(); // consume an extra register in the fragment shader
 					}
@@ -1486,12 +1375,12 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 	}
 
 	private function context3DCreated(e:Event):void {
-			if(!contextRequested) {
+		if(!contextRequested) {
 			onContextLoss(e);
 		}
 
 		contextRequested = false;
-			if(!scratchStage) {
+		if(!scratchStage) {
 			__context = null;
 			(e.currentTarget as Stage3D).context3D.dispose();
 			return;
@@ -1500,8 +1389,8 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 			scratchStage.visible = false;
 
 		__context = (e.currentTarget as Stage3D).context3D;
-			if(__context.driverInfo.toLowerCase().indexOf('software') > -1) {
-				if(!callbackCalled) {
+		if(__context.driverInfo.toLowerCase().indexOf('software') > -1) {
+			if(!callbackCalled) {
 				callbackCalled = true;
 				statusCallback(false);
 			}
@@ -1511,10 +1400,10 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		}
 
 		setupContext3D();
-			if(scratchStage.visible)
+		if(scratchStage.visible)
 			scratchStage.visible = false;
 
-			if(!callbackCalled) {
+		if(!callbackCalled) {
 			callbackCalled = true;
 			statusCallback(true);
 		}
@@ -1524,7 +1413,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 
 
 	private function requestContext3D():void {
-			if(contextRequested || !stage3D) return;
+		if(contextRequested || !stage3D) return;
 
 		stage3D.addEventListener(Event.CONTEXT3D_CREATE, context3DCreated, false, 0, true);
 		stage3D.addEventListener(ErrorEvent.ERROR, onStage3DError, false, 0, true);
@@ -1534,7 +1423,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 
 	private function onStage3DError(e:Event):void {
 		scratchStage.visible = true;
-			if(!callbackCalled) {
+		if(!callbackCalled) {
 			callbackCalled = true;
 			statusCallback(false);
 		}
@@ -1547,27 +1436,27 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		}
 		shaderCache = {};
 
-			for(var i:int=0; i<textures.length; ++i)
+		for(var i:int=0; i<textures.length; ++i)
 			(textures[i] as ScratchTextureBitmap).disposeTexture();
 
-			if(vertexBuffer) {
+		if(vertexBuffer) {
 			vertexBuffer.dispose();
 			vertexBuffer = null;
 		}
 
-			if(indexBuffer) {
+		if(indexBuffer) {
 			//trace('disposing of indexBuffer!');
 			indexBuffer.dispose();
 			//trace('indexBuffer disposed');
 			indexBuffer = null;
 		}
 
-			for(var id:String in bitmapsByID)
-				if(bitmapsByID[id] is ChildRender)
+		for(var id:String in bitmapsByID)
+			if(bitmapsByID[id] is ChildRender)
 				bitmapsByID[id].dispose();
 		bitmapsByID = {};
 
-			for(id in stampsByID)
+		for(id in stampsByID)
 			stampsByID[id].dispose();
 		stampsByID = {};
 
@@ -1575,7 +1464,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		vertexBufferUploaded = false;
 		scissorRect = null;
 
-			if(!e) requestContext3D();
+		if(!e) requestContext3D();
 	}
 
 	private static var sRawData:Vector.<Number> =
@@ -1588,12 +1477,12 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		// 	(viewWidth / 2, viewHeight / 2) at the bottom right,
 		//	and 'near' and 'far' giving limits to the range of z values for objects to appear.
 		var m:Matrix3D = new Matrix3D();
-			sRawData[0] = 2.0/width;
+		sRawData[0] = 2.0/width;
 		sRawData[1] = 0;
 		sRawData[4] = 0;
-			sRawData[5] = -2.0/height;
-			sRawData[12] = -(2*x + width) / width;
-			sRawData[13] = (2*y + height) / height;
+		sRawData[5] = -2.0/height;
+		sRawData[12] = -(2*x + width) / width;
+		sRawData[13] = (2*y + height) / height;
 		m.copyRawDataFrom(sRawData);
 		return m;
 	}
