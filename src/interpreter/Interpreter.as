@@ -627,6 +627,7 @@ public class Interpreter {
 
 	// Procedure call/return
 
+	private var tmpArgList:Array = [];
 	private function primCall(b:Block):void {
 		// Call a procedure. Handle recursive calls and "warp" procedures.
 		// The activeThread.firstTime flag is used to mark the first call
@@ -658,9 +659,10 @@ public class Interpreter {
 			}
 		}
 		var argCount:int = proc.parameterNames.length;
-		var argList:Array = [];
-		for (var i:int = 0; i < argCount; ++i) argList.push(arg(b, i));
-		startCmdList(proc, false, argList);
+
+		tmpArgList.length = argCount;
+		for (var i:int = 0; i < argCount; ++i) tmpArgList[i] = arg(b, i);
+		startCmdList(proc, false, tmpArgList);
 	}
 
 	private function primReturn(b:Block):void {
