@@ -121,11 +121,19 @@ public class ExtensionManager {
 		result.sortOn('name');
 		return result;
 	}
+	
+	private function resetRequesters(ext:ScratchExtension):void {
+		for(var b:Object in ext.waiting) {
+			delete ext.waiting[b];
+			(b as Block).requestState = 0;
+		}
+	}
 
 	public function stopButtonPressed():* {
 		// Send a reset_all command to all active extensions.
 		for each (var ext:ScratchExtension in enabledExtensions()) {
 			call(ext.name, 'reset_all', []);
+			resetRequesters(ext);
 		}
 	}
 
@@ -162,15 +170,11 @@ public class ExtensionManager {
 		var ext:ScratchExtension = extensionDict[extensionName];
 		if (ext == null) return; // unknown extension
 
-		var index:int = ext.busy.indexOf(id);
-		if(index > -1) {
-			ext.busy.splice(index, 1);
-			for(var b:Object in ext.waiting) {
-				if(ext.waiting[b] == id) {
-					delete ext.waiting[b];
-					(b as Block).response = retval;
-					(b as Block).requestState = 2;
-				}
+		for(var b:Object in ext.waiting) {
+			if(ext.waiting[b] == id) {
+				delete ext.waiting[b];
+				(b as Block).response = retval;
+				(b as Block).requestState = 2;
 			}
 		}
 	}
@@ -420,15 +424,14 @@ public class ExtensionManager {
 			b.requestState = 2;
 			return;
 		}
-
+		b.requestState = 1;
+		var id:int = ++ext.nextID;
+		ext.waiting[b] = id;
 		if (ext.port > 0) {
+			args.unshift(id); // pass the ID as the first argument
 			httpRequest(ext, op, args, b);
 		} else if(Scratch.app.jsEnabled) {
 			// call a JavaScript extension function with the given arguments
-			b.requestState = 1;
-			++ext.nextID;
-			ext.busy.push(ext.nextID);
-			ext.waiting[b] = ext.nextID;
 
 			if (b.forcedRequester) {
 				// We're forcing a non-requester to be treated as a requester
@@ -442,12 +445,9 @@ public class ExtensionManager {
 
 	private function httpRequest(ext:ScratchExtension, op:String, args:Array, b:Block):void {
 		function responseHandler(e:Event):void {
-			if(e.type == Event.COMPLETE)
-				b.response = loader.data;
-			else
-				b.response = '';
-
-			b.requestState = 2;
+			if (e.type != Event.COMPLETE){
+				b.requestState = 2;
+			}
 			b.requestLoader = null;
 		}
 
@@ -456,7 +456,7 @@ public class ExtensionManager {
 		loader.addEventListener(IOErrorEvent.IO_ERROR, responseHandler);
 		loader.addEventListener(Event.COMPLETE, responseHandler);
 
-		b.requestState = 1;
+		b.response = '';
 		b.requestLoader = loader;
 
 		var url:String = 'http://' + ext.host + ':' + ext.port + '/' + encodeURIComponent(op);
@@ -538,6 +538,7 @@ public class ExtensionManager {
 		function errorHandler(e:Event):void {
 			// ignore errors
 			delete pollInProgress[ext];
+			resetRequesters(ext);
 		}
 		var url:String = 'http://' + ext.host + ':' + ext.port + '/poll';
 		var loader:URLLoader = new URLLoader();
@@ -570,6 +571,13 @@ public class ExtensionManager {
 					var id:int = parseInt(token);
 					if (ext.busy.indexOf(id) == -1) ext.busy.push(id);
 				}
+				break;
+			case '_result':
+				i = value.indexOf(' ');
+				if (i == -1) i = value.length;
+				var resid:int = parseInt(value.slice(0, i));
+				var retval:String = value.slice(i + 1);
+				reporterCompleted(ext.name, resid, retval)
 				break;
 			case '_problem':
 				ext.problem = value;
