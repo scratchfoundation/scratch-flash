@@ -511,6 +511,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 	}
 
 	private var boundsDict:Dictionary = new Dictionary();
+	private var drawMatrix:Matrix3D = new Matrix3D();
 	private function drawChild(dispObj:DisplayObject, blend:Boolean = true):Boolean {
 		// Setup the geometry data
 		var rot:Number = dispObj.rotation;
@@ -534,16 +535,15 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		const texture:ScratchTextureBitmap = textures[texIndex];
 		__context.setTextureAt(0, texture.getTexture(__context));
 
-		var myMatrix:Matrix3D = new Matrix3D();
-		myMatrix.appendScale(bounds.width, bounds.height, 1);
-		myMatrix.appendTranslation(bounds.top, bounds.left, 0);
-		myMatrix.appendScale(dispObj.scaleX, dispObj.scaleY, 1);
-		myMatrix.appendRotation(dispObj.rotation, Vector3D.Z_AXIS);
-		myMatrix.appendTranslation(dispObj.x, dispObj.y, 0);
-		//myMatrix.appendScale(scratchStage.scaleX, scratchStage.scaleY, 1);
-		myMatrix.append(projMatrix);
+		drawMatrix.identity();
+		drawMatrix.appendScale(bounds.width, bounds.height, 1);
+		drawMatrix.appendTranslation(bounds.top, bounds.left, 0);
+		drawMatrix.appendScale(dispObj.scaleX, dispObj.scaleY, 1);
+		drawMatrix.appendRotation(dispObj.rotation, Vector3D.Z_AXIS);
+		drawMatrix.appendTranslation(dispObj.x, dispObj.y, 0);
+		drawMatrix.append(projMatrix);
 
-		__context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, myMatrix, true);
+		__context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, drawMatrix, true);
 
 		// Constants for the fragment shader
 		__context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, FC0);
@@ -764,7 +764,8 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		var spriteOpts:Object = spriteRenderOpts[dispObj] || (spriteRenderOpts[dispObj] = {});
 		var spriteEffects:Object = spriteOpts.effects || (spriteOpts.effects = {});
 
-		forEachEffect(function(effectName:String):void {
+		for (var i:int = 0; i < effectNames.length; ++i) {
+			var effectName:String = effectNames[i];
 			if (spriteEffects[effectName]) effectRefs[effectName] -= 1;
 			spriteEffects[effectName] = (effects && effectName in effects) ? effects[effectName] : 0;
 			if (spriteEffects[effectName]) effectRefs[effectName] += 1;
@@ -776,7 +777,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 			else if (newCount > spriteRenderOpts.length) {
 				Scratch.app.logMessage('Reference count too high for effect ' + effectName);
 			}
-		});
+		}
 	}
 
 	// TODO: store multiple sizes of bitmaps?
@@ -1372,8 +1373,8 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		};
 
 		var availableEffectRegisters:Array = [
-			'fc5.xxxx', 'fc5.yyyy', 'fc5.zzzz', 'fc5.wwww',
-			'fc6.xxxx', 'fc6.yyyy', 'fc6.zzzz', 'fc6.wwww'
+			'fc6.xxxx', 'fc6.yyyy', 'fc6.zzzz', 'fc6.wwww',
+			'fc7.xxxx', 'fc7.yyyy', 'fc7.zzzz', 'fc7.wwww'
 		];
 //		var availableEffectRegisters:Array = [
 //			'v2.xxxx', 'v2.yyyy', 'v2.zzzz', 'v2.wwww',
@@ -1404,7 +1405,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 				if (isActive) {
 					vertexComponents += effectVertexComponents[effectName];
 					if (effectName == FX_PIXELATE) {
-						fragmentShaderParts.push('alias fc5.xyxy, FX_' + effectName);
+						fragmentShaderParts.push('alias fc6.xyxy, FX_' + effectName);
 						++numEffects; // consume an extra register in the vertex shader
 						availableEffectRegisters.shift(); // consume an extra register in the fragment shader
 					}
