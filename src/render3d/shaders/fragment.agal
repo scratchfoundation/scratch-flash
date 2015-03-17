@@ -43,15 +43,16 @@ ft2.xyzw -= ft1.xyzw
 ft2.xyzw *= FX_pixelate
 
 // Get the middle pixel
-ft1.xy = FX_pixelate / fc0.yy
-ft2.xyzw = ft2.xyxy + ft1.xyxy
+ft1.xy = FX_pixelate_half
+// ft2.xyzw = ft2.xyxy + ft1.xyxy
+ft0.xyzw = ft2.xyxy + ft1.xyxy
 
 // Use the pixelated UV?
-ft1.x = FX_pixelate >= 0 // is pixelate_x >= 0?
-ft2.xyzw *= ft1.xxxx // then use the pixelated UV
-ft1.x = FX_pixelate < 0 // is pixelate_x < 0?
-ft0.xyzw *= ft1.xxxx // then use the pixelated UV
-ft0.xyzw += ft2.xyzw // Add them together
+// ft1.x = FX_pixelate >= 0 // is pixelate_x >= 0?
+// ft2.xyzw *= ft1.xxxx // then use the pixelated UV
+// ft1.x = FX_pixelate < 0 // is pixelate_x < 0?
+// ft0.xyzw *= ft1.xxxx // then use the pixelated UV
+// ft0.xyzw += ft2.xyzw // Add them together
 #endif // ENABLE_pixelate
 
 /*** Whirl effect ***/
@@ -203,7 +204,7 @@ ft2.y *= ft3.z //float s = s_span_not_zero * span_not_zero;	s	= ft2.y
 //				if (hueShift != 0.0 && v < 0.11) { v = 0.11; s = 1.0; }
 /*** ft3 is now free ***/  // Check this section for accuracy / mistakes
 #if ENABLE_color
-ft3.y = FX_color != 0 //int hs_not_zero = (hueShift != 0.0);	hs_not_zero	= ft3.y
+ft3.y = 1
 #else // ENABLE_color
 ft3.y = 0
 #endif // ENABLE_color

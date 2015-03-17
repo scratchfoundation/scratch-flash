@@ -19,10 +19,6 @@
 
 package render3d {
 
-import flash.display.Sprite;
-import flash.display.StageQuality;
-import flash.geom.Matrix3D;
-
 /**
  *   A display object container which renders in 3D instead
  *   @author Shane M. Clements, shane.m.clements@gmail.com
@@ -37,6 +33,8 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 	import flash.display.DisplayObject;
 	import flash.display.Shape;
 	import flash.display.Stage3D;
+	import flash.display.Sprite;
+	import flash.display.StageQuality;
 	import flash.display3D.*;
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
@@ -72,8 +70,8 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 	private var __context:Context3D;
 	private var indexBuffer:IndexBuffer3D;
 	private var vertexBuffer:VertexBuffer3D;
-	private var shaderConfig:Object; // contains Program3D, vertex size, etc.
-	private var shaderCache:Object; // mapping of shader config ID -> shaderConfig
+	private var currentShader:Program3D; // contains Program3D, vertex size, etc.
+	private var shaderCache:Object; // mapping of shader config ID -> currentShader
 	private var vertexShaderCode:String;
 	private var fragmentShaderCode:String;
 	private var fragmentShaderAssembler:AGALMacroAssembler;
@@ -115,9 +113,6 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 	private var statusCallback:Function;
 	private var appScale:Number = 1;
 
-	private var effectRefs:Object;
-	private var oldEffectRefs:Object;
-
 	/**
 	 *   Make the texture
 	 */
@@ -148,8 +143,6 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		vertexData.endian = Endian.LITTLE_ENDIAN;
 		indexBufferUploaded = false;
 		vertexBufferUploaded = false;
-		effectRefs = {};
-		oldEffectRefs = {};
 		loadShaders();
 	}
 
@@ -198,9 +191,6 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 			if(__context) scratchStage.visible = false;
 			scratchStage.cacheAsBitmap = false;
 			(scratchStage as Object).img.cacheAsBitmap = true;
-			forEachEffect(function(effectName:String): void {
-				effectRefs[effectName] = oldEffectRefs[effectName] = 0;
-			});
 		}
 		else {
 			stage3D.removeEventListener(Event.CONTEXT3D_CREATE, context3DCreated);
@@ -439,15 +429,6 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		var i:int;
 		var dispObj:DisplayObject;
 
-		var effectsChanged:Boolean = false;
-		forEachEffect(function(effectName:String): void {
-			if (!!oldEffectRefs[effectName] != !!effectRefs[effectName]) effectsChanged = true;
-			oldEffectRefs[effectName] = effectRefs[effectName];
-		});
-
-		if (effectsChanged)
-			switchShaders();
-
 		checkBuffers();
 
 		if(childrenChanged) {
@@ -469,10 +450,10 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		if(textureDirty)
 			packTextureBitmaps();
 
-		__context.setProgram(shaderConfig.program);
+		__context.setProgram(currentShader);
 		__context.clear(0, 0, 0, 0);
 
-		if (childrenChanged || effectsChanged) {
+		if (childrenChanged) {// || effectsChanged) {
 			vertexData.position = 0;
 			childrenDrawn = 0;
 			var skipped:uint = 0;
@@ -487,11 +468,6 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 			}
 			//trace('drew '+childrenDrawn+' children (vertexData.length = '+vertexData.length+')');
 		}
-//		trace('quadCount = '+childrenDrawn);
-//		trace('numChildren = '+scratchStage.numChildren);
-//		trace('vertexComponents = '+shaderConfig.vertexComponents);
-//		trace('vertexData.length = '+vertexData.length);
-//		trace('indexData.length = '+indexData.length);
 
 		for (var key:Object in unrenderedChildren)
 			delete unrenderedChildren[key];
@@ -573,27 +549,21 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		__context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 5, FC5);
 
 		// Setup the shader data
-		var alpha:Number = dispObj.alpha;
-		var mosaic:Number = 1;
-		var pixelate:Number = 1;
-		var radians:Number = 0;
-		var hueShift:Number = 0;
-		var brightnessShift:Number = 0;
-		var fisheye:Number = 1;
 		const effects:Object = (renderOpts ? renderOpts.effects : null);
+
+		switchShaders(effects);
+
 		if (effects) {
 			var scale:Number = ('isStage' in dispObj && dispObj['isStage'] ? 1 : appScale);
 			var srcWidth:Number = dw * scale; // Is this right?
 			var srcHeight:Number = dh * scale;
 
 			var index:int = 0;
+			var n:Number;
+
 			var currVect:Vector.<Number> = FC6;
-			var activeFX:Object = shaderConfig.effectActive;
-
-//			private static const FX_GHOST:String = 'ghost';
-
-			if (activeFX[FX_PIXELATE]) {
-				pixelate = (Math.abs(effects[FX_PIXELATE] * scale) / 10) + 1;
+			if ((n = effects[FX_PIXELATE]) != 0) {
+				var pixelate:Number = (Math.abs(n * scale) / 10) + 1;
 				var pixelX:Number = (pixelate > 1 || forcePixelate ? pixelate / rect.width : -1);
 				var pixelY:Number = (pixelate > 1 || forcePixelate ? pixelate / rect.height : -1);
 				if(pixelate > 1) {
@@ -602,41 +572,38 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 				}
 				currVect[index++] = pixelX;
 				currVect[index++] = pixelY;
+				FC4[1] = pixelX / 2;
+				FC4[2] = pixelY / 2;
+				__context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 4, FC4);
 			}
 
-			if (activeFX[FX_COLOR]) {
-				hueShift = ((360.0 * effects[FX_COLOR]) / 200.0) % 360.0;
-				currVect[index++] = hueShift;
+			if ((n = effects[FX_COLOR]) != 0) {
+				currVect[index++] = ((360.0 * n) / 200.0) % 360.0;
 			}
 
-			if (activeFX[FX_FISHEYE]) {
-				fisheye = Math.max(0, (effects[FX_FISHEYE] + 100) / 100);
-				currVect[index++] = fisheye;
+			if ((n = effects[FX_FISHEYE]) != 0) {
+				currVect[index++] = Math.max(0, (n + 100) / 100);
 				if (index == 4) currVect = FC7;
 			}
 
-			if (activeFX[FX_WHIRL]) {
-				radians = (Math.PI * (effects[FX_WHIRL])) / 180;
-				currVect[index++] = radians;
+			if ((n = effects[FX_WHIRL]) != 0) {
+				currVect[index++] = (Math.PI * n) / 180;
 				if (index == 4) currVect = FC7;
 			}
 
-			if (activeFX[FX_MOSAIC]) {
-				mosaic = Math.round((Math.abs(effects[FX_MOSAIC]) + 10) / 10);
-				mosaic = Math.floor(Math.max(1, Math.min(mosaic, Math.min(srcWidth, srcHeight))));
-				currVect[index++] = mosaic;
+			if ((n = effects[FX_MOSAIC]) != 0) {
+				n = Math.round((Math.abs(n) + 10) / 10);
+				currVect[index++] = Math.floor(Math.max(1, Math.min(n, Math.min(srcWidth, srcHeight))));
 				if (index == 4) currVect = FC7;
 			}
 
-			if (activeFX[FX_BRIGHTNESS]) {
-				brightnessShift = Math.max(-100, Math.min(effects[FX_BRIGHTNESS], 100)) / 100;
-				currVect[index++] = brightnessShift;
+			if ((n = effects[FX_BRIGHTNESS]) != 0) {
+				currVect[index++] = Math.max(-100, Math.min(n, 100)) / 100;
 				if (index == 4) currVect = FC7;
 			}
 
-			if (activeFX[FX_GHOST]) {
-				alpha = 1.0 - (Math.max(0, Math.min(effects[FX_GHOST], 100)) / 100.0);
-				currVect[index] = alpha;
+			if ((n = effects[FX_GHOST]) != 0) {
+				currVect[index] = 1.0 - (Math.max(0, Math.min(n, 100)) / 100.0);
 			}
 
 			__context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 6, FC6);
@@ -697,7 +664,6 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		}
 
 		if(renderOpts) {
-			var oldEffects:Object = spriteRenderOpts[dispObj] ? spriteRenderOpts[dispObj].effects : null;
 //				var oldBM:BitmapData = spriteRenderOpts[dispObj] ? spriteRenderOpts[dispObj].bitmap : null;
 			var opts:Object = spriteRenderOpts[dispObj] || (spriteRenderOpts[dispObj] = {});
 
@@ -735,10 +701,6 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 				opts[prop] = renderOpts[prop];
 		}
 
-//		if(renderOpts && renderOpts.costume) {
-//			getB
-//		}
-
 		// Bitmaps can update their renders
 		if(dispObj is Bitmap)
 			unrenderedChildren[dispObj] = true;
@@ -762,22 +724,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 
 	public function updateFilters(dispObj:DisplayObject, effects:Object):void {
 		var spriteOpts:Object = spriteRenderOpts[dispObj] || (spriteRenderOpts[dispObj] = {});
-		var spriteEffects:Object = spriteOpts.effects || (spriteOpts.effects = {});
-
-		for (var i:int = 0; i < effectNames.length; ++i) {
-			var effectName:String = effectNames[i];
-			if (spriteEffects[effectName]) effectRefs[effectName] -= 1;
-			spriteEffects[effectName] = (effects && effectName in effects) ? effects[effectName] : 0;
-			if (spriteEffects[effectName]) effectRefs[effectName] += 1;
-
-			var newCount:int = effectRefs[effectName];
-			if (newCount < 0) {
-				Scratch.app.logMessage('Reference count negative for effect ' + effectName);
-			}
-			else if (newCount > spriteRenderOpts.length) {
-				Scratch.app.logMessage('Reference count too high for effect ' + effectName);
-			}
-		}
+		spriteOpts.effects = effects || {};
 	}
 
 	// TODO: store multiple sizes of bitmaps?
@@ -1159,7 +1106,6 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		vertexData.position = 0;
 
 		// assign shader program
-		__context.setProgram(shaderConfig.program);
 		__context.clear(1, 1, 1, 0);
 		__context.setScissorRectangle(new Rectangle(0, 0, bmd.width + 1, bmd.height + 1));
 
@@ -1250,85 +1196,10 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 	private const FC1:Vector.<Number> = Vector.<Number>([Math.PI, 180, 60, 120]);
 	private const FC2:Vector.<Number> = Vector.<Number>([240, 3, 4, 5]);
 	private const FC3:Vector.<Number> = Vector.<Number>([6, 0.11, 0.09, 0.001]);
-	private const FC4:Vector.<Number> = Vector.<Number>([360, 0, 0, 0]);
+	private var FC4:Vector.<Number> = Vector.<Number>([360, 0, 0, 0]);
 	private var FC5:Vector.<Number> = Vector.<Number>([0, 0, 0, 0]);
 	private var FC6:Vector.<Number> = Vector.<Number>([0, 0, 0, 0]);
 	private var FC7:Vector.<Number> = Vector.<Number>([0, 0, 0, 0]);
-
-	private var registersUsed:int = 0;
-	public function render(quadCount:uint, blend:Boolean = true):void {
-		// assign shader program
-		__context.setProgram(shaderConfig.program);
-		__context.clear(0, 0, 0, 0);
-
-		// assign texture to texture sampler 0
-		//__context.setScissorRectangle(getChildAt(0).getRect(stage));
-		for(var i:int=0; i<maxTextures; ++i) {
-			var tIdx:int = (i >= textures.length ? 0 : i);
-			__context.setTextureAt(i, (textures[tIdx] as ScratchTextureBitmap).getTexture(__context));
-		}
-
-		__context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, projMatrix, true);
-
-		// Constants for the fragment shader
-		__context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, FC0);
-		__context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 1, FC1);
-		__context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 2, FC2);
-		__context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 3, FC3);
-		__context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 4, FC4);
-
-		// x, y, z, {unused}
-		__context.setVertexBufferAt(0, vertexBuffer, 0, Context3DVertexBufferFormat.FLOAT_3);
-
-		// u, v, u0, v0
-		__context.setVertexBufferAt(1, vertexBuffer, 3, Context3DVertexBufferFormat.FLOAT_4);
-
-		// w, h, texture index, {unused}
-		__context.setVertexBufferAt(2, vertexBuffer, 7, Context3DVertexBufferFormat.FLOAT_3);
-
-		// allocate space for the rest of the effects, packed as tightly as possible
-		var registerIndex:int = 3;
-		var bufferPosition:int = 10;
-		while (bufferPosition < shaderConfig.vertexComponents) {
-			var format:String;
-			switch (shaderConfig.vertexComponents - bufferPosition) {
-				case 1:
-					format = Context3DVertexBufferFormat.FLOAT_1;
-					break;
-				case 2:
-					format = Context3DVertexBufferFormat.FLOAT_2;
-					break;
-				case 3:
-					format = Context3DVertexBufferFormat.FLOAT_3;
-					break;
-				default: // 4 or more
-					format = Context3DVertexBufferFormat.FLOAT_4;
-					break;
-			}
-			__context.setVertexBufferAt(registerIndex, vertexBuffer, bufferPosition, format);
-			++registerIndex;
-			bufferPosition += 4; // bufferPosition could be incorrect when we leave this loop but that's currently OK.
-		}
-
-		// null out the remaining registers
-		for (; registerIndex < registersUsed; ++registerIndex) {
-			__context.setVertexBufferAt(registerIndex, null);
-		}
-		if (registersUsed < registerIndex) {
-			registersUsed = registerIndex;
-		}
-
-		if(blend)
-			__context.setBlendFactors(Context3DBlendFactor.SOURCE_ALPHA, Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA);
-		else
-			__context.setBlendFactors(Context3DBlendFactor.SOURCE_ALPHA, Context3DBlendFactor.ZERO);
-
-		uploadBuffers();
-
-		// draw all sprites
-		__context.drawTriangles(indexBuffer, 0, quadCount * 2);
-	}
-
 	private function setupContext3D(e:Event = null):void {
 		if(!__context) {
 			requestContext3D();
@@ -1341,8 +1212,6 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 
 		__context.setDepthTest(false, Context3DCompareMode.ALWAYS);
 		__context.enableErrorChecking = true;
-
-		switchShaders();
 
 		tlPoint = scratchStage.localToGlobal(originPt);
 	}
@@ -1359,54 +1228,33 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		fragmentShaderCode = getUTF(new FragmentShader());
 	}
 
-	private function switchShaders():void {
+	private function switchShaders(effects:Object):void {
 		// Number of 32-bit values associated with each effect
 		// Must be kept in sync with FilterPack.filterNames, vertex format setup, and vertex buffer fill.
-		const effectVertexComponents:Object = {
-			pixelate: 2,
-			color: 1,
-			fisheye: 1,
-			whirl: 1,
-			mosaic: 1,
-			brightness: 1,
-			ghost: 1
-		};
-
-		var availableEffectRegisters:Array = [
+		const availableEffectRegisters:Array = [
 			'fc6.xxxx', 'fc6.yyyy', 'fc6.zzzz', 'fc6.wwww',
 			'fc7.xxxx', 'fc7.yyyy', 'fc7.zzzz', 'fc7.wwww'
 		];
-//		var availableEffectRegisters:Array = [
-//			'v2.xxxx', 'v2.yyyy', 'v2.zzzz', 'v2.wwww',
-//			'v3.xxxx', 'v3.yyyy', 'v3.zzzz', 'v3.wwww'
-//		];
 
-		// TODO: Bind the minimal number of textures and track the count. The shader must use every bound sampler.
-		const maxTextureNum:int = (maxTextures - 1); // index of the last texture in use
+		var shaderID:int = 0;
+		if (effects)
+			for (var i:int = 0, l:int = effectNames.length; i < l; ++i) {
+				var effectName:String = effectNames[i];
+				shaderID = (shaderID << 1) | (effects[effectName] != 0 ? 1 : 0);
+			}
 
-		var shaderID:int = maxTextureNum;
-		forEachEffect(function(effectName:String): void {
-			shaderID = (shaderID << 1) | (effectRefs[effectName] > 0 ? 1 : 0);
-		});
-
-		shaderConfig = shaderCache[shaderID];
-		if (!shaderConfig) {
+		currentShader = shaderCache[shaderID];
+		if (!currentShader) {
 			var vertexShaderParts:Array = [];
-			var fragmentShaderParts:Array = ['#define MAXTEXTURE ' + maxTextureNum];
-
-			var numEffects: int = 0;
-			var vertexComponents: int = 10; // x, y, z, u, v, u0, v0, w, h, texture index
-			var effectActive:Object = {};
-			forEachEffect(function(effectName:String): void {
-				var isActive:Boolean = effectRefs[effectName] > 0;
-				numEffects += int(isActive);
-				effectActive[effectName] = isActive;
+			var fragmentShaderParts:Array = [];
+			for (i = 0, l = effectNames.length; i < l; ++i) {
+				var effectName:String = effectNames[i];
+				var isActive:Boolean = effects && effects[effectName] != 0;
 				fragmentShaderParts.push(['#define ENABLE_', effectName, ' ', int(isActive)].join(''));
 				if (isActive) {
-					vertexComponents += effectVertexComponents[effectName];
 					if (effectName == FX_PIXELATE) {
 						fragmentShaderParts.push('alias fc6.xyxy, FX_' + effectName);
-						++numEffects; // consume an extra register in the vertex shader
+						fragmentShaderParts.push('alias fc4.yzyz, FX_' + effectName + '_half');
 						availableEffectRegisters.shift(); // consume an extra register in the fragment shader
 					}
 					else {
@@ -1414,9 +1262,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 					}
 					availableEffectRegisters.shift();
 				}
-			});
-
-			vertexShaderParts.push('#define ACTIVE_EFFECTS '+numEffects);
+			}
 
 			vertexShaderParts.push(vertexShaderCode);
 			fragmentShaderParts.push(fragmentShaderCode);
@@ -1436,19 +1282,10 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 			var program:Program3D = __context.createProgram();
 			program.upload(vertexShaderAssembler.agalcode, fragmentShaderAssembler.agalcode);
 
-			shaderCache[shaderID] = shaderConfig = {
-				program: program,
-				vertexComponents: vertexComponents,
-				vertexSizeBytes: 4 * vertexComponents,
-				effectActive: effectActive
-			};
+			currentShader = shaderCache[shaderID] = program;
 		}
 
-		// Throw away the old vertex buffer: it probably has the wong data size per vertex
-		if (vertexBuffer != null) {
-			vertexBuffer.dispose();
-			vertexBuffer = null;
-		}
+		__context.setProgram(currentShader);
 	}
 
 	private function context3DCreated(e:Event):void {
@@ -1509,7 +1346,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 
 	private function onContextLoss(e:Event = null):void {
 		for each(var config:Object in shaderCache) {
-			config.program.dispose();
+			config.dispose();
 		}
 		shaderCache = {};
 
