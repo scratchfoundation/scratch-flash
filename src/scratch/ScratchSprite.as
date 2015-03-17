@@ -709,7 +709,7 @@ public class ScratchSprite extends ScratchObj implements IDraggable {
 			// Force rendering with PixelBender for a dragged sprite
 			applyFilters(true);
 			preDragScale = scaleX;
-			scaleX = scaleY = transform.concatenatedMatrix.a;
+			scaleX = scaleY = scaleX * Scratch.app.stagePane.scaleX * Scratch.app.scaleX;
 		}
 		else {
 			scaleX = scaleY = preDragScale;
