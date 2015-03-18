@@ -23,6 +23,7 @@ package render3d {
  *   A display object container which renders in 3D instead
  *   @author Shane M. Clements, shane.m.clements@gmail.com
  */
+import flash.display.Sprite;
 public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {SCRATCH::allow3d{
 
 	import com.adobe.utils.*;
@@ -33,7 +34,6 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 	import flash.display.DisplayObject;
 	import flash.display.Shape;
 	import flash.display.Stage3D;
-	import flash.display.Sprite;
 	import flash.display.StageQuality;
 	import flash.display3D.*;
 	import flash.events.ErrorEvent;
@@ -577,8 +577,10 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 				__context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 4, FC4);
 			}
 
+			var usesColor:Boolean = false;
 			if ((n = effects[FX_COLOR]) != 0) {
 				currVect[index++] = ((360.0 * n) / 200.0) % 360.0;
+				usesColor = true;
 			}
 
 			if ((n = effects[FX_FISHEYE]) != 0) {
@@ -597,7 +599,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 				if (index == 4) currVect = FC7;
 			}
 
-			if ((n = effects[FX_BRIGHTNESS]) != 0) {
+			if ((n = effects[FX_BRIGHTNESS]) != 0 || usesColor) {
 				currVect[index++] = Math.max(-100, Math.min(n, 100)) / 100;
 				if (index == 4) currVect = FC7;
 			}
