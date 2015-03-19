@@ -241,14 +241,6 @@ public class Scratch extends Sprite {
 		return new PaletteBuilder(this);
 	}
 
-	public function makeButton(label:String, action:Function = null, compact:Boolean = false, tipName:String = null):Button {
-		return new Button(label, action, compact, tipName);
-	}
-
-	public function makeIconButton(clickFunction:Function, onImageOrName:*, offImageObj:DisplayObject = null, isRadioButton:Boolean = false):IconButton {
-		return new IconButton(clickFunction, onImageOrName, offImageObj, isRadioButton);
-	}
-
 	private function uncaughtErrorHandler(event:UncaughtErrorEvent):void
 	{
 		if (event.error is Error)
