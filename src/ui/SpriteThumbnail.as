@@ -100,7 +100,7 @@ public class SpriteThumbnail extends Sprite implements DropTarget {
 		addChild(detailsButton);
 	}
 
-	private function addFrame():void {
+	protected function addFrame():void {
 		if (targetObj.isStage) return;
 
 		var frame:Shape = new Shape();
