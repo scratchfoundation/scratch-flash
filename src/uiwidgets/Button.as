@@ -23,6 +23,8 @@ package uiwidgets {
 	import flash.geom.Matrix;
 	import flash.text.*;
 
+import translation.Translator;
+
 public class Button extends Sprite {
 	protected var labelOrIcon:DisplayObject;
 	protected var normalColor:* = CSS.titleBarColors;
@@ -125,7 +127,7 @@ public class Button extends Sprite {
 		label.background = false;
 		label.defaultTextFormat = CSS.normalTextFormat;
 		label.textColor = CSS.buttonLabelColor;
-		label.text = s;
+		label.text = Translator.map(s);
 		labelOrIcon = label;
 		setMinWidthHeight(0, 0);
 		addChild(label);
