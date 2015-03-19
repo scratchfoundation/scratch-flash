@@ -61,10 +61,10 @@ public class MediaLibrary extends Sprite {
 	protected var whenDone:Function;
 	protected var allItems:Array = [];
 
-	private var title:TextField;
-	private var outerFrame:Shape;
-	private var innerFrame:Shape;
-	private var resultsFrame:ScrollFrame;
+	protected var title:TextField;
+	protected var outerFrame:Shape;
+	protected var innerFrame:Shape;
+	protected var resultsFrame:ScrollFrame;
 	protected var resultsPane:ScrollFrameContents;
 
 	protected var categoryFilter:MediaFilter;
@@ -73,8 +73,8 @@ public class MediaLibrary extends Sprite {
 	protected var spriteFeaturesFilter:MediaFilter;
 
 	private var closeButton:IconButton;
-	private var okayButton:Button;
-	private var cancelButton:Button;
+	protected var okayButton:Button;
+	protected var cancelButton:Button;
 
 	private static var libraryCache:Object = {}; // cache of all mediaLibrary entries
 
@@ -190,7 +190,7 @@ public class MediaLibrary extends Sprite {
 
 	}
 
-	private function drawBackground(w:int, h:int):void {
+	protected function drawBackground(w:int, h:int):void {
 		const bgColor:int = 0;
 		const bgAlpha:Number = 0.6;
 		var g:Graphics = this.graphics;
@@ -200,7 +200,7 @@ public class MediaLibrary extends Sprite {
 		g.endFill();
 	}
 
-	private function drawOuterFrame(w:int, h:int):void {
+	protected function drawOuterFrame(w:int, h:int):void {
 		var g:Graphics = outerFrame.graphics;
 		g.clear();
 		g.beginFill(CSS.tabColor);
@@ -208,7 +208,7 @@ public class MediaLibrary extends Sprite {
 		g.endFill();
 	}
 
-	private function drawInnerFrame(w:int, h:int):void {
+	protected function drawInnerFrame(w:int, h:int):void {
 		var g:Graphics = innerFrame.graphics;
 		g.clear();
 		g.beginFill(CSS.white, 1);
@@ -251,8 +251,8 @@ public class MediaLibrary extends Sprite {
 
 		themeFilter.visible = (['sprite', 'costume', 'backdrop'].indexOf(assetType) > -1);
 		imageTypeFilter.visible = (['sprite', 'costume'].indexOf(assetType) > -1);
-		spriteFeaturesFilter.visible = ('sprite' == assetType);
-spriteFeaturesFilter.visible = false; // disable features filter for now
+		//spriteFeaturesFilter.visible = ('sprite' == assetType);
+		spriteFeaturesFilter.visible = false; // disable features filter for now
 	}
 
 	private function filterChanged(filter:MediaFilter):void {
@@ -277,11 +277,12 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 		resultsPane.addEventListener(ScrollFrameContents.SCROLL_Y, resultsDidScroll);
 	}
 
-	private function addButtons():void {
+	protected function addButtons():void {
 		addChild(closeButton = new IconButton(close, 'close'));
 		addChild(okayButton = new Button(Translator.map('OK'), addSelected));
 		addChild(cancelButton = new Button(Translator.map('Cancel'), close));
 	}
+
 
 	// -----------------------------
 	// Library Contents
