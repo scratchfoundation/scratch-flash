@@ -175,9 +175,13 @@ public class DialogBox extends Sprite {
 			remove();
 			if (action != null) action();
 		}
-		var b:Button = new Button(Translator.map(label), doAction);
+		var b:Button = makeButton(label, doAction);
 		addChild(b);
 		buttons.push(b);
+	}
+
+	protected function makeButton(label:String, action:Function):Button {
+		return new Button(label, action);
 	}
 
 	public function showOnStage(stage:Stage, center:Boolean = true):void {
