@@ -142,6 +142,7 @@ public class PaletteBuilder {
 	}
 
 	protected function addExtensionButtons():void {
+		addAddExtensionButton();
 	}
 
 	protected function addAddExtensionButton():void {

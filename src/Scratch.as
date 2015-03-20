@@ -30,6 +30,7 @@ import extensions.ExtensionManager;
 import flash.display.*;
 import flash.errors.IllegalOperationError;
 import flash.events.*;
+import flash.external.ExternalInterface;
 import flash.geom.Point;
 import flash.geom.Rectangle;
 import flash.net.FileReference;
@@ -40,6 +41,8 @@ import flash.text.*;
 import flash.utils.*;
 
 import interpreter.*;
+
+import mx.utils.URLUtil;
 
 import render3d.DisplayObjectContainerIn3D;
 
@@ -63,6 +66,7 @@ public class Scratch extends Sprite {
 	public static var app:Scratch; // static reference to the app, used for debugging
 
 	// Display modes
+	public var hostProtocol:String = 'http';
 	public var editMode:Boolean; // true when project editor showing, false when only the player is showing
 	public var isOffline:Boolean; // true when running as an offline (i.e. stand-alone) app
 	public var isSmallPlayer:Boolean; // true when displaying as a scaled-down player (e.g. in search results)
@@ -72,6 +76,7 @@ public class Scratch extends Sprite {
 	public var isArmCPU:Boolean;
 	public var jsEnabled:Boolean = false; // true when the SWF can talk to the webpage
 	public var ignoreResize:Boolean = false; // If true, temporarily ignore resize events.
+	public var isExtensionDevMode:Boolean = false; // If true, run in extension development mode (as on ScratchX)
 
 	// Runtime
 	public var runtime:ScratchRuntime;
@@ -121,8 +126,32 @@ public class Scratch extends Sprite {
 		determineJSAccess();
 	}
 
+	protected function determineJSAccess():void {
+		if(externalInterfaceAvailable()) {
+			try {
+				externalCall('function(){return true;}', jsAccessDetermined);
+				return; // wait for callback
+			}
+			catch(e:Error) {}
+		}
+		jsAccessDetermined(false);
+	}
+
+	private function jsAccessDetermined(result:Boolean):void {
+		jsEnabled = result;
+		initialize();
+	}
+
 	protected function initialize():void {
-		isOffline = loaderInfo.url.indexOf('http:') == -1 && loaderInfo.url.indexOf('https:') == -1;
+		isOffline = !URLUtil.isHttpURL(loaderInfo.url);
+		hostProtocol = URLUtil.getProtocol(loaderInfo.url);
+
+		try {
+			isExtensionDevMode = !!loaderInfo.parameters['extensionDevMode'];
+			isExtensionDevMode = true; // TODO: remove this before ScratchX goes live!
+		}
+		catch(e:*) {}
+
 		checkFlashVersion();
 		initServer();
 
@@ -169,6 +198,32 @@ public class Scratch extends Sprite {
 		//Analyze.collectAssets(0, 119110);
 		//Analyze.checkProjects(56086, 64220);
 		//Analyze.countMissingAssets();
+
+		handleStartupParameters();
+	}
+
+	protected function handleStartupParameters():void {
+		setupExternalInterface(false);
+		jsEditorReady();
+	}
+
+	protected function setupExternalInterface(oldWebsitePlayer:Boolean):void {
+		if (!jsEnabled) return;
+
+		addExternalCallback('ASloadExtension', extensionManager.loadRawExtension);
+		addExternalCallback('ASextensionCallDone', extensionManager.callCompleted);
+		addExternalCallback('ASextensionReporterDone', extensionManager.reporterCompleted);
+
+		// TODO: remove these hacks by adjusting JS
+		addExternalCallback('AScreateProject', function():void{});
+		addExternalCallback('ASsetLoginUser', function():void{});
+	}
+
+	protected function jsEditorReady():void {
+		if (jsEnabled) {
+			var success:Boolean = ExternalInterface.call('JSeditorReady');
+			if (!success) jsThrowError('Calling JSeditorReady() failed.');
+		}
 	}
 
 	protected function initTopBarPart():void {
@@ -191,21 +246,13 @@ public class Scratch extends Sprite {
 		server = new Server();
 	}
 
-	protected function setupExternalInterface(oldWebsitePlayer:Boolean):void {
-		if (!jsEnabled) return;
-
-		addExternalCallback('ASloadExtension', extensionManager.loadRawExtension);
-		addExternalCallback('ASextensionCallDone', extensionManager.callCompleted);
-		addExternalCallback('ASextensionReporterDone', extensionManager.reporterCompleted);
-	}
-
 	public function showTip(tipName:String):void {}
 	public function closeTips():void {}
 	public function reopenTips():void {}
 	public function tipsWidth():int { return 0; }
 
 	protected function startInEditMode():Boolean {
-		return isOffline;
+		return isOffline || isExtensionDevMode;
 	}
 
 	public function getMediaLibrary(type:String, whenDone:Function):MediaLibrary {
@@ -245,6 +292,15 @@ public class Scratch extends Sprite {
 	public function logException(e:Error):void {}
 	public function logMessage(msg:String, extra_data:Object=null):void {}
 	public function loadProjectFailed():void {}
+
+	public function jsThrowError(s:String):void {
+		// Throw the given string as an error in the browser. Errors on the production site are logged.
+		var errorString:String = 'SWF Error: ' + s;
+		log(errorString);
+		if (jsEnabled) {
+			externalCall('JSthrowError', null, errorString);
+		}
+	}
 
 	protected function checkFlashVersion():void {
 		SCRATCH::allow3d {
@@ -330,11 +386,6 @@ public class Scratch extends Sprite {
 		stagePane.clearCachedBitmap();
 		stagePane.updateCostume();
 		stagePane.applyFilters();
-	}
-
-	protected function determineJSAccess():void {
-		// After checking for JS access, call initialize().
-		initialize();
 	}
 
 	private var debugRect:Shape;
@@ -1188,14 +1239,18 @@ public class Scratch extends Sprite {
 	//------------------------------
 
 	public function externalInterfaceAvailable():Boolean {
-		return false;
+		return ExternalInterface.available;
 	}
 
 	public function externalCall(functionName:String, returnValueCallback:Function = null, ...args):void {
-		throw new IllegalOperationError('Must override this function.');
+		args.unshift(functionName);
+		var retVal:* = ExternalInterface.call.apply(ExternalInterface, args);
+		if (returnValueCallback != null) {
+			returnValueCallback(retVal);
+		}
 	}
 
-	public function addExternalCallback(functionName:String, closure:Function):void {
-		throw new IllegalOperationError('Must override this function.');
+	public function addExternalCallback(functionName:String,closure:Function):void {
+		ExternalInterface.addCallback(functionName, closure);
 	}
 }}

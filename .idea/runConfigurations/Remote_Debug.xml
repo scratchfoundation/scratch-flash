@@ -5,6 +5,10 @@
     <option name="moduleName" value="scratch-flash" />
     <option name="remoteDebugTarget" value="Computer" />
     <option name="usbDebugPort" value="7936" />
+    <RunnerSettings RunnerId="Basic" />
+    <RunnerSettings RunnerId="FlexDebugRunner" />
+    <ConfigurationWrapper RunnerId="Basic" />
+    <ConfigurationWrapper RunnerId="FlexDebugRunner" />
     <method />
   </configuration>
 </component>
