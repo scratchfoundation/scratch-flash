@@ -436,6 +436,8 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 					};
 					if (item.dbObj.info.length == 3)
 						obj.bitmapResolution = item.dbObj.info[2];
+					else
+						obj.bitmapResolution = Math.max(obj.centerX / 480, obj.centerY / 360);
 					io.fetchImage(md5AndExt, item.dbObj.name, 0, whenDone, obj);
 				}
 			}

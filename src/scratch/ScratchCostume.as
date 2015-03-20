@@ -52,7 +52,7 @@ public class ScratchCostume {
 
 	public var costumeName:String;
 	public var bitmap:BitmapData; // composite bitmap (base layer + text layer)
-	public var bitmapResolution:int = 1; // used for double or higher resolution costumes
+	public var bitmapResolution:Number = 1; // used for double or higher resolution costumes
 	public var rotationCenterX:int;
 	public var rotationCenterY:int;
 
@@ -86,7 +86,7 @@ public class ScratchCostume {
 	public var undoList:Array = [];
 	public var undoListIndex:int;
 
-	public function ScratchCostume(name:String, data:*, centerX:int = 99999, centerY:int = 99999, bmRes:int = 1) {
+	public function ScratchCostume(name:String, data:*, centerX:int = 99999, centerY:int = 99999, bmRes:Number = 1) {
 		costumeName = name;
 		rotationCenterX = centerX;
 		rotationCenterY = centerY;
@@ -125,7 +125,7 @@ public class ScratchCostume {
 	public static function scaleForScratch(bm:BitmapData):BitmapData {
 		if ((bm.width <= 480) && (bm.height <= 360)) return bm;
 		var scale:Number = Math.min(480 / bm.width, 360 / bm.height);
-		var result:BitmapData = new BitmapData(scale * bm.width, scale * bm.height, true, 0);
+		var result:BitmapData = new BitmapData(Math.floor(scale * bm.width), Math.floor(scale * bm.height), true, 0);
 		var m:Matrix = new Matrix();
 		m.scale(scale, scale);
 		result.draw(bm, m);
@@ -480,7 +480,7 @@ public class ScratchCostume {
 			dispObj.getBounds(dispObj);
 		var centerX:Number = r.x + (r.width / 2);
 		var centerY:Number = r.y + (r.height / 2);
-		var bm:BitmapData = new BitmapData(w, h, true, 0x00FFFFFF); // transparent fill color
+		var bm:BitmapData = new BitmapData(Math.floor(w), Math.floor(h), true, 0x00FFFFFF); // transparent fill color
 		var scale:Number = Math.min(1, w / r.width, h / r.height);
 		var m:Matrix = new Matrix();
 		if (scale < 1) m.scale(scale, scale); // scale down a large image
@@ -499,7 +499,7 @@ public class ScratchCostume {
 
 		var scale:Number = 2 / bitmapResolution;
 		var bgColor:int = forStage ? 0xFFFFFFFF : 0;
-		var bm:BitmapData = new BitmapData(scale * w, scale * h, true, bgColor);
+		var bm:BitmapData = new BitmapData(Math.floor(scale * w), Math.floor(scale * h), true, bgColor);
 		var m:Matrix = new Matrix();
 		if (!forStage) m.translate(-dispR.x, -dispR.y);
 		m.scale(scale, scale);
