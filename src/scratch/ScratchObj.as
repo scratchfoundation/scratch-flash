@@ -24,25 +24,18 @@
 // containing the variables and methods common to both.
 
 package scratch {
-	import blocks.*;
-
-	import filters.FilterPack;
-
-	import flash.display.*;
-	import flash.events.MouseEvent;
+import blocks.*;
+import filters.FilterPack;
+import flash.display.*;
+import flash.events.Event;
 import flash.geom.ColorTransform;
 import flash.utils.*;
-
-	import interpreter.*;
-
-	import scratch.ScratchComment;
-import scratch.ScratchSprite;
-
+import interpreter.*;
+import org.gestouch.events.GestureEvent;
+import org.gestouch.gestures.TapGesture;
 import translation.Translator;
-
-	import util.*;
-
-	import watchers.*;
+import util.*;
+import watchers.*;
 
 public class ScratchObj extends Sprite {
 
@@ -76,7 +69,8 @@ public class ScratchObj extends Sprite {
 	function ScratchObj() {
 		super();
 
-		addEventListener(MouseEvent.CLICK, click);
+		var tap:TapGesture = new TapGesture(this);
+		tap.addEventListener(GestureEvent.GESTURE_RECOGNIZED, click);
 	}
 
 	public function clearCaches():void {
@@ -554,7 +548,7 @@ public class ScratchObj extends Sprite {
 	private const DOUBLE_CLICK_MSECS:int = 300;
 	private var lastClickTime:uint;
 
-	public function click(evt:MouseEvent):void {
+	public function click(evt:Event):void {
 		var app:Scratch = root as Scratch;
 		if (!app) return;
 		var now:uint = getTimer();

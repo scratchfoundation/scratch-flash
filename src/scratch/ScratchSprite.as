@@ -24,22 +24,19 @@
 // rotation style, size, draggability, and pen state.
 
 package scratch {
-	import flash.display.*;
-	import flash.events.*;
-import flash.filters.GlowFilter;
+import flash.display.*;
+import flash.events.*;
 import flash.geom.*;
 import flash.geom.ColorTransform;
 import flash.utils.*;
 import flash.net.FileReference;
 import filters.FilterPack;
 import interpreter.Variable;
-import translation.Translator;
 
-import ui.ToolMgr;
+import translation.Translator;
 import ui.dragdrop.DragAndDropMgr;
 import ui.dragdrop.DragEvent;
 import ui.dragdrop.IDraggable;
-
 import uiwidgets.Menu;
 import util.*;
 import watchers.ListWatcher;
@@ -712,7 +709,7 @@ public class ScratchSprite extends ScratchObj implements IDraggable {
 			// Force rendering with PixelBender for a dragged sprite
 			applyFilters(true);
 			preDragScale = scaleX;
-			scaleX = scaleY = transform.concatenatedMatrix.a;
+			scaleX = scaleY = scaleX * Scratch.app.stagePane.scaleX * Scratch.app.scaleX;
 		}
 		else {
 			scaleX = scaleY = preDragScale;

@@ -31,9 +31,7 @@ package ui {
 
 public class PaletteSelector extends Sprite {
 
-	protected static const categories:Array = [
-		'Motion', 'Looks', 'Sound', 'Pen', 'Data', // column 1
-		'Events', 'Control', 'Sensing', 'Operators', 'More Blocks']; // column 2
+	protected var categories:Array = getCategories();
 
 	public var selectedCategory:int = 0;
 	protected var app:Scratch;
@@ -43,7 +41,12 @@ public class PaletteSelector extends Sprite {
 		initCategories();
 	}
 
-	public static function strings():Array { return categories; }
+	protected function getCategories():Array {
+		return ['Motion', 'Looks', 'Sound', 'Pen', 'Data', // column 1
+			'Events', 'Control', 'Sensing', 'Operators', 'More Blocks']; // column 2
+	}
+
+	public static function strings():Array { return new PaletteSelector(Scratch.app).getCategories(); }
 	public function updateTranslation():void { initCategories(); }
 
 	public function select(id:int, shiftKey:Boolean = false):void {

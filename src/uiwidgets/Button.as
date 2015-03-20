@@ -23,12 +23,17 @@ package uiwidgets {
 	import flash.geom.Matrix;
 	import flash.text.*;
 
-public class Button extends Sprite {
+import translation.Translator;
 
-	private var labelOrIcon:DisplayObject;
-	private var color:* = CSS.titleBarColors;
-	private var minWidth:int = 50;
-	private var compact:Boolean;
+public class Button extends Sprite {
+	protected var labelOrIcon:DisplayObject;
+	protected var normalColor:* = CSS.titleBarColors;
+	protected var overColor:uint = CSS.overColor;
+	protected var textColor:uint = CSS.buttonLabelColor;
+	protected var textOverColor:uint = CSS.white;
+	protected var color:* = normalColor;
+	protected var minWidth:int = 50;
+	protected var compact:Boolean;
 
 	private var action:Function;
 	private var tipName:String;
@@ -43,7 +48,7 @@ public class Button extends Sprite {
 		addEventListener(MouseEvent.MOUSE_OUT, mouseOut);
 		addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
 		addEventListener(MouseEvent.MOUSE_UP, mouseUp);
-		setColor(CSS.titleBarColors);
+		setColor(normalColor);
 	}
 
 	public function setLabel(s:String):void {
@@ -95,8 +100,8 @@ public class Button extends Sprite {
  		graphics.endFill();
 	}
 
-	private function mouseOver(evt:MouseEvent):void { setColor(CSS.overColor) }
-	private function mouseOut(evt:MouseEvent):void { setColor(CSS.titleBarColors) }
+	protected function mouseOver(evt:MouseEvent):void { setColor(overColor) }
+	protected function mouseOut(evt:MouseEvent):void { setColor(normalColor) }
 	private function mouseDown(evt:MouseEvent):void { Menu.removeMenusFrom(stage) }
 	private function mouseUp(evt:MouseEvent):void {
 		if (action != null) action();
@@ -107,10 +112,10 @@ public class Button extends Sprite {
 		if (tool == 'help' && tipName) Scratch.app.showTip(tipName);
 	}
 
-	private function setColor(c:*):void {
+	protected function setColor(c:*):void {
 		color = c;
 		if (labelOrIcon is TextField) {
-			(labelOrIcon as TextField).textColor = (c == CSS.overColor) ? CSS.white : CSS.buttonLabelColor;
+			(labelOrIcon as TextField).textColor = (c == overColor) ? textOverColor : textColor;
 		}
 		setMinWidthHeight(5, 5);
 	}
@@ -122,7 +127,7 @@ public class Button extends Sprite {
 		label.background = false;
 		label.defaultTextFormat = CSS.normalTextFormat;
 		label.textColor = CSS.buttonLabelColor;
-		label.text = s;
+		label.text = Translator.map(s);
 		labelOrIcon = label;
 		setMinWidthHeight(0, 0);
 		addChild(label);
