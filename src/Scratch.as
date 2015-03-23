@@ -146,11 +146,7 @@ public class Scratch extends Sprite {
 		isOffline = !URLUtil.isHttpURL(loaderInfo.url);
 		hostProtocol = URLUtil.getProtocol(loaderInfo.url);
 
-		try {
-			isExtensionDevMode = !!loaderInfo.parameters['extensionDevMode'];
-			isExtensionDevMode = true; // TODO: remove this before ScratchX goes live!
-		}
-		catch(e:*) {}
+		isExtensionDevMode = (loaderInfo.parameters['extensionDevMode'] == 'true');
 
 		checkFlashVersion();
 		initServer();
