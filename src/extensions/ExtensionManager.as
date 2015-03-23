@@ -228,21 +228,22 @@ public class ExtensionManager {
 		// Reset the system extensions and load the given array of saved extensions.
 		if (!savedExtensions) return; // no saved extensions
 		for each (var extObj:Object in savedExtensions) {
+			if (isInternal(extObj.extensionName)) {
+				setEnabled(extObj.extensionName, true);
+				continue; // internal extension overrides one saved in project
+			}
+
 			if (!('extensionName' in extObj) ||
 				(!('extensionPort' in extObj) && !('javascriptURL' in extObj)) ||
 				!('blockSpecs' in extObj)) {
 					continue;
-			}
-			if (extensionDict[extObj.extensionName] &&
-				extensionDict[extObj.extensionName].isInternal) {
-					setEnabled(extObj.extensionName, true);
-					continue; // internal extension overrides one saved in project
 			}
 
 			var ext:ScratchExtension = new ScratchExtension(extObj.extensionName, extObj.extensionPort || 0);
 			extensionDict[extObj.extensionName] = ext;
 			ext.blockSpecs = extObj.blockSpecs;
 			ext.showBlocks = true;
+			ext.isInternal = false; // For now?
 			ext.menus = extObj.menus;
 			if(extObj.javascriptURL) {
 				ext.javascriptURL = extObj.javascriptURL;
@@ -263,7 +264,7 @@ public class ExtensionManager {
 		var i:int = op.indexOf('.');
 		if (i < 0) return null;
 		var ext:ScratchExtension = extensionDict[op.slice(0, i)];
-		if (ext == null) return null; // unknown extension
+		if (!ext || !ext.menus) return null; // unknown extension
 		return ext.menus[menuName];
 	}
 
@@ -559,28 +560,31 @@ public class ExtensionManager {
 		var i:int;
 		var lines:Array = response.split('\n');
 		for each (var line:String in lines) {
-			var tokens:Array = line.split(/\s+/);
-			if (tokens.length > 1) {
-				var key:String = tokens[0];
-				if (key.indexOf('_') == 0) { // internal status update or response
-					if ('_busy' == key) {
-						for (i = 1; i < tokens.length; i++) {
-							var id:int = parseInt(tokens[i]);
-							if (ext.busy.indexOf(id) == -1) ext.busy.push(id);
-						}
-					}
-					if ('_problem' == key) ext.problem = line.slice(9);
-					if ('_success' == key) ext.success = line.slice(9);
-				} else { // sensor value
-					var val:String = decodeURIComponent(tokens[1]);
-					var n:Number = Number(val);
-					var path:Array = key.split('/');
-					for (i = 0; i < path.length; i++) {
-						 // normalize URL encoding for each path segment
-						path[i] = encodeURIComponent(decodeURIComponent(path[i]));
-					}
-					ext.stateVars[path.join('/')] = isNaN(n) ? val : n;
+			i = line.indexOf(' ');
+			if (i == -1) i = line.length;
+			var key:String = line.slice(0, i);
+			var value:String = decodeURIComponent(line.slice(i + 1));
+			switch (key) {
+			case '_busy':
+				for each (var token:String in value.split(' ')) {
+					var id:int = parseInt(token);
+					if (ext.busy.indexOf(id) == -1) ext.busy.push(id);
 				}
+				break;
+			case '_problem':
+				ext.problem = value;
+				break;
+			case '_success':
+				ext.success = value;
+				break;
+			default:
+				var n:Number = Interpreter.asNumber(value);
+				var path:Array = key.split('/');
+				for (i = 0; i < path.length; i++) {
+					// normalize URL encoding for each path segment
+					path[i] = encodeURIComponent(decodeURIComponent(path[i]));
+				}
+				ext.stateVars[path.join('/')] = n == n ? n : value;
 			}
 		}
 	}

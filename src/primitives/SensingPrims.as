@@ -92,27 +92,11 @@ public class SensingPrims {
 		}
 		if (!s.visible) return false;
 
-		var s2:ScratchSprite;
-		if(true || !app.isIn3D) {
-			var sBM:BitmapData = s.bitmap();
-			for each (s2 in app.stagePane.spritesAndClonesNamed(arg))
-				if (s2.visible && sBM.hitTest(s.bounds().topLeft, 1, s2.bitmap(), s2.bounds().topLeft, 1))
-					return true;
-		}
-		else {
-			// TODO: Re-implement something like the method above for rotated bitmaps.
-//			var sBM:BitmapData = s.bitmap();
-//			var oBM:BitmapData = new BitmapData(sBM.width, sBM.height, true, 0);
-//			for each (s2 in app.stagePane.spritesAndClonesNamed(arg)) {
-//				if(s2.visible) {
-//					oBM.fillRect(oBM.rect, 0);
-//					// now draw s2 into oBM
-//					oBM.draw(s2.bitmap());
-//				}
-//				if (s2.visible && sBM.hitTest(s.bounds().topLeft, 1, oBM, s2.bounds().topLeft, 1))
-//					return true;
-//			}
-		}
+		;
+		var sBM:BitmapData = s.bitmap(true);
+		for each (var s2:ScratchSprite in app.stagePane.spritesAndClonesNamed(arg))
+			if (s2.visible && sBM.hitTest(s.bounds().topLeft, 1, s2.bitmap(true), s2.bounds().topLeft, 1))
+				return true;
 
 		return false;
 	}
@@ -252,7 +236,7 @@ public class SensingPrims {
 	private function primDistanceTo(b:Block):Number {
 		var s:ScratchSprite = interp.targetSprite();
 		var p:Point = mouseOrSpritePosition(interp.arg(b, 0));
-		if ((s == null) || (p == null)) return 0;
+		if ((s == null) || (p == null)) return 10000;
 		var dx:Number = p.x - s.scratchX;
 		var dy:Number = p.y - s.scratchY;
 		return Math.sqrt((dx * dx) + (dy * dy));

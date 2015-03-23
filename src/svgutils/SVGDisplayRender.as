@@ -40,11 +40,13 @@ public class SVGDisplayRender {
 
 	private var svgSprite:Sprite;
 	private var currentShape:Shape;
+	private var forHitTest:Boolean;
 
-	public function renderAsSprite(rootSVG:SVGElement, doShift:Boolean = false):Sprite {
+	public function renderAsSprite(rootSVG:SVGElement, doShift:Boolean = false, forHitTest:Boolean = false):Sprite {
 		// Return a sprite containing all the SVG elements that Scratch can render.
 		// If doShift is true, shift visible objects so the visible bounds is at (0,0).
 
+		this.forHitTest = forHitTest;
 		svgSprite = new Sprite();
 		if (!rootSVG) return svgSprite;
 
@@ -82,7 +84,7 @@ public class SVGDisplayRender {
 		} else if (el.path) {
 //			if (!currentShape) currentShape = new Shape();
 			var shape:Shape = new Shape();
-			el.renderPathOn(shape);
+			el.renderPathOn(shape, forHitTest);
 			if(el.transform) shape.transform.matrix = el.transform;
 			addLayer(shape);
 		}

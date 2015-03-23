@@ -86,8 +86,8 @@ public class Server implements IServer {
 		return fetchAsset('media/' + md5, whenDone);
 	}
 
-	public function getMediaLibrary(whenDone:Function):URLLoader {
-		return getAsset('mediaLibrary.json', whenDone);
+	public function getMediaLibrary(type:String, whenDone:Function):URLLoader {
+		return getAsset('libs/'+type+'Library.json', whenDone);
 	}
 
 	public function getThumbnail(md5:String, w:int, h:int, whenDone:Function):URLLoader {
@@ -95,8 +95,12 @@ public class Server implements IServer {
 			if (data) {
 				var loader:Loader = new Loader();
 				loader.contentLoaderInfo.addEventListener(Event.COMPLETE, imageLoaded);
+				loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, imageError);
 				try { loader.loadBytes(data) } catch (e:*) {}
 			}
+		}
+		function imageError(e:IOErrorEvent):void {
+			Scratch.app.log('Server failed to load thumbnail: ' + md5);
 		}
 		function imageLoaded(e:Event):void {
 			whenDone(makeThumbnail(e.target.content.bitmapData));

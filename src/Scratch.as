@@ -23,38 +23,43 @@
 // This is the top-level application.
 
 package {
-	import extensions.ExtensionManager;
-	import flash.display.*;
-	import flash.errors.IllegalOperationError;
-	import flash.events.*;
-	import flash.geom.Point;
-	import flash.geom.Rectangle;
-	import flash.net.FileReference;
-	import flash.net.FileReferenceList;
-	import flash.net.LocalConnection;
-	import flash.system.*;
-	import flash.text.*;
-	import flash.utils.*;
+import blocks.*;
 
-	import interpreter.*;
-	import blocks.*;
+import extensions.ExtensionManager;
 
-	import scratch.*;
-	import watchers.ListWatcher;
+import flash.display.*;
+import flash.errors.IllegalOperationError;
+import flash.events.*;
+import flash.geom.Point;
+import flash.geom.Rectangle;
+import flash.net.FileReference;
+import flash.net.FileReferenceList;
+import flash.net.LocalConnection;
+import flash.system.*;
+import flash.text.*;
+import flash.utils.*;
 
-	import translation.*;
+import interpreter.*;
 
-	import ui.*;
-	import ui.media.*;
-	import ui.parts.*;
+import render3d.DisplayObjectContainerIn3D;
 
-	import uiwidgets.*;
+import scratch.*;
 
-	import util.*;
+import translation.*;
+
+import ui.*;
+import ui.media.*;
+import ui.parts.*;
+
+import uiwidgets.*;
+
+import util.*;
+
+import watchers.ListWatcher;
 
 public class Scratch extends Sprite {
 	// Version
-	public static const versionString:String = 'v423';
+	public static const versionString:String = 'v434';
 	public static var app:Scratch; // static reference to the app, used for debugging
 
 	// Display modes
@@ -66,6 +71,7 @@ public class Scratch extends Sprite {
 	public var render3D:IRenderIn3D;
 	public var isArmCPU:Boolean;
 	public var jsEnabled:Boolean = false; // true when the SWF can talk to the webpage
+	public var ignoreResize:Boolean = false; // If true, temporarily ignore resize events.
 
 	// Runtime
 	public var runtime:ScratchRuntime;
@@ -105,6 +111,7 @@ public class Scratch extends Sprite {
 	protected var scriptsPart:ScriptsPart;
 	public var imagesPart:ImagesPart;
 	public var soundsPart:SoundsPart;
+	public const tipsBarClosedWidth:int = 17;
 
 	public function Scratch() {
 		loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, uncaughtErrorHandler);
@@ -115,7 +122,7 @@ public class Scratch extends Sprite {
 	}
 
 	protected function initialize():void {
-		isOffline = loaderInfo.url.indexOf('http:') == -1;
+		isOffline = loaderInfo.url.indexOf('http:') == -1 && loaderInfo.url.indexOf('https:') == -1;
 		checkFlashVersion();
 		initServer();
 
@@ -137,6 +144,9 @@ public class Scratch extends Sprite {
 
 		playerBG = new Shape(); // create, but don't add
 		addParts();
+		
+		server.getSelectedLang(Translator.setLanguageValue);
+		
 
 		stage.addEventListener(MouseEvent.MOUSE_DOWN, gh.mouseDown);
 		stage.addEventListener(MouseEvent.MOUSE_MOVE, gh.mouseMove);
@@ -156,9 +166,9 @@ public class Scratch extends Sprite {
 		else runtime.installEmptyProject();
 
 		fixLayout();
-//Analyze.collectAssets(0, 119110);
-//Analyze.checkProjects(56086, 64220);
-//Analyze.countMissingAssets();
+		//Analyze.collectAssets(0, 119110);
+		//Analyze.checkProjects(56086, 64220);
+		//Analyze.countMissingAssets();
 	}
 
 	protected function initTopBarPart():void {
@@ -192,6 +202,7 @@ public class Scratch extends Sprite {
 	public function showTip(tipName:String):void {}
 	public function closeTips():void {}
 	public function reopenTips():void {}
+	public function tipsWidth():int { return 0; }
 
 	protected function startInEditMode():Boolean {
 		return isOffline;
@@ -235,39 +246,26 @@ public class Scratch extends Sprite {
 	public function logMessage(msg:String, extra_data:Object=null):void {}
 	public function loadProjectFailed():void {}
 
-	[Embed(source='../libs/RenderIn3D.swf', mimeType='application/octet-stream')]
-	public static const MySwfData:Class;
 	protected function checkFlashVersion():void {
-		if(Capabilities.playerType != "Desktop" || Capabilities.version.indexOf('IOS') === 0) {
-			var versionString:String = Capabilities.version.substr(Capabilities.version.indexOf(' ')+1);
-			var versionParts:Array = versionString.split(',');
-			var majorVersion:int = parseInt(versionParts[0]);
-			var minorVersion:int = parseInt(versionParts[1]);
-			if((majorVersion > 11 || (majorVersion == 11 && minorVersion >=1)) && !isArmCPU && Capabilities.cpuArchitecture == 'x86') {
-				loadRenderLibrary();
-				return;
+		SCRATCH::allow3d {
+			if (Capabilities.playerType != "Desktop" || Capabilities.version.indexOf('IOS') === 0) {
+				var versionString:String = Capabilities.version.substr(Capabilities.version.indexOf(' ') + 1);
+				var versionParts:Array = versionString.split(',');
+				var majorVersion:int = parseInt(versionParts[0]);
+				var minorVersion:int = parseInt(versionParts[1]);
+				if ((majorVersion > 11 || (majorVersion == 11 && minorVersion >= 7)) && !isArmCPU && Capabilities.cpuArchitecture == 'x86') {
+					render3D = (new DisplayObjectContainerIn3D() as IRenderIn3D);
+					render3D.setStatusCallback(handleRenderCallback);
+					return;
+				}
 			}
 		}
 
 		render3D = null;
 	}
 
-	protected var loading3DLib:Boolean = false;
-	protected function loadRenderLibrary():void
-	{
-		var loader:Loader = new Loader();
-		loader.contentLoaderInfo.addEventListener(Event.COMPLETE, onSwfLoaded);
-		// we need the loaded code to be in the same (main) application domain
-		var ctx:LoaderContext = new LoaderContext(false, loaderInfo.applicationDomain);
-		ctx.allowCodeImport = true;
-		loader.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, uncaughtErrorHandler);
-		loader.loadBytes(new MySwfData() as ByteArray, ctx);
-		loading3DLib = true;
-	}
-
+	SCRATCH::allow3d
 	protected function handleRenderCallback(enabled:Boolean):void {
-		loading3DLib = false;
-
 		if(!enabled) {
 			go2D();
 			render3D = null;
@@ -287,13 +285,6 @@ public class Scratch extends Sprite {
 		}
 	}
 
-	protected function onSwfLoaded(e:Event):void {
-		var info:LoaderInfo = LoaderInfo(e.target);
-		var r3dClass:Class = info.applicationDomain.getDefinition("DisplayObjectContainerIn3D") as Class;
-		render3D = (new r3dClass() as IRenderIn3D);
-		render3D.setStatusCallback(handleRenderCallback);
-	}
-
 	public function clearCachedBitmaps():void {
 		for(var i:int=0; i<stagePane.numChildren; ++i) {
 			var spr:ScratchSprite = (stagePane.getChildAt(i) as ScratchSprite);
@@ -308,6 +299,7 @@ public class Scratch extends Sprite {
 		} catch (e:Error) {}
 	}
 
+	SCRATCH::allow3d
 	public function go3D():void {
 		if(!render3D || isIn3D) return;
 
@@ -318,6 +310,7 @@ public class Scratch extends Sprite {
 		isIn3D = true;
 	}
 
+	SCRATCH::allow3d
 	public function go2D():void {
 		if(!render3D || !isIn3D) return;
 
@@ -362,6 +355,7 @@ public class Scratch extends Sprite {
 		return [
 			'a copy of the project file on your computer.',
 			'Project not saved!', 'Save now', 'Not saved; project did not load.',
+			'Save project?', 'Don\'t save',
 			'Save now', 'Saved',
 			'Revert', 'Undo Revert', 'Reverting...',
 			'Throw away all changes since opening this project?',
@@ -423,7 +417,7 @@ public class Scratch extends Sprite {
 
 		if (lp) fixLoadProgressLayout();
 		stagePane.updateCostume();
-		if(isIn3D) render3D.onStageResize();
+		SCRATCH::allow3d { if(isIn3D) render3D.onStageResize(); }
 	}
 
 	private function keyDown(evt:KeyboardEvent):void {
@@ -440,7 +434,7 @@ public class Scratch extends Sprite {
 //		}
 		// Handle ctrl-m and toggle 2d/3d mode
 		else if(evt.ctrlKey && evt.charCode == 109) {
-			isIn3D ? go2D() : go3D();
+			SCRATCH::allow3d { isIn3D ? go2D() : go3D(); }
 			evt.preventDefault();
 			evt.stopImmediatePropagation();
 		}
@@ -577,6 +571,7 @@ public class Scratch extends Sprite {
 		Menu.removeMenusFrom(stage);
 		editMode = newMode;
 		if (editMode) {
+			interp.showAllRunFeedback();
 			hide(playerBG);
 			show(topBarPart);
 			show(libraryPart);
@@ -603,7 +598,7 @@ public class Scratch extends Sprite {
 	protected function isShowing(obj:DisplayObject):Boolean { return obj.parent != null }
 
 	public function onResize(e:Event):void {
-		fixLayout();
+		if (!ignoreResize) fixLayout();
 	}
 
 	public function fixLayout():void {
@@ -659,6 +654,7 @@ public class Scratch extends Sprite {
 
 		// the content area shows the part associated with the currently selected tab:
 		var contentY:int = tabsPart.y + 27;
+		w -= tipsWidth();
 		updateContentArea(tabsPart.x, contentY, w - tabsPart.x - 6, h - contentY - 5, h);
 	}
 
@@ -675,7 +671,7 @@ public class Scratch extends Sprite {
 			addChild(frameRateGraph); // put in front
 		}
 
-		if(isIn3D) render3D.onStageResize();
+		SCRATCH::allow3d { if (isIn3D) render3D.onStageResize(); }
 	}
 
 	private function drawBG():void {
@@ -734,11 +730,15 @@ public class Scratch extends Sprite {
 			m.addItem('Revert', revertToOriginalProject);
 		}
 
+		if (b.lastEvent.shiftKey) {
+			m.addLine();
+			m.addItem('Save Project Summary', saveSummary);
+		}
 		if (b.lastEvent.shiftKey && jsEnabled) {
 			m.addLine();
 			m.addItem('Import experimental extension', function():void {
 				function loadJSExtension(dialog:DialogBox):void {
-					var url:String = dialog.fields['URL'].text.replace(/^\s+|\s+$/g, '');
+					var url:String = dialog.getField('URL').replace(/^\s+|\s+$/g, '');
 					if (url.length == 0) return;
 					externalCall('ScratchExtensions.loadExternalJS', null, url);
 				}
@@ -813,7 +813,7 @@ public class Scratch extends Sprite {
 			return;
 		}
 		var d:DialogBox = new DialogBox();
-		d.addTitle(Translator.map('Save project') + '?');
+		d.addTitle('Save project?');
 		d.addButton('Save', save);
 		d.addButton('Don\'t save', proceedWithoutSaving);
 		d.addButton('Cancel', cancel);
@@ -847,6 +847,12 @@ public class Scratch extends Sprite {
 			result += (illegal.indexOf(ch) > -1) ? '-' : ch;
 		}
 		return result;
+	}
+
+	public function saveSummary():void {
+		var name:String = (projectName() || "project") + ".txt";
+		var file:FileReference = new FileReference();
+		file.save(stagePane.getSummary(), fixFileName(name));
 	}
 
 	public function toggleSmallStage():void {
@@ -965,6 +971,7 @@ public class Scratch extends Sprite {
 		spr.setScratchXY(int(200 * Math.random() - 100), int(100 * Math.random() - 50));
 		if (atMouse) spr.setScratchXY(stagePane.scratchMouseX(), stagePane.scratchMouseY());
 		stagePane.addChild(spr);
+		spr.updateCostume();
 		selectSprite(spr);
 		setTab(showImages ? 'images' : 'scripts');
 		setSaveNeeded(true);

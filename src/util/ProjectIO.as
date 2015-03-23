@@ -30,9 +30,8 @@ package util {
 import flash.display.*;
 import flash.events.*;
 import flash.net.URLLoader;
-import flash.net.URLLoaderDataFormat;
-import flash.net.URLRequest;
 import flash.utils.*;
+
 import scratch.*;
 
 import sound.WAVFile;
@@ -310,7 +309,7 @@ public class ProjectIO {
 	// Fetch a costume or sound from the server
 	//----------------------------
 
-	public function fetchImage(id:String, costumeName:String, width:int, whenDone:Function):URLLoader {
+	public function fetchImage(id:String, costumeName:String, width:int, whenDone:Function, otherData:Object = null):URLLoader {
 		// Fetch an image asset from the server and call whenDone with the resulting ScratchCostume.
 		var c:ScratchCostume;
 		function gotCostumeData(data:ByteArray):void {
@@ -319,17 +318,27 @@ public class ProjectIO {
 				return;
 			}
 			if (ScratchCostume.isSVGData(data)) {
-				c = new ScratchCostume(costumeName, data);
+				if (otherData && otherData.centerX)
+					c = new ScratchCostume(costumeName, data, otherData.centerX, otherData.centerY, otherData.bitmapResolution);
+				else
+					c = new ScratchCostume(costumeName, data);
 				c.baseLayerMD5 = id;
 				whenDone(c);
 			} else {
 				var loader:Loader = new Loader();
 				loader.contentLoaderInfo.addEventListener(Event.COMPLETE, imageLoaded);
+				loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, imageError);
 				loader.loadBytes(data);
 			}
 		}
+		function imageError(event:IOErrorEvent):void {
+			app.log('ProjectIO failed to load: ' + id);
+		}
 		function imageLoaded(e:Event):void {
-			c = new ScratchCostume(costumeName, e.target.content.bitmapData);
+			if (otherData && otherData.centerX)
+				c = new ScratchCostume(costumeName, e.target.content.bitmapData, otherData.centerX, otherData.centerY, otherData.bitmapResolution);
+			else
+				c = new ScratchCostume(costumeName, e.target.content.bitmapData);
 			if (width) c.bitmapResolution = c.baseLayerBitmap.width / width;
 			c.baseLayerMD5 = id;
 			whenDone(c);
@@ -422,7 +431,13 @@ public class ProjectIO {
 			for each (var c:ScratchCostume in obj.costumes) {
 				data = assetDict[c.baseLayerMD5];
 				if (data) c.baseLayerData = data;
-				else c.baseLayerData = ScratchCostume.emptySVG(); // missing asset data; use empty costume
+				else {
+					// Asset failed to load so use an empty costume
+					// BUT retain the original MD5 and don't break the reference to the costume that failed to load.
+					var origMD5:String = c.baseLayerMD5;
+					c.baseLayerData = ScratchCostume.emptySVG();
+					c.baseLayerMD5 = origMD5;
+				}
 				if (c.textLayerMD5) c.textLayerData = assetDict[c.textLayerMD5];
 			}
 			for each (var snd:ScratchSound in obj.sounds) {

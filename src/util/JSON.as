@@ -49,12 +49,13 @@ public class JSON {
 	public static function parse(s:String):Object {
 		// Parse the JSON string and return the resulting object.
 		var json:util.JSON = new util.JSON();
+		json.buf = s;
 		json.src = new ReadStream(s);
 		return json.readValue();
 	}
 
 	public static function escapeForJS(s:String):String {
-		var ch:String, result:String = ''
+		var ch:String, result:String = '';
 		for (var i:int; i < s.length; i++) {
 			result += (ch = s.charAt(i));
 			if ('\\' == ch) result += '\\';
@@ -67,7 +68,7 @@ public class JSON {
 	//----------------------------
 
 	private function readValue():Object {
-		skipWhiteSpaceAndComments()
+		skipWhiteSpaceAndComments();
 		var ch:String = src.peek();
 		if (("0" <= ch) && (ch <= "9")) return readNumber(); // common case
 
@@ -124,7 +125,7 @@ public class JSON {
 	}
 
 	private function readObject():Object {
-		var result:Object = new Object();
+		var result:Object = {};
 		src.skip(1); // skip "{"
 		while (true) {
 			if (src.atEnd()) return error("Incomplete object");
@@ -255,7 +256,9 @@ public class JSON {
 		}
 	}
 
-	private function error(msg:String):* { throw new Error(msg + " [pos=" + src.pos()) + "]"; return null }
+	private function error(msg:String):* {
+		throw new Error(msg + " [pos=" + src.pos()) + "] in " + buf;
+	}
 
 	//----------------------------
 	// Object to JSON support

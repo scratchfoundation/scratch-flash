@@ -105,7 +105,13 @@ public class ScratchSoundPlayer {
 		var flashSnd:Sound = new Sound();
 		flashSnd.addEventListener(SampleDataEvent.SAMPLE_DATA, writeSampleData);
 		soundChannel = flashSnd.play();
-		if (doneFunction != null) soundChannel.addEventListener(Event.SOUND_COMPLETE, doneFunction);
+		if (soundChannel) {
+			if (doneFunction != null) soundChannel.addEventListener(Event.SOUND_COMPLETE, doneFunction);
+		} else {
+			// User has no sound card or too many sounds already playing.
+			stopPlaying();
+			if (doneFunction != null) doneFunction();
+		}
 	}
 
 	protected function stopIfAlreadyPlaying():void {

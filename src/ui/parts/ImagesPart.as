@@ -54,6 +54,7 @@ public class ImagesPart extends UIPart {
 	private var clearButton:Button;
 	private var libraryButton:Button;
 	private var editorImportButton:Button;
+	private var cropButton:IconButton;
 	private var flipHButton:IconButton;
 	private var flipVButton:IconButton;
 	private var centerButton:IconButton;
@@ -85,7 +86,7 @@ public class ImagesPart extends UIPart {
 
 	public static function strings():Array {
 		return [
-			'Clear', 'Import', 'New backdrop:', 'New costume:', 'photo1',
+			'Clear', 'Add', 'Import', 'New backdrop:', 'New costume:', 'photo1',
 			'Undo', 'Redo', 'Flip left-right', 'Flip up-down', 'Set costume center',
 			'Choose backdrop from library', 'Choose costume from library',
 			'Paint new backdrop', 'Upload backdrop from file', 'New backdrop from camera',
@@ -95,7 +96,9 @@ public class ImagesPart extends UIPart {
 
 	public function updateTranslation():void {
 		clearButton.setLabel(Translator.map('Clear'));
+		libraryButton.setLabel(Translator.map('Add'));
 		editorImportButton.setLabel(Translator.map('Import'));
+		if (editor) editor.updateTranslation();
 		updateLabel();
 		fixlayout();
 	}
@@ -256,11 +259,12 @@ public class ImagesPart extends UIPart {
 		editorImportButton.x = libraryButton.x + libraryButton.width + smallSpace;
 		editorImportButton.y = clearButton.y;
 
-		// flip and costume center buttons
-		flipHButton.x = editorImportButton.x + editorImportButton.width + bigSpace;
+		// buttons in the upper right
+		cropButton.x = editorImportButton.x + editorImportButton.width + bigSpace;
+		flipHButton.x = cropButton.x + cropButton.width + smallSpace;
 		flipVButton.x = flipHButton.x + flipHButton.width + smallSpace;
 		centerButton.x = flipVButton.x + flipVButton.width + smallSpace;
-		flipHButton.y = flipVButton.y = centerButton.y = nameField.y - 1;
+		cropButton.y = flipHButton.y = flipVButton.y = centerButton.y = nameField.y - 1;
 	}
 
 	// -----------------------------
@@ -373,6 +377,14 @@ public class ImagesPart extends UIPart {
 			clearButton.alpha = 0.5;
 			clearButton.mouseEnabled = false;
 		}
+		if (editor is BitmapEdit) {
+			cropButton.alpha = 1;
+			cropButton.mouseEnabled = true;
+		}
+		else {
+			cropButton.alpha = 0.5;
+			cropButton.mouseEnabled = false;
+		}
 	}
 
 	// -----------------------------
@@ -380,16 +392,25 @@ public class ImagesPart extends UIPart {
 	//------------------------------
 
 	private function addFlipButtons():void {
+		addChild(cropButton = makeTopButton(crop, 'crop'));
 		addChild(flipHButton = makeTopButton(flipH, 'flipH'));
 		addChild(flipVButton = makeTopButton(flipV,'flipV'));
+		cropButton.isMomentary = true;
 		flipHButton.isMomentary = true;
 		flipVButton.isMomentary = true;
+		SimpleTooltips.add(cropButton, {text: 'Crop to selection', direction: 'bottom'});
 		SimpleTooltips.add(flipHButton, {text: 'Flip left-right', direction: 'bottom'});
 		SimpleTooltips.add(flipVButton, {text: 'Flip up-down', direction: 'bottom'});
 	}
 
-	private function flipH(ignore:*):void { editor.flipContent(false) }
-	private function flipV(ignore:*):void { editor.flipContent(true) }
+	private function crop(ignore:*):void {
+		var bitmapEditor:BitmapEdit = editor as BitmapEdit;
+		if (bitmapEditor) {
+			bitmapEditor.cropToSelection();
+		}
+	}
+	private function flipH(ignore:*):void { editor.flipContent(false); }
+	private function flipV(ignore:*):void { editor.flipContent(true); }
 
 	private function addCenterButton():void {
 		function setCostumeCenter(b:IconButton):void {

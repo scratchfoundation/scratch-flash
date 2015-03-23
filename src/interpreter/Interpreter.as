@@ -125,7 +125,7 @@ public class Interpreter {
 		}
 		threads = newThreads;
 		if (wasRunning) {
-			if(app.editMode) b.hideRunFeedback();
+			if (app.editMode) b.hideRunFeedback();
 			clearWarpBlock();
 		} else {
 			var topBlock:Block = b;
@@ -143,12 +143,18 @@ public class Interpreter {
 				};
 				b.args[0] = reporter;
 			}
-			topBlock.showRunFeedback();
+			if (app.editMode) topBlock.showRunFeedback();
 			var t:Thread = new Thread(b, targetObj, startupDelay);
 			if (topBlock.isReporter) bubbleThread = t;
 			t.topBlock = topBlock;
 			threads.push(t);
 			app.threadStarted();
+		}
+	}
+
+	public function showAllRunFeedback():void {
+		for each (var t:Thread in threads) {
+			t.topBlock.showRunFeedback();
 		}
 	}
 
@@ -178,7 +184,8 @@ public class Interpreter {
 	}
 
 	public function restartThread(b:Block, targetObj:*):Thread {
-		// used by broadcast; stop any thread running on b, then start a new thread on b
+		// used by broadcast, click hats, and when key pressed hats
+		// stop any thread running on b, then start a new thread on b
 		var newThread:Thread = new Thread(b, targetObj);
 		var wasRunning:Boolean = false;
 		for (var i:int = 0; i < threads.length; i++) {
@@ -190,7 +197,7 @@ public class Interpreter {
 		}
 		if (!wasRunning) {
 			threads.push(newThread);
-			if(app.editMode) b.showRunFeedback();
+			if (app.editMode) b.showRunFeedback();
 			app.threadStarted();
 		}
 		return newThread;

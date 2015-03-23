@@ -229,7 +229,7 @@ public class ScriptsPane extends ScrollFrameContents {
 		app.runtime.blockDropped(b);
 	}
 
-	private function findTargetsFor(b:Block):void {
+	public function findTargetsFor(b:Block):void {
 		possibleTargets = [];
 		var bEndWithTerminal:Boolean = b.bottomBlock().isTerminal;
 		var bCanWrap:Boolean = b.base.canHaveSubstack1() && !b.subStack1; // empty C or E block
@@ -352,7 +352,7 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 			if (Block(target).isEmbeddedParameter()) return false;
 		}
 		var dropType:String = droppedBlock.type;
-		var targetType:String = (target is Block) ? Block(target).type : BlockArg(target).type;
+		var targetType:String = target is Block ? Block(target.parent).argType(target).slice(1) : BlockArg(target).type;
 		if (targetType == 'm') {
 			if (Block(target.parent).type == 'h') return false;
 			return menusThatAcceptReporters.indexOf(BlockArg(target).menuName) > -1;
@@ -456,6 +456,7 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 		addChild(c);
 		saveScripts();
 		updateSize();
+		c.startEditText();
 	}
 
 	public function fixCommentLayout():void {

@@ -31,12 +31,13 @@
 //	* gradient fills: an SVGElement with a 'stop' subElement for each color
 
 package svgutils {
-	import flash.display.Sprite;
-	import flash.geom.*;
-	import flash.utils.ByteArray;
-	import util.Base64Encoder;
-	import by.blooddy.crypto.image.PNG24Encoder;
-	import by.blooddy.crypto.image.PNGFilter;
+import flash.display.BitmapData;
+import flash.display.Sprite;
+import flash.geom.*;
+import flash.utils.ByteArray;
+import util.Base64Encoder;
+import by.blooddy.crypto.image.PNG24Encoder;
+import by.blooddy.crypto.image.PNGFilter;
 
 public class SVGExport {
 
@@ -79,13 +80,21 @@ public class SVGExport {
 		// Set the attributes of the top-level <svg> element.
 		var svgSprite:Sprite = new SVGDisplayRender().renderAsSprite(rootEl);
 		var r:Rectangle = svgSprite.getBounds(svgSprite);
-		var w:int = Math.ceil(r.x + r.width);
-		var h:int = Math.ceil(r.y + r.height);
+
+		var m:Matrix = new Matrix();
+		var bmd:BitmapData = new BitmapData(Math.max(int(r.width), 1), Math.max(int(r.height), 1), true, 0);
+		m.translate(-r.left, -r.top);
+		bmd.draw(svgSprite, m);
+
+		// Get an accurate viewbox
+		var cropR:Rectangle = bmd.getColorBoundsRect(0xFF000000, 0, false);
+		bmd.dispose();
+
+		var w:int = Math.ceil(cropR.width + 2);
+		var h:int = Math.ceil(cropR.height + 2);
 		rootNode.@width = w;
 		rootNode.@height = h;
-		if ((Math.floor(r.x) != 0) || (Math.floor(r.y) != 0)) {
-			rootNode.@viewBox = '' + Math.floor(r.x) + ' ' + Math.floor(r.y) + ' ' + Math.ceil(w) + ' ' + Math.ceil(h);
-		}
+		rootNode.@viewBox = '' + Math.floor(cropR.x - 1) + ' ' + Math.floor(cropR.y - 1) + ' ' + w + ' ' + h;
 	}
 
 	private function addNodeTo(el:SVGElement, xml:XML):void {

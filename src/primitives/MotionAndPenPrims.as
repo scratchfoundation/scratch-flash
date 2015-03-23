@@ -87,20 +87,26 @@ public class MotionAndPenPrims {
 
 	private function primTurnRight(b:Block):void {
 		var s:ScratchSprite = interp.targetSprite();
-		if (s != null) s.setDirection(s.direction + interp.numarg(b, 0));
-		if (s.visible) interp.redraw();
+		if (s != null) {
+			s.setDirection(s.direction + interp.numarg(b, 0));
+			if (s.visible) interp.redraw();
+		}
 	}
 
 	private function primTurnLeft(b:Block):void {
 		var s:ScratchSprite = interp.targetSprite();
-		if (s != null) s.setDirection(s.direction - interp.numarg(b, 0));
-		if (s.visible) interp.redraw();
+		if (s != null) {
+			s.setDirection(s.direction - interp.numarg(b, 0));
+			if (s.visible) interp.redraw();
+		}
 	}
 
 	private function primSetDirection(b:Block):void {
 		var s:ScratchSprite = interp.targetSprite();
-		if (s != null) s.setDirection(interp.numarg(b, 0));
-		if (s.visible) interp.redraw();
+		if (s != null) {
+			s.setDirection(interp.numarg(b, 0));
+			if (s.visible) interp.redraw();
+		}
 	}
 
 	private function primPointTowards(b:Block):void {
@@ -311,7 +317,7 @@ public class MotionAndPenPrims {
 		// turn away from the nearest edge if it's close enough; otherwise do nothing
 		// Note: comparisons are in the stage coordinates, with origin (0, 0)
 		// use bounding rect of the sprite to account for costume rotation and scale
-		var r:Rectangle = s.getRect(app.stagePane);
+		var r:Rectangle = s.bounds();
 		// measure distance to edges
 		var d1:Number = Math.max(0, r.left);
 		var d2:Number = Math.max(0, r.top);
@@ -338,7 +344,7 @@ public class MotionAndPenPrims {
 	}
 
 	private function ensureOnStageOnBounce(s:ScratchSprite):void {
-		var r:Rectangle = s.getRect(app.stagePane);
+		var r:Rectangle = s.bounds();
 		if (r.left < 0) moveSpriteTo(s, s.scratchX - r.left, s.scratchY);
 		if (r.top < 0) moveSpriteTo(s, s.scratchX, s.scratchY + r.top);
 		if (r.right > ScratchObj.STAGEW) {

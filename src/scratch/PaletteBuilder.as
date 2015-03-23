@@ -50,7 +50,8 @@ public class PaletteBuilder {
 		return [
 			'Stage selected:', 'No motion blocks',
 			'Make a Block', 'Make a List', 'Make a Variable',
-			'New List', 'List name', 'New Variable', 'Variable name'];
+			'New List', 'List name', 'New Variable', 'Variable name',
+			'New Block', 'Add an Extension'];
 	}
 
 	public function showBlocksForCategory(selectedCategory:int, scrollToOrigin:Boolean, shiftKey:Boolean = false):void {
@@ -181,6 +182,10 @@ public class PaletteBuilder {
 
 	protected function createVar(name:String, varSettings:VariableSettings):* {
 		var obj:ScratchObj = (varSettings.isLocal) ? app.viewedObj() : app.stageObj();
+		if (obj.hasName(name)) {
+			DialogBox.notify("Cannot Add", "That name is already in use.");
+			return;
+		}
 		var variable:* = (varSettings.isList ? obj.lookupOrCreateList(name) : obj.lookupOrCreateVar(name));
 
 		app.runtime.showVarOrListFor(name, varSettings.isList, obj);
@@ -191,7 +196,7 @@ public class PaletteBuilder {
 
 	private function makeVariable():void {
 		function makeVar2():void {
-			var n:String = d.fields['Variable name'].text.replace(/^\s+|\s+$/g, '');
+			var n:String = d.getField('Variable name').replace(/^\s+|\s+$/g, '');
 			if (n.length == 0) return;
 
 			createVar(n, varSettings);
@@ -208,7 +213,7 @@ public class PaletteBuilder {
 
 	private function makeList():void {
 		function makeList2(d:DialogBox):void {
-			var n:String = d.fields['List name'].text.replace(/^\s+|\s+$/g, '');
+			var n:String = d.getField('List name').replace(/^\s+|\s+$/g, '');
 			if (n.length == 0) return;
 
 			createVar(n, varSettings);
@@ -369,6 +374,7 @@ public class PaletteBuilder {
 		return m;
 	}
 
+	protected const pwidth:int = 215;
 	protected function addExtensionSeparator(ext:ScratchExtension):void {
 		function extensionMenu(ignore:*):void {
 			var m:Menu = getExtensionMenu(ext);
@@ -386,7 +392,7 @@ public class PaletteBuilder {
 		var indicator:IndicatorLight = new IndicatorLight(ext);
 		indicator.addEventListener(MouseEvent.CLICK, function(e:Event):void {Scratch.app.showTip('extensions');}, false, 0, true);
 		app.extensionManager.updateIndicator(indicator, ext);
-		indicator.x = app.palette.width - 30;
+		indicator.x = pwidth - 30;
 		indicator.y = nextY + 2;
 		app.palette.addChild(indicator);
 
@@ -395,7 +401,7 @@ public class PaletteBuilder {
 
 	protected function addLineForExtensionTitle(titleButton:IconButton, ext:ScratchExtension):void {
 		var x:int = titleButton.width + 12;
-		addLine(x, nextY + 9, app.palette.width - x - 38);
+		addLine(x, nextY + 9, pwidth - x - 38);
 	}
 
 	private function addBlocksForExtension(ext:ScratchExtension):void {

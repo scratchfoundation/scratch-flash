@@ -388,8 +388,10 @@ public class StagePart extends UIPart {
 	}
 
 	private function stopEvent(e:Event):void {
-		e.stopImmediatePropagation();
-		e.preventDefault();
+		if (e) {
+			e.stopImmediatePropagation();
+			e.preventDefault();
+		}
 	}
 
 	public function addUserNameWarning():void {

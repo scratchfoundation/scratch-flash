@@ -18,19 +18,19 @@
  */
 
 package ui.media {
-	import flash.display.*;
-	import flash.events.*;
-	import flash.net.*;
-	import flash.text.*;
-	import flash.ui.*;
-	import flash.utils.*;
-	import assets.Resources;
-	import extensions.ScratchExtension;
-	import scratch.*;
-	import sound.mp3.MP3Loader;
-	import translation.Translator;
-	import uiwidgets.*;
-	import util.*;
+import flash.display.*;
+import flash.events.*;
+import flash.media.Sound;
+import flash.net.*;
+import flash.text.*;
+import flash.utils.*;
+import assets.Resources;
+import extensions.ScratchExtension;
+import scratch.*;
+import sound.mp3.MP3Loader;
+import translation.Translator;
+import uiwidgets.*;
+import util.*;
 
 public class MediaLibrary extends Sprite {
 
@@ -75,7 +75,7 @@ public class MediaLibrary extends Sprite {
 	private var okayButton:Button;
 	private var cancelButton:Button;
 
-	private static var libraryCache:Array; // cache of all mediaLibrary entries
+	private static var libraryCache:Object = {}; // cache of all mediaLibrary entries
 
 	public function MediaLibrary(app:Scratch, type:String, whenDone:Function) {
 		this.app = app;
@@ -216,11 +216,11 @@ public class MediaLibrary extends Sprite {
 
 	private function addTitle():void {
 		var s:String = assetType;
-		if ('backdrop' == s) s = Translator.map('Backdrop Library');
-		if ('costume' == s) s = Translator.map('Costume Library');
-		if ('extension' == s) s = Translator.map('Extension Library');
-		if ('sprite' == s) s = Translator.map('Sprite Library');
-		if ('sound' == s) s = Translator.map('Sound Library');
+		if ('backdrop' == s) s = 'Backdrop Library';
+		if ('costume' == s) s = 'Costume Library';
+		if ('extension' == s) s = 'Extension Library';
+		if ('sprite' == s) s = 'Sprite Library';
+		if ('sound' == s) s = 'Sound Library';
 		addChild(title = Resources.makeLabel(Translator.map(s), titleFormat));
 	}
 
@@ -287,19 +287,19 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 		function gotLibraryData(data:ByteArray):void {
 			if (!data) return; // failure
 			var s:String = data.readUTFBytes(data.length);
-			libraryCache = util.JSON.parse(stripComments(s)) as Array;
+			libraryCache[assetType] = util.JSON.parse(stripComments(s)) as Array;
 			collectEntries();
 		}
 		function collectEntries():void {
 			allItems = [];
-			for each (var entry:Object in libraryCache) {
+			for each (var entry:Object in libraryCache[assetType]) {
 				if (entry.type == assetType) {
 					if (entry.tags is Array) entry.category = entry.tags[0];
 					var info:Array = entry.info as Array;
 					if (info) {
 						if ((entry.type == 'backdrop') || (assetType == 'costume')) {
-							entry.width = info[0];
-							entry.height = info[1];
+//							entry.width = info[0];
+//							entry.height = info[1];
 						}
 						if (entry.type == 'sound') {
 							entry.seconds = info[0];
@@ -320,7 +320,7 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 			addScratchExtensions();
 			return;
 		}
-		if (!libraryCache) app.server.getMediaLibrary(gotLibraryData);
+		if (!libraryCache[assetType]) app.server.getMediaLibrary(assetType, gotLibraryData);
 		else collectEntries();
 	}
 
@@ -429,7 +429,14 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 				} else if (assetType == 'sound') {
 					io.fetchSound(md5AndExt, item.dbObj.name, whenDone);
 				} else {
-					io.fetchImage(md5AndExt, item.dbObj.name, 0, whenDone);
+					var obj:Object = {
+						centerX: item.dbObj.info[0],
+						centerY: item.dbObj.info[1],
+						bitmapResolution: 1
+					};
+					if (item.dbObj.info.length == 3)
+						obj.bitmapResolution = item.dbObj.info[2];
+					io.fetchImage(md5AndExt, item.dbObj.name, 0, whenDone, obj);
 				}
 			}
 		}
@@ -669,12 +676,29 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 			startSoundUpload(snd, origName, uploadComplete);
 		} else { // try to read data as an MP3 file
 			if (app.lp) app.lp.setTitle('Converting mp3...');
-			setTimeout(function():void {
-				MP3Loader.convertToScratchSound(sndName, data, function(s:ScratchSound):void {
-					snd = s;
-					startSoundUpload(s, origName, uploadComplete);
-				});
-			}, 1);
+			var sound:Sound;
+			SCRATCH::allow3d {
+				sound = new Sound();
+				data.position = 0;
+				try {
+					sound.loadCompressedDataFromByteArray(data, data.length);
+					MP3Loader.extractSamples(origName, sound, sound.length * 44.1, function (out:ScratchSound):void {
+						snd = out;
+						startSoundUpload(out, origName, uploadComplete);
+					});
+				}
+				catch(e:Error) {
+					uploadComplete();
+				}
+			}
+
+			if (!sound)
+				setTimeout(function():void {
+					MP3Loader.convertToScratchSound(sndName, data, function(s:ScratchSound):void {
+						snd = s;
+						startSoundUpload(s, origName, uploadComplete);
+					});
+				}, 1);
 		}
 	}
 

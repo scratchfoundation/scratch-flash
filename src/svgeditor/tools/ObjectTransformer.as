@@ -129,12 +129,21 @@ package svgeditor.tools  {
 			alpha = 0.65;
 		}
 
+		private function getStage():Stage {
+			if (editor && editor.stage) {
+				return editor.stage;
+			}
+			return stage;
+		}
+
 		override protected function shutdown():void {
+			var stageObject:Stage = getStage();
+
 			// Remove event handlers
 			removeSelectionEventHandlers();
 			editor.getWorkArea().removeEventListener(MouseEvent.MOUSE_DOWN, selectionBoxHandler);
-			stage.removeEventListener(MouseEvent.MOUSE_MOVE, selectionBoxHandler);
-			stage.removeEventListener(MouseEvent.MOUSE_UP, selectionBoxHandler);
+			stageObject.removeEventListener(MouseEvent.MOUSE_MOVE, selectionBoxHandler);
+			stageObject.removeEventListener(MouseEvent.MOUSE_UP, selectionBoxHandler);
 
 			select(null);
 			setActive(false);
@@ -155,6 +164,7 @@ package svgeditor.tools  {
 				}
 			}
 			else {
+				if (editor.revertToCreateTool(event)) return;
 				if(targetObj && event && (event.shiftKey || event.ctrlKey)) {
 					targetObj.getObjs().push(obj);
 					select(targetObj);
@@ -285,7 +295,7 @@ package svgeditor.tools  {
 			// Dispatch the 'select' event if we aren't refreshing
 			if(!isRefreshing && !isShuttingDown) dispatchEvent(e);
 
-			if(!targetObj && currentEvent is MouseEvent && currentEvent.type == MouseEvent.MOUSE_DOWN) {
+			if(!isShuttingDown && !targetObj && currentEvent is MouseEvent && currentEvent.type == MouseEvent.MOUSE_DOWN) {
 				selectionBoxHandler(currentEvent);
 			}
 		}
@@ -334,14 +344,18 @@ package svgeditor.tools  {
 		}
 
 		private function removeSelectionEventHandlers():void {
-			stage.removeEventListener(MouseEvent.MOUSE_UP, moveHandler);
-			editor.removeEventListener(MouseEvent.MOUSE_MOVE, moveHandler);
+			var stageObject:Stage = getStage();
+			if (stageObject) {
+				stageObject.removeEventListener(MouseEvent.MOUSE_UP, moveHandler);
+				stageObject.removeEventListener(MouseEvent.MOUSE_UP, resizeHandler);
+				stageObject.removeEventListener(MouseEvent.MOUSE_UP, rotateHandler);
+				stageObject.removeEventListener(MouseEvent.MOUSE_MOVE, rotateHandler);
+			}
 
-			stage.removeEventListener(MouseEvent.MOUSE_UP, resizeHandler);
-			editor.removeEventListener(MouseEvent.MOUSE_MOVE, resizeHandler);
-
-			stage.removeEventListener(MouseEvent.MOUSE_UP, rotateHandler);
-			stage.removeEventListener(MouseEvent.MOUSE_MOVE, rotateHandler);
+			if (editor) {
+				editor.removeEventListener(MouseEvent.MOUSE_MOVE, moveHandler);
+				editor.removeEventListener(MouseEvent.MOUSE_MOVE, resizeHandler);
+			}
 		}
 
 		private function keyPressed(e:KeyboardEvent):void {
@@ -776,10 +790,8 @@ package svgeditor.tools  {
 
 			switch(e.type) {
 				case MouseEvent.MOUSE_DOWN:
-					// The Bitmap Editor will want to return to the rectangle or ellipse tool if the user
-					// clicks outside of the selection and the selection is holding a just-drawn rectangle or ellipse.
-					if(editor is BitmapEdit && (editor as BitmapEdit).revertToCreateTool(e))
-						return;
+					// The editor will want to return to the rectangle or ellipse tool if the user clicks outside of the selection and the selection is holding a just-drawn rectangle or ellipse.
+					if (editor.revertToCreateTool(e)) return;
 
 					stage.addEventListener(MouseEvent.MOUSE_MOVE, arguments.callee, false, 0, true);
 					stage.addEventListener(MouseEvent.MOUSE_UP, arguments.callee, false, 0, true);

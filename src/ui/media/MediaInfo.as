@@ -31,15 +31,12 @@ package ui.media {
 	import flash.geom.*;
 	import flash.net.*;
 	import flash.text.*;
-	import flash.utils.*;
 	import assets.Resources;
 	import blocks.*;
 	import scratch.*;
-	import svgutils.SVGImporter;
 	import translation.Translator;
 	import ui.parts.*;
 	import uiwidgets.*;
-	import util.*;
 
 public class MediaInfo extends Sprite {
 
@@ -68,8 +65,6 @@ public class MediaInfo extends Sprite {
 	private var label:TextField;
 	private var info:TextField;
 	private var deleteButton:IconButton;
-
-	protected var loaders:Array = []; // list of URLLoaders for stopLoading()
 
 	public function MediaInfo(obj:*, owningObj:ScratchObj = null) {
 		owner = owningObj;
@@ -144,19 +139,12 @@ public class MediaInfo extends Sprite {
 	public function thumbnailY():int { return thumbnail.y }
 
 	public function computeThumbnail():Boolean {
-		var ext:String = fileType(md5);
 		if (mycostume) setLocalCostumeThumbnail();
 		else if (mysprite) setLocalSpriteThumbnail();
 		else if (scripts) setScriptThumbnail();
 		else return false;
 
 		return true;
-	}
-
-	public function stopLoading():void {
-		var app:Scratch = root as Scratch;
-		for each (var loader:URLLoader in loaders) if (loader) loader.close(); // loader can be nil when offline
-		loaders = [];
 	}
 
 	private function setLocalCostumeThumbnail():void {
@@ -366,12 +354,14 @@ public class MediaInfo extends Sprite {
 	//------------------------------
 
 	public function click(evt:MouseEvent):void {
-		var app:Scratch = Scratch.app;
-		if (mycostume) {
-			app.viewedObj().showCostumeNamed(mycostume.costumeName);
-			app.selectCostume();
+		if (!getBackpack()) {
+			var app:Scratch = Scratch.app;
+			if (mycostume) {
+				app.viewedObj().showCostumeNamed(mycostume.costumeName);
+				app.selectCostume();
+			}
+			if (mysound) app.selectSound(mysound);
 		}
-		if (mysound) app.selectSound(mysound);
 	}
 
 	public function handleTool(tool:String, evt:MouseEvent):void {
@@ -386,6 +376,7 @@ public class MediaInfo extends Sprite {
 	}
 
 	protected function addMenuItems(m:Menu):void {
+		if (!getBackpack()) m.addItem('duplicate', duplicateMe);
 		m.addItem('delete', deleteMe);
 		m.addLine();
 		if (mycostume) {
@@ -397,7 +388,7 @@ public class MediaInfo extends Sprite {
 	}
 
 	protected function duplicateMe():void {
-		if (owner) {
+		if (owner && !getBackpack()) {
 			if (mycostume) Scratch.app.addCostume(mycostume.duplicate());
 			if (mysound) Scratch.app.addSound(mysound.duplicate());
 		}
@@ -430,5 +421,9 @@ public class MediaInfo extends Sprite {
 		mysound.prepareToSave();
 		var defaultName:String = mysound.soundName + '.wav';
 		new FileReference().save(mysound.soundData, defaultName);
+	}
+
+	protected function getBackpack():UIPart {
+		return null;
 	}
 }}
