@@ -213,10 +213,6 @@ public class Scratch extends Sprite {
 		addExternalCallback('ASloadExtension', extensionManager.loadRawExtension);
 		addExternalCallback('ASextensionCallDone', extensionManager.callCompleted);
 		addExternalCallback('ASextensionReporterDone', extensionManager.reporterCompleted);
-
-		// TODO: remove these hacks by adjusting JS
-		addExternalCallback('AScreateProject', function():void{});
-		addExternalCallback('ASsetLoginUser', function():void{});
 	}
 
 	protected function jsEditorReady():void {

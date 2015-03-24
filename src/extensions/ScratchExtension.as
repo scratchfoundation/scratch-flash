@@ -70,9 +70,19 @@ public class ScratchExtension {
 	}
 
 	private static function getExtensionURL(extensionName:String):String {
-		var path:String = Scratch.app.isOffline ? '' : '/';//scratchr2/';
+		var path:String;
 
-		path += 'static/js/scratch_extensions/' + extensionName;
+		if (Scratch.app.isOffline) {
+			path = 'static/js/scratch_extensions/';
+		}
+		else if (Scratch.app.isExtensionDevMode) {
+			path = 'scratch_extensions/';
+		}
+		else {
+			path = '/scratchr2/static/js/scratch_extensions/'
+		}
+
+		path += extensionName;
 
 		return path;
 	}
