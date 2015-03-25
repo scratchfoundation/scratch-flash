@@ -213,8 +213,9 @@ public class Scratch extends Sprite {
 
 	protected function jsEditorReady():void {
 		if (jsEnabled) {
-			var success:Boolean = ExternalInterface.call('JSeditorReady');
-			if (!success) jsThrowError('Calling JSeditorReady() failed.');
+			externalCall('JSeditorReady', function(success:Boolean):void {
+				if (!success) jsThrowError('Calling JSeditorReady() failed.');
+			});
 		}
 	}
 
