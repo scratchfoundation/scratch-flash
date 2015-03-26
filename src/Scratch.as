@@ -29,7 +29,6 @@ import flash.net.FileFilter;
 import extensions.ExtensionManager;
 
 import flash.display.*;
-import flash.errors.IllegalOperationError;
 import flash.events.*;
 import flash.external.ExternalInterface;
 import flash.geom.Point;
@@ -37,6 +36,9 @@ import flash.geom.Rectangle;
 import flash.net.FileReference;
 import flash.net.FileReferenceList;
 import flash.net.LocalConnection;
+import flash.net.URLLoader;
+import flash.net.URLLoaderDataFormat;
+import flash.net.URLRequest;
 import flash.system.*;
 import flash.text.*;
 import flash.utils.*;
@@ -213,6 +215,10 @@ public class Scratch extends Sprite {
 		addExternalCallback('ASloadExtension', extensionManager.loadRawExtension);
 		addExternalCallback('ASextensionCallDone', extensionManager.callCompleted);
 		addExternalCallback('ASextensionReporterDone', extensionManager.reporterCompleted);
+
+		if (isExtensionDevMode) {
+			addExternalCallback('ASloadSBXFromURL', loadSBXFromURL);
+		}
 	}
 
 	protected function jsEditorReady():void {
@@ -221,6 +227,35 @@ public class Scratch extends Sprite {
 				if (!success) jsThrowError('Calling JSeditorReady() failed.');
 			});
 		}
+	}
+
+	private function loadSBXFromURL(url:String):void {
+		if (!isExtensionDevMode) return;
+
+		function handleComplete(e:Event):void {
+			runtime.installProjectFromData(sbxLoader.data);
+			var projectName:String = url;
+			var index:int = projectName.indexOf('?');
+			if (index > 0) projectName = projectName.slice(0, index);
+			index = projectName.lastIndexOf('/');
+			if (index > 0) projectName = projectName.substr(index + 1);
+			index = projectName.lastIndexOf('.sbx');
+			if (index > 0) projectName = projectName.slice(0, index);
+			app.setProjectName(projectName);
+		}
+
+		function handleError(e:ErrorEvent):void {
+			jsThrowError('Failed to load SBX: ' + e.toString());
+		}
+
+		loadInProgress = true;
+		var request:URLRequest = new URLRequest(url);
+		var sbxLoader:URLLoader = new URLLoader(request);
+		sbxLoader.dataFormat = URLLoaderDataFormat.BINARY;
+		sbxLoader.addEventListener(Event.COMPLETE, handleComplete);
+		sbxLoader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, handleError);
+		sbxLoader.addEventListener(IOErrorEvent.IO_ERROR, handleError);
+		sbxLoader.load(request);
 	}
 
 	protected function initTopBarPart():void {
@@ -518,6 +553,10 @@ public class Scratch extends Sprite {
 		// translate the blocks of the newly loaded project
 		for each (var o:ScratchObj in stagePane.allObjects()) {
 			o.updateScriptsAfterTranslation();
+		}
+
+		if (jsEnabled && isExtensionDevMode) {
+			externalCall('JSprojectLoaded');
 		}
 	}
 

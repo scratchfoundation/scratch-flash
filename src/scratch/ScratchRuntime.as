@@ -70,7 +70,7 @@ public class ScratchRuntime {
 	//------------------------------
 
 	public function stepRuntime():void {
-		if (projectToInstall != null && app.isOffline) {
+		if (projectToInstall != null && (app.isOffline || app.isExtensionDevMode)) {
 			installProject(projectToInstall);
 			if (saveAfterInstall) app.setSaveNeeded(true);
 			projectToInstall = null;
