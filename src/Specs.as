@@ -355,7 +355,7 @@ public class Specs {
 		["-"],
 		["item %d.listItem of %m.list",						"r", 12, "getLine:ofList:"],
 		["length of %m.list",								"r", 12, "lineCountOfList:"],
-		["%m.list contains %s",								"b", 12, "list:contains:"],
+		["%m.list contains %s?",								"b", 12, "list:contains:"],
 		["-"],
 		["show list %m.list",								" ", 12, "showList:"],
 		["hide list %m.list",								" ", 12, "hideList:"],
