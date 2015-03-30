@@ -189,6 +189,7 @@ public class Translator {
 			if (mode == 'val') val += extractQuotedString(line);
 		}
 		if (mode == 'val') dict[key] = val; // recordPairIn(key, val, dict);
+		delete dict['']; // remove the empty-string metadata entry, if present.
 		return dict;
 	}
 
