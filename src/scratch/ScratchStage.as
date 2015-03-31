@@ -392,9 +392,9 @@ public class ScratchStage extends ScratchObj {
 			m.scale(s.scaleX, s.scaleY);
 			m.translate(s.x, s.y);
 			var oldGhost:Number = s.filterPack.getFilterSetting('ghost');
-			s.filterPack.setFilter('ghost', 100 * (1 - stampAlpha));
+			s.filterPack.setFilter('ghost', 0);
 			s.applyFilters();
-			penBM.draw(s, m);
+			penBM.draw(s, m, new ColorTransform(1, 1, 1, stampAlpha));
 			s.filterPack.setFilter('ghost', oldGhost);
 			s.applyFilters();
 			s.visible = wasVisible;
@@ -434,9 +434,11 @@ public class ScratchStage extends ScratchObj {
 			var oldBright:Number = s.filterPack.getFilterSetting('brightness');
 			s.filterPack.setFilter('ghost', 0);
 			s.filterPack.setFilter('brightness', 0);
+			s.applyFilters();
 			var bmd:BitmapData = Scratch.app.render3D.getRenderedChild(s, b.width * s.scaleX, b.height * s.scaleY, for_carry);
 			s.filterPack.setFilter('ghost', ghost);
 			s.filterPack.setFilter('brightness', oldBright);
+			s.applyFilters();
 
 			return bmd;
 		}

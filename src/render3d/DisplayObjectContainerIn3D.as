@@ -1288,7 +1288,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		if (blend)
 			__context.setBlendFactors(Context3DBlendFactor.SOURCE_ALPHA, Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA);
 		else
-			__context.setBlendFactors(Context3DBlendFactor.SOURCE_ALPHA, Context3DBlendFactor.ZERO);
+			__context.setBlendFactors(Context3DBlendFactor.ONE, Context3DBlendFactor.ZERO);
 
 		uploadBuffers();
 
