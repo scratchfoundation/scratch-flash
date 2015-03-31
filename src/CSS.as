@@ -58,4 +58,6 @@ public class CSS {
 	public static const titleBarColors:Array = [white, tabColor];
 	public static const titleBarH:int = 30;
 
+	// Button dimensions
+	public static var buttonSpacing:uint = 10;
 }}

@@ -146,7 +146,7 @@ public class MediaLibrary extends Sprite {
 
 		cancelButton.x = w - (inset + cancelButton.width + rightInset);
 		cancelButton.y = h - (inset + cancelButton.height + 10);
-		okayButton.x = cancelButton.x - (okayButton.width + 10);
+		okayButton.x = cancelButton.x - (okayButton.width + CSS.buttonSpacing);
 		okayButton.y = cancelButton.y;
 
 		drawBackground(w, h);

@@ -2,8 +2,6 @@
  * Created by shanemc on 9/12/14.
  */
 package uiwidgets {
-import assets.ResourcesTablet;
-
 import com.greensock.TweenLite;
 import com.greensock.easing.Linear;
 
@@ -11,6 +9,8 @@ import flash.display.Sprite;
 import flash.events.Event;
 import flash.geom.Point;
 import scratch.ScratchSprite;
+
+import ui.ScreenDetector;
 
 import ui.dragdrop.DragAndDropMgr;
 import ui.dragdrop.DropTarget;
@@ -31,7 +31,7 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 
 	// Fixed state variables
 	private var type:uint = 0;
-	private var itemPadding:uint = ResourcesTablet.pixelsPerCM * 0.1;
+	private var itemPadding:uint = ScreenDetector.pixelsPerCM * 0.1;
 
 	// Dynamic state variables
 	private var w:uint;

@@ -32,9 +32,9 @@ package uiwidgets {
 
 public class EditableLabel extends Sprite {
 
-	private const defaultFormat:TextFormat = new TextFormat(CSS.font, 13, 0x929497);
-	private const bgColor:int = 0xFFFFFF;
-	private const frameColor:int = 0xA6A8AB;
+	protected const defaultFormat:TextFormat = new TextFormat(CSS.font, 13, 0x929497);
+	protected const bgColor:int = 0xFFFFFF;
+	protected var frameColor:int = 0xA6A8AB;
 
 	public var tf:TextField;
 
@@ -109,7 +109,7 @@ public class EditableLabel extends Sprite {
 		addChild(tf);
 	}
 
-	private function addFilter():void {
+	protected function addFilter():void {
 		var f:BevelFilter = new BevelFilter();
 		f.angle = 225;
 		f.shadowAlpha = 0.5;

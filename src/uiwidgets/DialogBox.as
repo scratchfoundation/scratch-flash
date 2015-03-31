@@ -40,11 +40,11 @@ public class DialogBox extends Sprite {
 	private var labelsAndFields:Array = [];
 	private var booleanLabelsAndFields:Array = [];
 	private var textLines:Array = [];
-	private var maxLabelWidth:int = 0;
-	private var maxFieldWidth:int = 0;
-	private var heightPerField:int = Math.max(makeLabel('foo').height, makeField(10).height) + 10;
-	private const spaceAfterText:int = 18;
-	private const blankLineSpace:int = 7;
+	protected var maxLabelWidth:uint = 0;
+	protected var maxFieldWidth:uint = 0;
+	protected var heightPerField:uint = Math.max(makeLabel('foo').height, makeField(10).height) + 10;
+	protected static var spaceAfterText:uint = 18;
+	protected static var blankLineSpace:uint = 7;
 
 	private var acceptFunction:Function; // if not nil, called when menu interaction is accepted
 	private var cancelFunction:Function; // if not nil, called when menu interaction is canceled
@@ -332,7 +332,7 @@ public class DialogBox extends Sprite {
 			for (i = 0; i < buttons.length; i++) {
 				buttons[i].x = buttonX;
 				buttons[i].y = buttonY;
-				buttonX += buttons[i].width + 10;
+				buttonX += buttons[i].width + CSS.buttonSpacing;
 			}
 		}
 	}
@@ -376,7 +376,7 @@ public class DialogBox extends Sprite {
 		if (textLines.length > 0) h += spaceAfterText;
 		// buttons
 		totalW = 0;
-		for (i = 0; i < buttons.length; i++) totalW += buttons[i].width + 10;
+		for (i = 0; i < buttons.length; i++) totalW += buttons[i].width + CSS.buttonSpacing;
 		w = Math.max(w, totalW);
 		if (buttons.length > 0) h += buttons[0].height + 15;
 		if ((labelsAndFields.length > 0) || (booleanLabelsAndFields.length > 0)) h += 15;

@@ -112,11 +112,15 @@ public class SpriteInfoPart extends UIPart implements ITool {
 		else layoutFullsize();
 	}
 
+	protected function makeEditableLabel(callback:Function, format:TextFormat = null):EditableLabel {
+		return new EditableLabel(callback, format);
+	}
+
 	protected function addParts():void {
 		addChild(closeButton = new IconButton(closeSpriteInfo, 'backarrow'));
 		closeButton.isMomentary = true;
 
-		addChild(spriteName = new EditableLabel(nameChanged, spriteNameFormat));
+		addChild(spriteName = makeEditableLabel(nameChanged, spriteNameFormat));
 		spriteName.setWidth(200);
 
 		addChild(thumbnail = new Bitmap());
