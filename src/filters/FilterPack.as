@@ -82,7 +82,7 @@ public class FilterPack {
 	}
 
 	public function setFilter(filterName:String, newValue:Number):Boolean {
-		if (isNaN(newValue)) return false;
+		if (newValue != newValue) return false;
 		if (filterName == "brightness") newValue = Math.max(-100, Math.min(newValue, 100));
 		if (filterName == "color") newValue = newValue % 200;
 		if (filterName == "ghost") newValue = Math.max(0, Math.min(newValue, 100));

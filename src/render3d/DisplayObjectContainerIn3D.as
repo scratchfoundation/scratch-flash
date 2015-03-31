@@ -430,6 +430,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		var dispObj:DisplayObject;
 
 		checkBuffers();
+		uploadBuffers();
 
 		if(childrenChanged) {
 			if(debugTexture) {
@@ -476,14 +477,15 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 	private function uploadBuffers():void {
 		if (!indexBufferUploaded) {
 //			trace('uploading indexBuffer when indexData length = '+indexData.length);
-			trace(indexData);
 			indexBuffer.uploadFromByteArray(indexData, 0, 0, indexData.length >> 1);
 			indexBufferUploaded = true;
 		}
 //		trace('uploading vertexBuffer when indexData length = '+indexData.length);
 //		trace('uploadFromByteArray(vertexData, 0, 0, '+((indexData.length / 12) * 4)+')');
-		vertexBuffer.uploadFromByteArray(vertexData, 0, 0, indexData.length / 3);
-		vertexBufferUploaded = true;
+//		if (!vertexBufferUploaded) {
+			vertexBuffer.uploadFromByteArray(vertexData, 0, 0, indexData.length / 3);
+			vertexBufferUploaded = true;
+//		}
 	}
 
 	private var boundsDict:Dictionary = new Dictionary();
@@ -514,7 +516,8 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		drawMatrix.identity();
 		drawMatrix.appendScale(bounds.width, bounds.height, 1);
 		drawMatrix.appendTranslation(bounds.top, bounds.left, 0);
-		drawMatrix.appendScale(dispObj.scaleX, dispObj.scaleY, 1);
+		var scale:Number = dispObj.scaleX;
+		drawMatrix.appendScale(scale, scale, 1);
 		drawMatrix.appendRotation(dispObj.rotation, Vector3D.Z_AXIS);
 		drawMatrix.appendTranslation(dispObj.x, dispObj.y, 0);
 		drawMatrix.append(projMatrix);
@@ -528,8 +531,8 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		__context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 3, FC3);
 		__context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 4, FC4);
 
-		const dw:Number = dispObj.width * dispObj.scaleX;
-		const dh:Number = dispObj.height * dispObj.scaleX;
+		const dw:Number = bounds.width * scale;
+		const dh:Number = bounds.height * scale;
 		const rect:Rectangle = texture.getRect(bmID);
 		var forcePixelate:Boolean = pixelateAll || (renderOpts && rot % 90 == 0 && (closeTo(dw, rect.width) || renderOpts.bitmap!=null));
 		var left:Number = rect.left / texture.width;
@@ -623,8 +626,6 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 			__context.setBlendFactors(Context3DBlendFactor.SOURCE_ALPHA, Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA);
 		else
 			__context.setBlendFactors(Context3DBlendFactor.SOURCE_ALPHA, Context3DBlendFactor.ZERO);
-
-		uploadBuffers();
 
 		// draw all sprites
 		__context.drawTriangles(indexBuffer, 0, 2);
@@ -1230,14 +1231,15 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		fragmentShaderCode = getUTF(new FragmentShader());
 	}
 
+	private var availableEffectRegisters:Array = [
+		'fc6.xxxx', 'fc6.yyyy', 'fc6.zzzz', 'fc6.wwww',
+		'fc7.xxxx', 'fc7.yyyy', 'fc7.zzzz', 'fc7.wwww'
+	];
+	private var vertexShaderParts:Array = [];
+	private var fragmentShaderParts:Array = [];
 	private function switchShaders(effects:Object):void {
 		// Number of 32-bit values associated with each effect
 		// Must be kept in sync with FilterPack.filterNames, vertex format setup, and vertex buffer fill.
-		const availableEffectRegisters:Array = [
-			'fc6.xxxx', 'fc6.yyyy', 'fc6.zzzz', 'fc6.wwww',
-			'fc7.xxxx', 'fc7.yyyy', 'fc7.zzzz', 'fc7.wwww'
-		];
-
 		var shaderID:int = 0;
 		if (effects)
 			for (var i:int = 0, l:int = effectNames.length; i < l; ++i) {
@@ -1247,8 +1249,9 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 
 		currentShader = shaderCache[shaderID];
 		if (!currentShader) {
-			var vertexShaderParts:Array = [];
-			var fragmentShaderParts:Array = [];
+			vertexShaderParts.length = 0;
+			fragmentShaderParts.length = 0;
+			var ri:int = 0;
 			for (i = 0, l = effectNames.length; i < l; ++i) {
 				var effectName:String = effectNames[i];
 				var isActive:Boolean = effects && effects[effectName] != 0;
@@ -1257,12 +1260,12 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 					if (effectName == FX_PIXELATE) {
 						fragmentShaderParts.push('alias fc6.xyxy, FX_' + effectName);
 						fragmentShaderParts.push('alias fc4.yzyz, FX_' + effectName + '_half');
-						availableEffectRegisters.shift(); // consume an extra register in the fragment shader
+						++ri; // consume an extra register in the fragment shader
 					}
 					else {
-						fragmentShaderParts.push(['alias ', availableEffectRegisters[0], ', FX_', effectName].join(''));
+						fragmentShaderParts.push(['alias ', availableEffectRegisters[ri], ', FX_', effectName].join(''));
 					}
-					availableEffectRegisters.shift();
+					++ri;
 				}
 			}
 
