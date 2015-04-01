@@ -504,7 +504,6 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		var bmID:String = spriteBitmaps[dispObj];
 		var renderOpts:Object = spriteRenderOpts[dispObj];
 		var roundLoc:Boolean = (rot % 90 == 0 && dispObj.scaleX == 1.0 && dispObj.scaleY == 1.0);
-//			var forcePixelate:Boolean = pixelateAll || (renderOpts && renderOpts.bitmap && rot % 90 == 0);
 
 		var boundsX:Number = bounds.left, boundsY:Number = bounds.top;
 		var childRender:ChildRender = bitmapsByID[bmID] as ChildRender;
@@ -1145,6 +1144,8 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		__context.setScissorRectangle(new Rectangle(0, 0, bmd.width + 1, bmd.height + 1));
 		render(1, false);
 		__context.drawToBitmapData(bmd);
+		// TODO: Fix bright edges of renders
+//		trace('Edge pixel: 0x'+bmd.getPixel32(bmd.width - 1, bmd.height - 1).toString(16).toUpperCase());
 
 		if (changeBackBuffer) {
 			scissorRect = null;
