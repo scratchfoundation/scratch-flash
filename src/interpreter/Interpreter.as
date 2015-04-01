@@ -432,6 +432,7 @@ public class Interpreter {
 		// control
 		primTable["whenGreenFlag"]		= primNoop;
 		primTable["whenKeyPressed"]		= primNoop;
+		primTable["whenKeyReleased"]		= primNoop;
 		primTable["whenClicked"]		= primNoop;
 		primTable["whenSceneStarts"]	= primNoop;
 		primTable["wait:elapsed:from:"]	= primWait;

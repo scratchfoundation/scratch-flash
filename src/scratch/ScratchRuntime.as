@@ -184,14 +184,7 @@ public class ScratchRuntime {
 	}
 
 	public function startKeyHats(ch:int):void {
-		var keyName:String = null;
-		if (('a'.charCodeAt(0) <= ch) && (ch <= 'z'.charCodeAt(0))) keyName = String.fromCharCode(ch);
-		if (('0'.charCodeAt(0) <= ch) && (ch <= '9'.charCodeAt(0))) keyName = String.fromCharCode(ch);
-		if (28 == ch) keyName = 'left arrow';
-		if (29 == ch) keyName = 'right arrow';
-		if (30 == ch) keyName = 'up arrow';
-		if (31 == ch) keyName = 'down arrow';
-		if (32 == ch) keyName = 'space';
+		var keyName = getKeyName(ch);
 		if (keyName == null) return;
 		var startMatchingKeyHats:Function = function (stack:Block, target:ScratchObj):void {
 			if ((stack.op == 'whenKeyPressed') && (stack.args[0].argValue == keyName)) {
@@ -200,6 +193,30 @@ public class ScratchRuntime {
 			}
 		}
 		allStacksAndOwnersDo(startMatchingKeyHats);
+	}
+
+	public function startKeyUpHats(ch:int):void {
+		var keyName = getKeyName(ch);
+		if (keyName == null) return;
+		var startMatchingKeyUpHats:Function = function (stack:Block, target:ScratchObj):void {
+			if ((stack.op == 'whenKeyReleased') && (stack.args[0].argValue == keyName)) {
+				// only start the stack if it is not already running
+				if (!interp.isRunning(stack, target)) interp.toggleThread(stack, target);
+			}
+		}
+		allStacksAndOwnersDo(startMatchingKeyUpHats);
+	}
+
+	private function getKeyName(ch:int):String {
+		var keyName:String = null;
+		if (('a'.charCodeAt(0) <= ch) && (ch <= 'z'.charCodeAt(0))) keyName = String.fromCharCode(ch);
+		if (('0'.charCodeAt(0) <= ch) && (ch <= '9'.charCodeAt(0))) keyName = String.fromCharCode(ch);
+		if (28 == ch) keyName = 'left arrow';
+		if (29 == ch) keyName = 'right arrow';
+		if (30 == ch) keyName = 'up arrow';
+		if (31 == ch) keyName = 'down arrow';
+		if (32 == ch) keyName = 'space';
+		return keyName;
 	}
 
 	public function collectBroadcasts():Array {
@@ -533,6 +550,7 @@ public class ScratchRuntime {
 		var ch:int = evt.charCode;
 		if (evt.charCode == 0) ch = mapArrowKey(evt.keyCode);
 		if ((65 <= ch) && (ch <= 90)) ch += 32; // map A-Z to a-z
+		if (!(evt.target is TextField)) startKeyUpHats(ch);
 		if (ch < 128) keyIsDown[ch] = false;
 	}
 
