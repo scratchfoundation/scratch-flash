@@ -38,7 +38,7 @@ public class EditableLabel extends Sprite {
 
 	public var tf:TextField;
 
-	private var bezel:Shape;
+	protected var bezel:Shape;
 	private var dynamicBezel:Boolean;
 	private var textChanged:Function;
 
@@ -118,5 +118,4 @@ public class EditableLabel extends Sprite {
 		f.blurX = f.blurY = 2;
 		bezel.filters = [f];
 	}
-
 }}
