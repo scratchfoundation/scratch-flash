@@ -26,14 +26,16 @@
 package scratch {
 	import flash.display.*;
 	import flash.events.*;
-import flash.filters.GlowFilter;
-import flash.geom.*;
-import flash.geom.ColorTransform;
-import flash.utils.*;
+	import flash.external.ExternalInterface;
+	import flash.geom.*;
+	import flash.geom.ColorTransform;
+	import flash.utils.*;
 	import flash.net.FileReference;
 	import filters.FilterPack;
 	import interpreter.Variable;
 	import translation.Translator;
+
+	import uiwidgets.DialogBox;
 	import uiwidgets.Menu;
 	import util.*;
 	import watchers.ListWatcher;
@@ -467,6 +469,9 @@ public class ScratchSprite extends ScratchObj {
 		m.addItem('delete', deleteSprite);
 		m.addLine();
 		m.addItem('save to local file', saveToLocalFile);
+		if(Scratch.app.jsEnabled && ExternalInterface.available && ExternalInterface.call('CommunityLibrary.enabled')) {
+			m.addItem('submit to community library', submitToCommunityLibrary);
+		}
 		return m;
 	}
 
@@ -555,6 +560,19 @@ public class ScratchSprite extends ScratchObj {
 		var file:FileReference = new FileReference();
 		file.addEventListener(Event.COMPLETE, success);
 		file.save(zipData, defaultName);
+	}
+
+	private function submitToCommunityLibrary():void {
+		Scratch.app.createProjectIO().uploadToCommunityLibrary(this,function(res:*):void {
+			if(res.okay) {
+			   ExternalInterface.call('CommunityLibrary.submit',res.url);
+			} else {
+				DialogBox.notify(
+					'Unable to submit sprite',
+					res.error
+				);
+			}
+		});
 	}
 
 	public function copyToShare():ScratchSprite {

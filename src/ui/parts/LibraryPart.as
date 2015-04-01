@@ -24,6 +24,8 @@
 
 package ui.parts {
 import flash.display.*;
+import flash.external.ExternalInterface;
+import flash.display.*;
 import flash.text.*;
 import flash.utils.*;
 import scratch.*;
@@ -197,7 +199,7 @@ public class LibraryPart extends UIPart {
 		var index:int = 1;
 		for each (var spr:ScratchSprite in sortedSprites) {
 			spr.indexInLibrary = index++; // renumber to ensure unique indices
- 			var tn:SpriteThumbnail = new SpriteThumbnail(spr, app);
+			var tn:SpriteThumbnail = new SpriteThumbnail(spr, app);
 			tn.x = nextX;
 			tn.y = nextY;
 			spritesPane.addChild(tn);
@@ -345,8 +347,17 @@ public class LibraryPart extends UIPart {
 		app.openCameraDialog(savePhoto);
 	}
 
-	private function spriteFromComputer(b:IconButton):void { importSprite(true) }
-	private function spriteFromLibrary(b:IconButton):void { importSprite(false) }
+	private function spriteFromComputer(b:IconButton):void {
+		importSprite(true);
+	}
+
+	private function spriteFromLibrary(b:IconButton):void {
+		if(ExternalInterface.available && ExternalInterface.call('CommunityLibrary.enabled')) {
+			ExternalInterface.call('CommunityLibrary.showBrowser');
+		} else {
+			importSprite(false);
+		}
+	}
 
 	private function importSprite(fromComputer:Boolean):void {
 		function addSprite(costumeOrSprite:*):void {

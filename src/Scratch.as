@@ -1166,6 +1166,11 @@ public class Scratch extends Sprite {
 		return new MediaInfo(obj, owningObj);
 	}
 
+
+	public function createProjectIO():ProjectIO {
+		return new ProjectIO(this);
+	}
+
 	static public function loadSingleFile(fileLoaded:Function, filters:Array = null):void {
 		function fileSelected(event:Event):void {
 			if (fileList.fileList.length > 0) {
@@ -1181,6 +1186,7 @@ public class Scratch extends Sprite {
 			// Ignore the exception that happens when you call browse() with the file browser open
 			fileList.browse(filters);
 		} catch(e:*) {}
+
 	}
 
 	// -----------------------------

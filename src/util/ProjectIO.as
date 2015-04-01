@@ -536,4 +536,12 @@ public class ProjectIO {
 		recordedAssets[md5] = id;
 		return id;
 	}
+
+	//----------------------------
+	// Community library upload
+	//----------------------------
+
+	public function uploadToCommunityLibrary(spr:ScratchSprite,whenDone:Function):void {
+		// Do nothing, this only exists to be overriden by ProjectIOOnline
+	}
 }}
