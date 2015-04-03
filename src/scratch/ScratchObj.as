@@ -257,11 +257,11 @@ public class ScratchObj extends Sprite {
 			img.transform.colorTransform = cTrans;
 		}
 		else {
-			updateEffects();
+			updateEffectsFor3D();
 		}
 	}
 
-	protected function updateEffects():void {
+	public function updateEffectsFor3D():void {
 		SCRATCH::allow3d {
 			if((parent && parent is ScratchStage) || this is ScratchStage) {
 				if(parent is ScratchStage)

@@ -23,7 +23,7 @@ package render3d {
 	public class SpriteStamp extends BitmapData {
 		private var fx:Object;
 		public function SpriteStamp(width:int, height:int, fx:Object) {
-			super(width, height, true, 0x00ffffff);
+			super(width, height, true, 0);
 			effects = fx;
 		}
 
