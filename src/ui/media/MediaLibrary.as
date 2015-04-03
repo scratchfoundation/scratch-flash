@@ -297,9 +297,9 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 					if (entry.tags is Array) entry.category = entry.tags[0];
 					var info:Array = entry.info as Array;
 					if (info) {
-						if ((entry.type == 'backdrop') || (assetType == 'costume')) {
-//							entry.width = info[0];
-//							entry.height = info[1];
+						if (entry.type == 'backdrop') {
+							entry.width = info[0];
+							entry.height = info[1];
 						}
 						if (entry.type == 'sound') {
 							entry.seconds = info[0];
@@ -422,20 +422,26 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 			var item:MediaLibraryItem = resultsPane.getChildAt(i) as MediaLibraryItem;
 			if (item && item.isHighlighted()) {
 				var md5AndExt:String = item.dbObj.md5;
+				var obj:Object = null;
 				if (assetType == 'extension') {
 					whenDone(item.dbObj.extension);
 				} else if (md5AndExt.slice(-5) == '.json') {
 					io.fetchSprite(md5AndExt, whenDone);
 				} else if (assetType == 'sound') {
 					io.fetchSound(md5AndExt, item.dbObj.name, whenDone);
-				} else {
-					var obj:Object = {
+				} else if (assetType == 'costume') {
+					obj = {
 						centerX: item.dbObj.info[0],
 						centerY: item.dbObj.info[1],
 						bitmapResolution: 1
 					};
 					if (item.dbObj.info.length == 3)
 						obj.bitmapResolution = item.dbObj.info[2];
+
+					io.fetchImage(md5AndExt, item.dbObj.name, 0, whenDone, obj);
+				} else { // assetType == backdrop
+					if (item.dbObj.info.length == 2 && item.dbObj.info[0] == 960 && item.dbObj.info[1] == 720)
+						obj = { centerX: 99999, centerY: 99999,	bitmapResolution: 2 };
 					io.fetchImage(md5AndExt, item.dbObj.name, 0, whenDone, obj);
 				}
 			}
