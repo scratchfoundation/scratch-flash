@@ -145,6 +145,9 @@ public class BitmapEdit extends ImageEdit {
 			bakeIntoBitmap();
 			saveToCostume();
 		}
+
+		var cropToolEnabled:Boolean = (currentTool is ObjectTransformer && !!(currentTool as ObjectTransformer).getSelection());
+		imagesPart.setCanCrop(cropToolEnabled);
 	}
 
 	public function cropToSelection():void {
@@ -230,6 +233,7 @@ public class BitmapEdit extends ImageEdit {
 	}
 
 	override public function setToolMode(newMode:String, bForce:Boolean = false, fromButton:Boolean = false):void {
+		imagesPart.setCanCrop(false);
 		highlightTool('none');
 		var obj:ISVGEditable = null;
 		if (newMode != toolMode && currentTool is SVGEditTool)
