@@ -377,7 +377,10 @@ public class ImagesPart extends UIPart {
 			clearButton.alpha = 0.5;
 			clearButton.mouseEnabled = false;
 		}
-		if (editor is BitmapEdit) {
+	}
+
+	public function setCanCrop(enabled:Boolean):void {
+		if (enabled) {
 			cropButton.alpha = 1;
 			cropButton.mouseEnabled = true;
 		}
@@ -385,6 +388,7 @@ public class ImagesPart extends UIPart {
 			cropButton.alpha = 0.5;
 			cropButton.mouseEnabled = false;
 		}
+
 	}
 
 	// -----------------------------
@@ -401,6 +405,7 @@ public class ImagesPart extends UIPart {
 		SimpleTooltips.add(cropButton, {text: 'Crop to selection', direction: 'bottom'});
 		SimpleTooltips.add(flipHButton, {text: 'Flip left-right', direction: 'bottom'});
 		SimpleTooltips.add(flipVButton, {text: 'Flip up-down', direction: 'bottom'});
+		setCanCrop(false);
 	}
 
 	private function crop(ignore:*):void {
