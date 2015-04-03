@@ -253,6 +253,7 @@ public class ImagesPart extends UIPart {
 			editor.setWidthHeight(contentsW, h - editor.y - 14);
 		}
 
+		contentsW = w - 16;
 		// import button
 		libraryButton.x = clearButton.x + clearButton.width + smallSpace;
 		libraryButton.y = clearButton.y;
@@ -260,10 +261,10 @@ public class ImagesPart extends UIPart {
 		editorImportButton.y = clearButton.y;
 
 		// buttons in the upper right
-		cropButton.x = editorImportButton.x + editorImportButton.width + bigSpace;
-		flipHButton.x = cropButton.x + cropButton.width + smallSpace;
-		flipVButton.x = flipHButton.x + flipHButton.width + smallSpace;
-		centerButton.x = flipVButton.x + flipVButton.width + smallSpace;
+		centerButton.x = contentsW - centerButton.width;
+		flipVButton.x = centerButton.x - flipVButton.width - smallSpace;
+		flipHButton.x = flipVButton.x - flipHButton.width - smallSpace;
+		cropButton.x = flipHButton.x - cropButton.width - smallSpace;
 		cropButton.y = flipHButton.y = flipVButton.y = centerButton.y = nameField.y - 1;
 	}
 
