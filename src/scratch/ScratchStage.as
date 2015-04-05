@@ -23,6 +23,8 @@
 // A Scratch stage object. Supports a drawing surface for the pen commands.
 
 package scratch {
+import blocks.BlockArg;
+
 import flash.display.*;
 import flash.geom.*;
 import flash.media.*;
@@ -543,7 +545,13 @@ public class ScratchStage extends ScratchObj {
 
 	SCRATCH::allow3d
 	public function updateSpriteEffects(spr:DisplayObject, effects:Object):void {
-		if(Scratch.app.isIn3D) Scratch.app.render3D.updateFilters(spr, effects);
+		if(Scratch.app.isIn3D) {
+			if (videoImage && videoImage.alpha < 1 && !effects.ghost) {
+				if (!effects.hasOwnProperty('ghost')) effects.ghost = BlockArg.epsilon;
+				else effects.ghost += BlockArg.epsilon;
+			}
+			Scratch.app.render3D.updateFilters(spr, effects);
+		}
 	}
 
 	public function getBitmapWithoutSpriteFilteredByColor(s:ScratchSprite, c:int):BitmapData {
