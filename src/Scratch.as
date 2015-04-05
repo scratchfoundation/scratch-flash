@@ -24,6 +24,7 @@
 
 package {
 import blocks.*;
+import flash.net.FileFilter;
 
 import extensions.ExtensionManager;
 
@@ -144,9 +145,9 @@ public class Scratch extends Sprite {
 
 		playerBG = new Shape(); // create, but don't add
 		addParts();
-		
+
 		server.getSelectedLang(Translator.setLanguageValue);
-		
+
 
 		stage.addEventListener(MouseEvent.MOUSE_DOWN, gh.mouseDown);
 		stage.addEventListener(MouseEvent.MOUSE_MOVE, gh.mouseMove);
@@ -1166,7 +1167,7 @@ public class Scratch extends Sprite {
 		return new MediaInfo(obj, owningObj);
 	}
 
-	static public function loadSingleFile(fileLoaded:Function, filters:Array = null):void {
+	static public function loadSingleFile(fileLoaded:Function, filter:FileFilter = null):void {
 		function fileSelected(event:Event):void {
 			if (fileList.fileList.length > 0) {
 				var file:FileReference = FileReference(fileList.fileList[0]);
@@ -1179,7 +1180,7 @@ public class Scratch extends Sprite {
 		fileList.addEventListener(Event.SELECT, fileSelected);
 		try {
 			// Ignore the exception that happens when you call browse() with the file browser open
-			fileList.browse(filters);
+			fileList.browse(filter != null ? [filter] : null);
 		} catch(e:*) {}
 	}
 
