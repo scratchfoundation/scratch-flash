@@ -97,7 +97,7 @@ public class Primitives {
 		var hi:Number = (n1 <= n2) ? n2 : n1;
 		if (low == hi) return low;
 		// if both low and hi are ints, truncate the result to an int
-		if ((int(low) == low) && (int(hi) == hi)) {
+		if (b.args[0].numberType == BlockArg.NT_INT || b.args[1].numberType == BlockArg.NT_INT) {
 			return low + int(Math.random() * ((hi + 1) - low));
 		}
 		return (Math.random() * (hi - low)) + low;
