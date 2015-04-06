@@ -224,8 +224,8 @@ public class BlockArg extends Sprite {
 			if (!isNaN(n)) {
 				argValue = n;
 
-				// For number arguments that are integers AND contain a decimal point, mark them as an INTEGER (used by pick random)
-				numberType = (field.text.indexOf('.') >= 0 && n is int) ? NT_INT : NT_FLOAT;
+				// For number arguments that are integers AND do NOT contain a decimal point, mark them as an INTEGER (used by pick random)
+				numberType = (field.text.indexOf('.') == -1 && n is int) ? NT_INT : NT_FLOAT;
 			}
 			else
 				numberType = NT_FLOAT;
