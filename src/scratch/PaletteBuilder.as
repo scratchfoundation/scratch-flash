@@ -362,6 +362,9 @@ public class PaletteBuilder {
 				else if(ext.url.indexOf('http') === 0) navigateToURL(new URLRequest(ext.url));
 				else DialogBox.notify('Extensions', 'Unable to load about page: the URL given for extension "' + ext.name + '" is not formatted correctly.');
 			}
+			else {
+				DialogBox.notify('Extensions', 'Unable to load about page: the URL given for extension "' + ext.name + '" is not found.');
+			}
 		}
 		function hideExtension():void {
 			app.extensionManager.setEnabled(ext.name, false);
@@ -392,7 +395,7 @@ public class PaletteBuilder {
 		var indicator:IndicatorLight = new IndicatorLight(ext);
 		indicator.addEventListener(MouseEvent.CLICK, function(e:Event):void {Scratch.app.showTip('extensions');}, false, 0, true);
 		app.extensionManager.updateIndicator(indicator, ext);
-		indicator.x = pwidth - 30;
+		indicator.x = pwidth - 40;
 		indicator.y = nextY + 2;
 		app.palette.addChild(indicator);
 
@@ -401,18 +404,18 @@ public class PaletteBuilder {
 
 	protected function addLineForExtensionTitle(titleButton:IconButton, ext:ScratchExtension):void {
 		var x:int = titleButton.width + 12;
-		addLine(x, nextY + 9, pwidth - x - 38);
+		addLine(x, nextY + 9, pwidth - x - 48);
 	}
 
 	private function addBlocksForExtension(ext:ScratchExtension):void {
 		var blockColor:int = Specs.extensionsColor;
-		var opPrefix:String = ext.useScratchPrimitives ? '' : ext.name + '.';
 		for each (var spec:Array in ext.blockSpecs) {
 			if (spec.length >= 3) {
-				var op:String = opPrefix + spec[2];
+				var op:String = ext.name + '.' + spec[2];
 				var defaultArgs:Array = spec.slice(3);
 				var block:Block = new Block(spec[1], spec[0], blockColor, op, defaultArgs);
-				var showCheckbox:Boolean = (spec[0] == 'r' && defaultArgs.length == 0);
+				var isItr:Boolean = (spec[0] == 'r' || spec[0] == 'rR');
+				var showCheckbox:Boolean = (isItr && defaultArgs.length == 0);
 				if (showCheckbox) addReporterCheckbox(block);
 				addItem(block, showCheckbox);
 			} else {
