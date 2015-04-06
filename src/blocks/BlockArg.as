@@ -225,9 +225,10 @@ public class BlockArg extends Sprite {
 				argValue = n;
 
 				// For number arguments that are integers AND contain a decimal point, mark them as an INTEGER (used by pick random)
-				if (numberType)
-					numberType = (field.text.indexOf('.') >= 0 && n is int) ? NT_INT : NT_FLOAT;
+				numberType = (field.text.indexOf('.') >= 0 && n is int) ? NT_INT : NT_FLOAT;
 			}
+			else
+				numberType = NT_FLOAT;
 		}
 		// fix layout:
 		var padding:int = (type == 'n') ? 3 : 0;
