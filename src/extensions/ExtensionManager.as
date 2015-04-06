@@ -206,9 +206,7 @@ public class ExtensionManager {
 		return ext;
 	}
 			
-			
 	public function loadExtensionData(ext:ScratchExtension, extObj:Object):void {		
-		
 		extensionDict[extObj.extensionName] = ext;
 		ext.port = extObj.extensionPort;
 		ext.blockSpecs = extObj.blockSpecs;
