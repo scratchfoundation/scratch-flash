@@ -175,6 +175,14 @@ public class Scratch extends Sprite {
 		topBarPart = new TopBarPart(this);
 	}
 
+	protected function initScriptsPart():void {
+		scriptsPart = new ScriptsPart(this);
+	}
+
+	protected function initImagesPart():void {
+		imagesPart = new ImagesPart(this);
+	}
+
 	protected function initInterpreter():void {
 		interp = new Interpreter(this);
 	}
@@ -542,8 +550,8 @@ public class Scratch extends Sprite {
 		stagePart = getStagePart();
 		libraryPart = getLibraryPart();
 		tabsPart = new TabsPart(this);
-		scriptsPart = new ScriptsPart(this);
-		imagesPart = new ImagesPart(this);
+		initScriptsPart();
+		initImagesPart();
 		soundsPart = new SoundsPart(this);
 		addChild(topBarPart);
 		addChild(stagePart);

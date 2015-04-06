@@ -76,12 +76,20 @@ public class ImagesPart extends UIPart {
 		addListFrame();
 		addChild(nameField = new EditableLabel(nameChanged));
 
-		addChild(editor = new SVGEdit(app, this));
+		addEditor(true);
 
 		addUndoButtons();
 		addFlipButtons();
 		addCenterButton();
 		updateTranslation();
+	}
+
+	protected function addEditor(isSVG:Boolean):void {
+		if (isSVG) {
+			addChild(editor = new SVGEdit(app, this));
+		} else {
+			addChild(editor = new BitmapEdit(app, this));
+		}
 	}
 
 	public static function strings():Array {
@@ -231,11 +239,11 @@ public class ImagesPart extends UIPart {
 		if (flag) {
 			if (editor is BitmapEdit) return;
 			if (editor && editor.parent) removeChild(editor);
-			addChild(editor = new BitmapEdit(app, this));
+			addEditor(false);
 		} else {
 			if (editor is SVGEdit) return;
 			if (editor && editor.parent) removeChild(editor);
-			addChild(editor = new SVGEdit(app, this));
+			addEditor(true);
 		}
 		if (oldSettings) {
 			editor.setShapeProps(oldSettings);
