@@ -87,6 +87,10 @@ public class ProjectIO {
 		return zip.endWrite();
 	}
 
+	protected function getScratchStage():ScratchStage {
+		return new ScratchStage();
+	}
+
 	private function addJSONData(fileName:String, obj:*, zip:ZipIO):void {
 		var jsonData:ByteArray = new ByteArray();
 		jsonData.writeUTFBytes(util.JSON.stringify(obj));
@@ -125,7 +129,7 @@ public class ProjectIO {
 		else if (fail != null) fail();
 	}
 
-	private function decodeFromZipFile(zipData:ByteArray):ScratchObj {
+	protected function decodeFromZipFile(zipData:ByteArray):ScratchObj {
 		var jsonData:String;
 		images = [];
 		sounds = [];
@@ -155,7 +159,7 @@ public class ProjectIO {
 		if (jsonData == null) return null;
 		var jsonObj:Object = util.JSON.parse(jsonData);
 		if (jsonObj['children']) { // project JSON
-			var proj:ScratchStage = new ScratchStage();
+			var proj:ScratchStage = getScratchStage();
 			proj.readJSON(jsonObj);
 			if (proj.penLayerID >= 0) proj.penLayerPNG = images[proj.penLayerID]
 			else if (proj.penLayerMD5) proj.penLayerPNG = images[0];
@@ -297,7 +301,7 @@ public class ProjectIO {
 		}
 		projectData.position = 0;
 		var projObject:Object = util.JSON.parse(projectData.readUTFBytes(projectData.length));
-		var proj:ScratchStage = new ScratchStage();
+		var proj:ScratchStage = getScratchStage();
 		proj.readJSON(projObject);
 		var assetsToFetch:Array = collectAssetsToFetch(proj.allObjects());
 		var assetDict:Object = new Object();

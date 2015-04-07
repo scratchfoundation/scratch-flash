@@ -136,7 +136,7 @@ public class Scratch extends Sprite {
 		CursorTool.init(this);
 		app = this;
 
-		stagePane = new ScratchStage();
+		stagePane = getScratchStage();
 		gh = new GestureHandler(this, (loaderInfo.parameters['inIE'] == 'true'));
 		initInterpreter();
 		initRuntime();
@@ -174,6 +174,14 @@ public class Scratch extends Sprite {
 
 	protected function initTopBarPart():void {
 		topBarPart = new TopBarPart(this);
+	}
+
+	protected function initScriptsPart():void {
+		scriptsPart = new ScriptsPart(this);
+	}
+
+	protected function initImagesPart():void {
+		imagesPart = new ImagesPart(this);
 	}
 
 	protected function initInterpreter():void {
@@ -543,8 +551,8 @@ public class Scratch extends Sprite {
 		stagePart = getStagePart();
 		libraryPart = getLibraryPart();
 		tabsPart = new TabsPart(this);
-		scriptsPart = new ScriptsPart(this);
-		imagesPart = new ImagesPart(this);
+		initScriptsPart();
+		initImagesPart();
 		soundsPart = new SoundsPart(this);
 		addChild(topBarPart);
 		addChild(stagePart);
