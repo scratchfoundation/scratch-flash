@@ -213,14 +213,6 @@ public class Block extends Sprite {
 		fixArgLayout();
 	}
 
-	public function get isBroadcastSender():Boolean {
-		return op == 'broadcast:' || op == 'doBroadcastAndWait';
-	}
-
-	public function get isBroadcastReceiver():Boolean {
-		return op == 'whenIReceive';
-	}
-
 	public function get broadcastMsg():String {
 		for each (var arg:BlockArg in args) {
 			if (arg.menuName == "broadcast") {

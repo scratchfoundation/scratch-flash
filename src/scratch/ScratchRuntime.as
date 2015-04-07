@@ -777,7 +777,7 @@ public class ScratchRuntime {
 		for each (var stack:Block in obj.scripts) {
 			var found:Boolean;
 			stack.allBlocksDo(function (b:Block):void {
-				if (b.isBroadcastSender) {
+				if (b.op == 'broadcast:' || b.op == 'doBroadcastAndWait') {
 					if (b.broadcastMsg == msg) found = true;
 				}
 			});
@@ -791,7 +791,7 @@ public class ScratchRuntime {
 		for each (var stack:Block in obj.scripts) {
 			var found:Boolean;
 			stack.allBlocksDo(function (b:Block):void {
-				if (b.isBroadcastReceiver) {
+				if (b.op == 'whenIReceive') {
 					if (b.broadcastMsg.toLowerCase() == msg) found = true;
 				}
 			});
@@ -805,7 +805,7 @@ public class ScratchRuntime {
 		for each (var o:ScratchObj in app.stagePane.allObjects()) {
 			for each (var stack:Block in o.scripts) {
 				stack.allBlocksDo(function (b:Block):void {
-					if (b.isBroadcastSender || b.isBroadcastReceiver) {
+					if (b.op == 'broadcast:' || b.op == 'doBroadcastAndWait' || b.op == 'whenIReceive') {
 						if (b.broadcastMsg == msg) result.push(b);
 					}
 				});
