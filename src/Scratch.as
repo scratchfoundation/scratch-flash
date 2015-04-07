@@ -135,7 +135,7 @@ public class Scratch extends Sprite {
 		CursorTool.init(this);
 		app = this;
 
-		stagePane = new ScratchStage();
+		stagePane = getScratchStage();
 		gh = new GestureHandler(this, (loaderInfo.parameters['inIE'] == 'true'));
 		initInterpreter();
 		initRuntime();
