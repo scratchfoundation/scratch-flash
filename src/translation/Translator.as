@@ -121,7 +121,7 @@ public class Translator {
 		rightToLeftMath = ('ar' == lang);
 		if (font12.indexOf(lang) > -1) Block.setFonts(11 * scale, 10 * scale, false, 0);
 		if (font13.indexOf(lang) > -1) Block.setFonts(13 * scale, 12 * scale, false, 0);
-		else Block.setFonts(10 * scale, 9 * scale, true, 0); // default font settings
+		else Block.setFonts(10 * scale, 9 * scale, false, 0); // default font settings
 	}
 
 	public static function map(s:String, context:Dictionary=null):String {

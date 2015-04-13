@@ -57,7 +57,7 @@ public class PaletteBuilder {
 	public function showBlocksForCategory(selectedCategory:int, scrollToOrigin:Boolean, shiftKey:Boolean = false):void {
 		if (app.palette == null) return;
 		app.palette.clear(scrollToOrigin);
-		nextY = 7;
+		nextY = CSS.palPadding;
 
 		if (selectedCategory == Specs.dataCategory) return showDataCategory();
 		if (selectedCategory == Specs.myBlocksCategory) return showMyBlocksPalette(shiftKey);
@@ -94,18 +94,18 @@ public class PaletteBuilder {
 				addItem(block, showCheckbox);
 				cmdCount++;
 			} else {
-				if ((spec.length == 1) && (cmdCount > 0)) nextY += 10 * spec[0].length; // add some space
+				if ((spec.length == 1) && (cmdCount > 0)) nextY += CSS.palSectionSpacing * spec[0].length; // add some space
 				cmdCount = 0;
 			}
 		}
 	}
 
 	protected function addItem(o:DisplayObject, hasCheckbox:Boolean = false):void {
-		o.x = hasCheckbox ? 23 : 6;
+		o.x = hasCheckbox ? CSS.palCheckboxSpace : CSS.palPadding;
 		o.y = nextY;
 		app.palette.addChild(o);
 		app.palette.updateSize();
-		nextY += o.height + 5;
+		nextY += o.height + CSS.palSpacing;
 	}
 
 	private function makeLabel(label:String):TextField {
@@ -202,7 +202,7 @@ public class PaletteBuilder {
 			createVar(n, varSettings);
 		}
 
-		var d:DialogBox = new DialogBox(makeVar2);
+		var d:DialogBox = DialogBox.create(makeVar2);
 		var varSettings:VariableSettings = makeVarSettings(false, app.viewedObj().isStage);
 		d.addTitle('New Variable');
 		d.addField('Variable name', 150);
@@ -218,7 +218,7 @@ public class PaletteBuilder {
 
 			createVar(n, varSettings);
 		}
-		var d:DialogBox = new DialogBox(makeList2);
+		var d:DialogBox = DialogBox.create(makeList2);
 		var varSettings:VariableSettings = makeVarSettings(true, app.viewedObj().isStage);
 		d.addTitle('New List');
 		d.addField('List name', 150);
@@ -249,7 +249,7 @@ public class PaletteBuilder {
 			app.setSaveNeeded();
 		}
 		var specEditor:ProcedureSpecEditor = new ProcedureSpecEditor('', [], false);
-		var d:DialogBox = new DialogBox(addBlockHat);
+		var d:DialogBox = DialogBox.create(addBlockHat);
 		d.addTitle('New Block');
 		d.addWidget(specEditor);
 		d.addAcceptCancelButtons('OK');
@@ -295,7 +295,7 @@ public class PaletteBuilder {
 		return checkboxReporters.indexOf(op) > -1;
 	}
 
-	private function isSpriteSpecific(op:String):Boolean {
+	protected function isSpriteSpecific(op:String):Boolean {
 		const spriteSpecific: Array = ['costumeIndex', 'xpos', 'ypos', 'heading', 'scale', 'volume'];
 		return spriteSpecific.indexOf(op) > -1;
 	}
@@ -326,7 +326,7 @@ public class PaletteBuilder {
 		app.palette.addChild(b);
 	}
 
-	private function toggleWatcher(b:IconButton):void {
+	protected function toggleWatcher(b:IconButton):void {
 		var data:Object = b.clientData;
 		if (data.block) {
 			switch (data.block.op) {

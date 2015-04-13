@@ -44,7 +44,7 @@ public class BlockShape extends Shape {
 	public static const IfElseShape:int = 11;
 
 	// Geometry
-	public static const NotchDepth:int = 3;
+	public static var NotchDepth:int = 3;
 	public static const EmptySubstackH:int = 12;
 	public static const SubstackInset:int = 15;
 
@@ -141,8 +141,9 @@ public class BlockShape extends Shape {
 	public function canHaveSubstack1():Boolean { return shape >= LoopShape }
 	public function canHaveSubstack2():Boolean { return shape == IfElseShape }
 
-	public function substack1y():int { return topH }
-	public function substack2y():int { return topH + substack1H + DividerH - NotchDepth }
+	public function substackx():int { return BlockShape.SubstackInset; }
+	public function substack1y():int { return topH; }
+	public function substack2y():int { return topH + substack1H + DividerH - NotchDepth; }
 
 	public function redraw():void {
 		if (!redrawNeeded) return;

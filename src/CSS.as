@@ -42,6 +42,7 @@ public class CSS {
 	public static const onColor:int = textColor; // 0x4C4D4F
 	public static const overColor:int = 0x179FD7;
 	public static const arrowColor:int = 0xA6A8AC;
+	public static var dialogCornerRadius:uint = 8;
 
 	// Fonts
 	public static const font:String = Resources.chooseFont(['Arial', 'Verdana', 'DejaVu Sans']);
@@ -56,8 +57,18 @@ public class CSS {
 
 	// Section title bars
 	public static const titleBarColors:Array = [white, tabColor];
-	public static const titleBarH:int = 30;
+	public static var titleBarH:int = 30;
 
 	// Button dimensions
-	public static var buttonSpacing:uint = 10;
+	public static var tinyPadding:uint = 4;
+	public static var smallPadding:uint = 10;
+	public static var bigPadding:uint = 15;
+	public static var palPadding:uint = 7;
+	public static var palSpacing:uint = 5;
+	public static var palSectionSpacing:uint = 10;
+	public static var palCheckboxSpace:uint = 23;
+	public static var minButtonHeight:uint = 15;
+	public static var iconHeight:uint = 13;
+	public static var thinBorder:uint = 1;
+	public static var thickBorder:uint = 2;
 }}

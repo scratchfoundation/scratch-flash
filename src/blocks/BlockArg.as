@@ -61,7 +61,7 @@ public class BlockArg extends Sprite {
 	public var field:TextField;
 	public var menuName:String;
 
-	private var menuIcon:Shape;
+	private var menuIcon:DisplayObject;
 
 	// BlockArg types:
 	//	b - boolean (pointed)
@@ -90,15 +90,7 @@ public class BlockArg extends Sprite {
 		addChild(base);
 
 		if ((type == 'd') || (type == 'm')) { // add a menu icon
-			menuIcon = new Shape();
-			var g:Graphics = menuIcon.graphics;
-			g.beginFill(0, 0.6); // darker version of base color
-			g.lineTo(7, 0);
-			g.lineTo(3.5, 4);
-			g.lineTo(0, 0);
-			g.endFill();
-			menuIcon.y = 5;
-			addChild(menuIcon);
+			addChild(menuIcon = makeMenuIcon());
 		}
 
 		if (editable || isNumber || (type == 'm')) { // add a string field
@@ -121,6 +113,18 @@ public class BlockArg extends Sprite {
 		} else {
 			base.redraw();
 		}
+	}
+
+	protected function makeMenuIcon():DisplayObject {
+		var s:Shape = new Shape();
+		var g:Graphics = s.graphics;
+		g.beginFill(0, 0.6); // darker version of base color
+		g.lineTo(7, 0);
+		g.lineTo(3.5, 4);
+		g.lineTo(0, 0);
+		g.endFill();
+		s.y = 5;
+		return s;
 	}
 
 	protected function setType(type:String, color:int, menuName:String = ''):Boolean {

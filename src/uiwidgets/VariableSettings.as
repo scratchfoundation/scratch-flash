@@ -59,8 +59,8 @@ public class VariableSettings extends Sprite {
 	protected function addButtons():void {
 		function setLocal(b:IconButton):void { isLocal = true; updateButtons() }
 		function setGlobal(b:IconButton):void { isLocal = false; updateButtons() }
-		addChild(localButton = new IconButton(setLocal, null));
-		addChild(globalButton = new IconButton(setGlobal, null));
+		addChild(localButton = IconButton.create(setLocal, null));
+		addChild(globalButton = IconButton.create(setGlobal, null));
 	}
 
 	protected function updateButtons():void {

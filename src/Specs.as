@@ -49,9 +49,9 @@ public class Specs {
 	public static const listCategory:int = 12;
 	public static const extensionsCategory:int = 20;
 
-	public static var variableColor:int = 0xEE7D16; // Scratch 1.4: 0xF3761D
+	public static var variableColor:int = 0xed9c00; // Scratch 1.4: 0xF3761D
 	public static var listColor:int = 0xCC5B22; // Scratch 1.4: 0xD94D11
-	public static var procedureColor:int = 0x632D99; // 0x531E99;
+	public static var procedureColor:int = 0xb21bd9; // 0x531E99;
 	public static var parameterColor:int = 0x5947B1;
 	public static var extensionsColor:int = 0x4B4A60; // 0x72228C; // 0x672D79;
 
@@ -60,14 +60,14 @@ public class Specs {
 	public static const categories:Array = [
 	 // id   category name	color
 		[0,  "undefined",	0xD42828],
-		[1,  "Motion",		0x4a6cd4],
-		[2,  "Looks",		0x8a55d7],
-		[3,  "Sound",		0xbb42c3],
-		[4,  "Pen",			0x0e9a6c], // Scratch 1.4: 0x009870
-		[5,  "Events",		0xc88330],
-		[6,  "Control",		0xe1a91a],
-		[7,  "Sensing",		0x2ca5e2],
-		[8,  "Operators",	0x5cb712],
+		[1,  "Motion",		0x4378C7],
+		[2,  "Looks",		0x8452E2],
+		[3,  "Sound",		0xE048DE],
+		[4,  "Pen",			0x06c17e], // Scratch 1.4: 0x009870
+		[5,  "Events",		0xCC9F07],
+		[6,  "Control",		0xedb200],
+		[7,  "Sensing",		0x5ab6eb],
+		[8,  "Operators",	0x4cae35],
 		[9,  "Data",		variableColor],
 		[10, "More Blocks",	procedureColor],
 		[11, "Parameter",	parameterColor],

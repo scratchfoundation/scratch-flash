@@ -31,20 +31,21 @@ public class DialogBox extends Sprite {
 	private var fields:Dictionary = new Dictionary();
 	private var booleanFields:Dictionary = new Dictionary();
 	public var widget:DisplayObject;
-	private var w:int, h:int;
+	protected var w:int, h:int;
 	public var leftJustify:Boolean;
 
 	private var context:Dictionary;
-	private var title:TextField;
+	protected var title:TextField;
 	protected var buttons:Array = [];
-	private var labelsAndFields:Array = [];
-	private var booleanLabelsAndFields:Array = [];
-	private var textLines:Array = [];
+	protected var labelsAndFields:Array = [];
+	protected var booleanLabelsAndFields:Array = [];
+	protected var textLines:Array = [];
 	protected var maxLabelWidth:uint = 0;
 	protected var maxFieldWidth:uint = 0;
 	protected var heightPerField:uint = Math.max(makeLabel('foo').height, makeField(10).height) + 10;
 	protected static var spaceAfterText:uint = 18;
 	protected static var blankLineSpace:uint = 7;
+	public static var dbClass:Class = DialogBox;
 
 	private var acceptFunction:Function; // if not nil, called when menu interaction is accepted
 	private var cancelFunction:Function; // if not nil, called when menu interaction is canceled
@@ -59,9 +60,13 @@ public class DialogBox extends Sprite {
 		addEventListener(FocusEvent.KEY_FOCUS_CHANGE, focusChange);
 	}
 
+	public static function create(acceptFunction:Function = null, cancelFunction:Function = null):DialogBox {
+		return new dbClass(acceptFunction, cancelFunction);
+	}
+
 	public static function ask(question:String, defaultAnswer:String, stage:Stage = null, resultFunction:Function = null, context:Dictionary = null):void {
 		function done():void { if (resultFunction != null) resultFunction(d.fields['answer'].text) }
-		var d:DialogBox = new DialogBox(done);
+		var d:DialogBox = new dbClass(done);
 		d.addTitle(question);
 		d.addField('answer', 120, defaultAnswer, false);
 		d.addButton('OK', d.accept);
@@ -70,7 +75,7 @@ public class DialogBox extends Sprite {
 	}
 
 	public static function confirm(question:String, stage:Stage = null, okFunction:Function = null, cancelFunction:Function = null, context:Dictionary = null):void {
-		var d:DialogBox = new DialogBox(okFunction, cancelFunction);
+		var d:DialogBox = new dbClass(okFunction, cancelFunction);
 		d.addTitle(question);
 		d.addAcceptCancelButtons('OK');
 		if (context) d.updateContext(context);
@@ -78,7 +83,7 @@ public class DialogBox extends Sprite {
 	}
 
 	public static function notify(title:String, msg:String, stage:Stage = null, leftJustify:Boolean = false, okFunction:Function = null, cancelFunction:Function = null, context:Dictionary = null):void {
-		var d:DialogBox = new DialogBox(okFunction, cancelFunction);
+		var d:DialogBox = new dbClass(okFunction, cancelFunction);
 		d.leftJustify = leftJustify;
 		d.addTitle(title);
 		d.addText(msg);
@@ -127,8 +132,8 @@ public class DialogBox extends Sprite {
 			l = makeLabel(Translator.map(fieldName) + ':');
 			addChild(l);
 		}
-		var f:TextField = makeField(width);
-		if (defaultValue != null) f.text = defaultValue;
+		var f:EditableLabel = makeField(width);
+		if (defaultValue != null) f.setContents(defaultValue);
 		addChild(f);
 		fields[fieldName] = f;
 		labelsAndFields.push([l, f]);
@@ -198,7 +203,7 @@ public class DialogBox extends Sprite {
 		stage.addChild(this);
 		if (labelsAndFields.length > 0) {
 			// note: doesn't work when testing from FlexBuilder; works when deployed
-			stage.focus = labelsAndFields[0][1];
+			stage.focus = labelsAndFields[0][1].tf;
 		}
 	}
 
@@ -248,7 +253,7 @@ public class DialogBox extends Sprite {
 	}
 
 	private function makeLabel(s:String, forTitle:Boolean = false):TextField {
-		const normalFormat:TextFormat = new TextFormat(CSS.font, 14, CSS.textColor);
+		const normalFormat:TextFormat = new TextFormat(CSS.font, CSS.titleFormat.size, CSS.textColor);
 		var result:VariableTextField = new VariableTextField();
 		result.autoSize = TextFieldAutoSize.LEFT;
 		result.selectable = false;
@@ -258,18 +263,9 @@ public class DialogBox extends Sprite {
 		return result;
 	}
 
-	private function makeField(width:int):TextField {
-		var result:TextField = new TextField();
-		result.selectable = true;
-		result.type = TextFieldType.INPUT;
-		result.background = true;
-		result.border = true;
-		result.defaultTextFormat = CSS.normalTextFormat;
-		result.width = width;
-		result.height = result.defaultTextFormat.size + 8;
-
-		result.backgroundColor = 0xFFFFFF;
-		result.borderColor = CSS.borderColor;
+	protected function makeField(width:int):EditableLabel {
+		var result:EditableLabel = new EditableLabel(null);
+		result.setWidth(width);
 
 		return result;
 	}
@@ -332,12 +328,12 @@ public class DialogBox extends Sprite {
 			for (i = 0; i < buttons.length; i++) {
 				buttons[i].x = buttonX;
 				buttons[i].y = buttonY;
-				buttonX += buttons[i].width + CSS.buttonSpacing;
+				buttonX += buttons[i].width + CSS.smallPadding;
 			}
 		}
 	}
 
-	private function fixSize():void {
+	protected function fixSize():void {
 		var i:int, totalW:int;
 		w = h = 0;
 		// title
@@ -376,7 +372,7 @@ public class DialogBox extends Sprite {
 		if (textLines.length > 0) h += spaceAfterText;
 		// buttons
 		totalW = 0;
-		for (i = 0; i < buttons.length; i++) totalW += buttons[i].width + CSS.buttonSpacing;
+		for (i = 0; i < buttons.length; i++) totalW += buttons[i].width + CSS.smallPadding;
 		w = Math.max(w, totalW);
 		if (buttons.length > 0) h += buttons[0].height + 15;
 		if ((labelsAndFields.length > 0) || (booleanLabelsAndFields.length > 0)) h += 15;
@@ -385,7 +381,7 @@ public class DialogBox extends Sprite {
 		drawBackground();
 	}
 
-	private function drawBackground():void {
+	protected function drawBackground():void {
 		var titleBarColors:Array = [0xE0E0E0, 0xD0D0D0]; // old: CSS.titleBarColors;
 		var borderColor:int = 0xB0B0B0; // old: CSS.borderColor;
 		var g:Graphics = graphics;
@@ -413,11 +409,11 @@ public class DialogBox extends Sprite {
 		if (labelsAndFields.length == 0) return;
 		var focusIndex:int = -1;
 		for (var i:int = 0; i < labelsAndFields.length; i++) {
-			if (stage.focus == labelsAndFields[i][1]) focusIndex = i;
+			if (stage.focus == labelsAndFields[i][1].tf) focusIndex = i;
 		}
 		focusIndex++;
 		if (focusIndex >= labelsAndFields.length) focusIndex = 0;
-		stage.focus = labelsAndFields[focusIndex][1];
+		stage.focus = labelsAndFields[focusIndex][1].tf;
 	}
 
 	private function mouseDown(evt:MouseEvent):void {if (evt.target == this || evt.target == title) startDrag();}

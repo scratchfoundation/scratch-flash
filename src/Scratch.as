@@ -153,7 +153,7 @@ public class Scratch extends Sprite {
 		initBlockIO();
 		initInterpreter();
 		initRuntime();
-		initPaletteBuilder();
+		palBuilder = getPaletteBuilder();
 		initExtensionManager();
 		Translator.initializeLanguageList();
 
@@ -210,10 +210,6 @@ public class Scratch extends Sprite {
 		addExternalCallback('ASloadExtension', extensionManager.loadRawExtension);
 		addExternalCallback('ASextensionCallDone', extensionManager.callCompleted);
 		addExternalCallback('ASextensionReporterDone', extensionManager.reporterCompleted);
-	}
-
-	protected function initPaletteBuilder():void {
-		palBuilder = new PaletteBuilder(this);
 	}
 
 	public function showTip(tipName:String):void {}

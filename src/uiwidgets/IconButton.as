@@ -45,6 +45,7 @@ public class IconButton extends Sprite {
 	protected var mouseIsOver:Boolean;
 	protected var onImage:DisplayObject;
 	protected var offImage:DisplayObject;
+	public static var ibClass:Class = IconButton;
 
 	public function IconButton(clickFunction:Function, onImageOrName:*, offImageObj:DisplayObject = null, isRadioButton:Boolean = false) {
 		this.clickFunction = clickFunction;
@@ -55,6 +56,10 @@ public class IconButton extends Sprite {
 		addEventListener(MouseEvent.MOUSE_OVER, mouseOver);
 		addEventListener(MouseEvent.MOUSE_OUT, mouseOut);
 		mouseChildren = false;
+	}
+
+	public static function create(clickFunction:Function, onImageOrName:*, offImageObj:DisplayObject = null, isRadioButton:Boolean = false):IconButton {
+		return new ibClass(clickFunction, onImageOrName, offImageObj, isRadioButton);
 	}
 
 	public function actOnMouseUp():void {

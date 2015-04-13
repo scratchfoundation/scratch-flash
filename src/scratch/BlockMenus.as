@@ -544,7 +544,7 @@ public class BlockMenus implements DragClient {
 			if (!def) return;
 			block = def;
 		}
-		var d:DialogBox = new DialogBox(editSpec2);
+		var d:DialogBox = DialogBox.create(editSpec2);
 		d.addTitle('Edit Block');
 		d.addWidget(new ProcedureSpecEditor(block.spec, block.parameterNames, block.warpProcFlag));
 		d.addAcceptCancelButtons('OK');
@@ -654,7 +654,7 @@ public class BlockMenus implements DragClient {
 
 			app.runtime.renameVariable(oldName, newName);
 		}
-		var d:DialogBox = new DialogBox(doVarRename);
+		var d:DialogBox = DialogBox.create(doVarRename);
 		d.addTitle(Translator.map('Rename') + ' ' + blockVarOrListName());
 		d.addField('New name', 120);
 		d.addAcceptCancelButtons('OK');
@@ -767,7 +767,7 @@ public class BlockMenus implements DragClient {
 			if (newName.length == 0) return;
 			setBlockArg(newName);
 		}
-		var d:DialogBox = new DialogBox(changeBroadcast);
+		var d:DialogBox = DialogBox.create(changeBroadcast);
 		d.addTitle('New Message');
 		d.addField('Message Name', 120);
 		d.addAcceptCancelButtons('OK');

@@ -40,7 +40,7 @@ package ui.parts {
 
 public class UIPart extends Sprite {
 
-	protected static const cornerRadius:int = 8;
+	public static var cornerRadius:int = 8;
 
 	public var app:Scratch;
 	public var w:int, h:int;
@@ -60,9 +60,9 @@ public class UIPart extends Sprite {
 		return tf;
 	}
 
-	public static function drawTopBar(g:Graphics, colors:Array, path:Array, w:int, h:int, borderColor:int = -1):void {
+	public static function drawTopBar(g:Graphics, colors:Array, path:Array, w:int, h:int, borderColor:int = -1, clear:Boolean = true):void {
 		if (borderColor < 0) borderColor = CSS.borderColor;
-		g.clear();
+		if (clear) g.clear();
 		drawBoxBkgGradientShape(g, Math.PI / 2, colors,[0x00, 0xFF], path, w, h);
 		g.lineStyle(0.5, borderColor, 1, true);
 		DrawPath.drawPath(path, g);

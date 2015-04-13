@@ -402,7 +402,7 @@ public class Watcher extends Sprite implements ITool {
 			setSliderValue(sliderMin);
 			Scratch.app.setSaveNeeded();
 		}
-		var d:DialogBox = new DialogBox(setMinMax);
+		var d:DialogBox = DialogBox.create(setMinMax);
 		d.addTitle('Slider Range');
 		d.addField('Min', 120, isDiscrete || int(sliderMin) != sliderMin ? sliderMin : int(sliderMin) + '.0');
 		d.addField('Max', 120, sliderMax);
