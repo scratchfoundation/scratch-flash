@@ -398,10 +398,6 @@ public dynamic class SVGPath extends Array {
 								new Point(cmd[1] * scale, cmd[2] * scale),
 								new Point(cmd[3] * scale, cmd[4] * scale),
 								new Point(cmd[5] * scale, cmd[6] * scale),
-//								new Point(Math.round(lastX * scale), Math.round(lastY * scale)),
-//								new Point(Math.round(cmd[1] * scale), Math.round(cmd[2] * scale)),
-//								new Point(Math.round(cmd[3] * scale), Math.round(cmd[4] * scale)),
-//								new Point(Math.round(cmd[5] * scale), Math.round(cmd[6] * scale)),
 								cmds, points);
 						break;
 					case 'L':
@@ -417,8 +413,6 @@ public dynamic class SVGPath extends Array {
 						cmds.push(GraphicsPathCommand.CURVE_TO);
 						points.push(cmd[1] * scale, cmd[2] * scale,
 								cmd[3] * scale, cmd[4] * scale);
-//						points.push(Math.round(cmd[1] * scale), Math.round(cmd[2] * scale),
-//								Math.round(cmd[3] * scale), Math.round(cmd[4] * scale));
 						break;
 					case 'Z':
 						cmds.push(GraphicsPathCommand.LINE_TO);
