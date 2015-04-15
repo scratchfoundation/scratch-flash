@@ -48,6 +48,7 @@
 
 package util {
 	import flash.display.*;
+	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
 	import flash.filters.*;
 	import flash.geom.*;
@@ -332,6 +333,15 @@ public class GestureHandler {
 
 	public function mouseWheel(evt:MouseEvent):void {
 		hideBubble();
+	}
+
+	public function escKeyDown():void {
+		if (carriedObj != null && carriedObj is Block) {
+			carriedObj.stopDrag();
+			removeDropShadowFrom(carriedObj);
+			Block(carriedObj).restoreOriginalState();
+			carriedObj = null;
+		}
 	}
 
 	private function findMouseTarget(evt:MouseEvent, target:*):DisplayObject {
