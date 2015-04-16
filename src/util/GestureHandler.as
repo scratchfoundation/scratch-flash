@@ -221,7 +221,7 @@ public class GestureHandler {
 	}
 
 	private function doClickImmediately():Boolean {
-		// Answer true when clicking on the stage or a locked sprite in play (presentation) mode.
+		// Answer true when clicking on the stage or a locked sprite in play (full screen) mode.
 		if (app.editMode) return false;
 		if (mouseTarget is ScratchStage) return true;
 		return (mouseTarget is ScratchSprite) && !ScratchSprite(mouseTarget).isDraggable;
@@ -429,8 +429,8 @@ public class GestureHandler {
 		if (!('objToGrab' in mouseTarget)) return;
 		if (!app.editMode) {
 			if (app.loadInProgress) return;
-			if ((mouseTarget is ScratchSprite) && !ScratchSprite(mouseTarget).isDraggable) return; // don't drag locked sprites in presentation mode
-			if ((mouseTarget is Watcher) || (mouseTarget is ListWatcher)) return; // don't drag watchers in presentation mode
+			if ((mouseTarget is ScratchSprite) && !ScratchSprite(mouseTarget).isDraggable) return; // don't drag locked sprites in fullscreen mode
+			if ((mouseTarget is Watcher) || (mouseTarget is ListWatcher)) return; // don't drag watchers in fullscreen mode
 		}
 		grab(mouseTarget, evt);
 		gesture = 'drag';

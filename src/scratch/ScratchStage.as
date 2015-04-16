@@ -371,7 +371,7 @@ public class ScratchStage extends ScratchObj {
 		// NOTE: The following code supports the scrolling backgrounds
 		// feature, which was explored but removed before launch.
 		// This prototype implementation renders SVG backdrops to a bitmap
-		// (to allow wrapping) but that causes pixelation in presentation mode.
+		// (to allow wrapping) but that causes pixelation in full screen mode.
 		// If the scrolling backgrounds feature is ever resurrected this code
 		// is a good starting point but the pixelation issue should be fixed.
 		clearCachedBitmap();
