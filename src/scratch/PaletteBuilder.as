@@ -194,6 +194,7 @@ public class PaletteBuilder {
 		return variable;
 	}
 
+	public static var fieldWidth:uint = 150;
 	private function makeVariable():void {
 		function makeVar2():void {
 			var n:String = d.getField('Variable name').replace(/^\s+|\s+$/g, '');
@@ -205,7 +206,7 @@ public class PaletteBuilder {
 		var d:DialogBox = DialogBox.create(makeVar2);
 		var varSettings:VariableSettings = makeVarSettings(false, app.viewedObj().isStage);
 		d.addTitle('New Variable');
-		d.addField('Variable name', 150);
+		d.addField('Variable name', fieldWidth);
 		d.addWidget(varSettings);
 		d.addAcceptCancelButtons('OK');
 		d.showOnStage(app.stage);
@@ -221,7 +222,7 @@ public class PaletteBuilder {
 		var d:DialogBox = DialogBox.create(makeList2);
 		var varSettings:VariableSettings = makeVarSettings(true, app.viewedObj().isStage);
 		d.addTitle('New List');
-		d.addField('List name', 150);
+		d.addField('List name', fieldWidth);
 		d.addWidget(varSettings);
 		d.addAcceptCancelButtons('OK');
 		d.showOnStage(app.stage);

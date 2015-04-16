@@ -62,6 +62,7 @@ public class CSS {
 	// Button dimensions
 	public static var tinyPadding:uint = 4;
 	public static var smallPadding:uint = 10;
+	public static var hatTopPadding:uint = 17;
 	public static var bigPadding:uint = 15;
 	public static var palPadding:uint = 7;
 	public static var palSpacing:uint = 5;

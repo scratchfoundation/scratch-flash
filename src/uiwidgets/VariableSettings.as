@@ -18,20 +18,19 @@
  */
 
 package uiwidgets {
-	import flash.display.*;
-	import flash.text.*;
-	import assets.Resources;
-	import translation.Translator;
+import flash.display.*;
+import flash.text.*;
+import assets.Resources;
+import translation.Translator;
 
 public class VariableSettings extends Sprite {
 
 	public var isLocal:Boolean;
-
 	public var isList:Boolean;
-	private var isStage:Boolean;
+	protected var isStage:Boolean;
 
 	protected var globalButton:IconButton;
-	private var globalLabel:TextField;
+	protected var globalLabel:TextField;
 	protected var localButton:IconButton;
 	protected var localLabel:TextField;
 

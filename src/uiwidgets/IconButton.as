@@ -139,7 +139,7 @@ public class IconButton extends Sprite {
 		var g:Graphics = arrow.graphics;
 		g.beginFill(c);
 		g.lineTo(8, 0);
-		g.lineTo(4, 6)
+		g.lineTo(4, 6);
 		g.lineTo(0, 0);
 		g.endFill();
 		arrow.x = x;
@@ -189,7 +189,7 @@ public class IconButton extends Sprite {
 		}
 	}
 
-	private function useDefaultImages():void {
+	protected function useDefaultImages():void {
 		// Use default images (empty and filled circles, appropriate for a radio button)
 		const color:int = 0x373737;
 		offImage = new Sprite();
@@ -206,5 +206,4 @@ public class IconButton extends Sprite {
 		g.drawCircle(6, 6, 4);
 		g.endFill();
 	}
-
 }}

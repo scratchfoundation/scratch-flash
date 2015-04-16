@@ -45,7 +45,7 @@ public class BlockShape extends Shape {
 
 	// Geometry
 	public static var NotchDepth:int = 3;
-	public static const EmptySubstackH:int = 12;
+	public static var EmptySubstackH:int = 12;
 	public static const SubstackInset:int = 15;
 
 	private const CornerInset:int = 3;

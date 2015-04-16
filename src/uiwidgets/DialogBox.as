@@ -252,14 +252,18 @@ public class DialogBox extends Sprite {
 		if (parent != null) parent.removeChild(this);
 	}
 
-	private function makeLabel(s:String, forTitle:Boolean = false):TextField {
+	protected function getLabelTextFormat(forTitle:Boolean):TextFormat {
 		const normalFormat:TextFormat = new TextFormat(CSS.font, CSS.titleFormat.size, CSS.textColor);
+		return forTitle ? CSS.titleFormat : normalFormat;
+	}
+
+	private function makeLabel(s:String, forTitle:Boolean = false):TextField {
 		var result:VariableTextField = new VariableTextField();
 		result.autoSize = TextFieldAutoSize.LEFT;
 		result.selectable = false;
 		result.background = false;
+		result.defaultTextFormat = getLabelTextFormat(forTitle);
 		result.setText(s, context);
-		result.setTextFormat(forTitle ? CSS.titleFormat : normalFormat);
 		return result;
 	}
 
