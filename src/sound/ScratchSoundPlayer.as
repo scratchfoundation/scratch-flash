@@ -87,9 +87,6 @@ public class ScratchSoundPlayer {
 
 	public function atEnd():Boolean { return soundChannel == null; }
 	private function timeLeft():Number { return ((endOffset - bytePosition)/(stepSize * 44100)); }
-	public function nearEnd():Boolean {
-		return atEnd() || timeLeft() < 5;
-	}
 
 	public function stopPlaying():void {
 		if (soundChannel != null) {

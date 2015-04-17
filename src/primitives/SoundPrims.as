@@ -89,7 +89,7 @@ public class SoundPrims {
 		}
 	}
 
-	private const asyncSoundCutoff:Number = 3.0;
+	private static const asyncSoundCutoff:Number = 3.0;
 	private function primPlayNote(b:Block):void {
 		var s:ScratchObj = interp.targetObj();
 		if (s == null) return;
@@ -98,8 +98,8 @@ public class SoundPrims {
 			var secs:Number = beatsToSeconds(interp.numarg(b, 1));
 			var ssp:ScratchSoundPlayer = playNote(s.instrument, key, secs, s);
 			if (secs > asyncSoundCutoff || b.nextBlock || b.topBlock().op != 'whenKeyPressed') {
-				interp.activeThread.tmpObj = ssp;
 				interp.startTimer(secs);
+				interp.activeThread.tmpObj = ssp;
 			}
 		} else {
 			interp.checkTimer();
@@ -114,8 +114,7 @@ public class SoundPrims {
 			var isMIDI:Boolean = (b.op == 'drum:duration:elapsed:from:');
 			var secs:Number = beatsToSeconds(interp.numarg(b, 1));
 			playDrum(drum, isMIDI, 10, s); // always play entire drum sample
-			if (secs > asyncSoundCutoff || b.nextBlock || b.topBlock().op != 'whenKeyPressed')
-				interp.startTimer(secs);
+			interp.startTimer(secs);
 		} else {
 			interp.checkTimer();
 		}
