@@ -53,7 +53,7 @@ public class ScratchSprite extends ScratchObj {
 	public var penWidth:Number = 1;
 	public var penHue:Number = 120; // blue
 	public var penShade:Number = 50; // full brightness and saturation
-	public var penColorCache:Number = 0xFF;
+	public var penColorRGBA:Number = 0xFF;
 
 	private var cachedBitmap:BitmapData;	// current costume, rotated & scaled
 	private var cachedBounds:Rectangle;		// bounds of non-transparent cachedBitmap in stage coords
@@ -77,6 +77,14 @@ public class ScratchSprite extends ScratchObj {
 		img.addChild(geomShape);
 		showCostume(0);
 		setScratchXY(0, 0);
+	}
+
+	public function get penColorRGB(): Number {
+		return penColorRGBA & 0xFFFFFF;
+	}
+
+	public function get penColorAlpha(): Number {
+		return ((penColorRGBA & 0xFF000000) >>> 24) / 256;
 	}
 
 	private function initMedia():void {
@@ -155,7 +163,7 @@ public class ScratchSprite extends ScratchObj {
 		penWidth = spr.penWidth;
 		penHue = spr.penHue;
 		penShade = spr.penShade;
-		penColorCache = spr.penColorCache;
+		penColorRGBA = spr.penColorRGBA;
 
 		showCostume(spr.currentCostumeIndex);
 		setDirection(spr.direction);
@@ -258,11 +266,11 @@ public class ScratchSprite extends ScratchObj {
 		penWidth = Math.max(1, Math.min(Math.round(n), 255)); // 255 is the maximum line with supported by Flash
 	}
 
-	public function setPenColor(c:Number):void {
-		var hsv:Array = Color.rgb2hsv(c);
+	public function setPenColor(rgba:Number):void {
+		var hsv:Array = Color.rgb2hsv(rgba & 0xFFFFFF);
 		penHue = (200 * hsv[0]) / 360 ;
 		penShade = 50 * hsv[2];  // not quite right; doesn't account for saturation
-		penColorCache = c;
+		penColorRGBA = rgba;
 	}
 
 	public function setPenHue(n:Number):void {
@@ -281,9 +289,9 @@ public class ScratchSprite extends ScratchObj {
 		var c:int = Color.fromHSV((penHue * 180) / 100, 1, 1);
 		var shade:Number = (penShade > 100) ? 200 - penShade : penShade; // range 0..100
 		if (shade < 50) {
-			penColorCache = Color.mixRGB(0, c, (10 + shade) / 60);
+			penColorRGBA = Color.mixRGB(0, c, (10 + shade) / 60);
 		} else {
-			penColorCache = Color.mixRGB(c, 0xFFFFFF, (shade - 50) / 60);
+			penColorRGBA = Color.mixRGB(c, 0xFFFFFF, (shade - 50) / 60);
 		}
 	}
 
