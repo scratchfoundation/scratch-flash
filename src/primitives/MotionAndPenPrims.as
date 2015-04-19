@@ -232,15 +232,17 @@ public class MotionAndPenPrims {
 
 	private function primPenDown(b:Block):void {
 		var s:ScratchSprite = interp.targetSprite();
-		if (s != null) s.penIsDown = true;
-		touch(s, s.scratchX, s.scratchY);
-		interp.redraw();
+		if (s != null) {
+			s.penIsDown = true;
+			touch(s, s.scratchX, s.scratchY);
+			interp.redraw();
+		}
 	}
 
 	private function touch(s:ScratchSprite, x:Number, y:Number):void {
 		var g:Graphics = app.stagePane.newPenStrokes.graphics;
 		g.lineStyle();
-		g.beginFill(s.penColorCache);
+		g.beginFill(s.penColorRGB, s.penColorAlpha);
 		g.drawCircle(240 + x, 180 - y, s.penWidth / 2);
 		g.endFill();
 		app.stagePane.penActivity = true;
@@ -315,7 +317,7 @@ public class MotionAndPenPrims {
 
 	private function stroke(s:ScratchSprite, oldX:Number, oldY:Number, newX:Number, newY:Number):void {
 		var g:Graphics = app.stagePane.newPenStrokes.graphics;
-		g.lineStyle(s.penWidth, s.penColorCache);
+		g.lineStyle(s.penWidth, s.penColorRGBA);
 		g.moveTo(240 + oldX, 180 - oldY);
 		g.lineTo(240 + newX, 180 - newY);
 //trace('pen line('+oldX+', '+oldY+', '+newX+', '+newY+')');
