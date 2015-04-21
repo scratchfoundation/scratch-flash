@@ -240,7 +240,9 @@ public class MotionAndPenPrims {
 	private function touch(s:ScratchSprite, x:Number, y:Number):void {
 		var g:Graphics = app.stagePane.newPenStrokes.graphics;
 		g.lineStyle();
-		g.beginFill(s.penColorCache);
+		var alpha:Number = (0xFF & (s.penColorCache >> 24)) / 0xFF;
+		if (alpha == 0) alpha = 1;
+		g.beginFill(0xFFFFFF & s.penColorCache, alpha);
 		g.drawCircle(240 + x, 180 - y, s.penWidth / 2);
 		g.endFill();
 		app.stagePane.penActivity = true;
@@ -315,7 +317,9 @@ public class MotionAndPenPrims {
 
 	private function stroke(s:ScratchSprite, oldX:Number, oldY:Number, newX:Number, newY:Number):void {
 		var g:Graphics = app.stagePane.newPenStrokes.graphics;
-		g.lineStyle(s.penWidth, s.penColorCache);
+		var alpha:Number = (0xFF & (s.penColorCache >> 24)) / 0xFF;
+		if (alpha == 0) alpha = 1;
+		g.lineStyle(s.penWidth, 0xFFFFFF & s.penColorCache, alpha);
 		g.moveTo(240 + oldX, 180 - oldY);
 		g.lineTo(240 + newX, 180 - newY);
 //trace('pen line('+oldX+', '+oldY+', '+newX+', '+newY+')');
