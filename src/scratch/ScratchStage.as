@@ -742,35 +742,6 @@ public class ScratchStage extends ScratchObj {
 			return true;
 		}
 		Scratch.app.setSaveNeeded();
-		if ((obj is MediaInfo) && obj.fromBackpack) {
-			function addSpriteForCostume(c:ScratchCostume):void {
-				var s:ScratchSprite = new ScratchSprite(c.costumeName);
-				s.setInitialCostume(c.duplicate());
-				app.addNewSprite(s, false, true);
-			}
-			var app:Scratch = root as Scratch;
-			// Add sprites
-			if (obj.mysprite) {
-				app.addNewSprite(obj.mysprite.duplicate(), false, true);
-				return true;
-			}
-			if (obj.objType == 'sprite') {
-				function addDroppedSprite(spr:ScratchSprite):void {
-					spr.objName = obj.objName;
-					app.addNewSprite(spr, false, true);
-				}
-				new ProjectIO(app).fetchSprite(obj.md5, addDroppedSprite);
-				return true;
-			}
-			if (obj.mycostume) {
-				addSpriteForCostume(obj.mycostume);
-				return true;
-			}
-			if (obj.objType == 'image') {
-				new ProjectIO(app).fetchImage(obj.md5, obj.objName, obj.objWidth, addSpriteForCostume);
-				return true;
-			}
-		}
 		return false;
 	}
 
