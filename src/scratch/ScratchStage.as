@@ -24,6 +24,7 @@
 
 package scratch {
 import blocks.Block;
+import blocks.BlockArg;
 
 import by.blooddy.crypto.MD5;
 import by.blooddy.crypto.image.PNG24Encoder;
@@ -492,7 +493,7 @@ public class ScratchStage extends ScratchObj implements DropTarget, ITool {
 		flipVideo = ('on' == newState); // 'on' means mirrored; 'on-flip' means unmirrored
 		if (camera == null) {
 			// Set up the camera only the first time it is used.
-			camera = Camera.getCamera();
+			camera = getCamera(CameraPosition.FRONT);
 			if (!camera) return; // no camera available or access denied
 			camera.setMode(640, 480, 30);
 		}
@@ -503,6 +504,15 @@ public class ScratchStage extends ScratchObj implements DropTarget, ITool {
 			videoImage.alpha = videoAlpha;
 			addChildAt(videoImage, getChildIndex(penLayer) + 1);
 		}
+	}
+
+	private function getCamera(position:String):Camera {
+		for (var i:uint = 0; i < Camera.names.length; ++i)
+		{
+			var cam:Camera = Camera.getCamera(String(i));
+			if (cam.position == position) return cam;
+		}
+		return Camera.getCamera();
 	}
 
 	public function setVideoTransparency(transparency:Number):void {
@@ -580,7 +590,12 @@ public class ScratchStage extends ScratchObj implements DropTarget, ITool {
 
 	SCRATCH::allow3d
 	public function updateSpriteEffects(spr:DisplayObject, effects:Object):void {
-		if(Scratch.app.isIn3D) Scratch.app.render3D.updateFilters(spr, effects);
+		if(Scratch.app.isIn3D) {
+			if (videoImage && videoImage.alpha < 1 && !effects.ghost)
+				effects.ghost = BlockArg.epsilon;
+
+			Scratch.app.render3D.updateFilters(spr, effects);
+		}
 	}
 
 	public function getBitmapWithoutSpriteFilteredByColor(s:ScratchSprite, c:int):BitmapData {

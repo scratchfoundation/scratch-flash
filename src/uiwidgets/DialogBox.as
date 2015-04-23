@@ -65,7 +65,7 @@ public class DialogBox extends Sprite {
 	}
 
 	public static function ask(question:String, defaultAnswer:String, stage:Stage = null, resultFunction:Function = null, context:Dictionary = null):void {
-		function done():void { if (resultFunction != null) resultFunction(d.fields['answer'].text) }
+		function done():void { if (resultFunction != null) resultFunction(d.fields['answer'].tf.text) }
 		var d:DialogBox = new dbClass(done);
 		d.addTitle(question);
 		d.addField('answer', 120, defaultAnswer, false);
@@ -236,15 +236,15 @@ public class DialogBox extends Sprite {
 	}
 
 	public function getField(fieldName:String):* {
-		if (fields[fieldName] != null) return fields[fieldName].text;
+		if (fields[fieldName] != null) return fields[fieldName].tf.text;
 		if (booleanFields[fieldName] != null) return booleanFields[fieldName].isOn();
 		return null;
 	}
 
 	public function setPasswordField(fieldName:String, flag:Boolean = true):void {
 		var field:* = fields[fieldName];
-		if (field is TextField) {
-			(field as TextField).displayAsPassword = flag;
+		if (field.tf is TextField) {
+			(field.tf as TextField).displayAsPassword = flag;
 		}
 	}
 
@@ -408,7 +408,7 @@ public class DialogBox extends Sprite {
 
 	/* Events */
 
-	private function focusChange(evt:Event):void {
+	protected function focusChange(evt:Event):void {
 		evt.preventDefault();
 		if (labelsAndFields.length == 0) return;
 		var focusIndex:int = -1;
@@ -420,8 +420,8 @@ public class DialogBox extends Sprite {
 		stage.focus = labelsAndFields[focusIndex][1].tf;
 	}
 
-	private function mouseDown(evt:MouseEvent):void {if (evt.target == this || evt.target == title) startDrag();}
-	private function mouseUp(evt:MouseEvent):void { stopDrag() }
+	protected function mouseDown(evt:MouseEvent):void {if (evt.target == this || evt.target == title) startDrag();}
+	protected function mouseUp(evt:MouseEvent):void { stopDrag() }
 
 	private function keyDown(evt:KeyboardEvent):void {
 		if ((evt.keyCode == 10) || (evt.keyCode == 13)) accept();

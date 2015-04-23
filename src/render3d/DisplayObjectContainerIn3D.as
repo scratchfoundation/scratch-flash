@@ -578,7 +578,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 			brightnessShift = Math.max(-100, Math.min(effects[FX_BRIGHTNESS], 100)) / 100;
 		}
 
-			if(renderOpts && renderOpts.costumeFlipped) {
+		if(renderOpts && renderOpts.costumeFlipped) {
 			var tmp:Number = right;
 			right = left;
 			left = tmp;

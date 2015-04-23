@@ -49,6 +49,12 @@ public class PaletteSelector extends Sprite {
 	public static function strings():Array { return new PaletteSelector(Scratch.app).getCategories(); }
 	public function updateTranslation():void { initCategories(); }
 
+	public function refresh():void {
+		var oldID:int = selectedCategory;
+		selectedCategory = -1;
+		select(oldID);
+	}
+
 	public function select(id:int, shiftKey:Boolean = false):void {
 		for (var i:int = 0; i < numChildren; i++) {
 			var item:PaletteSelectorItem = getChildAt(i) as PaletteSelectorItem;

@@ -65,8 +65,8 @@ public class EditableLabel extends Sprite {
 		tf.height = h - 1;
 	}
 
-	public function contents():String { return tf.text }
-	public function setContents(s:String):void { tf.text = s }
+	public function contents():String { return tf.text; }
+	public function setContents(s:String):void { tf.text = s; }
 	public function setEditable(flag:Boolean):void {
 		tf.type = flag ? TextFieldType.INPUT : TextFieldType.DYNAMIC;
 		tf.selectable = flag;
@@ -89,6 +89,7 @@ public class EditableLabel extends Sprite {
 		if ((k == 10) || (k == 13)) {
 			stage.focus = null; // relinquish keyboard focus
 			evt.stopPropagation();
+			tf.dispatchEvent(new Event(Event.CHANGE, true));
 		}
 	}
 

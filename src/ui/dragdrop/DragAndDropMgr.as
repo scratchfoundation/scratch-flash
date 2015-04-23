@@ -183,6 +183,7 @@ public class DragAndDropMgr {
 		var transformGesture:TransformGesture = event.target as TransformGesture;
 		var dropAccepted:Boolean = currentDropTarget && currentDropTarget.handleDrop(draggedObj);
 		originalObj.dispatchEvent(new DragEvent(dropAccepted ? DragEvent.DRAG_STOP : DragEvent.DRAG_CANCEL, draggedObj));
+		event.stopImmediatePropagation();
 		stopDrag();
 
 		originalObj = null;
@@ -213,7 +214,6 @@ public class DragAndDropMgr {
 			}
 		}
 
-		trace('currentDropTarget = ' + null);
 		return null;
 	}
 }}

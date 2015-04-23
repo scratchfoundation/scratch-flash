@@ -61,7 +61,7 @@ public class BlockArg extends Sprite {
 	public var field:TextField;
 	public var menuName:String;
 
-	private var menuIcon:DisplayObject;
+	protected var menuIcon:DisplayObject;
 
 	// BlockArg types:
 	//	b - boolean (pointed)
@@ -260,13 +260,17 @@ public class BlockArg extends Sprite {
 		var padding:int = (type == 'n') ? 3 : 0;
 		if (type == 'b') padding = 8;
 		if (menuIcon != null) padding = (type == 'd') ? 10 : 13;
-		var w:int = Math.max(minTextWidth, field.textWidth + addedTextPadding + padding);
+		var w:int = calcBaseWidth(padding);
 		if (menuIcon) menuIcon.x = w - menuIcon.width - 3;
 		base.setWidth(w);
 		base.redraw();
 		fixLayout();
 
 		if (evt && Scratch.app) Scratch.app.setSaveNeeded();
+	}
+
+	protected function calcBaseWidth(padding:int):int {
+		return Math.max(minTextWidth, field.textWidth + addedTextPadding + padding);
 	}
 
 	protected function fixLayout():void {

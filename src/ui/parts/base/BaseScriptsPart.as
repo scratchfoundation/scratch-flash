@@ -125,7 +125,7 @@ public class BaseScriptsPart extends UIPart implements IScriptsPart {
 
 	public function updatePalette():void {
 		selector.updateTranslation();
-		selector.select(selector.selectedCategory);
+		selector.refresh();
 	}
 
 	public function updateSpriteWatermark():void {

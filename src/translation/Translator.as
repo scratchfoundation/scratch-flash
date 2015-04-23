@@ -124,7 +124,9 @@ public class Translator {
 		else Block.setFonts(10 * scale, 9 * scale, false, 0); // default font settings
 	}
 
+	public static var premap:Function;
 	public static function map(s:String, context:Dictionary=null):String {
+		if (premap) s = premap(s);
 		var result:* = dictionary[s];
 		if ((result == null) || (result.length == 0)) result = s;
 		if (context) result = StringUtils.substitute(result, context);

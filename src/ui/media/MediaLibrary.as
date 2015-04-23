@@ -57,7 +57,7 @@ public class MediaLibrary extends Sprite {
 	private static const spriteFeatures:Array = ['All', 'Scripts', 'Costumes > 1', 'Sounds'];
 
 	protected var app:Scratch;
-	private var assetType:String;
+	protected var assetType:String;
 	protected var whenDone:Function;
 	protected var allItems:Array = [];
 
