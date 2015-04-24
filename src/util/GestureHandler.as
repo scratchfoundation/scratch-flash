@@ -401,6 +401,7 @@ public class GestureHandler {
 		Menu.removeMenusFrom(stage);
 		if (!('objToGrab' in mouseTarget)) return;
 		if (!app.editMode) {
+			if (app.loadInProgress) return;
 			if ((mouseTarget is ScratchSprite) && !ScratchSprite(mouseTarget).isDraggable) return; // don't drag locked sprites in presentation mode
 			if ((mouseTarget is Watcher) || (mouseTarget is ListWatcher)) return; // don't drag watchers in presentation mode
 		}
