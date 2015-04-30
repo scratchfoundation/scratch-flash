@@ -84,26 +84,26 @@ package svgeditor.tools
 		override protected function init():void {
 			super.init();
 			editor.getWorkArea().addEventListener(MouseEvent.MOUSE_DOWN, mouseDown, false, 0, true);
-			stage.addChild(eraserShape);
+			STAGE.addChild(eraserShape);
 			updateIcon();
 		}
 
 		override protected function shutdown():void {
 			editor.getWorkArea().removeEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
 			super.shutdown();
-			stage.removeChild(eraserShape);
+			STAGE.removeChild(eraserShape);
 		}
 
 		private function mouseDown(e:MouseEvent):void {
 			editor.getWorkArea().addEventListener(MouseEvent.MOUSE_MOVE, erase, false, 0, true);
-			editor.stage.addEventListener(MouseEvent.MOUSE_UP, mouseUp, false, 0, true);
+			STAGE.addEventListener(MouseEvent.MOUSE_UP, mouseUp, false, 0, true);
 			eraserWidth = editor.getShapeProps().eraserWidth;
 			erase();
 		}
 
 		private function mouseUp(e:MouseEvent):void {
 			editor.getWorkArea().removeEventListener(MouseEvent.MOUSE_MOVE, erase);
-			editor.stage.removeEventListener(MouseEvent.MOUSE_UP, mouseUp);
+			STAGE.removeEventListener(MouseEvent.MOUSE_UP, mouseUp);
 			erase();
 			lastPos = null;
 			dispatchEvent(new Event(Event.CHANGE));

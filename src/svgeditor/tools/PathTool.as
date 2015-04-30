@@ -60,8 +60,8 @@ package svgeditor.tools
 		override protected function init():void {
 			super.init();
 			if(!linesOnly) {
-				stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyPress, false, 0, true);
-				stage.addEventListener(KeyboardEvent.KEY_UP, onKeyRelease, false, 0, true);
+				STAGE.addEventListener(KeyboardEvent.KEY_DOWN, onKeyPress, false, 0, true);
+				STAGE.addEventListener(KeyboardEvent.KEY_UP, onKeyRelease, false, 0, true);
 			}
 			editor.getToolsLayer().mouseEnabled = false;
 			mouseEnabled = false;
@@ -72,10 +72,8 @@ package svgeditor.tools
 		}
 
 		override protected function shutdown():void {
-			if(editor.stage) {
-				editor.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyPress);
-				editor.stage.removeEventListener(KeyboardEvent.KEY_UP, onKeyRelease);
-			}
+			STAGE.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyPress);
+			STAGE.removeEventListener(KeyboardEvent.KEY_UP, onKeyRelease);
 			editor.getToolsLayer().mouseEnabled = true;
 			PathEndPointManager.removeEndPoints();
 			if(previewShape.parent) previewShape.parent.removeChild(previewShape);

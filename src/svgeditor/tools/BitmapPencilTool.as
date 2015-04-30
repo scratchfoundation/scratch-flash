@@ -51,17 +51,17 @@ public final class BitmapPencilTool extends SVGTool {
 
 	override protected function init():void {
 		super.init();
-		editor.stage.addEventListener(MouseEvent.MOUSE_DOWN, mouseDown, false, 0, true);
-		editor.stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseMove, false, 0, true);
-		editor.stage.addEventListener(MouseEvent.MOUSE_UP, mouseUp, false, 0, true);
+		STAGE.addEventListener(MouseEvent.MOUSE_DOWN, mouseDown, false, 0, true);
+		STAGE.addEventListener(MouseEvent.MOUSE_MOVE, mouseMove, false, 0, true);
+		STAGE.addEventListener(MouseEvent.MOUSE_UP, mouseUp, false, 0, true);
 		editor.getToolsLayer().mouseEnabled = false;
 		updateProperties();
 	}
 
 	override protected function shutdown():void {
-		editor.stage.removeEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
-		editor.stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
-		editor.stage.removeEventListener(MouseEvent.MOUSE_UP, mouseUp);
+		STAGE.removeEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
+		STAGE.removeEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
+		STAGE.removeEventListener(MouseEvent.MOUSE_UP, mouseUp);
 		editor.getToolsLayer().mouseEnabled = true;
 		removeFeedback();
 		super.shutdown();
