@@ -110,7 +110,7 @@ package svgeditor.tools
 							elem.setAttribute('stroke-width', 2);
 					}
 					obj.redraw(true);
-					isOverStroke = (obj as DisplayObject).hitTestPoint(stage.mouseX, stage.mouseY, true);
+					isOverStroke = (obj as DisplayObject).hitTestPoint(STAGE.mouseX, STAGE.mouseY, true);
 				}
 				else {
 					isOverStroke = false;

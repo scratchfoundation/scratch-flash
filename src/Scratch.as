@@ -46,6 +46,8 @@ import render3d.DisplayObjectContainerIn3D;
 
 import scratch.*;
 
+import svgeditor.tools.SVGTool;
+
 import translation.*;
 
 import ui.*;
@@ -115,6 +117,7 @@ public class Scratch extends Sprite {
 	public const tipsBarClosedWidth:int = 17;
 
 	public function Scratch() {
+		SVGTool.setStage(stage);
 		loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, uncaughtErrorHandler);
 		app = this;
 
