@@ -139,23 +139,6 @@ public class ScriptsPane extends ScrollFrameContents {
 	}
 
 	public function updateFeedbackFor(b:Block):void {
-		if (mouseX + x >= 0) {
-			nearestTarget = nearestTargetForBlockIn(b, possibleTargets);
-			if (nearestTarget != null) {
-				updateFeedbackShape();
-			} else {
-				hideFeedbackShape();
-			}
-			if (b.base.canHaveSubstack1() && !b.subStack1) {
-				updateHeight();
-			}
-		}
-		else {
-			nearestTarget = null;
-			hideFeedbackShape();
-		}
-
-		fixCommentLayout();
 
 		function updateHeight(): void {
 			var h:int = BlockShape.EmptySubstackH;
@@ -200,6 +183,24 @@ public class ScriptsPane extends ScrollFrameContents {
 				feedbackShape.copyFeedbackShapeFrom(b, false, isInsertion, wrapH);
 			}
 		}
+
+		if (mouseX + x >= 0) {
+			nearestTarget = nearestTargetForBlockIn(b, possibleTargets);
+			if (nearestTarget != null) {
+				updateFeedbackShape();
+			} else {
+				hideFeedbackShape();
+			}
+			if (b.base.canHaveSubstack1() && !b.subStack1) {
+				updateHeight();
+			}
+		}
+		else {
+			nearestTarget = null;
+			hideFeedbackShape();
+		}
+
+		fixCommentLayout();
 	}
 
 	public function allStacks():Array {
