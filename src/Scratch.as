@@ -214,7 +214,7 @@ public class Scratch extends Sprite {
 
 		if (isExtensionDevMode) {
 			addExternalCallback('ASloadSBXFromURL', loadSBXFromURL);
-			addExternalCallback('ASbrowseForSBX', runtime.selectProjectFile);
+			addExternalCallback('ASloadBase64SBX', loadBase64SBX);
 		}
 	}
 
@@ -253,6 +253,12 @@ public class Scratch extends Sprite {
 		sbxLoader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, handleError);
 		sbxLoader.addEventListener(IOErrorEvent.IO_ERROR, handleError);
 		sbxLoader.load(request);
+	}
+
+	private function loadBase64SBX(base64: String): void {
+		var sbxData: ByteArray = Base64Encoder.decode(base64);
+		app.setProjectName('');
+		runtime.installProjectFromData(sbxData);
 	}
 
 	protected function initTopBarPart():void {
