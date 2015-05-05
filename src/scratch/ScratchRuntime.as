@@ -75,7 +75,6 @@ public class ScratchRuntime {
 			if (saveAfterInstall) app.setSaveNeeded(true);
 			projectToInstall = null;
 			saveAfterInstall = false;
-			app.loadInProgress = false;
 			return;
 		}
 
