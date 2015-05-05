@@ -256,7 +256,9 @@ public class Scratch extends Sprite {
 
 	public function logException(e:Error):void {}
 	public function logMessage(msg:String, extra_data:Object=null):void {}
-	public function loadProjectFailed():void {}
+	public function loadProjectFailed():void {
+		loadInProgress = false;
+	}
 
 	protected function checkFlashVersion():void {
 		SCRATCH::allow3d {
@@ -466,6 +468,7 @@ public class Scratch extends Sprite {
 		removeLoadProgressBox();
 		System.gc();
 		if (autostart) runtime.startGreenFlags(true);
+		loadInProgress = false;
 		saveNeeded = false;
 
 		// translate the blocks of the newly loaded project
@@ -912,7 +915,6 @@ public class Scratch extends Sprite {
 		projectOwner = newOwner;
 		projectID = newID;
 		projectIsPrivate = true;
-		loadInProgress = false;
 	}
 
 	// -----------------------------
