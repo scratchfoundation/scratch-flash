@@ -214,6 +214,7 @@ public class Scratch extends Sprite {
 
 		if (isExtensionDevMode) {
 			addExternalCallback('ASloadSBXFromURL', loadSBXFromURL);
+			addExternalCallback('ASbrowseForSBX', runtime.selectProjectFile);
 		}
 	}
 

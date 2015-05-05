@@ -383,7 +383,9 @@ public class ScratchRuntime {
 		stopAll();
 		var filter1:FileFilter = new FileFilter('Scratch 1.4 Project', '*.sb');
 		var filter2:FileFilter = new FileFilter('Scratch 2 Project', '*.sb2');
-		Scratch.loadSingleFile(fileLoadHandler, [filter1, filter2])
+		var filter3:FileFilter = new FileFilter('ScratchX Project', '*.sbx');
+		var filterList:Array = Scratch.app.isExtensionDevMode ? [filter3, filter2, filter1] : [filter2, filter1];
+		Scratch.loadSingleFile(fileLoadHandler, filterList);
 	}
 
 	public function installProjectFromFile(fileName:String, data:ByteArray):void {
