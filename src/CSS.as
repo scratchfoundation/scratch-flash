@@ -28,9 +28,17 @@ package {
 
 public class CSS {
 
+	public static function topBarColor():int { return Scratch.app.isExtensionDevMode ? topBarColor_ScratchX : topBarColor_default; }
+	public static function backgroundColor():int { return Scratch.app.isExtensionDevMode ? backgroundColor_ScratchX : backgroundColor_default; }
+
+	// ScratchX
+	public static const topBarColor_ScratchX:int = 0x30485f;
+	public static const backgroundColor_ScratchX:int = 0x3f5975;
+
 	// Colors
 	public static const white:int = 0xFFFFFF;
-	public static const topBarColor:int = 0x9C9EA2;
+	public static const backgroundColor_default:int = white;
+	public static const topBarColor_default:int = 0x9C9EA2;
 	public static const tabColor:int = 0xE6E8E8;
 	public static const panelColor:int = 0xF2F2F2;
 	public static const itemSelectedColor:int = 0xD0D0D0;

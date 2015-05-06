@@ -90,7 +90,7 @@ public class TopBarPart extends UIPart {
 		this.h = h;
 		var g:Graphics = shape.graphics;
 		g.clear();
-		g.beginFill(CSS.topBarColor);
+		g.beginFill(CSS.topBarColor());
 		g.drawRect(0, 0, w, h);
 		g.endFill();
 		fixLayout();

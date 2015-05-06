@@ -156,6 +156,7 @@ public class Scratch extends Sprite {
 		stage.align = StageAlign.TOP_LEFT;
 		stage.scaleMode = StageScaleMode.NO_SCALE;
 		stage.frameRate = 30;
+		stage.color = CSS.backgroundColor();
 
 		Block.setFonts(10, 9, true, 0); // default font sizes
 		Block.MenuHandlerFunction = BlockMenus.BlockMenuHandler;
@@ -799,7 +800,7 @@ public class Scratch extends Sprite {
 	// Menus
 	//------------------------------
 	public function showFileMenu(b:*):void {
-		var m:Menu = new Menu(null, 'File', CSS.topBarColor, 28);
+		var m:Menu = new Menu(null, 'File', CSS.topBarColor(), 28);
 		m.addItem('New', createNewProject);
 		m.addLine();
 
@@ -842,7 +843,7 @@ public class Scratch extends Sprite {
 	}
 
 	public function showEditMenu(b:*):void {
-		var m:Menu = new Menu(null, 'More', CSS.topBarColor, 28);
+		var m:Menu = new Menu(null, 'More', CSS.topBarColor(), 28);
 		m.addItem('Undelete', runtime.undelete, runtime.canUndelete());
 		m.addLine();
 		m.addItem('Small stage layout', toggleSmallStage, true, stageIsContracted);
@@ -972,7 +973,7 @@ public class Scratch extends Sprite {
 			languageChanged = true;
 		}
 		if (Translator.languages.length == 0) return; // empty language list
-		var m:Menu = new Menu(setLanguage, 'Language', CSS.topBarColor, 28);
+		var m:Menu = new Menu(setLanguage, 'Language', CSS.topBarColor(), 28);
 		if (b.lastEvent.shiftKey) {
 			m.addItem('import translation file');
 			m.addItem('set font size');
