@@ -75,9 +75,8 @@ public class ExtensionManager {
 	public function specForCmd(op:String):Array {
 		// Return a command spec array for the given operation or null.
 		for each (var ext:ScratchExtension in extensionDict) {
-			var prefix:String = ext.useScratchPrimitives ? '' : (ext.name + '.');
 			for each (var spec:Array in ext.blockSpecs) {
-				if ((spec.length > 2) && ((prefix + spec[2]) == op)) {
+				if ((spec.length > 2) && ((ext.name + '.' + spec[2]) == op)) {
 					return [spec[1], spec[0], Specs.extensionsCategory, op, spec.slice(3)];
 				}
 			}
@@ -101,8 +100,11 @@ public class ExtensionManager {
 				}
 				else {
 					app.externalCall('ScratchExtensions.unregister', null, extName);
-					delete extensionDict[extName];
+					if(!ext.isInternal) delete extensionDict[extName];
 				}
+			}
+			else {
+				 if(!flag) delete extensionDict[extName];
 			}
 		}
 	}
@@ -139,8 +141,11 @@ public class ExtensionManager {
 			descriptor.extensionName = ext.name;
 			descriptor.blockSpecs = ext.blockSpecs;
 			descriptor.menus = ext.menus;
+			if(ext.tags) descriptor.tags = ext.tags;
+			if(ext.thumbnailMD5) descriptor.thumbnailMD5 = ext.thumbnailMD5;			
+			if(ext.url) descriptor.url = ext.url;
 			if(ext.port) descriptor.extensionPort = ext.port;
-			else if(ext.javascriptURL) descriptor.javascriptURL = ext.javascriptURL;
+			if(ext.javascriptURL) descriptor.javascriptURL = ext.javascriptURL;
 			result.push(descriptor);
 		}
 		return result;
@@ -191,27 +196,46 @@ public class ExtensionManager {
 		var ext:ScratchExtension = extensionDict[extObj.extensionName];
 		if(!ext)
 			ext = new ScratchExtension(extObj.extensionName, extObj.extensionPort);
+			
+		loadExtensionData(ext, extObj);	
+		//not within loadExtensionData() as not safe to load from a saved file
+		if (extObj.host) ext.host = extObj.host; // non-local host allowed but not saved in project
+		
+		Scratch.app.translationChanged();
+		Scratch.app.updatePalette();
+		return ext;
+	}
+			
+	public function loadExtensionData(ext:ScratchExtension, extObj:Object):void {		
+		extensionDict[extObj.extensionName] = ext;
 		ext.port = extObj.extensionPort;
 		ext.blockSpecs = extObj.blockSpecs;
-		if (app.isOffline && (ext.port == 0)) {
-			// Fix up block specs to force reporters to be treated as requesters.
-			// This is because the offline JS interface doesn't support returning values directly.
-			for each(var spec:Object in ext.blockSpecs) {
-				if(spec[0] == 'r') {
-					// 'r' is reporter, 'R' is requester, and 'rR' is a reporter forced to act as a requester.
-					spec[0] = 'rR';
-				}
+		
+		// Fix up block specs to force reporters to be treated as requesters.
+		// This is because the offline JS interface doesn't support returning values directly.
+		// 'r' is reporter, 'R' is requester, and 'rR' is a reporter forced to act as a requester.
+		// A saved .sb2 file may contain either 'r' or 'rR', so fix in both directions
+		for each(var spec:Object in ext.blockSpecs) {
+			if (app.isOffline && (ext.port == 0)) {
+				if (spec[0] == 'r') spec[0] = 'rR';
+			} else {
+				if(spec[0] == 'rR') spec[0] = 'r';		
 			}
 		}
 		if(extObj.url) ext.url = extObj.url;
+		if(extObj.tags) ext.tags = extObj.tags;
+		if(extObj.thumbnailMD5) ext.thumbnailMD5 = extObj.thumbnailMD5;	
 		ext.showBlocks = true;
 		ext.menus = extObj.menus;
-		ext.javascriptURL = extObj.javascriptURL;
-		if (extObj.host) ext.host = extObj.host; // non-local host allowed but not saved in project
-		extensionDict[extObj.extensionName] = ext;
-		Scratch.app.translationChanged();
-		Scratch.app.updatePalette();
-
+		ext.isInternal = false; // For now?
+						
+		if(extObj.javascriptURL) {
+			ext.javascriptURL = extObj.javascriptURL;
+			ext.showBlocks = false;
+			//if(extObj.id) ext.id = extObj.id;
+			setEnabled(extObj.extensionName, true);
+		}
+						
 		// Update the indicator
 		for (var i:int = 0; i < app.palette.numChildren; i++) {
 			var indicator:IndicatorLight = app.palette.getChildAt(i) as IndicatorLight;
@@ -220,8 +244,6 @@ public class ExtensionManager {
 				break;
 			}
 		}
-
-		return ext;
 	}
 
 	public function loadSavedExtensions(savedExtensions:Array):void {
@@ -240,18 +262,9 @@ public class ExtensionManager {
 			}
 
 			var ext:ScratchExtension = new ScratchExtension(extObj.extensionName, extObj.extensionPort || 0);
-			extensionDict[extObj.extensionName] = ext;
-			ext.blockSpecs = extObj.blockSpecs;
-			ext.showBlocks = true;
-			ext.isInternal = false; // For now?
-			ext.menus = extObj.menus;
-			if(extObj.javascriptURL) {
-				ext.javascriptURL = extObj.javascriptURL;
-				ext.showBlocks = false;
-				if(extObj.id) ext.id = extObj.id;
-				setEnabled(extObj.extensionName, true);
-			}
+			loadExtensionData(ext, extObj);		
 		}
+		Scratch.app.translationChanged();
 		Scratch.app.updatePalette();
 	}
 
