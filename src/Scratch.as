@@ -214,7 +214,7 @@ public class Scratch extends Sprite {
 		addExternalCallback('ASextensionReporterDone', extensionManager.reporterCompleted);
 
 		if (isExtensionDevMode) {
-			addExternalCallback('ASloadSBXFromURL', loadSBXFromURL);
+			addExternalCallback('ASloadGithubURL', loadGithubURL);
 			addExternalCallback('ASloadBase64SBX', loadBase64SBX);
 		}
 	}
@@ -227,7 +227,7 @@ public class Scratch extends Sprite {
 		}
 	}
 
-	private function loadSBXFromURL(url:String):void {
+	private function loadGithubURL(url:String):void {
 		if (!isExtensionDevMode) return;
 
 		function handleComplete(e:Event):void {
