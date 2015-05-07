@@ -139,6 +139,9 @@ public class ExtensionManager {
 			descriptor.extensionName = ext.name;
 			descriptor.blockSpecs = ext.blockSpecs;
 			descriptor.menus = ext.menus;
+			if(ext.tags) descriptor.tags = ext.tags;
+			if(ext.thumbnailMD5) descriptor.thumbnailMD5 = ext.thumbnailMD5;			
+			if(ext.url) descriptor.url = ext.url;
 			if(ext.port) descriptor.extensionPort = ext.port;
 			else if(ext.javascriptURL) descriptor.javascriptURL = ext.javascriptURL;
 			result.push(descriptor);
