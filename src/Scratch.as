@@ -26,6 +26,8 @@ package {
 import blocks.*;
 import flash.net.FileFilter;
 
+import extensions.ExtensionDevManager;
+
 import extensions.ExtensionManager;
 
 import flash.display.*;
@@ -294,7 +296,12 @@ public class Scratch extends Sprite {
 	}
 
 	protected function initExtensionManager():void {
-		extensionManager = new ExtensionManager(this);
+		if (isExtensionDevMode) {
+			extensionManager = new ExtensionDevManager(this);
+		}
+		else {
+			extensionManager = new ExtensionManager(this);
+		}
 	}
 
 	protected function initServer():void {

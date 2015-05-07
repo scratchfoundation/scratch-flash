@@ -45,7 +45,7 @@ import util.*;
 
 public class ExtensionManager {
 
-	private var app:Scratch;
+	protected var app:Scratch;
 	protected var extensionDict:Object = new Object(); // extension name -> extension record
 	private var justStartedWait:Boolean;
 	private var pollInProgress:Dictionary = new Dictionary(true);
