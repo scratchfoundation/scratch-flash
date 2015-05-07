@@ -225,7 +225,6 @@ public class ExtensionManager {
 				break;
 			}
 		}
-		return ext;
  	}
 
 	public function loadRawExtension(extObj:Object):ScratchExtension {
