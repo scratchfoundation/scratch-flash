@@ -218,11 +218,13 @@ public class ExtensionManager {
 			setEnabled(extObj.extensionName, true);
 		}
  		// Update the indicator
- 		for (var i:int = 0; i < app.palette.numChildren; i++) {
- 			var indicator:IndicatorLight = app.palette.getChildAt(i) as IndicatorLight;
- 				break;
- 			}
- 		}
+		for (var i:int = 0; i < app.palette.numChildren; i++) {
+			var indicator:IndicatorLight = app.palette.getChildAt(i) as IndicatorLight;
+			if (indicator && indicator.target === ext) {
+				updateIndicator(indicator, indicator.target, true);
+				break;
+			}
+		}
 		return ext;
  	}
 
