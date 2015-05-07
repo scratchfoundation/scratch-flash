@@ -217,33 +217,24 @@ public class ExtensionManager {
 			//if(extObj.id) ext.id = extObj.id;
 			setEnabled(extObj.extensionName, true);
 		}
-						
  		// Update the indicator
  		for (var i:int = 0; i < app.palette.numChildren; i++) {
  			var indicator:IndicatorLight = app.palette.getChildAt(i) as IndicatorLight;
  				break;
  			}
  		}
-
 		return ext;
  	}
-
-
 
 	public function loadRawExtension(extObj:Object):ScratchExtension {
 		var ext:ScratchExtension = extensionDict[extObj.extensionName];
 		if(!ext)
 			ext = new ScratchExtension(extObj.extensionName, extObj.extensionPort);
-		
 		loadExtensionData(ext, extObj);	
 		//not within loadExtensionData() as not safe to load from a saved file
 		if (extObj.host) ext.host = extObj.host; // non-local host allowed but not saved in project
-		
 		Scratch.app.translationChanged();
 		Scratch.app.updatePalette();
-		return ext;
-	}
-
 		return ext;
 	}
 
@@ -255,13 +246,11 @@ public class ExtensionManager {
 				setEnabled(extObj.extensionName, true);
 				continue; // internal extension overrides one saved in project
 			}
-
 			if (!('extensionName' in extObj) ||
 				(!('extensionPort' in extObj) && !('javascriptURL' in extObj)) ||
 				!('blockSpecs' in extObj)) {
 					continue;
 			}
-
 			var ext:ScratchExtension = new ScratchExtension(extObj.extensionName, extObj.extensionPort || 0);
 			loadExtensionData(ext, extObj);	
 		}
