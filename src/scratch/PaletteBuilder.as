@@ -412,7 +412,8 @@ public class PaletteBuilder {
 				var op:String = opPrefix + spec[2];
 				var defaultArgs:Array = spec.slice(3);
 				var block:Block = new Block(spec[1], spec[0], blockColor, op, defaultArgs);
-				var showCheckbox:Boolean = (spec[0] == 'r' && defaultArgs.length == 0);
+				var isItr:Boolean = (spec[0] == 'r' || spec[0] == 'rR');
+				var showCheckbox:Boolean = (isItr && defaultArgs.length == 0);
 				if (showCheckbox) addReporterCheckbox(block);
 				addItem(block, showCheckbox);
 			} else {
