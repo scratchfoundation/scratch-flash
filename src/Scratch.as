@@ -250,6 +250,13 @@ public class Scratch extends Sprite {
 			jsThrowError('Failed to load SBX: ' + e.toString());
 		}
 
+		var fileExtension:String = url.substr(url.lastIndexOf('.')).toLowerCase();
+		if (fileExtension == '.js') {
+			externalCall('ScratchExtensions.loadExternalJS', null, url);
+			return;
+		}
+
+		// Otherwise assume it's a project (SB2, SBX, etc.)
 		loadInProgress = true;
 		var request:URLRequest = new URLRequest(url);
 		var sbxLoader:URLLoader = new URLLoader(request);
