@@ -24,18 +24,24 @@
 // category, including the blocks, buttons, and watcher toggle boxes.
 
 package scratch {
-	import flash.display.*;
-	import flash.events.MouseEvent;
-	import flash.events.Event;
-	import flash.net.*;
-	import flash.text.*;
-	import blocks.*;
-	import extensions.*;
-	import ui.media.MediaLibrary;
-	import ui.ProcedureSpecEditor;
-	import ui.parts.UIPart;
-	import uiwidgets.*;
-	import translation.Translator;
+import blocks.*;
+
+import extensions.*;
+
+import flash.display.*;
+import flash.events.Event;
+import flash.events.MouseEvent;
+import flash.geom.ColorTransform;
+import flash.net.*;
+import flash.text.*;
+
+import translation.Translator;
+
+import ui.ProcedureSpecEditor;
+import ui.media.MediaLibrary;
+import ui.parts.UIPart;
+
+import uiwidgets.*;
 
 public class PaletteBuilder {
 
@@ -143,10 +149,18 @@ public class PaletteBuilder {
 
 	protected function addExtensionButtons():void {
 		addAddExtensionButton();
+		if (Scratch.app.isExtensionDevMode) {
+			addLoadExperimentalExtensionButton();
+		}
 	}
 
 	protected function addAddExtensionButton():void {
 		addItem(new Button(Translator.map('Add an Extension'), showAnExtension, false, '/help/studio/tips/blocks/add-an-extension/'));
+	}
+
+	protected function addLoadExperimentalExtensionButton():void {
+		// TODO: button tip link
+		addItem(new Button(Translator.map('Load Experimental Extension'), showAnExtension, false));
 	}
 
 	private function showDataCategory():void {
@@ -372,6 +386,24 @@ public class PaletteBuilder {
 		var m:Menu = new Menu();
 		m.addItem(Translator.map('About') + ' ' + ext.name + ' ' + Translator.map('extension') + '...', showAbout, !!ext.url);
 		m.addItem('Remove extension blocks', hideExtension);
+
+		var extensionDevManager:ExtensionDevManager = Scratch.app.extensionManager as ExtensionDevManager;
+
+		if(!ext.isInternal && extensionDevManager) {
+			m.addLine();
+			var localFileName:String = extensionDevManager.getLocalFileName(ext);
+			if(localFileName) {
+				if (extensionDevManager.isLocalExtensionDirty()) {
+					m.addItem('Load changes from ' + localFileName, function ():void {
+						extensionDevManager.loadLocalCode();
+					});
+				}
+				m.addItem('Disconnect from ' + localFileName, function():void {
+					extensionDevManager.stopWatchingExtensionFile();
+				});
+			}
+		}
+
 		return m;
 	}
 
@@ -398,11 +430,57 @@ public class PaletteBuilder {
 		app.palette.addChild(indicator);
 
 		nextY += titleButton.height + 10;
+
+		var extensionDevManager:ExtensionDevManager = Scratch.app.extensionManager as ExtensionDevManager;
+		if (extensionDevManager) {
+			// Show if this extension is being updated by a file
+			var fileName:String = extensionDevManager.getLocalFileName(ext);
+			if(fileName) {
+				var extensionEditStatus:TextField = UIPart.makeLabel('Connected to ' + fileName, CSS.normalTextFormat, 8, nextY - 5);
+				app.palette.addChild(extensionEditStatus);
+
+				nextY += extensionEditStatus.textHeight + 3;
+			}
+		}
 	}
 
+	[Embed(source='../assets/reload.png')] private static const reloadIcon:Class;
 	protected function addLineForExtensionTitle(titleButton:IconButton, ext:ScratchExtension):void {
 		var x:int = titleButton.width + 12;
-		addLine(x, nextY + 9, pwidth - x - 38);
+		var w:int = pwidth - x - 38;
+		var extensionDevManager:ExtensionDevManager = Scratch.app.extensionManager as ExtensionDevManager;
+		var dirty:Boolean = extensionDevManager && extensionDevManager.isLocalExtensionDirty(ext);
+		if (dirty)
+			w -= 15;
+		addLine(x, nextY + 9, w);
+
+		if (dirty) {
+			var reload:Bitmap = new reloadIcon();
+			reload.scaleX = 0.75;
+			reload.scaleY = 0.75;
+			var reloadBtn:Sprite = new Sprite();
+			reloadBtn.addChild(reload);
+			reloadBtn.x = x + w + 6;
+			reloadBtn.y = nextY + 2;
+			app.palette.addChild(reloadBtn);
+			SimpleTooltips.add(reloadBtn, {
+				text: 'Click to load changes (running old code from ' + extensionDevManager.getLocalCodeDate() + ')',
+				direction: 'top'
+			});
+
+			reloadBtn.addEventListener(MouseEvent.MOUSE_DOWN, function (e:MouseEvent):void {
+				SimpleTooltips.hideAll();
+				extensionDevManager.loadLocalCode();
+			});
+
+			reloadBtn.addEventListener(MouseEvent.ROLL_OVER, function (e:MouseEvent):void {
+				reloadBtn.transform.colorTransform = new ColorTransform(2, 2, 2);
+			});
+
+			reloadBtn.addEventListener(MouseEvent.ROLL_OUT, function (e:MouseEvent):void {
+				reloadBtn.transform.colorTransform = new ColorTransform();
+			});
+		}
 	}
 
 	private function addBlocksForExtension(ext:ScratchExtension):void {
