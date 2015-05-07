@@ -24,16 +24,24 @@
 // socket-based communications with local and server-based extension helper applications.
 
 package extensions {
-	import flash.errors.IllegalOperationError;
-	import flash.events.*;
-	import flash.net.*;
-	import flash.utils.Dictionary;
-	import flash.utils.getTimer;
-	import blocks.Block;
-	import interpreter.*;
-	import uiwidgets.DialogBox;
-	import uiwidgets.IndicatorLight;
-	import util.*;
+import blocks.Block;
+
+import com.adobe.utils.StringUtil;
+
+import flash.errors.IllegalOperationError;
+import flash.events.*;
+import flash.net.*;
+import flash.utils.Dictionary;
+import flash.utils.getTimer;
+
+import interpreter.*;
+
+import mx.utils.URLUtil;
+
+import uiwidgets.DialogBox;
+import uiwidgets.IndicatorLight;
+
+import util.*;
 
 public class ExtensionManager {
 
@@ -225,6 +233,10 @@ public class ExtensionManager {
 	}
 
 	public function loadSavedExtensions(savedExtensions:Array):void {
+		function extensionRefused(extObj:Object, reason: String):void {
+			Scratch.app.jsThrowError('Refusing to load project extension "' + extObj.extensionName + '": ' + reason);
+		}
+
 		// Reset the system extensions and load the given array of saved extensions.
 		if (!savedExtensions) return; // no saved extensions
 		for each (var extObj:Object in savedExtensions) {
@@ -233,24 +245,43 @@ public class ExtensionManager {
 				continue; // internal extension overrides one saved in project
 			}
 
-			if (!('extensionName' in extObj) ||
-				(!('extensionPort' in extObj) && !('javascriptURL' in extObj)) ||
-				!('blockSpecs' in extObj)) {
-					continue;
+			if (!('extensionName' in extObj)) {
+				Scratch.app.jsThrowError('Refusing to load project extension without a name.');
+				continue;
+			}
+
+			if (!('extensionPort' in extObj) && !('javascriptURL' in extObj)) {
+				extensionRefused(extObj, 'No location specified.');
+				continue;
+			}
+
+			if (!('blockSpecs' in extObj)) {
+				// TODO: resolve potential confusion when the project blockSpecs don't match those in the JS.
+				extensionRefused(extObj, 'No blockSpecs.');
+				continue;
 			}
 
 			var ext:ScratchExtension = new ScratchExtension(extObj.extensionName, extObj.extensionPort || 0);
-			extensionDict[extObj.extensionName] = ext;
 			ext.blockSpecs = extObj.blockSpecs;
 			ext.showBlocks = true;
-			ext.isInternal = false; // For now?
+			ext.isInternal = false;
 			ext.menus = extObj.menus;
 			if(extObj.javascriptURL) {
+				if (!Scratch.app.isExtensionDevMode) {
+					extensionRefused(extObj, 'Experimental extensions are only supported on ScratchX.');
+					continue;
+				}
+				if (!StringUtil.endsWith(URLUtil.getServerName(extObj.javascriptURL).toLowerCase(),'.github.io')) {
+					extensionRefused(extObj, 'Experimental extensions must be hosted on GitHub Pages.');
+					continue;
+				}
 				ext.javascriptURL = extObj.javascriptURL;
 				ext.showBlocks = false;
 				if(extObj.id) ext.id = extObj.id;
 				setEnabled(extObj.extensionName, true);
 			}
+
+			extensionDict[extObj.extensionName] = ext;
 		}
 		Scratch.app.updatePalette();
 	}
