@@ -204,7 +204,7 @@ public class Specs {
 		["pen up",								" ", 4, "putPenUp"],
 		["-"],
 		["set pen color to %c",					" ", 4, "penColor:"],
-		["change pen color by %n",				" ", 4, "changePenHueBy:"],
+		["change pen hue by %n",				" ", 4, "changePenHueBy:"],
 		["set pen hue to %n",					" ", 4, "setPenHueTo:", 		0],
 		["-"],
 		["change pen shade by %n",				" ", 4, "changePenShadeBy:"],
