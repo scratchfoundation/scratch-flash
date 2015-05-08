@@ -620,4 +620,12 @@ public class ExtensionManager {
 		}
 	}
 
+	public function hasExperimentalExtensions():Boolean {
+		for each (var ext:ScratchExtension in extensionDict) {
+			if (!ext.isInternal && ext.javascriptURL) {
+				return true;
+			}
+		}
+		return false;
+	}
 }}
