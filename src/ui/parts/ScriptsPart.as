@@ -23,12 +23,15 @@
 // This part holds the palette and scripts pane for the current sprite (or stage).
 
 package ui.parts {
-	import flash.display.*;
-	import flash.text.*;
-	import flash.utils.getTimer;
-	import scratch.*;
-	import ui.*;
-	import uiwidgets.*;
+import flash.display.*;
+import flash.text.*;
+import flash.utils.getTimer;
+
+import scratch.*;
+
+import ui.*;
+
+import uiwidgets.*;
 
 public class ScriptsPart extends UIPart {
 
@@ -80,7 +83,13 @@ public class ScriptsPart extends UIPart {
 		return scriptsPane;
 	}
 
-	public function resetCategory():void { selector.select(Specs.motionCategory) }
+	public function resetCategory():void {
+		if (Scratch.app.isExtensionDevMode) {
+			selector.select(Specs.myBlocksCategory);
+		} else {
+			selector.select(Specs.motionCategory);
+		}
+	}
 
 	public function updatePalette():void {
 		selector.updateTranslation();
