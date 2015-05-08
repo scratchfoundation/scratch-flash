@@ -25,6 +25,8 @@
 package {
 import blocks.*;
 
+import com.adobe.utils.StringUtil;
+
 import extensions.ExtensionDevManager;
 import extensions.ExtensionManager;
 
@@ -1041,7 +1043,9 @@ public class Scratch extends Sprite {
 	protected function exportProjectToFile(fromJS:Boolean = false):void {
 		function squeakSoundsConverted():void {
 			scriptsPane.saveScripts(false);
-			var defaultName:String = (projectName().length > 0) ? projectName() + '.sb2' : 'project.sb2';
+			var projectType:String = extensionManager.hasExperimentalExtensions() ? '.sbx' : '.sb2';
+			var defaultName:String = StringUtil.trim(projectName());
+			defaultName = ((defaultName.length > 0) ? defaultName : 'project') + projectType;
 			var zipData:ByteArray = projIO.encodeProjectAsZipFile(stagePane);
 			var file:FileReference = new FileReference();
 			file.addEventListener(Event.COMPLETE, fileSaved);
