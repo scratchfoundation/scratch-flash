@@ -20,18 +20,10 @@
 package extensions {
 import flash.events.*;
 import flash.net.*;
-import flash.net.FileReference;
-import flash.net.URLLoader;
-import flash.utils.ByteArray;
 import flash.utils.clearInterval;
 import flash.utils.setInterval;
 
-import mx.utils.URLUtil;
-
-import org.osmf.utils.URL;
-
 import uiwidgets.DialogBox;
-import util.Multipart;
 
 public class ExtensionDevManager extends ExtensionManager {
 
