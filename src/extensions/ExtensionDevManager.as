@@ -23,6 +23,10 @@ import flash.net.*;
 import flash.utils.clearInterval;
 import flash.utils.setInterval;
 
+import translation.Translator;
+
+import uiwidgets.Button;
+
 import uiwidgets.DialogBox;
 
 public class ExtensionDevManager extends ExtensionManager {
@@ -69,6 +73,26 @@ public class ExtensionDevManager extends ExtensionManager {
 
 		rawExtensionLoaded = true;
 		return ext;
+	}
+
+	public function makeLoadExperimentalExtensionButton():Button {
+		function showShiftMenu(evt:MouseEvent):void {
+			loadAndWatchExtensionFile();
+		}
+
+		// TODO: button tip link
+		var button:Button = new Button(Translator.map('Load Experimental Extension'));
+		button.addEventListener(MouseEvent.RIGHT_CLICK, showShiftMenu);
+		button.setEventAction(function (evt:MouseEvent):void {
+			if (evt.shiftKey) {
+				showShiftMenu(evt);
+			} else {
+				Scratch.app.setModalOverlay(true);
+				Scratch.app.externalCall('JSshowExtensionDialog');
+			}
+		});
+
+		return button;
 	}
 
 	// -----------------------------
@@ -154,5 +178,15 @@ public class ExtensionDevManager extends ExtensionManager {
 		}
 
 		super.setEnabled(extName, flag);
+	}
+
+	public function getExperimentalExtensionNames():Array {
+		var names:Array = [];
+		for each (var ext:ScratchExtension in extensionDict) {
+			if (!ext.isInternal && ext.javascriptURL) {
+				names.push(ext.name);
+			}
+		}
+		return names;
 	}
 }}
