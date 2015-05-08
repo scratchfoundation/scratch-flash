@@ -93,7 +93,7 @@ public class PaletteBuilder {
 				var blockColor:int = (app.interp.isImplemented(spec[3])) ? catColor : 0x505050;
 				var defaultArgs:Array = targetObj.defaultArgsFor(spec[3], spec.slice(4));
 				var label:String = spec[0];
-				if(targetObj.isStage && spec[3] == 'whenClicked') label = 'when Stage clicked';
+				if (targetObj.isStage && spec[3] == 'whenClicked') label = 'when Stage clicked';
 				var block:Block = new Block(label, spec[1], blockColor, spec[3], defaultArgs);
 				var showCheckbox:Boolean = isCheckboxReporter(spec[3]);
 				if (showCheckbox) addReporterCheckbox(block);
@@ -159,11 +159,25 @@ public class PaletteBuilder {
 	}
 
 	protected function addLoadExperimentalExtensionButton():void {
+		function showShiftMenu(evt:MouseEvent):void {
+			var extensionDevManager:ExtensionDevManager = Scratch.app.extensionManager as ExtensionDevManager;
+			if (extensionDevManager) {
+				extensionDevManager.loadAndWatchExtensionFile();
+			}
+		}
+
 		// TODO: button tip link
-		addItem(new Button(Translator.map('Load Experimental Extension'), function ():void {
-			Scratch.app.setModalOverlay(true);
-			Scratch.app.externalCall('JSshowExtensionDialog')
-		}, false));
+		var button:Button = new Button(Translator.map('Load Experimental Extension'));
+		button.addEventListener(MouseEvent.RIGHT_CLICK, showShiftMenu);
+		button.setEventAction(function (evt:MouseEvent):void {
+			if (evt.shiftKey) {
+				showShiftMenu(evt);
+			} else {
+				Scratch.app.setModalOverlay(true);
+				Scratch.app.externalCall('JSshowExtensionDialog');
+			}
+		});
+		addItem(button);
 	}
 
 	private function showDataCategory():void {
@@ -236,6 +250,7 @@ public class PaletteBuilder {
 
 			createVar(n, varSettings);
 		}
+
 		var d:DialogBox = new DialogBox(makeList2);
 		var varSettings:VariableSettings = makeVarSettings(true, app.viewedObj().isStage);
 		d.addTitle('New List');
@@ -266,6 +281,7 @@ public class PaletteBuilder {
 			app.updatePalette();
 			app.setSaveNeeded();
 		}
+
 		var specEditor:ProcedureSpecEditor = new ProcedureSpecEditor('', [], false);
 		var d:DialogBox = new DialogBox(addBlockHat);
 		d.addTitle('New Block');
@@ -284,6 +300,7 @@ public class PaletteBuilder {
 			}
 			app.updatePalette();
 		}
+
 		var lib:MediaLibrary = app.getMediaLibrary('extension', addExt);
 		lib.open();
 	}
@@ -305,7 +322,7 @@ public class PaletteBuilder {
 	}
 
 	protected function isCheckboxReporter(op:String):Boolean {
-		const checkboxReporters: Array = [
+		const checkboxReporters:Array = [
 			'xpos', 'ypos', 'heading', 'costumeIndex', 'scale', 'volume', 'timeAndDate',
 			'backgroundIndex', 'sceneName', 'tempo', 'answer', 'timer', 'soundLevel', 'isLoud',
 			'sensor:', 'sensorPressed:', 'senseVideoMotion', 'xScroll', 'yScroll',
@@ -314,7 +331,7 @@ public class PaletteBuilder {
 	}
 
 	private function isSpriteSpecific(op:String):Boolean {
-		const spriteSpecific: Array = ['costumeIndex', 'xpos', 'ypos', 'heading', 'scale', 'volume'];
+		const spriteSpecific:Array = ['costumeIndex', 'xpos', 'ypos', 'heading', 'scale', 'volume'];
 		return spriteSpecific.indexOf(op) > -1;
 	}
 
@@ -348,13 +365,13 @@ public class PaletteBuilder {
 		var data:Object = b.clientData;
 		if (data.block) {
 			switch (data.block.op) {
-			case 'senseVideoMotion':
-				data.targetObj = getBlockArg(data.block, 1) == 'Stage' ? app.stagePane : app.viewedObj();
-			case 'sensor:':
-			case 'sensorPressed:':
-			case 'timeAndDate':
-				data.param = getBlockArg(data.block, 0);
-				break;
+				case 'senseVideoMotion':
+					data.targetObj = getBlockArg(data.block, 1) == 'Stage' ? app.stagePane : app.viewedObj();
+				case 'sensor:':
+				case 'sensorPressed:':
+				case 'timeAndDate':
+					data.param = getBlockArg(data.block, 0);
+					break;
 			}
 		}
 		var showFlag:Boolean = !app.runtime.watcherShowing(data);
@@ -377,10 +394,11 @@ public class PaletteBuilder {
 			// Open in the tips window if the URL starts with /info/ and another tab otherwise
 			if (ext.url) {
 				if (ext.url.indexOf('/info/') === 0) app.showTip(ext.url);
-				else if(ext.url.indexOf('http') === 0) navigateToURL(new URLRequest(ext.url));
+				else if (ext.url.indexOf('http') === 0) navigateToURL(new URLRequest(ext.url));
 				else DialogBox.notify('Extensions', 'Unable to load about page: the URL given for extension "' + ext.name + '" is not formatted correctly.');
 			}
 		}
+
 		function hideExtension():void {
 			app.extensionManager.setEnabled(ext.name, false);
 			app.updatePalette();
@@ -392,16 +410,16 @@ public class PaletteBuilder {
 
 		var extensionDevManager:ExtensionDevManager = Scratch.app.extensionManager as ExtensionDevManager;
 
-		if(!ext.isInternal && extensionDevManager) {
+		if (!ext.isInternal && extensionDevManager) {
 			m.addLine();
 			var localFileName:String = extensionDevManager.getLocalFileName(ext);
-			if(localFileName) {
+			if (localFileName) {
 				if (extensionDevManager.isLocalExtensionDirty()) {
 					m.addItem('Load changes from ' + localFileName, function ():void {
 						extensionDevManager.loadLocalCode();
 					});
 				}
-				m.addItem('Disconnect from ' + localFileName, function():void {
+				m.addItem('Disconnect from ' + localFileName, function ():void {
 					extensionDevManager.stopWatchingExtensionFile();
 				});
 			}
@@ -411,11 +429,13 @@ public class PaletteBuilder {
 	}
 
 	protected const pwidth:int = 215;
+
 	protected function addExtensionSeparator(ext:ScratchExtension):void {
 		function extensionMenu(ignore:*):void {
 			var m:Menu = getExtensionMenu(ext);
 			m.showOnStage(app.stage);
 		}
+
 		nextY += 7;
 
 		var titleButton:IconButton = UIPart.makeMenuButton(ext.name, extensionMenu, true, CSS.textColor);
@@ -426,7 +446,9 @@ public class PaletteBuilder {
 		addLineForExtensionTitle(titleButton, ext);
 
 		var indicator:IndicatorLight = new IndicatorLight(ext);
-		indicator.addEventListener(MouseEvent.CLICK, function(e:Event):void {Scratch.app.showTip('extensions');}, false, 0, true);
+		indicator.addEventListener(MouseEvent.CLICK, function (e:Event):void {
+			Scratch.app.showTip('extensions');
+		}, false, 0, true);
 		app.extensionManager.updateIndicator(indicator, ext);
 		indicator.x = pwidth - 30;
 		indicator.y = nextY + 2;
@@ -438,7 +460,7 @@ public class PaletteBuilder {
 		if (extensionDevManager) {
 			// Show if this extension is being updated by a file
 			var fileName:String = extensionDevManager.getLocalFileName(ext);
-			if(fileName) {
+			if (fileName) {
 				var extensionEditStatus:TextField = UIPart.makeLabel('Connected to ' + fileName, CSS.normalTextFormat, 8, nextY - 5);
 				app.palette.addChild(extensionEditStatus);
 
@@ -447,7 +469,9 @@ public class PaletteBuilder {
 		}
 	}
 
-	[Embed(source='../assets/reload.png')] private static const reloadIcon:Class;
+	[Embed(source='../assets/reload.png')]
+	private static const reloadIcon:Class;
+
 	protected function addLineForExtensionTitle(titleButton:IconButton, ext:ScratchExtension):void {
 		var x:int = titleButton.width + 12;
 		var w:int = pwidth - x - 38;
@@ -521,4 +545,5 @@ public class PaletteBuilder {
 		app.palette.addChild(line);
 	}
 
-}}
+}
+}
