@@ -84,6 +84,7 @@ public class Resources {
 	// Top bar
 	[Embed(source='UI/topbar/scratchlogoOff.png')] private static const scratchlogoOff:Class;
 	[Embed(source='UI/topbar/scratchlogoOn.png')] private static const scratchlogoOn:Class;
+	[Embed(source='UI/topbar/scratchx-logo.png')] private static const scratchxlogo:Class;
 	[Embed(source='UI/topbar/copyTool.png')] private static const copyTool:Class;
 	[Embed(source='UI/topbar/cutTool.png')] private static const cutTool:Class;
 	[Embed(source='UI/topbar/growTool.png')] private static const growTool:Class;
