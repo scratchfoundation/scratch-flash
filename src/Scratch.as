@@ -635,6 +635,10 @@ public class Scratch extends Sprite {
 		libraryPart.refresh()
 	}
 
+	public function updateTopBar():void {
+		topBarPart.refresh();
+	}
+
 	public function threadStarted():void {
 		stagePart.threadStarted()
 	}
@@ -1040,7 +1044,7 @@ public class Scratch extends Sprite {
 		d.showOnStage(stage);
 	}
 
-	protected function exportProjectToFile(fromJS:Boolean = false):void {
+	public function exportProjectToFile(fromJS:Boolean = false):void {
 		function squeakSoundsConverted():void {
 			scriptsPane.saveScripts(false);
 			var projectType:String = extensionManager.hasExperimentalExtensions() ? '.sbx' : '.sb2';

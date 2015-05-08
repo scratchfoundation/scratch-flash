@@ -110,6 +110,7 @@ public class ExtensionManager {
 				else {
 					app.externalCall('ScratchExtensions.unregister', null, extName);
 					delete extensionDict[extName];
+					app.updateTopBar();
 				}
 			}
 		}
@@ -169,6 +170,8 @@ public class ExtensionManager {
 	public function reporterCompleted(extensionName:String, id:Number, retval:*):void {
 		var ext:ScratchExtension = extensionDict[extensionName];
 		if (ext == null) return; // unknown extension
+
+		app.updateTopBar();
 
 		var index:int = ext.busy.indexOf(id);
 		if(index > -1) {
