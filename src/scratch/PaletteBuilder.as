@@ -160,7 +160,10 @@ public class PaletteBuilder {
 
 	protected function addLoadExperimentalExtensionButton():void {
 		// TODO: button tip link
-		addItem(new Button(Translator.map('Load Experimental Extension'), showAnExtension, false));
+		addItem(new Button(Translator.map('Load Experimental Extension'), function ():void {
+			Scratch.app.setModalOverlay(true);
+			Scratch.app.externalCall('JSshowExtensionDialog')
+		}, false));
 	}
 
 	private function showDataCategory():void {

@@ -26,7 +26,6 @@ package {
 import blocks.*;
 
 import extensions.ExtensionDevManager;
-
 import extensions.ExtensionManager;
 
 import flash.display.*;
@@ -218,6 +217,7 @@ public class Scratch extends Sprite {
 		if (isExtensionDevMode) {
 			addExternalCallback('ASloadGithubURL', loadGithubURL);
 			addExternalCallback('ASloadBase64SBX', loadBase64SBX);
+			addExternalCallback('ASsetModalOverlay', setModalOverlay);
 		}
 	}
 
@@ -784,6 +784,34 @@ public class Scratch extends Sprite {
 		g.clear();
 		g.beginFill(0);
 		g.drawRect(0, 0, stage.stageWidth, stage.stageHeight);
+	}
+
+	private var modalOverlay:Sprite;
+	public function setModalOverlay(enableOverlay: Boolean):void {
+		var currentlyEnabled:Boolean = !!modalOverlay;
+		if (enableOverlay != currentlyEnabled) {
+			if (enableOverlay) {
+				function eatEvent(event:MouseEvent):void {
+					event.stopImmediatePropagation();
+					event.stopPropagation();
+				}
+
+				modalOverlay = new Sprite();
+				modalOverlay.graphics.beginFill(CSS.backgroundColor_ScratchX, 0.8);
+				modalOverlay.graphics.drawRect(0, 0, stage.width, stage.height);
+				modalOverlay.addEventListener(MouseEvent.CLICK, eatEvent);
+				modalOverlay.addEventListener(MouseEvent.MOUSE_DOWN, eatEvent);
+				modalOverlay.addEventListener(MouseEvent.RIGHT_CLICK, eatEvent);
+				modalOverlay.addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, eatEvent);
+				modalOverlay.addEventListener(MouseEvent.MIDDLE_CLICK, eatEvent);
+				modalOverlay.addEventListener(MouseEvent.MIDDLE_MOUSE_DOWN, eatEvent);
+				stage.addChild(modalOverlay);
+			}
+			else {
+				stage.removeChild(modalOverlay);
+				modalOverlay = null;
+			}
+		}
 	}
 
 	// -----------------------------
