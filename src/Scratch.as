@@ -236,9 +236,7 @@ public class Scratch extends Sprite {
 		}
 	}
 
-	private function loadGithubURL(url:String):void {
-		if (!isExtensionDevMode) return;
-
+	private function loadSingleGithubURL(url:String):void {
 		function handleComplete(e:Event):void {
 			runtime.installProjectFromData(sbxLoader.data);
 			var projectName:String = url;
@@ -270,6 +268,23 @@ public class Scratch extends Sprite {
 		sbxLoader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, handleError);
 		sbxLoader.addEventListener(IOErrorEvent.IO_ERROR, handleError);
 		sbxLoader.load(request);
+	}
+
+	private function loadGithubURL(urlOrArray:*):void {
+		if (!isExtensionDevMode) return;
+
+		if (urlOrArray is Array) {
+			var urlArray:Array = urlOrArray as Array;
+			var urlCount:int = urlArray.length;
+			for (var index:int = 0; index < urlCount; ++index) {
+				loadSingleGithubURL(urlArray[index]);
+			}
+		}
+		else {
+			var url:String = urlOrArray as String;
+			loadSingleGithubURL(url);
+		}
+		externalCall('JSshowWarning');
 	}
 
 	private function loadBase64SBX(base64:String):void {
