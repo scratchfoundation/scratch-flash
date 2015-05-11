@@ -42,6 +42,7 @@ import flash.net.LocalConnection;
 import flash.net.URLLoader;
 import flash.net.URLLoaderDataFormat;
 import flash.net.URLRequest;
+import flash.net.URLVariables;
 import flash.system.*;
 import flash.text.*;
 import flash.utils.*;
@@ -237,6 +238,8 @@ public class Scratch extends Sprite {
 	}
 
 	private function loadSingleGithubURL(url:String):void {
+		url = StringUtil.trim(unescape(url));
+
 		function handleComplete(e:Event):void {
 			runtime.installProjectFromData(sbxLoader.data);
 			if (StringUtil.trim(projectName()).length == 0) {
@@ -286,7 +289,7 @@ public class Scratch extends Sprite {
 
 			// Filter URLs: allow at most one project file, and wait until it loads before loading extensions.
 			for (index = 0; index < urlCount; ++index) {
-				url = StringUtil.trim(urlArray[index]);
+				url = StringUtil.trim(unescape(urlArray[index]));
 				if (StringUtil.endsWith(url.toLowerCase(), '.js')) {
 					extensionURLs.push(url);
 				}
