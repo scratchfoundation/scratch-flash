@@ -27,7 +27,9 @@
 
 package ui.media {
 import by.blooddy.crypto.MD5;
-import ui.dragdrop.IDraggable;
+
+import ui.BaseItem;
+
 import util.JSON;
 import flash.display.*;
 import flash.events.*;
@@ -41,7 +43,7 @@ import translation.Translator;
 import ui.parts.*;
 import uiwidgets.*;
 
-public class MediaInfo extends Sprite implements IDraggable {
+public class MediaInfo extends BaseItem {
 
 	public static var frameWidth:int = 81;
 	public static var frameHeight:int = 94;
@@ -290,25 +292,13 @@ public class MediaInfo extends Sprite implements IDraggable {
 	// Backpack Support
 	//------------------------------
 
-//	public function objToGrab(evt:MouseEvent):* {
-//		var result:MediaInfo = Scratch.app.createMediaInfo({
-//			type: objType,
-//			name: objName,
-//			width: objWidth,
-//			md5: md5
-//		});
-//		if (mycostume) result = Scratch.app.createMediaInfo(mycostume, owner);
-//		if (mysound) result = Scratch.app.createMediaInfo(mysound, owner);
-//		if (mysprite) result = Scratch.app.createMediaInfo(mysprite);
-//		if (scripts) result = Scratch.app.createMediaInfo(scripts);
-//
-//		result.removeDeleteButton();
-//		if (thumbnail.bitmapData) result.setThumbnailBM(thumbnail.bitmapData);
-//		result.hideTextFields();
-//		return result;
-//	}
+	// Item and Draggable interface implementations
+	override public function getIdentifier(strict:Boolean = false):String {
+		if (md5 == null) return null;
+		return objType + md5 + (strict ? objName : '');
+	}
 
-	public function getSpriteToDrag():Sprite {
+	override public function getSpriteToDrag():Sprite {
 		var result:MediaInfo = Scratch.app.createMediaInfo({
 			type: objType,
 			name: objName,

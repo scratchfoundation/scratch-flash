@@ -48,7 +48,7 @@ public class LibraryPart extends UIPart implements ILibraryPart, DropTarget {
 
 	protected var stageThumbnail:SpriteThumbnail;
 	protected var spritesFrame:ScrollFrame;
-	protected var spritesPane:ScrollFrameContents;
+	protected var spritesPane:ArrangeableContents;
 	protected var spriteDetails:SpriteInfoPart;
 
 	private var spritesTitle:TextField;
@@ -184,7 +184,7 @@ public class LibraryPart extends UIPart implements ILibraryPart, DropTarget {
 		var sortedSprites:Array = app.stageObj().sprites();
 		sortedSprites.sort(
 			function(spr1:ScratchSprite, spr2:ScratchSprite):int {
-				return spr1.indexInLibrary - spr2.indexInLibrary
+				return spr1.indexInLibrary - spr2.indexInLibrary;
 		});
 		const inset:int = 2;
 		var rightEdge:int = w - spritesFrame.x;
@@ -281,7 +281,7 @@ public class LibraryPart extends UIPart implements ILibraryPart, DropTarget {
 	}
 
 	protected function addSpritesArea():void {
-		spritesPane = new ScrollFrameContents();
+		spritesPane = new ArrangeableContents(MediaInfo.frameWidth, MediaInfo.frameHeight, ArrangeableContents.TYPE_STRIP_VERTICAL, 1);
 		spritesPane.color = bgColor;
 		spritesPane.hExtra = spritesPane.vExtra = 0;
 		spritesFrame = new ScrollFrame();
@@ -478,7 +478,8 @@ public class LibraryPart extends UIPart implements ILibraryPart, DropTarget {
 		// Return a list containing all thumbnails.
 		var result:Array = [stageThumbnail];
 		for (var i:int = 0; i < spritesPane.numChildren; i++) {
-			result.push(spritesPane.getChildAt(i));
+			var thumb:SpriteThumbnail = spritesPane.getChildAt(i) as SpriteThumbnail;
+			if (thumb) result.push(thumb);
 		}
 		return result;
 	}

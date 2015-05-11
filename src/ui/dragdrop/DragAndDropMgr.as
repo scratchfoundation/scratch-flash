@@ -29,6 +29,8 @@ import org.gestouch.events.GestureEvent;
 import org.gestouch.gestures.Gesture;
 import org.gestouch.gestures.TransformGesture;
 
+import ui.events.DragEvent;
+
 public class DragAndDropMgr {
 	public var originalObj:Sprite;
 	public var draggedObj:Sprite;

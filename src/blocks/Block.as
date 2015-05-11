@@ -31,26 +31,22 @@
 // sequence from a specification string (e.g. "%n + %n") and type (e.g. reporter).
 
 package blocks {
-import extensions.ExtensionManager;
-
 import flash.display.*;
-	import flash.events.*;
-	import flash.filters.GlowFilter;
-	import flash.geom.*;
-	import flash.net.URLLoader;
-	import flash.text.*;
-	import assets.Resources;
-	import translation.Translator;
+import flash.events.*;
+import flash.filters.GlowFilter;
+import flash.geom.*;
+import flash.net.URLLoader;
+import flash.text.*;
+import assets.Resources;
+import translation.Translator;
 
 import ui.BlockPalette;
-
-import ui.dragdrop.DragAndDropMgr;
-import ui.dragdrop.DragEvent;
-import ui.dragdrop.IDraggable;
+import ui.dragdrop.*;
+import ui.events.DragEvent;
 
 import util.*;
-	import uiwidgets.*;
-	import scratch.*;
+import uiwidgets.*;
+import scratch.*;
 
 public class Block extends Sprite implements IDraggable {
 

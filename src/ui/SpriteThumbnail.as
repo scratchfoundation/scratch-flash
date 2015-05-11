@@ -27,12 +27,12 @@ import blocks.Block;
 import scratch.*;
 import translation.Translator;
 
-import ui.dragdrop.DropTarget;
+import ui.events.PointerEvent;
 import ui.media.MediaInfo;
 import ui.parts.LibraryPart;
 import uiwidgets.*;
 
-public class SpriteThumbnail extends Sprite implements DropTarget {
+public class SpriteThumbnail extends BaseItem {
 
 	private const frameW:int = 73;
 	private const frameH:int = 73;
@@ -47,8 +47,8 @@ public class SpriteThumbnail extends Sprite implements DropTarget {
 	protected var thumbnail:Bitmap;
 	private var label:TextField;
 	private var sceneInfo:TextField;
-	protected var selectedFrame:Shape;
-	protected var highlightFrame:Shape;
+	protected var selectedFrame:DisplayObject;
+	protected var highlightFrame:DisplayObject;
 	private var infoSprite:Sprite;
 	private var detailsButton:IconButton;
 
@@ -73,7 +73,7 @@ public class SpriteThumbnail extends Sprite implements DropTarget {
 		addLabels();
 		addDetailsButton();
 		updateThumbnail();
-		addEventListener(MouseEvent.CLICK, click);
+		addEventListener(PointerEvent.TAP, click);
 		addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, menu);
 	}
 
@@ -114,7 +114,7 @@ public class SpriteThumbnail extends Sprite implements DropTarget {
 
 	protected function addSelectedFrame():void {
 		selectedFrame = new Shape();
-		var g:Graphics = selectedFrame.graphics;
+		var g:Graphics = (selectedFrame as Shape).graphics;
 		var h:int = targetObj.isStage ? stageFrameH : frameH;
 		g.lineStyle(3, CSS.overColor, 1, true);
 		g.beginFill(CSS.itemSelectedColor);
@@ -127,7 +127,7 @@ public class SpriteThumbnail extends Sprite implements DropTarget {
 	protected function addHighlightFrame():void {
 		const highlightColor:int = 0xE0E000;
 		highlightFrame = new Shape();
-		var g:Graphics = highlightFrame.graphics;
+		var g:Graphics = (highlightFrame as Shape).graphics;
 		var h:int = targetObj.isStage ? stageFrameH : frameH;
 		g.lineStyle(2, highlightColor, 1, true);
 		g.drawRoundRect(1, 1, frameW - 1, h - 1, 12, 12);
@@ -226,7 +226,7 @@ public class SpriteThumbnail extends Sprite implements DropTarget {
 	// Grab and Drop
 	//------------------------------
 
-	public function objToGrab(evt:MouseEvent):MediaInfo {
+	override public function getSpriteToDrag():Sprite {
 		if (targetObj.isStage) return null;
 		var result:MediaInfo = app.createMediaInfo(targetObj);
 		result.removeDeleteButton();

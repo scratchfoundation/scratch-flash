@@ -1,11 +1,11 @@
 /**
  * Created by shanemc on 9/12/14.
  */
-package ui.dragdrop {
+package ui.events {
+import ui.dragdrop.*;
 import flash.display.Sprite;
-import flash.events.MouseEvent;
 
-public class DragEvent extends MouseEvent {
+public class DragEvent extends PointerEvent {
 	public static const DRAG_START:String   = 'dragStart';
 	public static const DRAG_STOP:String    = 'dragStop';
 	public static const DRAG_CANCEL:String  = 'dragCancel';

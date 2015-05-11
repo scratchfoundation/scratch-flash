@@ -4,20 +4,17 @@
 package uiwidgets {
 import com.greensock.TweenLite;
 import com.greensock.easing.Linear;
-
+import flash.display.DisplayObject;
 import flash.display.Sprite;
 import flash.events.Event;
 import flash.geom.Point;
 import scratch.ScratchSprite;
 
-import ui.ScreenDetector;
-
+import ui.BaseItem;
+import ui.Utility;
 import ui.dragdrop.DragAndDropMgr;
 import ui.dragdrop.DropTarget;
-import ui.EditableItem;
-import ui.media.MediaInfo;
-import ui.media.MediaInfoOnline;
-import ui.dragdrop.DragEvent;
+import ui.events.DragEvent;
 
 public class ArrangeableContents extends ScrollFrameContents implements DropTarget {
 	public static const TYPE_GRID:uint = 0;
@@ -31,15 +28,20 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 
 	// Fixed state variables
 	private var type:uint = 0;
-	private var itemPadding:uint = ScreenDetector.pixelsPerCM * 0.1;
+	private var itemPadding:uint = Utility.cmToPixels(0.1);
 
 	// Dynamic state variables
-	private var w:uint;
-	private var h:uint;
-	private var selectedItem:EditableItem;
+	private var w:uint = 100;
+	private var h:uint = 100;
+	private var itemWidth:uint;
+	private var itemHeight:uint;
+	private var selectedItem:BaseItem;
 	private var editMode:Boolean;
-	public function ArrangeableContents(w:uint, h:uint, t:uint = TYPE_GRID) {
+	public function ArrangeableContents(iw:uint, ih:uint, t:uint = TYPE_GRID, padding:int = -1) {
 		type = t;
+		itemWidth = iw;
+		itemHeight = ih;
+		if (padding > -1) itemPadding = padding;
 		setWidthHeight(w, h);
 
 		addEventListener(DragEvent.DRAG_DROP, dragAndDropHandler);
@@ -49,6 +51,11 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 		addEventListener(DragEvent.DRAG_OVER, dragAndDropHandler);
 		addEventListener(DragEvent.DRAG_MOVE, dragAndDropHandler);
 		addEventListener(DragEvent.DRAG_OUT, dragAndDropHandler);
+	}
+
+	public function setItemPadding(padding:uint):void {
+		itemPadding = padding;
+		arrangeItems();
 	}
 
 	override public function updateSize():void {
@@ -61,8 +68,8 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 	private var dropPos:int = -1;
 	private var ignoredObj:*;
 	private function dragAndDropHandler(event:DragEvent):void {
-		var mi:MediaInfoOnline;
-		var dup:MediaInfo;
+		var mi:BaseItem;
+		var dup:BaseItem;
 		switch(event.type) {
 			case DragEvent.DRAG_START:
 				event.target.visible = false;
@@ -70,25 +77,25 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 				break;
 
 			case DragEvent.DRAG_OVER:
-				mi = event.draggedObject as MediaInfoOnline;
+				mi = event.draggedObject as BaseItem;
 				if (!mi) {
 					var spr:ScratchSprite = event.draggedObject as ScratchSprite;
 					if (spr)
-						mi = Scratch.app.createMediaInfo(spr.duplicate()) as MediaInfoOnline;
+						mi = Scratch.app.createMediaInfo(spr.duplicate()) as BaseItem;
 				}
-				if (mi) {
-					dup = findItemByMediaInfo(mi);
-					if (dup) {
-						if (mi.fromBackpack) {
-							dup.visible = false;
-							arrangeItems(true);
-						}
-						else {
-							// TODO: when do we ignore?
-							//ignoredObj = event.draggedObject;
-						}
-					}
-				}
+//				if (mi) {
+//					dup = findItemByMediaInfo(mi);
+//					if (dup) {
+//						if ((mi  as MediaInfoOnline).fromBackpack) {
+//							dup.visible = false;
+//							arrangeItems(true);
+//						}
+//						else {
+//							// TODO: when do we ignore?
+//							//ignoredObj = event.draggedObject;
+//						}
+//					}
+//				}
 			case DragEvent.DRAG_MOVE:
 				if (ignoredObj == event.draggedObject) break;
 
@@ -98,21 +105,21 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 
 			case DragEvent.DRAG_STOP:
 			case DragEvent.DRAG_OUT:
-				mi = event.draggedObject as MediaInfoOnline;
-				if (mi && mi.fromBackpack) {
-					dup = findItemByMediaInfo(mi);
-					if (dup) {
-						dup.visible = true;
-						dup.alpha = event.type == DragEvent.DRAG_OUT ? leftBehindAlpha : 1;
-					}
-				}
+				mi = event.draggedObject as BaseItem;
+//				if (mi && (mi as MediaInfoOnline).fromBackpack) {
+//					dup = findItemByMediaInfo(mi);
+//					if (dup) {
+//						dup.visible = true;
+//						dup.alpha = event.type == DragEvent.DRAG_OUT ? leftBehindAlpha : 1;
+//					}
+//				}
 				ignoredObj = null;
 				dropPos = -1;
 				arrangeItems(true);
 				break;
 
 			case DragEvent.DRAG_CANCEL:
-				mi = event.draggedObject as MediaInfoOnline;
+				mi = event.draggedObject as BaseItem;
 				if (mi) {
 					dup = findItemByMediaInfo(mi);
 					if (dup) {
@@ -130,7 +137,7 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 	// Override for custom dropping actions
 	public function handleDrop(obj:*):Boolean {
 		// Accept the drop if we're re-arranging items OR we already have that item as identified by MD5
-		var mi:MediaInfo = obj as MediaInfo;
+		var mi:BaseItem = obj as BaseItem;
 		if(mi && (mi.parent == this || !!(mi = findItemByMediaInfo(mi)))) {
 			mi.visible = true;
 			if (mi.parent != this || dropPos > -1)
@@ -144,51 +151,49 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 		return true;
 	}
 
-	private function findItemByMediaInfo(obj:MediaInfo):MediaInfo {
-		if (!obj.md5) return null;
+	private function findItemByMediaInfo(obj:BaseItem):BaseItem {
+		if (!obj.getIdentifier()) return null;
 
 		for (var i:int = 0; i < numChildren; i++) {
-			var item:MediaInfo = getChildAt(i) as MediaInfo;
-			if (isItemTheSame(item, obj)) return item;
+			var item:BaseItem = getChildAt(i) as BaseItem;
+			if (itemsMatch(item, obj)) return item;
 		}
 
 		return null;
 	}
 
-	protected function isItemTheSame(obj1:MediaInfo, obj2:MediaInfo):Boolean {
-		return obj1 && obj2 && obj1.objType == obj2.objType && obj1.md5 == obj2.md5 && obj1.objName == obj2.objName;
+	protected function itemsMatch(obj1:BaseItem, obj2:BaseItem):Boolean {
+		return obj1 && obj2 && obj1.getIdentifier(true) == obj2.getIdentifier(true);
 	}
 
 	// Select an item
 	private function onTap(e:Event):void {
 		if (editMode || selectedItem == e.target) return;
-		if (selectedItem) selectedItem.toggleSelected(false);
+		if (selectedItem) selectedItem.setSelected(false);
 
-		selectedItem = e.target as EditableItem;
-		if (selectedItem) selectedItem.toggleSelected(true);
+		selectedItem = e.target as BaseItem;
+		if (selectedItem) selectedItem.setSelected(true);
 	}
 
 	private var contentChanged:Boolean;
 	private var orderChanged:Boolean;
-	public function addContent(item:MediaInfo, where:* = null):void {
+	public function addContent(item:BaseItem, where:* = null):void {
 		orderChanged = (item.parent == this);
 
-		if (where is Number && where >= 0) addChildAt(item, where as Number);
+		if (where is Number && where >= 0) addChildAt(item as DisplayObject, where as Number);
 		else if (dropPos > -1) {
 			var index:int = (dropPos < numChildren) ? getChildIndex(allItems()[dropPos]) : numChildren;
-			addChildAt(item, index);
+			addChildAt(item as DisplayObject, index);
 			dropPos = -1;
 		}
-		else addChild(item);
+		else addChild(item as DisplayObject);
 
-		if (item is EditableItem) (item as EditableItem).toggleEditMode(editMode);
-//		if (item.objType != 'ui') DragAndDropMgr.setDraggable(item, true);
 		contentChanged = true;
 	}
 
 	protected function replaceContents(newItems:Array):void {
 		removeAllItems();
-		for each (var item:MediaInfo in newItems)
+		for each (var item:BaseItem in newItems)
 			addContent(item);
 
 		contentChanged = false;
@@ -200,18 +205,18 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 	private function getIndexFromPoint(pt:Point, forAdding:Boolean = false):int {
 		var loc:Point = globalToLocal(pt);
 		var i:int = 0;
-		var mi:MediaInfo;
+		var mi:BaseItem;
 		if (type == TYPE_STRIP_HORIZONTAL) {
 			for each(mi in allItems()) {
 				if (mi.x + mi.width / 2 > loc.x)
-					return forAdding ? getChildIndex(mi)  : i;
+					return forAdding ? getChildIndex(mi as DisplayObject)  : i;
 				++i;
 			}
 		}
 		else if (type == TYPE_STRIP_VERTICAL) {
 			for each(mi in allItems()) {
 				if (mi.y + mi.height / 2 > loc.y)
-					return forAdding ? getChildIndex(mi) : i;
+					return forAdding ? getChildIndex(mi as DisplayObject) : i;
 				++i;
 			}
 		}
@@ -220,10 +225,10 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 			var px:Number = loc.x - itemPadding * 2;
 			var py:Number = loc.y - itemPadding * 2;
 			var realWidth:int = w - itemPadding * 4;
-			var rowLen:int = realWidth / (MediaInfo.frameWidth + itemPadding);
-			var extraPadding:int = (realWidth - rowLen * (MediaInfo.frameWidth + itemPadding)) / rowLen;
-			var index:int = Math.max(0, Math.min(rowLen-1, Math.floor(px / (MediaInfo.frameWidth + itemPadding + extraPadding))) +
-													rowLen * Math.floor(py / (MediaInfo.frameHeight + itemPadding)));
+			var rowLen:int = realWidth / (itemWidth + itemPadding);
+			var extraPadding:int = (realWidth - rowLen * (itemWidth + itemPadding)) / rowLen;
+			var index:int = Math.max(0, Math.min(rowLen-1, Math.floor(px / (itemWidth + itemPadding + extraPadding))) +
+													rowLen * Math.floor(py / (itemHeight + itemPadding)));
 			var items:Array = allItems();
 			if (items.length && ((index < items.length && items[index].objType != 'ui') || index == items.length))
 				return forAdding ?
@@ -237,8 +242,8 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 	}
 
 	public function removeContent(which:*):void {
-		if (which is MediaInfo)
-			DragAndDropMgr.setDraggable(removeChild(which as MediaInfo) as Sprite, false);
+		if (which is DisplayObject)
+			DragAndDropMgr.setDraggable(removeChild(which as DisplayObject) as Sprite, false);
 		else if (which is Number)
 			DragAndDropMgr.setDraggable(removeChildAt(which as Number) as Sprite, false);
 		else
@@ -264,7 +269,7 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 	public function allItems():Array {
 		var items:Array = [];
 		for (var i:int = 0; i < numChildren; i++) {
-			var item:MediaInfo = getChildAt(i) as MediaInfo;
+			var item:BaseItem = getChildAt(i) as BaseItem;
 			if (item && item.visible) items.push(item);
 		}
 		return items;
@@ -282,50 +287,50 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 	}
 
 	// Return a function that places items and iterates to the next position with each call
-	public function getPlacementFunc(animate:Boolean):Function {
+	private function getPlacementFunc(animate:Boolean):Function {
 		var nextX:int;
 		var nextY:int;
 		if (type == TYPE_STRIP_HORIZONTAL) {
-			nextX = itemPadding * 2;
-			nextY = Math.floor((h - MediaInfo.frameHeight) / 2);
-			return function(item:MediaInfo, index:int, arr:Array):void {
+			nextX = itemPadding;
+			nextY = Math.floor((h - itemHeight) / 2);
+			return function(item:BaseItem, index:int, arr:Array):void {
 				// Jump another position if we're on the dropPos
 				if (index == dropPos) arguments.callee(null, -2, arr);
 				if (item) moveItem(item, nextX, nextY, animate);
-				nextX += MediaInfo.frameWidth + itemPadding;
+				nextX += itemWidth + itemPadding;
 			};
 		}
 		else if (type == TYPE_STRIP_VERTICAL) {
-			nextX = Math.floor((w - MediaInfo.frameWidth) / 2);
-			nextY = itemPadding * 2;
-			return function(item:MediaInfo, index:int, arr:Array):void {
+			nextX = Math.floor((w - itemWidth) / 2);
+			nextY = itemPadding;
+			return function(item:BaseItem, index:int, arr:Array):void {
 				// Jump another position if we're on the dropPos
 				if (index == dropPos) arguments.callee(null, -2, arr);
 				if (item) moveItem(item, nextX, nextY, animate);
-				nextY += MediaInfo.frameHeight + itemPadding;
+				nextY += itemHeight + itemPadding;
 			};
 		}
 
-		nextX = itemPadding * 2;
-		nextY = itemPadding * 2;
-		var realWidth:int = w - itemPadding * 4;
-		var colCount:int = realWidth / (MediaInfo.frameWidth + itemPadding);
-		var extraPadding:int = (realWidth - colCount * (MediaInfo.frameWidth + itemPadding)) / colCount;
-		return function(item:MediaInfo, index:int, arr:Array):void {
+		nextX = itemPadding;
+		nextY = itemPadding;
+		var realWidth:int = w - itemPadding * 2;
+		var colCount:int = realWidth / (itemWidth + itemPadding);
+		var extraPadding:int = (realWidth - colCount * (itemWidth + itemPadding)) / colCount;
+		return function(item:BaseItem, index:int, arr:Array):void {
 			// Jump another position if we're on the dropPos
 			if (index == dropPos) arguments.callee(null, -2, arr);
 			if (item) moveItem(item, nextX, nextY, animate);
 
-			nextX += MediaInfo.frameWidth + itemPadding + extraPadding;
-			if (nextX > w - (MediaInfo.frameWidth + itemPadding)) {
+			nextX += itemWidth + itemPadding + extraPadding;
+			if (nextX > w - (itemWidth + itemPadding)) {
 				nextX = itemPadding * 2;
-				nextY += MediaInfo.frameHeight + itemPadding;
+				nextY += itemHeight + itemPadding;
 			}
 		};
 	}
 
 	[inline]
-	private function moveItem(item:MediaInfo, x:Number, y:Number, animate:Boolean = false):void {
+	private function moveItem(item:BaseItem, x:Number, y:Number, animate:Boolean = false):void {
 		if (animate) {
 			TweenLite.to(item, animationDuration, {
 				x: x,

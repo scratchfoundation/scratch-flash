@@ -479,9 +479,16 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 			indexBuffer.uploadFromByteArray(indexData, 0, 0, indexData.length >> 1);
 			indexBufferUploaded = true;
 		}
+
+		if (vertexBuffer == null) {
+			//trace('creating vertexBuffer when indexData length = '+indexData.length);
+			vertexBuffer = __context.createVertexBuffer(indexData.length / 3, shaderConfig.vertexComponents);
+			vertexBufferUploaded = false;
+		}
+
 //		trace('uploading vertexBuffer when indexData length = '+indexData.length);
 //		trace('uploadFromByteArray(vertexData, 0, 0, '+((indexData.length / 12) * 4)+')');
-		vertexBuffer.uploadFromByteArray(vertexData, 0, 0, (indexData.length / 12) * 4);
+		vertexBuffer.uploadFromByteArray(vertexData, 0, 0, indexData.length / 3);
 		vertexBufferUploaded = true;
 	}
 
@@ -1112,13 +1119,14 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 			return;
 		}
 
-			if(!indexBuffer) checkBuffers();
+		if(!indexBuffer) checkBuffers();
 		draw();
+		__context.setScissorRectangle(new Rectangle(0, 0, bmd.width, bmd.height));
 		__context.configureBackBuffer(bmd.width, bmd.height, 0, false);
 		render(childrenDrawn);
 		__context.drawToBitmapData(bmd);
 		//__context.present();
-		//bmd.draw(uiContainer);
+		bmd.draw(uiContainer);
 		scissorRect = null;
 		setRenderView();
 	}

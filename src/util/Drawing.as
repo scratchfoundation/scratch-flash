@@ -29,7 +29,7 @@ public class Drawing {
 	private var g:Graphics;
 	private var lastX:Number;
 	private var lastY:Number;
-	function Drawing(gfx:Graphics, startX:Number = 0, startY:Number = 0) {
+	function Drawing(gfx:Graphics, startX:int = 0, startY:int = 0) {
 		g = gfx;
 		lastX = startX;
 		lastY = startY;

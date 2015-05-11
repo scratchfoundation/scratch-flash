@@ -32,7 +32,7 @@ import blocks.*;
 import scratch.*;
 import flash.geom.Rectangle;
 
-import ui.dragdrop.DragEvent;
+import ui.events.DragEvent;
 import ui.dragdrop.DropTarget;
 import ui.media.MediaInfo;
 

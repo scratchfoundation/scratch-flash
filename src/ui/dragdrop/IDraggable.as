@@ -3,8 +3,8 @@
  */
 package ui.dragdrop {
 import flash.display.Sprite;
-import flash.events.IEventDispatcher;
+import ui.IDisplayObject;
 
-public interface IDraggable extends IEventDispatcher {
+public interface IDraggable extends IDisplayObject {
 	function getSpriteToDrag():Sprite;
 }}

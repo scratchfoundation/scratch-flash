@@ -35,7 +35,7 @@ import interpreter.Variable;
 
 import translation.Translator;
 import ui.dragdrop.DragAndDropMgr;
-import ui.dragdrop.DragEvent;
+import ui.events.DragEvent;
 import ui.dragdrop.IDraggable;
 import uiwidgets.Menu;
 import util.*;
