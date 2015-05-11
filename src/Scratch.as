@@ -235,14 +235,16 @@ public class Scratch extends Sprite {
 	private function loadSingleGithubURL(url:String):void {
 		function handleComplete(e:Event):void {
 			runtime.installProjectFromData(sbxLoader.data);
-			var projectName:String = url;
-			var index:int = projectName.indexOf('?');
-			if (index > 0) projectName = projectName.slice(0, index);
-			index = projectName.lastIndexOf('/');
-			if (index > 0) projectName = projectName.substr(index + 1);
-			index = projectName.lastIndexOf('.sbx');
-			if (index > 0) projectName = projectName.slice(0, index);
-			app.setProjectName(projectName);
+			if (StringUtil.trim(projectName()).length == 0) {
+				var newProjectName:String = url;
+				var index:int = newProjectName.indexOf('?');
+				if (index > 0) newProjectName = newProjectName.slice(0, index);
+				index = newProjectName.lastIndexOf('/');
+				if (index > 0) newProjectName = newProjectName.substr(index + 1);
+				index = newProjectName.lastIndexOf('.sbx');
+				if (index > 0) newProjectName = newProjectName.slice(0, index);
+				setProjectName(newProjectName);
+			}
 		}
 
 		function handleError(e:ErrorEvent):void {
@@ -266,21 +268,49 @@ public class Scratch extends Sprite {
 		sbxLoader.load(request);
 	}
 
+	private var pendingExtensionURLs:Array;
 	private function loadGithubURL(urlOrArray:*):void {
 		if (!isExtensionDevMode) return;
 
-		if (urlOrArray is Array) {
-			var urlArray:Array = urlOrArray as Array;
+		var url:String;
+		var urlArray:Array = urlOrArray as Array;
+		if (urlArray) {
 			var urlCount:int = urlArray.length;
-			for (var index:int = 0; index < urlCount; ++index) {
-				loadSingleGithubURL(urlArray[index]);
+			var extensionURLs:Array = [];
+			var projectURL:String;
+			var index:int;
+
+			// Filter URLs: allow at most one project file, and wait until it loads before loading extensions.
+			for (index = 0; index < urlCount; ++index) {
+				url = StringUtil.trim(urlArray[index]);
+				if (StringUtil.endsWith(url.toLowerCase(), '.js')) {
+					extensionURLs.push(url);
+				}
+				else if (url.length > 0) {
+					if (projectURL) {
+						jsThrowError("Ignoring extra project URL: " + projectURL);
+					}
+					projectURL = StringUtil.trim(url);
+				}
+			}
+			if (projectURL) {
+				pendingExtensionURLs = extensionURLs;
+				loadSingleGithubURL(projectURL);
+				// warning will be shown later
+			}
+			else {
+				urlCount = extensionURLs.length;
+				for (index = 0; index < urlCount; ++index) {
+					loadSingleGithubURL(extensionURLs[index]);
+				}
+				externalCall('JSshowWarning');
 			}
 		}
 		else {
-			var url:String = urlOrArray as String;
+			url = urlOrArray as String;
 			loadSingleGithubURL(url);
+			externalCall('JSshowWarning');
 		}
-		externalCall('JSshowWarning');
 	}
 
 	private function loadBase64SBX(base64:String):void {
@@ -631,6 +661,10 @@ public class Scratch extends Sprite {
 		}
 
 		if (jsEnabled && isExtensionDevMode) {
+			if (pendingExtensionURLs) {
+				loadGithubURL(pendingExtensionURLs);
+				pendingExtensionURLs = null;
+			}
 			externalCall('JSprojectLoaded');
 		}
 	}
