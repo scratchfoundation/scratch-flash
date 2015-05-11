@@ -281,10 +281,10 @@ public class ExtensionManager {
 				ext.javascriptURL = extObj.javascriptURL;
 				ext.showBlocks = false;
 				if(extObj.id) ext.id = extObj.id;
-				setEnabled(extObj.extensionName, true);
 			}
 
 			extensionDict[extObj.extensionName] = ext;
+			setEnabled(extObj.extensionName, true);
 		}
 		Scratch.app.updatePalette();
 	}
