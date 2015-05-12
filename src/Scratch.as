@@ -1067,7 +1067,7 @@ public class Scratch extends Sprite {
 
 		saveProjectAndThen(function():void {
 			clearProject();
-			if (callback) callback();
+			if (callback != null) callback();
 		});
 	}
 
@@ -1087,8 +1087,7 @@ public class Scratch extends Sprite {
 
 		function save():void {
 			d.cancel();
-			exportProjectToFile(); // if this succeeds, saveNeeded will become false
-			if (!saveNeeded) postSaveAction();
+			exportProjectToFile(false, postSaveAction);
 		}
 
 		if (postSaveAction == null) postSaveAction = doNothing;
@@ -1104,7 +1103,7 @@ public class Scratch extends Sprite {
 		d.showOnStage(stage);
 	}
 
-	public function exportProjectToFile(fromJS:Boolean = false):void {
+	public function exportProjectToFile(fromJS:Boolean = false, saveCallback:Function = null):void {
 		function squeakSoundsConverted():void {
 			scriptsPane.saveScripts(false);
 			var projectType:String = extensionManager.hasExperimentalExtensions() ? '.sbx' : '.sb2';
@@ -1118,6 +1117,11 @@ public class Scratch extends Sprite {
 
 		function fileSaved(e:Event):void {
 			if (!fromJS) setProjectName(e.target.name);
+			if (isExtensionDevMode) {
+				// Some versions of the editor think of this as an "export" and some think of it as a "save"
+				saveNeeded = false;
+			}
+			if (saveCallback != null) saveCallback();
 		}
 
 		if (loadInProgress) return;
@@ -1517,7 +1521,7 @@ public class Scratch extends Sprite {
 
 	// jsCallbackArray is: [functionName, arg1, arg2...] where args are optional.
 	// TODO: rewrite all versions of externalCall in terms of this
-	public function externalCallArray(jsCallbackArray:Array, returnValueCallback:Function = null) {
+	public function externalCallArray(jsCallbackArray:Array, returnValueCallback:Function = null):void {
 		var args:Array = jsCallbackArray.concat(); // clone
 		args.splice(1, 0, returnValueCallback);
 		externalCall.apply(this, args);
