@@ -217,7 +217,11 @@ public class Scratch extends Sprite {
 		addExternalCallback('ASloadExtension', extensionManager.loadRawExtension);
 		addExternalCallback('ASextensionCallDone', extensionManager.callCompleted);
 		addExternalCallback('ASextensionReporterDone', extensionManager.reporterCompleted);
-		addExternalCallback('AScreateNewProject', createNewProject);
+		addExternalCallback('AScreateNewProject', function(jsCallback:Array):void {
+			createNewProject(null, function():void {
+				externalCallArray(jsCallback);
+			});
+		});
 
 		if (isExtensionDevMode) {
 			addExternalCallback('ASloadGithubURL', loadGithubURL);
@@ -1053,7 +1057,7 @@ public class Scratch extends Sprite {
 				'\n\nPlease do not distribute!', stage);
 	}
 
-	protected function createNewProject(ignore:* = null):void {
+	protected function createNewProject(ignore:* = null, callback:Function = null):void {
 		function clearProject():void {
 			startNewProject('', '');
 			setProjectName('Untitled');
@@ -1061,7 +1065,10 @@ public class Scratch extends Sprite {
 			stagePart.refresh();
 		}
 
-		saveProjectAndThen(clearProject);
+		saveProjectAndThen(function():void {
+			clearProject();
+			if (callback) callback();
+		});
 	}
 
 	protected function saveProjectAndThen(postSaveAction:Function = null):void {
@@ -1506,6 +1513,14 @@ public class Scratch extends Sprite {
 
 	public function addExternalCallback(functionName:String, closure:Function):void {
 		ExternalInterface.addCallback(functionName, closure);
+	}
+
+	// jsCallbackArray is: [functionName, arg1, arg2...] where args are optional.
+	// TODO: rewrite all versions of externalCall in terms of this
+	public function externalCallArray(jsCallbackArray:Array, returnValueCallback:Function = null) {
+		var args:Array = jsCallbackArray.concat(); // clone
+		args.splice(1, 0, returnValueCallback);
+		externalCall.apply(this, args);
 	}
 }
 }
