@@ -1062,7 +1062,6 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		if (!spriteBitmaps[dispObj] || unrenderedChildren[dispObj] || !bitmapsByID[spriteBitmaps[dispObj]]) {
 			if (checkChildRender(dispObj)) {
 				packTextureBitmaps();
-				checkBuffers();
 			}
 		}
 
@@ -1132,6 +1131,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 
 		// TODO: Find out why the index buffer isn't uploaded sometimes
 		indexBufferUploaded = false;
+		checkBuffers();
 		uploadBuffers();
 
 		var changeBackBuffer:Boolean = (bmd.width > scissorRect.width || bmd.height > scissorRect.height);
