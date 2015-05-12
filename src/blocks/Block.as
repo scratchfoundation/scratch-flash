@@ -432,7 +432,7 @@ public class Block extends Sprite {
 		var b:Block = this;
 		while (b.isReporter) {
 			b.fixArgLayout();
-			if (b.parent is Block) b = Block(b.parent)
+			if (b.parent is Block) b = Block(b.parent);
 			else return;
 		}
 		if (b is Block) b.fixArgLayout();
