@@ -357,7 +357,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 	private function checkBuffers():void {
 		var resized:Boolean = false;
 		var numChildren:uint = scratchStage.numChildren;
-		var vertexDataMinSize:int = numChildren * 4 * shaderConfig.vertexSizeBytes * 2; // 4 verts per child
+		var vertexDataMinSize:int = numChildren * 4 * shaderConfig.vertexSizeBytes; // 4 verts per child
 		if (vertexDataMinSize > vertexData.length) {
 			// Increase and fill in the index buffer
 			var index:uint = indexData.length;
@@ -1291,6 +1291,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		else
 			__context.setBlendFactors(Context3DBlendFactor.ONE, Context3DBlendFactor.ZERO);
 
+		checkBuffers();
 		uploadBuffers();
 
 		// draw all sprites
