@@ -221,11 +221,7 @@ public class Scratch extends Sprite {
 		addExternalCallback('ASloadExtension', extensionManager.loadRawExtension);
 		addExternalCallback('ASextensionCallDone', extensionManager.callCompleted);
 		addExternalCallback('ASextensionReporterDone', extensionManager.reporterCompleted);
-		addExternalCallback('AScreateNewProject', function(jsCallback:Array):void {
-			createNewProject(null, function():void {
-				externalCallArray(jsCallback);
-			});
-		});
+		addExternalCallback('AScreateNewProject', createNewProjectScratchX);
 
 		if (isExtensionDevMode) {
 			addExternalCallback('ASloadGithubURL', loadGithubURL);
@@ -1071,17 +1067,25 @@ public class Scratch extends Sprite {
 				'\n\nPlease do not distribute!', stage);
 	}
 
-	protected function createNewProject(ignore:* = null, callback:Function = null):void {
+	protected function createNewProjectAndThen(callback:Function = null):void {
 		function clearProject():void {
 			startNewProject('', '');
 			setProjectName('Untitled');
 			topBarPart.refresh();
 			stagePart.refresh();
+			if (callback != null) callback();
 		}
 
-		saveProjectAndThen(function():void {
-			clearProject();
-			if (callback != null) callback();
+		saveProjectAndThen(clearProject);
+	}
+
+	protected function createNewProject(ignore:* = null):void {
+		createNewProjectAndThen();
+	}
+
+	protected function createNewProjectScratchX(jsCallback:Array):void {
+		createNewProjectAndThen(function():void {
+			externalCallArray(jsCallback);
 		});
 	}
 
