@@ -28,10 +28,15 @@ import flash.text.*;
 import flash.utils.*;
 import scratch.*;
 import translation.Translator;
+
+import ui.BaseItem;
+import ui.ItemData;
 import ui.dragdrop.DropTarget;
 import ui.media.*;
 import ui.SpriteThumbnail;
 import ui.parts.base.ILibraryPart;
+import ui.styles.ItemStyle;
+
 import uiwidgets.*;
 
 public class LibraryPart extends UIPart implements ILibraryPart, DropTarget {
@@ -46,7 +51,7 @@ public class LibraryPart extends UIPart implements ILibraryPart, DropTarget {
 
 	protected var shape:Shape;
 
-	protected var stageThumbnail:SpriteThumbnail;
+	protected var stageThumbnail:BaseItem;
 	protected var spritesFrame:ScrollFrame;
 	protected var spritesPane:ArrangeableContents;
 	protected var spriteDetails:SpriteInfoPart;
@@ -66,12 +71,14 @@ public class LibraryPart extends UIPart implements ILibraryPart, DropTarget {
 
 	private var videoLabel:TextField;
 	private var videoButton:IconButton;
+	private var itemStyle:ItemStyle;
 
 	public function LibraryPart(app:Scratch) {
 		this.app = app;
 		shape = new Shape();
 		addChild(shape);
 
+		itemStyle = createItemStyle();
 		addSpritesTitle();
 		addNewSpriteButtons();
 		addStageArea();
@@ -94,12 +101,16 @@ public class LibraryPart extends UIPart implements ILibraryPart, DropTarget {
 		];
 	}
 
+	protected function createItemStyle():ItemStyle {
+		return new ItemStyle(73, 73);
+	}
+
 	public function updateTranslation():void {
 		spritesTitle.text = Translator.map('Sprites');
 		newSpriteLabel.text = Translator.map('New sprite:');
 		newBackdropLabel.text = Translator.map('New backdrop:');
 		videoLabel.text = Translator.map('Video on:');
-		stageThumbnail.updateThumbnail(true);
+		stageThumbnail.refresh();
 		spriteDetails.updateTranslation();
 
 		SimpleTooltips.add(libraryButton, {text: 'Choose sprite from library', direction: 'bottom'});
@@ -168,7 +179,7 @@ public class LibraryPart extends UIPart implements ILibraryPart, DropTarget {
 		// for example, broadcast senders or receivers. Passing an
 		// empty list to this function clears all highlights.
 		for each (var tn:SpriteThumbnail in allThumbnails()) {
-			tn.showHighlight(highlightList.indexOf(tn.targetObj) >= 0);
+			tn.showHighlight(highlightList.indexOf(tn.data.obj) >= 0);
 		}
 	}
 
@@ -179,7 +190,7 @@ public class LibraryPart extends UIPart implements ILibraryPart, DropTarget {
 		spritesTitle.visible = !app.stageIsContracted;
 		if (app.viewedObj() && app.viewedObj().isStage) showSpriteDetails(false);
 		if (spriteDetails.visible) spriteDetails.refresh();
-		stageThumbnail.setTarget(app.stageObj());
+		stageThumbnail.refresh();
 		spritesPane.clear(false);
 		var sortedSprites:Array = app.stageObj().sprites();
 		sortedSprites.sort(
@@ -192,7 +203,7 @@ public class LibraryPart extends UIPart implements ILibraryPart, DropTarget {
 		var index:int = 1;
 		for each (var spr:ScratchSprite in sortedSprites) {
 			spr.indexInLibrary = index++; // renumber to ensure unique indices
- 			var tn:SpriteThumbnail = new SpriteThumbnail(spr, app);
+ 			var tn:BaseItem = new BaseItem(itemStyle, new ItemData('sprite', spr.objName, spr));
 			tn.x = nextX;
 			tn.y = nextY;
 			spritesPane.addChild(tn);
@@ -207,12 +218,16 @@ public class LibraryPart extends UIPart implements ILibraryPart, DropTarget {
 		step();
 	}
 
+	protected function sprData(s:ScratchSprite):ItemData {
+		return new ItemData('sprite', s.objName, s);
+	}
+
 	protected function scrollToSelectedSprite():void {
 		var viewedObj:ScratchObj = app.viewedObj();
 		var sel:SpriteThumbnail;
 		for (var i:int = 0; i < spritesPane.numChildren; i++) {
 			var tn:SpriteThumbnail = spritesPane.getChildAt(i) as SpriteThumbnail;
-			if (tn && (tn.targetObj == viewedObj)) sel = tn;
+			if (tn && (tn.data.obj == viewedObj)) sel = tn;
 		}
 		if (sel) {
 			var selTop:int = sel.y + spritesPane.y - 1;
@@ -233,8 +248,8 @@ public class LibraryPart extends UIPart implements ILibraryPart, DropTarget {
 		var viewedObj:ScratchObj = app.viewedObj();
 		var updateThumbnails:Boolean = ((getTimer() - lastUpdate) > updateInterval);
 		for each (var tn:SpriteThumbnail in allThumbnails()) {
-			if (updateThumbnails) tn.updateThumbnail();
-			tn.select(tn.targetObj == viewedObj);
+			if (updateThumbnails) tn.refresh();
+			tn.select(tn.data.obj == viewedObj);
 		}
 		if (updateThumbnails) lastUpdate = getTimer();
 		if (spriteDetails.visible) spriteDetails.step();
@@ -255,7 +270,9 @@ public class LibraryPart extends UIPart implements ILibraryPart, DropTarget {
 	}
 
 	protected function addStageArea():void {
-		stageThumbnail = new SpriteThumbnail(app.stagePane, app);
+		var stageStyle:ItemStyle = createItemStyle();
+		stageStyle.imageHeight = 86;
+		stageThumbnail = new BaseItem(stageStyle, new ItemData('stage', app.stagePane.objName, app.stagePane));
 		addChild(stageThumbnail);
 	}
 
@@ -281,7 +298,7 @@ public class LibraryPart extends UIPart implements ILibraryPart, DropTarget {
 	}
 
 	protected function addSpritesArea():void {
-		spritesPane = new ArrangeableContents(MediaInfo.frameWidth, MediaInfo.frameHeight, ArrangeableContents.TYPE_STRIP_VERTICAL, 1);
+		spritesPane = new ArrangeableContents(new ItemStyle(), ArrangeableContents.TYPE_STRIP_VERTICAL, 1);
 		spritesPane.color = bgColor;
 		spritesPane.hExtra = spritesPane.vExtra = 0;
 		spritesFrame = new ScrollFrame();
@@ -452,7 +469,7 @@ public class LibraryPart extends UIPart implements ILibraryPart, DropTarget {
 		var nextIndex:int = 1;
 		for (var i:int = 0; i < spritesPane.numChildren; i++) {
 			var th:SpriteThumbnail = spritesPane.getChildAt(i) as SpriteThumbnail;
-			var spr:ScratchSprite = th.targetObj as ScratchSprite;
+			var spr:ScratchSprite = th.data.obj as ScratchSprite;
 			if (!inserted) {
 				if (dropY < (th.y - (th.height / 2))) { // insert before this row
 					dropped.indexInLibrary = nextIndex++;

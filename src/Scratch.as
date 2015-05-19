@@ -145,6 +145,7 @@ public class Scratch extends Sprite {
 		Block.MenuHandlerFunction = BlockMenus.BlockMenuHandler;
 		CursorTool.init(this);
 		app = this;
+		BaseItem.setFactory(new ThumbnailFactory(this));
 
 		stagePane = new ScratchStage();
 		//gh = new GestureHandler(this, (loaderInfo.parameters['inIE'] == 'true'));

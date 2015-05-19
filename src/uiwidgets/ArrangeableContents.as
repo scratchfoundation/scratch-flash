@@ -15,6 +15,7 @@ import ui.Utility;
 import ui.dragdrop.DragAndDropMgr;
 import ui.dragdrop.DropTarget;
 import ui.events.DragEvent;
+import ui.styles.ItemStyle;
 
 public class ArrangeableContents extends ScrollFrameContents implements DropTarget {
 	public static const TYPE_GRID:uint = 0;
@@ -23,24 +24,22 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 
 	public static const ORDER_CHANGE:String = 'orderChange';
 	public static const CONTENT_CHANGE:String = 'contentChange';
-	private static const leftBehindAlpha:Number = 0.6;
+//	private static const leftBehindAlpha:Number = 0.6;
 	private static const animationDuration:Number = 0.25;
 
 	// Fixed state variables
 	private var type:uint = 0;
 	private var itemPadding:uint = Utility.cmToPixels(0.1);
+	protected var itemStyle:ItemStyle;
 
 	// Dynamic state variables
 	private var w:uint = 100;
 	private var h:uint = 100;
-	private var itemWidth:uint;
-	private var itemHeight:uint;
 	private var selectedItem:BaseItem;
 	private var editMode:Boolean;
-	public function ArrangeableContents(iw:uint, ih:uint, t:uint = TYPE_GRID, padding:int = -1) {
+	public function ArrangeableContents(iStyle:ItemStyle, t:uint = TYPE_GRID, padding:int = -1) {
 		type = t;
-		itemWidth = iw;
-		itemHeight = ih;
+		itemStyle = iStyle;
 		if (padding > -1) itemPadding = padding;
 		setWidthHeight(w, h);
 
@@ -225,6 +224,8 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 			var px:Number = loc.x - itemPadding * 2;
 			var py:Number = loc.y - itemPadding * 2;
 			var realWidth:int = w - itemPadding * 4;
+			var itemWidth:uint = itemStyle.frameWidth;
+			var itemHeight:uint = itemStyle.frameHeight;
 			var rowLen:int = realWidth / (itemWidth + itemPadding);
 			var extraPadding:int = (realWidth - rowLen * (itemWidth + itemPadding)) / rowLen;
 			var index:int = Math.max(0, Math.min(rowLen-1, Math.floor(px / (itemWidth + itemPadding + extraPadding))) +
@@ -290,6 +291,8 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 	private function getPlacementFunc(animate:Boolean):Function {
 		var nextX:int;
 		var nextY:int;
+		var itemWidth:uint = itemStyle.frameWidth;
+		var itemHeight:uint = itemStyle.frameHeight;
 		if (type == TYPE_STRIP_HORIZONTAL) {
 			nextX = itemPadding;
 			nextY = Math.floor((h - itemHeight) / 2);

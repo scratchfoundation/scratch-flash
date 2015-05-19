@@ -26,6 +26,8 @@ package {
 	import flash.text.*;
 	import assets.Resources;
 
+import ui.styles.ItemStyle;
+
 public class CSS {
 
 	// Colors
@@ -72,4 +74,7 @@ public class CSS {
 	public static var iconHeight:uint = 13;
 	public static var thinBorder:uint = 1;
 	public static var thickBorder:uint = 2;
+
+	// Item style
+	public static var itemStyle:ItemStyle = new ItemStyle();
 }}

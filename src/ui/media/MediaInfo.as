@@ -44,11 +44,6 @@ import ui.parts.*;
 import uiwidgets.*;
 
 public class MediaInfo extends BaseItem {
-
-	public static var frameWidth:int = 81;
-	public static var frameHeight:int = 94;
-	protected static var thumbnailWidth:int = 68;
-	protected static var thumbnailHeight:int = 51;
 	protected static var infoHeight:int = 28;
 
 	// at most one of the following is non-null:
@@ -69,11 +64,11 @@ public class MediaInfo extends BaseItem {
 
 	private var frame:Shape; // visible when selected
 	protected var thumbnail:Bitmap;
-	protected var label:TextField;
 	protected var info:TextField;
 	protected var deleteButton:IconButton;
 
 	public function MediaInfo(obj:*, owningObj:ScratchObj = null) {
+		super(CSS.itemStyle);
 		owner = owningObj;
 		mycostume = obj as ScratchCostume;
 		mysound = obj as ScratchSound;
@@ -121,20 +116,20 @@ public class MediaInfo extends BaseItem {
 	}
 
 	protected function getFrameHeight():uint {
-		return frameHeightOverride > 0 ? frameHeightOverride : frameHeight;
+		return frameHeightOverride > 0 ? frameHeightOverride : style.frameHeight;
 	}
 
 	public static function strings():Array {
 		return ['Backdrop', 'Costume', 'Script', 'Sound', 'Sprite', 'save to local file'];
 	}
 
-	public static function setFrameWidth(w:uint):void {
-		frameWidth = w;
-		frameHeight = Math.floor(1.161 * w);
-		thumbnailWidth = Math.floor(0.84 * w);
-		thumbnailHeight = Math.floor(0.67 * frameHeight);
-		infoHeight = Math.floor(0.27 * frameHeight);
-	}
+//	public static function setstyle.frameWidth(w:uint):void {
+//		style.frameWidth = w;
+//		frameHeight = Math.floor(1.161 * w);
+//		style.imageWidth = Math.floor(0.84 * w);
+//		style.imageHeight = Math.floor(0.67 * frameHeight);
+//		infoHeight = Math.floor(0.27 * frameHeight);
+//	}
 
 	// -----------------------------
 	// Highlighting (for MediaPane)
@@ -175,16 +170,16 @@ public class MediaInfo extends BaseItem {
 	private function setLocalCostumeThumbnail():void {
 		// Set the thumbnail for a costume local to this project (and not necessarily saved to the server).
 		var forStage:Boolean = owner && owner.isStage;
-		var bm:BitmapData = mycostume.thumbnail(thumbnailWidth * (forStage ? 1 : getScaleFactor()),
-						thumbnailHeight * (forStage ? 1 : getScaleFactor()), forStage);
+		var bm:BitmapData = mycostume.thumbnail(style.imageWidth * (forStage ? 1 : getScaleFactor()),
+				style.imageHeight * (forStage ? 1 : getScaleFactor()), forStage);
 		isBackdrop = forStage;
 		setThumbnailBM(bm);
 	}
 
 	private function setLocalSpriteThumbnail():void {
 		// Set the thumbnail for a sprite local to this project (and not necessarily saved to the server).
-		setThumbnailBM(mysprite.currentCostume().thumbnail(thumbnailWidth * getScaleFactor(),
-						thumbnailHeight * getScaleFactor(), false));
+		setThumbnailBM(mysprite.currentCostume().thumbnail(style.imageWidth * getScaleFactor(),
+						style.imageHeight * getScaleFactor(), false));
 	}
 
 	protected function fileType(s:String):String {
@@ -203,7 +198,7 @@ public class MediaInfo extends BaseItem {
 		var r:Rectangle = script.getBounds(script);
 		var centerX:Number = r.x + (r.width / 2);
 		var centerY:Number = r.y + (r.height / 2);
-		var bm:BitmapData = new BitmapData(thumbnailWidth * getScaleFactor(), thumbnailHeight * getScaleFactor(), true, 0);
+		var bm:BitmapData = new BitmapData(style.imageWidth * getScaleFactor(), style.imageHeight * getScaleFactor(), true, 0);
 		var m:Matrix = new Matrix();
 		var scale:Number = Math.min(bm.width / script.width, bm.height / script.height);
 		m.scale(scale, scale);
@@ -213,23 +208,23 @@ public class MediaInfo extends BaseItem {
 	}
 
 	protected function setThumbnailBM(bm:BitmapData):void {
-		var tAspect:Number = thumbnailWidth / thumbnailHeight;
+		var tAspect:Number = style.imageWidth / style.imageHeight;
 		var scale:Number;
 		if (bm.width / bm.height > tAspect)
-			scale = thumbnailWidth / bm.width;
+			scale = style.imageWidth / bm.width;
 		else
-			scale = thumbnailHeight / bm.height;
+			scale = style.imageHeight / bm.height;
 
 		thumbnail.scaleX = thumbnail.scaleY = scale;
 		thumbnail.bitmapData = bm;
 
-		thumbnail.x = (frameWidth - thumbnail.width) / 2;
-		thumbnail.y = (frameHeight - infoHeight - thumbnail.height) / 2;
+		thumbnail.x = (style.frameWidth - thumbnail.width) / 2;
+		thumbnail.y = (style.frameHeight - infoHeight - thumbnail.height) / 2;
 	}
 
 	protected function setInfo(s:String):void {
 		info.text = s;
-		info.x = Math.max(0, (frameWidth - info.textWidth) / 2);
+		info.x = Math.max(0, (style.frameWidth - info.textWidth) / 2);
 	}
 
 	// -----------------------------
@@ -239,10 +234,10 @@ public class MediaInfo extends BaseItem {
 	public function updateLabelAndInfo(forBackpack:Boolean):void {
 		this.forBackpack = forBackpack;
 		setText(label, (forBackpack ? backpackTitle() : objName));
-		label.x = ((frameWidth - label.textWidth) / 2) - 2;
+		label.x = ((style.frameWidth - label.textWidth) / 2) - 2;
 
 		setText(info, (forBackpack ? objName: infoString()));
-		info.x = Math.max(0, (frameWidth - info.textWidth) / 2);
+		info.x = Math.max(0, (style.frameWidth - info.textWidth) / 2);
 	}
 
 	public function hideTextFields():void {
@@ -363,7 +358,7 @@ public class MediaInfo extends BaseItem {
 		var g:Graphics = frame.graphics;
 		g.lineStyle(3, CSS.overColor, 1, true);
 		g.beginFill(CSS.itemSelectedColor);
-		g.drawRoundRect(0, 0, frameWidth, getFrameHeight(), 12, 12);
+		g.drawRoundRect(0, 0, style.frameWidth, style.frameHeight, 12, 12);
 		g.endFill();
 		addChild(frame);
 	}
@@ -371,11 +366,11 @@ public class MediaInfo extends BaseItem {
 	protected function addThumbnail():void {
 		if ('sound' == objType) {
 			thumbnail = Resources.createBmp('speakerOff');
-			thumbnail.x = (frameWidth - thumbnail.width) / 2;
+			thumbnail.x = (style.frameWidth - thumbnail.width) / 2;
 			thumbnail.y = 16;
 		} else {
 			thumbnail = Resources.createBmp('questionMark');
-			thumbnail.x = (frameWidth - thumbnail.width) / 2;
+			thumbnail.x = (style.frameWidth - thumbnail.width) / 2;
 			thumbnail.y = 13;
 		}
 		addChild(thumbnail);
@@ -384,10 +379,10 @@ public class MediaInfo extends BaseItem {
 
 	protected function addLabelAndInfo():void {
 		label = Resources.makeLabel('', CSS.thumbnailFormat);
-		label.y = getFrameHeight() - infoHeight;
+		label.y = style.frameHeight - infoHeight;
 		addChild(label);
 		info = Resources.makeLabel('', CSS.thumbnailExtraInfoFormat);
-		info.y = getFrameHeight() - Math.floor(infoHeight * 0.5);
+		info.y = style.frameHeight - Math.floor(infoHeight * 0.5);
 		addChild(info);
 	}
 
