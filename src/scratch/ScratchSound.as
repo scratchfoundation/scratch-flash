@@ -58,7 +58,7 @@ public class ScratchSound {
 		this.soundName = name;
 		if (sndData != null) {
 			try {
-				var info:* = WAVFile.decode(sndData);
+				var info:Object = WAVFile.decode(sndData);
 				if ([1, 3, 17].indexOf(info.encoding) == -1) throw Error('Unsupported WAV format');
 				soundData = sndData;
 				if (info.encoding == 17)

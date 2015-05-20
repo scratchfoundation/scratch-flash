@@ -686,13 +686,16 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 			SCRATCH::allow3d {
 				sound = new Sound();
 				try {
-					if (snd && snd.format == 'float')
-						sound.loadPCMFromByteArray(data, snd.sampleCount / snd.channels, "float", snd.channels == 2, snd.rate);
-					else {
+					var sampleCount:uint = 0;
+					if (snd && snd.format == 'float') {
+						sampleCount = snd.sampleCount / snd.channels;
+						sound.loadPCMFromByteArray(snd.soundData, sampleCount, "float", snd.channels == 2, snd.rate);
+					} else {
 						data.position = 0;
 						sound.loadCompressedDataFromByteArray(data, data.length);
+						sampleCount = sound.length * 44.1;
 					}
-					MP3Loader.extractSamples(origName, sound, sound.length * 44.1, function (out:ScratchSound):void {
+					MP3Loader.extractSamples(origName, sound, sampleCount, function (out:ScratchSound):void {
 						snd = out;
 						startSoundUpload(out, origName, uploadComplete);
 					});

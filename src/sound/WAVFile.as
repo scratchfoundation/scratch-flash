@@ -91,6 +91,7 @@ public class WAVFile {
 			result.sampleCount = (result.bitsPerSample == 8) ? result.sampleDataSize : result.sampleDataSize / 2;
 		} else if (encoding == 3) {
 			result.sampleCount = Math.floor(result.sampleDataSize / (result.bitsPerSample >>> 3));
+			waveData.position = result.sampleDataStart;
 		} else if (encoding == 17) {
 			if (formatChunk.length < 20) throw Error("WAVFile: adpcm format chunk is too small");
 			if (result.channels != 1) throw Error("WAVFile: adpcm supports only one channel (monophonic)");

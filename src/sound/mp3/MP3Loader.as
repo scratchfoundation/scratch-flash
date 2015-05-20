@@ -57,7 +57,7 @@ public class MP3Loader {
 		function convertNextChunk():void {
 			buf.position = 0;
 			var count:int = mp3Snd.extract(buf, 4000);
-			if (count == 0) { // finished!
+			if (count == 0 || convertedSamples >= mp3SampleCount) { // finished!
 				if (Scratch.app.lp) Scratch.app.lp.setTitle('Compressing...');
 				setTimeout(compressSamples, 50);
 				return;
