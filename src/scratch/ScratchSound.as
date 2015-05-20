@@ -43,7 +43,6 @@ public class ScratchSound {
 	private var __soundData:ByteArray = new ByteArray();
 	public var format:String = '';
 	public var rate:int = 44100;
-	public var channels:int = 1;
 	public var sampleCount:int;
 	public var bitsPerSample:int; // primarily used for compressed Squeak sounds; not saved
 
@@ -66,7 +65,6 @@ public class ScratchSound {
 				else if (info.encoding == 3)
 					format = 'float';
 				rate = info.samplesPerSecond;
-				channels = info.channels;
 				sampleCount = info.sampleCount;
 				bitsPerSample = info.bitsPerSample;
 				reduceSizeIfNeeded(info.channels);
