@@ -201,7 +201,8 @@ public class Server implements IServer {
 //			whenDone(BackpackPart.localAssets[md5]);
 //			return null;
 //		}
-		return serverGet('media/' + md5, whenDone);
+		var url:String = URLs.assetCdnPrefix + URLs.internalAPI + 'asset/' + md5 + '/get/';
+		return serverGet(url, whenDone);
 	}
 
 	public function getMediaLibrary(libraryType:String, whenDone:Function):URLLoader {
