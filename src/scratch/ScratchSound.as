@@ -69,8 +69,7 @@ public class ScratchSound {
 				channels = info.channels;
 				sampleCount = info.sampleCount;
 				bitsPerSample = info.bitsPerSample;
-				if (format != 'float')
-					reduceSizeIfNeeded(info.channels);
+				reduceSizeIfNeeded(info.channels);
 			} catch (e:*) {
 				setSamples(new Vector.<int>(0), 22050);
 			}

@@ -120,11 +120,18 @@ public class WAVFile {
 	public static function extractSamples(waveData:ByteArray):Vector.<int> {
 		var result:Vector.<int> = new Vector.<int>();
 		var info:Object = WAVFile.decode(waveData);
+		var i:int;
 		var v:int;
 		if (info.encoding == 1) {
 			waveData.position = info.sampleDataStart;
-			for (var i:int = 0; i < info.sampleCount; i++) {
+			for (i = 0; i < info.sampleCount; i++) {
 				v = (info.bitsPerSample == 8) ? ((waveData.readUnsignedByte() - 128) << 8) : waveData.readShort();
+				result.push(v);
+			}
+		} else if (info.encoding == 3) {
+			waveData.position = info.sampleDataStart;
+			for (i = 0; i < info.sampleCount; i++) {
+				v = Math.min(32767, Math.max(-32768, waveData.readFloat() * 32768));
 				result.push(v);
 			}
 		} else if (info.encoding == 17) {
