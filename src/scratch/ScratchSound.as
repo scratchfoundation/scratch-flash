@@ -43,8 +43,9 @@ public class ScratchSound {
 	private var __soundData:ByteArray = new ByteArray();
 	public var format:String = '';
 	public var rate:int = 44100;
+	public var channels:int = 1;
 	public var sampleCount:int;
-	public var bitsPerSample:int; // used only for compressed Squeak sounds; not saved
+	public var bitsPerSample:int; // primarily used for compressed Squeak sounds; not saved
 
 	public var editorData:Object; // cache of data used by sound editor; not saved
 	private const WasEdited:int = -10; // special soundID used to indicate sounds that have been edited
@@ -60,10 +61,16 @@ public class ScratchSound {
 				var info:* = WAVFile.decode(sndData);
 				if ([1, 3, 17].indexOf(info.encoding) == -1) throw Error('Unsupported WAV format');
 				soundData = sndData;
-				format = (info.encoding == 17) ? 'adpcm' : '';
+				if (info.encoding == 17)
+					format = 'adpcm';
+				else if (info.encoding == 3)
+					format = 'float';
 				rate = info.samplesPerSecond;
+				channels = info.channels;
 				sampleCount = info.sampleCount;
-				reduceSizeIfNeeded(info.channels);
+				bitsPerSample = info.bitsPerSample;
+				if (format != 'float')
+					reduceSizeIfNeeded(info.channels);
 			} catch (e:*) {
 				setSamples(new Vector.<int>(0), 22050);
 			}
