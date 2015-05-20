@@ -58,7 +58,7 @@ public class ScratchSound {
 		if (sndData != null) {
 			try {
 				var info:* = WAVFile.decode(sndData);
-				if (!((info.encoding == 1) || (info.encoding == 17))) throw Error('Unsupported WAV format');
+				if ([1, 3, 17].indexOf(info.encoding) == -1) throw Error('Unsupported WAV format');
 				soundData = sndData;
 				format = (info.encoding == 17) ? 'adpcm' : '';
 				rate = info.samplesPerSecond;

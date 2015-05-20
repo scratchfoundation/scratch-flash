@@ -60,14 +60,22 @@ public class WAVFile {
 		// read format chunk
 		var formatChunk:ByteArray = extractChunk('fmt ', waveData);
 		if (formatChunk.length < 16) throw Error("WAVFile: format chunk is too small");
-		var encoding:int = formatChunk.readShort();
+		var encoding:uint = formatChunk.readUnsignedShort();
 
 		result.encoding = encoding;
-		result.channels = formatChunk.readShort();
-		result.samplesPerSecond = formatChunk.readInt();
-		result.bytesPerSecond = formatChunk.readInt();
-		result.blockAlignment = formatChunk.readShort();
-		result.bitsPerSample = formatChunk.readShort();
+		result.channels = formatChunk.readUnsignedShort();
+		result.samplesPerSecond = formatChunk.readUnsignedInt();
+		result.bytesPerSecond = formatChunk.readUnsignedInt();
+		result.blockAlignment = formatChunk.readUnsignedShort();
+		result.bitsPerSample = formatChunk.readUnsignedShort();
+		if (formatChunk.length >= 18 && encoding == 0xFFFE) {
+			var extensionSize:uint = formatChunk.readUnsignedShort();
+			if (extensionSize == 22) {
+				result.validBitsPerSample = formatChunk.readUnsignedShort();
+				result.channelMask = formatChunk.readUnsignedInt();
+				result.encoding = encoding = formatChunk.readUnsignedShort();
+			}
+		}
 
 		// get size of data chunk
 		var sampleDataStartAndSize:Array = dataChunkStartAndSize(waveData);
@@ -85,11 +93,11 @@ public class WAVFile {
 			if (formatChunk.length < 20) throw Error("WAVFile: adpcm format chunk is too small");
 			if (result.channels != 1) throw Error("WAVFile: adpcm supports only one channel (monophonic)");
 			formatChunk.position += 2;  // skip extra header byte count
-			var samplesPerBlock:int = formatChunk.readShort();
+			var samplesPerBlock:int = formatChunk.readUnsignedShort();
 			result.adpcmBlockSize = ((samplesPerBlock - 1) / 2) + 4; // block size in bytes
 			var factChunk:ByteArray = extractChunk('fact', waveData);
 			if ((factChunk != null) && (factChunk.length == 4)) {
-				result.sampleCount = factChunk.readInt();				
+				result.sampleCount = factChunk.readUnsignedInt();
 			} else {
 				// this should never happen, since there should always be a 'fact' chunk
 				result.sampleCount = 2 * result.sampleDataSize;	 // slight over-estimate (doesn't take ADPCM headers into account)
@@ -97,7 +105,7 @@ public class WAVFile {
 		} else if (encoding == 85) {
 			factChunk = extractChunk('fact', waveData);
 			if ((factChunk != null) && (factChunk.length == 4)) {
-				result.sampleCount = factChunk.readInt();				
+				result.sampleCount = factChunk.readUnsignedInt();
 			}
 		} else {
 			throw Error("WAVFile: unknown encoding " + encoding);
@@ -131,7 +139,8 @@ public class WAVFile {
 			var chunkType:String = waveData.readUTFBytes(4);
 			var chunkSize:int = waveData.readUnsignedInt();
 			if (chunkType == desiredType) {
-				if (chunkSize > waveData.bytesAvailable) return null;
+				if (chunkSize > waveData.bytesAvailable)
+					return null;
 				var result:ByteArray = new ByteArray();
 				result.endian = Endian.LITTLE_ENDIAN;
 				waveData.readBytes(result, 0, chunkSize);
