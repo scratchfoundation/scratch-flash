@@ -104,7 +104,7 @@ public class MediaPane extends ScrollFrameContents implements DropTarget{
 		for (var i:int = 0 ; i < numChildren ; i++) {
 			var ci:MediaInfo = getChildAt(i) as MediaInfo;
 			if (ci != null) {
-				if (ci.mycostume == current) {
+				if (ci.asCostume == current) {
 					ci.highlight();
 					scrollToItem(ci);
 				} else {
@@ -138,7 +138,7 @@ public class MediaPane extends ScrollFrameContents implements DropTarget{
 		for (var i:int = 0 ; i < numChildren ; i++) {
 			var si:MediaInfo = getChildAt(i) as MediaInfo;
 			if (si != null) {
-				if (si.mysound == current) si.highlight();
+				if (si.asSound == current) si.highlight();
 				else si.unhighlight();
 			}
 		}
@@ -177,8 +177,8 @@ public class MediaPane extends ScrollFrameContents implements DropTarget{
 	}
 
 	private function sameMedia(item1:MediaInfo, item2:MediaInfo):Boolean {
-		if (item1.mycostume && (item1.mycostume == item2.mycostume)) return true;
-		if (item1.mysound && (item1.mysound == item2.mysound)) return true;
+		if (item1.asCostume && (item1.asCostume == item2.asCostume)) return true;
+		if (item1.asSound && (item1.asSound == item2.asSound)) return true;
 		return false;
 	}
 
@@ -190,13 +190,13 @@ public class MediaPane extends ScrollFrameContents implements DropTarget{
 		if (isSound) {
 			scratchObj.sounds.splice(0); // remove all
 			for each (el in newList) {
-				if (el.mysound) scratchObj.sounds.push(el.mysound);
+				if (el.asSound) scratchObj.sounds.push(el.asSound);
 			}
 		} else {
 			var oldCurrentCostume:ScratchCostume = scratchObj.currentCostume();
 			scratchObj.costumes.splice(0); // remove all
 			for each (el in newList) {
-				if (el.mycostume) scratchObj.costumes.push(el.mycostume);
+				if (el.asCostume) scratchObj.costumes.push(el.asCostume);
 			}
 			var cIndex:int = scratchObj.costumes.indexOf(oldCurrentCostume);
 			if (cIndex > -1) scratchObj.currentCostumeIndex = cIndex;

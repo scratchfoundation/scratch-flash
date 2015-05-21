@@ -25,6 +25,9 @@
 
 package scratch {
 import blocks.*;
+
+import by.blooddy.crypto.MD5;
+
 import filters.FilterPack;
 import flash.display.*;
 import flash.events.Event;
@@ -81,6 +84,9 @@ public class ScratchObj extends Sprite {
 	}
 
 	public function allObjects():Array { return [this] }
+	public function generateMD5():String {
+		return MD5.hash(util.JSON.stringify(this));
+	}
 
 	public function deleteCostume(c:ScratchCostume):void {
 		if (costumes.length < 2) return; // a sprite must have at least one costume

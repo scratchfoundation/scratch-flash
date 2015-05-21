@@ -77,4 +77,5 @@ public class CSS {
 
 	// Item style
 	public static var itemStyle:ItemStyle = new ItemStyle();
+	public static var soundItemStyle:ItemStyle = new ItemStyle(itemStyle.frameWidth, itemStyle.frameHeight, itemStyle.imageWidth, 75);
 }}

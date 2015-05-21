@@ -6,17 +6,28 @@ public class ItemData {
 	public var type:String;
 	public var name:String;
 	public var obj:*;
-	public var id:String;
+	public var assetID:String;
 	public var extras:Object;
-	public function ItemData(objType:String, objName:String, assetID:String, object:*, extras:Object = null) {
+	public function ItemData(objType:String, objName:String, md5:String, object:*, extras:Object = null) {
 		type = objType;
 		name = objName;
-		id = assetID;
+		assetID = md5;
 		obj = object;
 		extras = extras;
 	}
 
 	public function identifier(strict:Boolean = false):String {
-		return type + id + (strict ? name : '');
+		return assetID + (strict ? name : '');
+	}
+
+	public function clone():ItemData {
+		var extrasCopy:Object;
+		if (extras) {
+			extrasCopy = {};
+			for (var prop:String in extras)
+				if (prop.charAt(0) != '_') // ignore special props
+					extrasCopy[prop] = extras[prop];
+		}
+		return new ItemData(type, name, assetID, obj, extrasCopy);
 	}
 }}

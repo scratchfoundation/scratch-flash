@@ -145,7 +145,7 @@ public class Scratch extends Sprite {
 		Block.MenuHandlerFunction = BlockMenus.BlockMenuHandler;
 		CursorTool.init(this);
 		app = this;
-		BaseItem.setFactory(new ThumbnailFactory(this));
+		BaseItem.setFactory(getThumbnailFactory());
 
 		stagePane = new ScratchStage();
 		//gh = new GestureHandler(this, (loaderInfo.parameters['inIE'] == 'true'));
@@ -179,6 +179,10 @@ public class Scratch extends Sprite {
 		//Analyze.collectAssets(0, 119110);
 		//Analyze.checkProjects(56086, 64220);
 		//Analyze.countMissingAssets();
+	}
+
+	protected function getThumbnailFactory():ThumbnailFactory {
+		return new ThumbnailFactory(this);
 	}
 
 	protected function initBlockIO():void {

@@ -9,13 +9,16 @@ import blocks.BlockIO;
 
 import flash.display.Bitmap;
 import flash.display.BitmapData;
+import flash.display.DisplayObject;
 import flash.geom.Matrix;
 import flash.geom.Rectangle;
 
 import scratch.ScratchCostume;
+import scratch.ScratchObj;
 import scratch.ScratchSprite;
 import ui.styles.ItemStyle;
 
+// TODO: Cache bitmapdata renders by assetID / MD5 and dimensions
 public class ThumbnailFactory {
 	private var app:Scratch;
 	public function ThumbnailFactory(app:Scratch) {
@@ -23,21 +26,38 @@ public class ThumbnailFactory {
 	}
 
 	// Can create thumbnails for costumes, sprites, and sounds
-	private static const cacheID:String = '_id_drawn_';
+	private static const cacheKey:String = '_id_drawn_';
 	public function updateThumbnail(item:BaseItem, style:ItemStyle):void {
-		if (item.data.extras && item.data.extras[cacheID] == item.data.id)
+		var cacheID:String = getCacheID(item.data);
+		if (item.data.extras && item.data.extras[cacheKey] == cacheID)
 			return;
 
+		item.setImage(renderThumbnail(item, style));
+
+		if (!item.data.extras) item.data.extras = {};
+		item.data.extras[cacheKey] = cacheID;
+	}
+
+	protected function getCacheID(data:ItemData):String {
+		if (data.obj is ScratchObj)
+			return (data.obj as ScratchObj).currentCostume().baseLayerMD5;
+		else if (data.type == 'costume' || data.type == 'backdrop' || data.type == 'sound')
+			return data.assetID;
+
+		return data.assetID;
+	}
+
+	protected function renderThumbnail(item:BaseItem, style:ItemStyle):Bitmap {
 		var type:String = item.data.type;
 		var bmp:Bitmap;
 		if (type == 'costume' || type == 'backdrop') {
-			var obj:ScratchCostume = item.data.obj;
-			bmp = new Bitmap(obj.thumbnail(style.imageWidth * getScaleFactor(),
+			var costume:ScratchCostume = item.data.obj as ScratchCostume;
+			bmp = new Bitmap(costume.thumbnail(style.imageWidth * getScaleFactor(),
 					style.imageHeight * getScaleFactor(), type == 'backdrop'));
 		}
 		else if (type == 'sprite' || type == 'stage') {
-			var obj:ScratchSprite = item.data.obj;
-			bmp = new Bitmap(obj.currentCostume().thumbnail(style.imageWidth * getScaleFactor(),
+			var scratchObj:ScratchObj = item.data.obj as ScratchObj;
+			bmp = new Bitmap(scratchObj.currentCostume().thumbnail(style.imageWidth * getScaleFactor(),
 					style.imageHeight * getScaleFactor(), type == 'stage'));
 		}
 		else if (type == 'script') {
@@ -59,17 +79,14 @@ public class ThumbnailFactory {
 		else if (type == 'sound') {
 			bmp = Resources.createBmp('speakerOff');
 		} else {
-			bmp = Resources.createBmp('questionMark');
+			bmp = getThumbnailForUnknown();
 		}
 
-		item.setImage(bmp);
-
-		if (!item.data.extras) item.data.extras = {};
-		item.data.extras[cacheID] = item.data.id;
+		return bmp;
 	}
 
-	public function refresh(item:BaseItem, style:ItemStyle):void {
-
+	protected function getThumbnailForUnknown():Bitmap {
+		return Resources.createBmp('questionMark');
 	}
 
 	protected function getScaleFactor():Number {

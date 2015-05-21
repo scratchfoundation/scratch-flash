@@ -4,6 +4,8 @@
 package ui {
 import assets.Resources;
 
+import flash.display.Bitmap;
+
 import flash.display.DisplayObject;
 import flash.display.Sprite;
 import flash.events.Event;
@@ -25,7 +27,7 @@ public class BaseItem extends Sprite implements IDraggable {
 	public static const ITEM_INTERACTIVE:String = 'itemInteractive';
 
 	public var data:ItemData;
-	protected var image:DisplayObject;
+	protected var image:Bitmap;
 	protected var interactive:Boolean;
 	protected var selected:Boolean;
 	protected var style:ItemStyle;
@@ -40,9 +42,20 @@ public class BaseItem extends Sprite implements IDraggable {
 		setupInteractions();
 	}
 
-	public function setImage(img:DisplayObject):void {
+	public function setImage(img:Bitmap):void {
 		if (image && image.parent) removeChild(image);
 		addChild(image = img);
+
+		var tAspect:Number = style.imageWidth / style.imageHeight;
+		if (image.bitmapData) {
+			var scale:Number;
+			if (image.width / image.height > tAspect)
+				scale = style.imageWidth / image.width;
+			else
+				scale = style.imageHeight / image.height;
+
+			image.scaleX = image.scaleY = scale;
+		}
 
 		image.x = (style.frameWidth - image.width) / 2;
 		image.y = style.imageMargin;
@@ -50,6 +63,8 @@ public class BaseItem extends Sprite implements IDraggable {
 
 	public function refresh():void {
 		thumbnailFactory.updateThumbnail(this, style);
+		// TODO: center?
+		label.text = data.name;
 	}
 
 	protected function addText():void {
@@ -75,11 +90,22 @@ public class BaseItem extends Sprite implements IDraggable {
 		if(inter) dispatchEvent(new Event(ITEM_INTERACTIVE, true));
 	}
 
+	public function duplicate():BaseItem {
+		var newData:Object = {};
+		for (var prop:String in data)
+			newData[prop] = data[prop];
+
+		return new BaseItem(style, data.clone());
+	}
+
 	// Consider these "abstract" because they should / can be overridden
 	public function isUI():Boolean { return data.obj == null; }
 	public function getIdentifier(strict:Boolean = false):String { return data.identifier(strict); }
 	public function getSpriteToDrag():Sprite {
-		return new BaseItem(style, data)
+		var dup:BaseItem = duplicate();
+		dup.label.visible = false;
+		dup.scaleX = dup.scaleY = transform.concatenatedMatrix.a;
+		return dup;
 	}
 
 	private var longPressGesture:LongPressGesture;
