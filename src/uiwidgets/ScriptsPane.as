@@ -139,11 +139,12 @@ public class ScriptsPane extends ScrollFrameContents {
 	}
 
 	public function updateFeedbackFor(b:Block):void {
-		nearestTarget = nearestTargetForBlockIn(b, possibleTargets);
-		if (b.base.canHaveSubstack1() && !b.subStack1) {
-			var o:Block = null;
-			if (nearestTarget) {
-				t = nearestTarget[1];
+
+		function updateHeight(): void {
+			var h:int = BlockShape.EmptySubstackH;
+			if (nearestTarget != null) {
+				var t:* = nearestTarget[1];
+				var o:Block = null;
 				switch (nearestTarget[2]) {
 					case INSERT_NORMAL:
 						o = t.nextBlock;
@@ -158,17 +159,17 @@ public class ScriptsPane extends ScrollFrameContents {
 						o = t.subStack2;
 						break;
 				}
-			}
-			var h:int = BlockShape.EmptySubstackH;
-			if (o) {
-				h = o.height;
-				if (!o.bottomBlock().isTerminal) h -= BlockShape.NotchDepth;
+				if (o) {
+					h = o.height;
+					if (!o.bottomBlock().isTerminal) h -= BlockShape.NotchDepth;
+				}
 			}
 			b.previewSubstack1Height(h);
 		}
-		if (nearestTarget != null) {
-			var localP:Point = globalToLocal(nearestTarget[0]);
+
+		function updateFeedbackShape() : void {
 			var t:* = nearestTarget[1];
+			var localP:Point = globalToLocal(nearestTarget[0]);
 			feedbackShape.x = localP.x;
 			feedbackShape.y = localP.y;
 			feedbackShape.visible = true;
@@ -181,9 +182,24 @@ public class ScriptsPane extends ScrollFrameContents {
 				var isInsertion:Boolean = (insertionType != INSERT_ABOVE) && (insertionType != INSERT_WRAP);
 				feedbackShape.copyFeedbackShapeFrom(b, false, isInsertion, wrapH);
 			}
-		} else {
+		}
+
+		if (mouseX + x >= 0) {
+			nearestTarget = nearestTargetForBlockIn(b, possibleTargets);
+			if (nearestTarget != null) {
+				updateFeedbackShape();
+			} else {
+				hideFeedbackShape();
+			}
+			if (b.base.canHaveSubstack1() && !b.subStack1) {
+				updateHeight();
+			}
+		}
+		else {
+			nearestTarget = null;
 			hideFeedbackShape();
 		}
+
 		fixCommentLayout();
 	}
 
