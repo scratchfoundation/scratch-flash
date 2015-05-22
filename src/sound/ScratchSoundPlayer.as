@@ -33,6 +33,8 @@ import flash.utils.ByteArray;
 
 import scratch.ScratchSound;
 
+import util.WaveSWF;
+
 public class ScratchSoundPlayer {
 
 	static public var activeSounds:Array = [];
@@ -99,10 +101,30 @@ public class ScratchSoundPlayer {
 	public function startPlaying(doneFunction:Function = null):void {
 		stopIfAlreadyPlaying();
 		activeSounds.push(this);
+
+		var flashSnd:Sound = new Sound();
+
+		var wavLoader:WaveSWF = new WaveSWF(scratchSound);
+		wavLoader.addEventListener(Event.COMPLETE, function(e:Event):void {
+			flashSnd = wavLoader.sound;
+			soundChannel = flashSnd.play();
+			if (soundChannel) {
+				soundChannel.addEventListener(Event.SOUND_COMPLETE, function(e:Event):void {
+					trace('done playing!');
+				});
+				if (doneFunction != null) soundChannel.addEventListener(Event.SOUND_COMPLETE, doneFunction);
+			} else {
+				// User has no sound card or too many sounds already playing.
+				stopPlaying();
+				if (doneFunction != null) doneFunction();
+			}
+		});
+
+		return;
 		bytePosition = startOffset;
 		nextSample = getSample();
 
-		var flashSnd:Sound = new Sound();
+		return;
 		flashSnd.addEventListener(SampleDataEvent.SAMPLE_DATA, writeSampleData);
 		soundChannel = flashSnd.play();
 		if (soundChannel) {
