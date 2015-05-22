@@ -678,15 +678,15 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 			snd = new ScratchSound(sndName, data); // try reading the data as a WAV file
 		} catch (e:Error) { }
 
-		if (snd && (snd.sampleCount > 0)) { // WAV data
+		if (snd && snd.sampleCount > 0) { // WAV data
 			startSoundUpload(snd, origName, uploadComplete);
 		} else { // try to read data as an MP3 file
-			if (app.lp) app.lp.setTitle('Converting mp3...');
+			if (app.lp) app.lp.setTitle('Converting mp3 file...');
 			var sound:Sound;
 			SCRATCH::allow3d {
 				sound = new Sound();
-				data.position = 0;
 				try {
+					data.position = 0;
 					sound.loadCompressedDataFromByteArray(data, data.length);
 					MP3Loader.extractSamples(origName, sound, sound.length * 44.1, function (out:ScratchSound):void {
 						snd = out;
@@ -694,6 +694,7 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 					});
 				}
 				catch(e:Error) {
+					trace(e);
 					uploadComplete();
 				}
 			}
