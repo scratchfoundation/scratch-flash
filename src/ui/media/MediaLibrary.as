@@ -681,7 +681,7 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 		if (snd && snd.sampleCount > 0) { // WAV data
 			startSoundUpload(snd, origName, uploadComplete);
 		} else { // try to read data as an MP3 file
-			if (app.lp) app.lp.setTitle('Converting audio file...');
+			if (app.lp) app.lp.setTitle('Converting mp3 file...');
 			var sound:Sound;
 			SCRATCH::allow3d {
 				sound = new Sound();

@@ -131,7 +131,10 @@ public class WAVFile {
 		} else if (info.encoding == 3) {
 			waveData.position = info.sampleDataStart;
 			for (i = 0; i < info.sampleCount; i++) {
-				v = Math.min(32767, Math.max(-32768, waveData.readFloat() * 32768));
+				var f:Number = waveData.readFloat();
+				if (f > 1.0) f = 1.0;
+				if (f < -1.0) f = -1.0;
+				v = f * 0x7fff;
 				result.push(v);
 			}
 		} else if (info.encoding == 17) {
