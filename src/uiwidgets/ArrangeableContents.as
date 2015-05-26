@@ -325,7 +325,7 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 
 			nextX += itemWidth + itemPadding + extraPadding;
 			if (nextX > w - (itemWidth + style.padding)) {
-				nextX = itemPadding * 2;
+				nextX = style.padding;
 				nextY += itemHeight + itemPadding;
 			}
 		};
