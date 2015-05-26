@@ -30,22 +30,12 @@ import translation.Translator;
 import ui.events.PointerEvent;
 import ui.media.MediaInfo;
 import ui.parts.LibraryPart;
+import ui.styles.ItemStyle;
+
 import uiwidgets.*;
 
 public class SpriteThumbnail extends BaseItem {
-
-	private const frameW:int = 73;
-	private const frameH:int = 73;
-	private const stageFrameH:int = 86;
-
-	private const thumbnailW:int = 68;
-	private const thumbnailH:int = 51;
-
-	public var targetObj:ScratchObj;
-
 	protected var app:Scratch;
-	protected var thumbnail:Bitmap;
-	private var label:TextField;
 	private var sceneInfo:TextField;
 	protected var selectedFrame:DisplayObject;
 	protected var highlightFrame:DisplayObject;
@@ -56,19 +46,15 @@ public class SpriteThumbnail extends BaseItem {
 	private var lastName:String = '';
 	private var lastSceneCount:int = 0;
 
-	public function SpriteThumbnail(targetObj:ScratchObj, app:Scratch) {
-		this.targetObj = targetObj;
+	public function SpriteThumbnail(targetObj:ScratchObj, app:Scratch, itemStyle:ItemStyle) {
+		super(itemStyle, new ItemData(targetObj.isStage ? 'stage' : 'sprite', targetObj.objName, targetObj.generateMD5(), targetObj));
 		this.app = app;
 
 		addFrame();
 		addSelectedFrame();
 		addHighlightFrame();
 
-		thumbnail = new Bitmap();
-		thumbnail.x = 3;
-		thumbnail.y = 3;
-		thumbnail.filters = [grayOutlineFilter()];
-		addChild(thumbnail);
+		addChild(image);
 
 		addLabels();
 		addDetailsButton();
@@ -82,12 +68,12 @@ public class SpriteThumbnail extends BaseItem {
 
 	protected function addLabels():void {
 		label = Resources.makeLabel('', CSS.thumbnailFormat);
-		label.width = frameW;
+		label.width = style.frameWidth;
 		addChild(label);
 
-		if (targetObj.isStage) {
+		if (data.type == 'stage') {
 			sceneInfo = Resources.makeLabel('', CSS.thumbnailExtraInfoFormat);
-			sceneInfo.width = frameW;
+			sceneInfo.width = style.frameWidth;
 			addChild(sceneInfo);
 		}
 	}
@@ -100,14 +86,15 @@ public class SpriteThumbnail extends BaseItem {
 		addChild(detailsButton);
 	}
 
+	private var frame:Shape;
 	protected function addFrame():void {
-		if (targetObj.isStage) return;
+		if (data.type == 'stage') return;
 
-		var frame:Shape = new Shape();
+		frame = new Shape();
 		var g:Graphics = frame.graphics;
 		g.lineStyle(NaN);
 		g.beginFill(0xFFFFFF);
-		g.drawRoundRect(0, 0, frameW, frameH, 12, 12);
+		g.drawRoundRect(0, 0, style.frameWidth, style.frameHeight, 12, 12);
 		g.endFill();
 		addChild(frame);
 	}
@@ -115,10 +102,9 @@ public class SpriteThumbnail extends BaseItem {
 	protected function addSelectedFrame():void {
 		selectedFrame = new Shape();
 		var g:Graphics = (selectedFrame as Shape).graphics;
-		var h:int = targetObj.isStage ? stageFrameH : frameH;
 		g.lineStyle(3, CSS.overColor, 1, true);
 		g.beginFill(CSS.itemSelectedColor);
-		g.drawRoundRect(0, 0, frameW, h, 12, 12);
+		g.drawRoundRect(0, 0, style.frameWidth, style.frameHeight, 12, 12);
 		g.endFill();
 		selectedFrame.visible = false;
 		addChild(selectedFrame);
@@ -128,22 +114,21 @@ public class SpriteThumbnail extends BaseItem {
 		const highlightColor:int = 0xE0E000;
 		highlightFrame = new Shape();
 		var g:Graphics = (highlightFrame as Shape).graphics;
-		var h:int = targetObj.isStage ? stageFrameH : frameH;
 		g.lineStyle(2, highlightColor, 1, true);
-		g.drawRoundRect(1, 1, frameW - 1, h - 1, 12, 12);
+		g.drawRoundRect(1, 1, style.frameWidth - 1, style.frameHeight - 1, 12, 12);
 		highlightFrame.visible = false;
 		addChild(highlightFrame);
 	}
 
 	public function setTarget(obj:ScratchObj):void {
-		targetObj = obj;
+		data.obj = obj;
 		updateThumbnail();
 	}
 
 	public function select(flag:Boolean):void {
 		if (selectedFrame.visible == flag) return;
 		selectedFrame.visible = flag;
-		detailsButton.visible = flag && !targetObj.isStage;
+		detailsButton.visible = flag && data.type != 'stage';
 	}
 
 	public function showHighlight(flag:Boolean):void {
@@ -165,10 +150,10 @@ public class SpriteThumbnail extends BaseItem {
 	public function makeInfoSprite():Sprite {
 		var result:Sprite = new Sprite();
 		var bm:Bitmap = Resources.createBmp('hatshape');
-		bm.x = (frameW - bm.width) / 2;
+		bm.x = (style.frameWidth - bm.width) / 2;
 		bm.y = 20;
 		result.addChild(bm);
-		var tf:TextField = Resources.makeLabel(String(targetObj.scripts.length), CSS.normalTextFormat);
+		var tf:TextField = Resources.makeLabel(String(data.obj.scripts.length), CSS.normalTextFormat);
 		tf.x = bm.x + 20 - (tf.textWidth / 2);
 		tf.y = bm.y + 4;
 		result.addChild(tf);
@@ -176,18 +161,21 @@ public class SpriteThumbnail extends BaseItem {
 	}
 
 	public function updateThumbnail(translationChanged:Boolean = false):void {
-		if (targetObj == null) return;
+		highlightFrame.visible = false;
+		selectedFrame.visible = false;
+		if (frame) frame.visible = false;
+
+		if (data.obj == null) return;
 		if (translationChanged) lastSceneCount = -1;
 		updateName();
-		if (targetObj.isStage) updateSceneCount();
+		if (data.type == 'stage') updateSceneCount();
 
-		if (targetObj.img.numChildren == 0) return; // shouldn't happen
-		if (targetObj.currentCostume().svgLoading) return; // don't update thumbnail while loading SVG bitmaps
-		var src:DisplayObject = targetObj.img.getChildAt(0);
+		if (data.obj.img.numChildren == 0) return; // shouldn't happen
+		if (data.obj.currentCostume().svgLoading) return; // don't update thumbnail while loading SVG bitmaps
+		var src:DisplayObject = data.obj.img.getChildAt(0);
 		if (src == lastSrcImg) return; // thumbnail is up to date
 
-		var c:ScratchCostume = targetObj.currentCostume();
-		thumbnail.bitmapData = c.thumbnail(thumbnailW, thumbnailH, targetObj.isStage);
+		refresh();
 		lastSrcImg = src;
 	}
 
@@ -201,7 +189,7 @@ public class SpriteThumbnail extends BaseItem {
 	}
 
 	private function updateName():void {
-		var s:String = (targetObj.isStage) ? Translator.map('Stage') : targetObj.objName;
+		var s:String = data.type == 'stage' ? Translator.map('Stage') : data.obj.objName;
 		if (s == lastName) return;
 		lastName = s;
 		label.text = s;
@@ -209,15 +197,15 @@ public class SpriteThumbnail extends BaseItem {
 			s = s.substring(0, s.length - 1);
 			label.text = s + '\u2026'; // truncated name with ellipses
 		}
-		label.x = ((frameW - label.textWidth) / 2) - 2;
+		label.x = ((style.frameWidth - label.textWidth) / 2) - 2;
 		label.y = 57;
 	}
 
-	private function updateSceneCount():void {
-		if (targetObj.costumes.length == lastSceneCount) return;
-		var sceneCount:int = targetObj.costumes.length;
+	protected function updateSceneCount():void {
+		if (data.obj.costumes.length == lastSceneCount) return;
+		var sceneCount:int = data.obj.costumes.length;
 		sceneInfo.text = sceneCount + ' ' + Translator.map((sceneCount == 1) ? 'backdrop' : 'backdrops');
-		sceneInfo.x = ((frameW - sceneInfo.textWidth) / 2) - 2;
+		sceneInfo.x = ((style.frameWidth - sceneInfo.textWidth) / 2) - 2;
 		sceneInfo.y = 70;
 		lastSceneCount = sceneCount;
 	}
@@ -227,36 +215,33 @@ public class SpriteThumbnail extends BaseItem {
 	//------------------------------
 
 	override public function getSpriteToDrag():Sprite {
-		if (targetObj.isStage) return null;
-		var result:MediaInfo = app.createMediaInfo(targetObj);
-		result.removeDeleteButton();
-		result.computeThumbnail();
-		result.hideTextFields();
-		return result;
+		if (data.type == 'stage') return null;
+
+		return super.getSpriteToDrag();
 	}
 
 	public function handleDrop(obj:*):Boolean {
-		function addCostume(c:ScratchCostume):void { app.addCostume(c, targetObj); }
-		function addSound(snd:ScratchSound):void { app.addSound(snd, targetObj); }
+		function addCostume(c:ScratchCostume):void { app.addCostume(c, data.obj); }
+		function addSound(snd:ScratchSound):void { app.addSound(snd, data.obj); }
 		var item:MediaInfo = obj as MediaInfo;
 		if (item) {
 			// accept dropped costumes and sounds from another sprite, but not yet from Backpack
-			if (item.mycostume) {
-				addCostume(item.mycostume.duplicate());
+			if (item.asCostume) {
+				addCostume(item.asCostume.duplicate());
 				return true;
 			}
-			if (item.mysound) {
-				addSound(item.mysound.duplicate());
+			if (item.asSound) {
+				addSound(item.asSound.duplicate());
 				return true;
 			}
 		}
 		if (obj is Block) {
 			// copy a block/stack to this sprite
-			if (targetObj == app.viewedObj()) return false; // dropped on my own thumbnail; do nothing
-			var copy:Block = Block(obj).duplicate(false, targetObj.isStage);
+			if (data.obj == app.viewedObj()) return false; // dropped on my own thumbnail; do nothing
+			var copy:Block = Block(obj).duplicate(false, data.type == 'stage');
 			copy.x = app.scriptsPane.padding;
 			copy.y = app.scriptsPane.padding;
-			targetObj.scripts.push(copy);
+			data.obj.scripts.push(copy);
 			return false; // do not consume the original block
 		}
 		return false;
@@ -267,8 +252,8 @@ public class SpriteThumbnail extends BaseItem {
 	//------------------------------
 
 	public function click(evt:Event):void {
-		if (!targetObj.isStage && targetObj is ScratchSprite) app.flashSprite(targetObj as ScratchSprite);
-		app.selectSprite(targetObj);
+		if (data.type != 'stage' && data.obj is ScratchSprite) app.flashSprite(data.obj as ScratchSprite);
+		app.selectSprite(data.obj);
 	}
 
 	public function menu(evt:MouseEvent):Menu {
@@ -280,8 +265,8 @@ public class SpriteThumbnail extends BaseItem {
 			t.visible = true;
 			t.updateBubble();
 		}
-		if (targetObj.isStage) return null;
-		var t:ScratchSprite = targetObj as ScratchSprite;
+		if (data.type == 'stage') return null;
+		var t:ScratchSprite = data.obj as ScratchSprite;
 		var m:Menu = t.menu(evt); // basic sprite menu
 		m.addLine();
 		if (t.visible) {
@@ -294,7 +279,7 @@ public class SpriteThumbnail extends BaseItem {
 
 	public function handleTool(tool:String, evt:MouseEvent):void {
 		if (tool == 'help') Scratch.app.showTip('scratchUI');
-		var spr:ScratchSprite = targetObj as ScratchSprite;
+		var spr:ScratchSprite = data.obj as ScratchSprite;
 		if (!spr) return;
 		if (tool == 'copy') spr.duplicateSprite();
 		if (tool == 'cut') spr.deleteSprite();

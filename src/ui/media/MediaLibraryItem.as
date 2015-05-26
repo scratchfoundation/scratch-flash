@@ -93,7 +93,7 @@ public class MediaLibraryItem extends Sprite {
 
 	public static function strings():Array { return ['Costumes:', 'Scripts:'] }
 
-	public static function setDefaultScale(scale:Number) {
+	public static function setDefaultScale(scale:Number):void {
 		// TODO: most or all usage of 'defaultScale' should be rephrased in terms of frameWidth or thumbnailWidth.
 		defaultScale = scale;
 		itemFrameWidth = 140 * scale;

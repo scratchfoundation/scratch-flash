@@ -121,7 +121,7 @@ public class ScrollFrame extends Sprite {
 	public function setWidthHeight(w:int, h:int):void {
 		drawShape(Shape(mask).graphics, w, h);
 		if (shadowFrame) drawShape(shadowFrame.graphics, w, h);
-		if (contents) contents.updateSize();
+		if (contents) contents.setWidthHeight(w, h);
 		fixLayout();
 	}
 
