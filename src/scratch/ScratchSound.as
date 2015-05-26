@@ -87,14 +87,14 @@ public class ScratchSound {
 		// Convert stereo to mono, downsample if rate > 32000, or both.
 		// Compress if data is over threshold and not already compressed.
 		const compressionThreshold:int = 30 * 44100; // about 30 seconds
-		if ((rate > 32000) || (channels == 2)) {
+		if (rate > 32000 || channels == 2 || format == 'float') {
 			var newRate:int = (rate > 32000) ? rate / 2 : rate;
-			var oldSamples:Vector.<int> = WAVFile.extractSamples(soundData);
-			var newSamples:Vector.<int> =
-				(channels == 2) ?
-					stereoToMono(oldSamples, (newRate < rate)) :
-					downsample(oldSamples);
-			setSamples(newSamples, newRate, true);
+			var samples:Vector.<int> = WAVFile.extractSamples(soundData);
+			if (rate > 32000 || channels == 2)
+				samples = (channels == 2) ?
+					stereoToMono(samples, (newRate < rate)) :
+					downsample(samples);
+			setSamples(samples, newRate, true);
 			soundID = 0;
 		} else if ((soundData.length > compressionThreshold) && ('' == format)) {
 			// Compress large, uncompressed sounds
