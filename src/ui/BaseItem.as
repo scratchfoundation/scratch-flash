@@ -2,11 +2,7 @@
  * Created by shanemc on 4/28/15.
  */
 package ui {
-import assets.Resources;
-
 import flash.display.Bitmap;
-
-import flash.display.DisplayObject;
 import flash.display.Sprite;
 import flash.events.Event;
 import flash.text.TextField;
@@ -19,6 +15,7 @@ import ui.dragdrop.DragAndDropMgr;
 import ui.dragdrop.IDraggable;
 import ui.events.PointerEvent;
 import ui.styles.ItemStyle;
+import assets.Resources;
 
 public class BaseItem extends Sprite implements IDraggable {
 	private static var thumbnailFactory:ThumbnailFactory;
@@ -32,13 +29,13 @@ public class BaseItem extends Sprite implements IDraggable {
 	protected var selected:Boolean;
 	protected var style:ItemStyle;
 	protected var label:TextField;
+	protected var info:TextField;
 
 	public function BaseItem(s:ItemStyle, itemData:ItemData) {
 		style = s;
 		data = itemData;
-		thumbnailFactory.updateThumbnail(this, s);
 		addText();
-
+		refresh();
 		setupInteractions();
 	}
 
@@ -61,17 +58,50 @@ public class BaseItem extends Sprite implements IDraggable {
 		image.y = style.imageMargin;
 	}
 
-	public function refresh():void {
-		thumbnailFactory.updateThumbnail(this, style);
-		// TODO: center?
-		label.text = data.name;
+	public function refresh(forceRender:Boolean = false):void {
+		thumbnailFactory.updateThumbnail(this, style, forceRender);
+
+		// Update text
+		setText(label, data.name);
+
+		if (style.hasInfo && data.extras)
+			setText(info, data.extras.info);
 	}
 
 	protected function addText():void {
 		label = Resources.makeLabel('', CSS.thumbnailFormat);
-		var imageBottom:uint = style.imageHeight + 2* style.imageMargin;
-		label.y = imageBottom + (style.frameHeight - imageBottom - label.height)/2;
+		label.selectable = false;
 		addChild(label);
+
+		var imageBottom:uint = style.imageHeight + 2 * style.imageMargin;
+		var textAreaHeight:uint = style.frameHeight - imageBottom;
+		if (style.hasInfo) {
+			// Split the text area in two
+			textAreaHeight /= 2;
+			label.y = imageBottom + (textAreaHeight - Number(label.defaultTextFormat.size))/2;
+			info = Resources.makeLabel('', CSS.thumbnailExtraInfoFormat);
+			info.selectable = false;
+			info.y = imageBottom + textAreaHeight + (textAreaHeight - Number(info.defaultTextFormat.size))/2;
+			addChild(info);
+		}
+		else {
+			label.y = imageBottom + (textAreaHeight - Number(label.defaultTextFormat.size))/2;
+		}
+	}
+
+	protected function setText(tf:TextField, s:String):void {
+		if (s == null) s = '';
+		if (tf.text == s) return;
+
+		// Set the text of the given TextField, truncating if necessary.
+		var desiredWidth:int = style.frameWidth - CSS.tinyPadding;
+		tf.text = s;
+		while ((tf.textWidth > desiredWidth) && (s.length > 0)) {
+			s = s.substring(0, s.length - 1);
+			tf.text = s + '\u2026'; // truncated name with ellipses
+		}
+
+		tf.x = (style.frameWidth - tf.textWidth) / 2;
 	}
 
 	public function remove():void {
@@ -99,7 +129,7 @@ public class BaseItem extends Sprite implements IDraggable {
 	}
 
 	// Consider these "abstract" because they should / can be overridden
-	public function isUI():Boolean { return data.obj == null; }
+	public function isUI():Boolean { return data.type == 'ui'; }
 	public function getIdentifier(strict:Boolean = false):String { return data.identifier(strict); }
 	public function getSpriteToDrag():Sprite {
 		var dup:BaseItem = duplicate();
