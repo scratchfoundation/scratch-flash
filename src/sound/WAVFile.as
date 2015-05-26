@@ -131,7 +131,7 @@ public class WAVFile {
 		} else if (info.encoding == 3) {
 			waveData.position = info.sampleDataStart;
 			for (i = 0; i < info.sampleCount; i++) {
-				var f:Number = waveData.readFloat();
+				var f:Number = (info.bitsPerSample == 32 ? waveData.readFloat() : waveData.readDouble());
 				if (f > 1.0) f = 1.0;
 				if (f < -1.0) f = -1.0;
 				v = f * 0x7fff;
