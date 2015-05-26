@@ -27,9 +27,9 @@ public class ThumbnailFactory {
 
 	// Can create thumbnails for costumes, sprites, and sounds
 	private static const cacheKey:String = '_id_drawn_';
-	public function updateThumbnail(item:BaseItem, style:ItemStyle):void {
+	public function updateThumbnail(item:BaseItem, style:ItemStyle, skipCache:Boolean = false):void {
 		var cacheID:String = getCacheID(item.data);
-		if (item.data.extras && item.data.extras[cacheKey] == cacheID)
+		if (!skipCache && item.data.extras && item.data.extras[cacheKey] == cacheID)
 			return;
 
 		item.setImage(renderThumbnail(item, style));
