@@ -61,7 +61,6 @@ public class MediaInfo extends BaseItem {
 	public var forBackpack:Boolean;
 
 	private var frame:Shape; // visible when selected
-	protected var info:TextField;
 	protected var deleteButton:IconButton;
 
 	public function get asCostume():ScratchCostume {
@@ -121,10 +120,8 @@ public class MediaInfo extends BaseItem {
 		owner = owningObj;
 
 		addFrame();
-		addInfo();
 		unhighlight();
 		addDeleteButton();
-		updateLabelAndInfo(false);
 		addEventListener(MouseEvent.CLICK, click);
 		addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, menu);
 	}
@@ -160,28 +157,9 @@ public class MediaInfo extends BaseItem {
 	public function thumbnailX():int { return image.x }
 	public function thumbnailY():int { return image.y }
 
-	protected function setInfo(s:String):void {
-		info.text = s;
-		info.x = Math.max(0, (style.frameWidth - info.textWidth) / 2);
-	}
-
 	// -----------------------------
 	// Label and Info
 	//------------------------------
-
-	public function updateLabelAndInfo(forBackpack:Boolean):void {
-		this.forBackpack = forBackpack;
-		setText(label, (forBackpack ? backpackTitle() : objName));
-		label.x = ((style.frameWidth - label.textWidth) / 2) - 2;
-
-		setText(info, (forBackpack ? objName: infoString()));
-		info.x = Math.max(0, (style.frameWidth - info.textWidth) / 2);
-	}
-
-	public function hideTextFields():void {
-		setText(label, '');
-		setText(info, '');
-	}
 
 	private function backpackTitle():String {
 		if ('image' == objType) return Translator.map(isBackdrop ? 'Backdrop' : 'Costume');
@@ -191,6 +169,7 @@ public class MediaInfo extends BaseItem {
 		return objType;
 	}
 
+	// TODO: Move to item renderer singleton?
 	private function infoString():String {
 		if (asCostume) return costumeInfoString();
 		if (asSound) return soundInfoString(asSound.getLengthInMsec());
@@ -292,23 +271,6 @@ public class MediaInfo extends BaseItem {
 		g.drawRoundRect(0, 0, style.frameWidth, style.frameHeight, 12, 12);
 		g.endFill();
 		addChildAt(frame, 0);
-	}
-
-	protected function addInfo():void {
-		label.y = style.frameHeight - infoHeight;
-		info = Resources.makeLabel('', CSS.thumbnailExtraInfoFormat);
-		info.y = style.frameHeight - Math.floor(infoHeight * 0.5);
-		addChild(info);
-	}
-
-	private function setText(tf:TextField, s:String):void {
-		// Set the text of the given TextField, truncating if necessary.
-		var desiredWidth:int = frame.width - 6;
-		tf.text = s;
-		while ((tf.textWidth > desiredWidth) && (s.length > 0)) {
-			s = s.substring(0, s.length - 1);
-			tf.text = s + '\u2026'; // truncated name with ellipses
-		}
 	}
 
 	// -----------------------------
