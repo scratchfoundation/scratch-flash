@@ -71,8 +71,8 @@ public class BlockArg extends Sprite {
 	//	n - number (rounded)
 	//	s - string (rectangular)
 	//	none of the above - custom subclass of BlockArg
-	public function BlockArg(type:String, color:int, editable:Boolean = false, menuName:String = '') {
-		this.type = type;
+	public function BlockArg(argType:String, color:int, editable:Boolean = false, menuName:String = '') {
+		type = argType;
 
 		if (color == -1) { // copy for clone; omit graphics
 			if ((type == 'd') || (type == 'n')) isNumber = true;
