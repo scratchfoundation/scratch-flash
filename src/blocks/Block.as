@@ -405,6 +405,8 @@ public class Block extends Sprite implements IDraggable {
 		if (e.type == DragEvent.DRAG_START) {
 			saveOriginalState();
 			if (parent is Block) Block(parent).removeBlock(this);
+			base.redraw(true);
+
 			//if (parent != null) parent.removeChild(this);
 		}
 		else
@@ -706,8 +708,12 @@ public class Block extends Sprite implements IDraggable {
 
 		// remove the old argument
 		removeChild(oldArg);
+		if (oldArg is Block)
+			(oldArg as Block).base.redraw(true);
+
 		labelsAndArgs[i] = b;
 		addChild(b);
+		b.base.redraw(true);
 		fixExpressionLayout();
 
 		if (oldArg is Block) {

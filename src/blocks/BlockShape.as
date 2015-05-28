@@ -145,8 +145,8 @@ public class BlockShape extends Shape {
 	public function substack1y():int { return topH; }
 	public function substack2y():int { return topH + substack1H + DividerH - NotchDepth; }
 
-	public function redraw():void {
-		if (!redrawNeeded) return;
+	public function redraw(force:Boolean = false):void {
+		if (!redrawNeeded && !force) return;
 		var g:Graphics = this.graphics;
 		g.clear();
 		g.beginFill(color);
