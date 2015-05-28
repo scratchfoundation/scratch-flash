@@ -135,7 +135,7 @@ public class Scratch extends Sprite {
 		stage.frameRate = 30;
 
 		Block.setFonts(10, 9, true, 0); // default font sizes
-		Block.MenuHandlerFunction = BlockMenus.BlockMenuHandler;
+		setBlockMenuHandler();
 		CursorTool.init(this);
 		app = this;
 
@@ -173,6 +173,10 @@ public class Scratch extends Sprite {
 		//Analyze.collectAssets(0, 119110);
 		//Analyze.checkProjects(56086, 64220);
 		//Analyze.countMissingAssets();
+	}
+
+	protected function setBlockMenuHandler():void {
+		Block.MenuHandlerFunction = BlockMenus.BlockMenuHandler;
 	}
 
 	protected function initTopBarPart():void {

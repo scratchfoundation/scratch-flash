@@ -35,8 +35,8 @@ public class BlockMenus implements DragClient {
 	private var app:Scratch;
 	private var startX:Number;
 	private var startY:Number;
-	private var block:Block;
-	private var blockArg:BlockArg; // null if menu is invoked on a block
+	protected var block:Block;
+	protected var blockArg:BlockArg; // null if menu is invoked on a block
 
 	private static const basicMathOps:Array = ['+', '-', '*', '/'];
 	private static const comparisonOps:Array = ['<', '=', '>'];
@@ -186,7 +186,7 @@ public class BlockMenus implements DragClient {
 		return true;
 	}
 
-	private function showMenu(m:Menu):void {
+	protected function showMenu(m:Menu):void {
 		m.color = block.base.color;
 		m.itemHeight = 22;
 		if (blockArg) {
@@ -197,7 +197,7 @@ public class BlockMenus implements DragClient {
 		}
 	}
 
-	private function setBlockArg(selection:*):void {
+	protected function setBlockArg(selection:*):void {
 		if (blockArg != null) blockArg.setArgValue(selection);
 		Scratch.app.setSaveNeeded();
 		SCRATCH::allow3d { Scratch.app.runtime.checkForGraphicEffects(); }
