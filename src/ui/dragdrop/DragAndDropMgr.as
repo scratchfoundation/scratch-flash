@@ -198,7 +198,7 @@ public class DragAndDropMgr {
 	}
 
 	private function getDropTarget(stagePoint:Point):DropTarget {
-		if (Scratch.app.isIn3D && Scratch.app.stagePane.getBounds(stage).containsPoint(stagePoint))
+		if (Scratch.app.isIn3D && Scratch.app.stageActive && Scratch.app.stagePane.getBounds(stage).containsPoint(stagePoint))
 			return Scratch.app.stagePane;
 
 		draggedObj.visible = false;
