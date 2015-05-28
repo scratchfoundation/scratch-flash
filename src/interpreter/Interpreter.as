@@ -383,7 +383,7 @@ public class Interpreter {
 		return Number(n);
 	}
 
-	private function startCmdList(b:Block, isLoop:Boolean = false, argList:Array = null):void {
+	public function startCmdList(b:Block, isLoop:Boolean = false, argList:Array = null):void {
 		if (b == null) {
 			if (isLoop) yield = true;
 			return;
