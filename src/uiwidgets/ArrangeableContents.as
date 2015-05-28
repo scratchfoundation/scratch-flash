@@ -8,6 +8,8 @@ import flash.display.DisplayObject;
 import flash.display.Sprite;
 import flash.events.Event;
 import flash.geom.Point;
+import flash.utils.setTimeout;
+
 import scratch.ScratchSprite;
 
 import ui.BaseItem;
@@ -50,13 +52,6 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 		addEventListener(DragEvent.DRAG_OVER, dragAndDropHandler);
 		addEventListener(DragEvent.DRAG_MOVE, dragAndDropHandler);
 		addEventListener(DragEvent.DRAG_OUT, dragAndDropHandler);
-	}
-
-	override public function updateSize():void {
-		//super.updateSize();
-		//setWidthHeight(this.w, this.h);
-
-		arrangeItems();
 	}
 
 	// Move items out of the way of a dragging item
@@ -193,7 +188,7 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 
 		contentChanged = false;
 		orderChanged = false;
-		updateSize();
+		arrangeItems();
 		x = y = 0; // reset scroll offset
 	}
 
@@ -218,9 +213,9 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 		else {
 			// Grid layout
 			var itemPadding:uint = style.itemPadding;
-			var px:Number = loc.x - itemPadding * 2;
-			var py:Number = loc.y - itemPadding * 2;
-			var realWidth:int = w - itemPadding * 4;
+			var px:Number = loc.x - style.padding;
+			var py:Number = loc.y - style.padding;
+			var realWidth:int = w - style.padding * 2;
 			var itemWidth:uint = itemStyle.frameWidth;
 			var itemHeight:uint = itemStyle.frameHeight;
 			var rowLen:int = realWidth / (itemWidth + itemPadding);
@@ -262,6 +257,15 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 		arrangeItems();
 	}
 
+	protected function getInteractiveContent():Vector.<BaseItem> {
+		var items:Vector.<BaseItem> = new Vector.<BaseItem>();
+		for (var i:int = 0; i < numChildren; i++) {
+			var item:BaseItem = getChildAt(i) as BaseItem;
+			if (item && item.visible && item.isInteractive()) items.push(item);
+		}
+		return items;
+	}
+
 	public function allItems(includeUI:Boolean = true):Vector.<BaseItem> {
 		var items:Vector.<BaseItem> = new Vector.<BaseItem>();
 		for (var i:int = 0; i < numChildren; i++) {
@@ -278,9 +282,18 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 			orderChanged = false;
 		}
 
-		if (numChildren > 0)
+		if (numChildren > 0) {
 			allItems().forEach(getPlacementFunc(animate));
+			if (!animate)
+				refreshBackground();
+			else
+				setTimeout(refreshBackground, style.animationDuration * 1000);
+		}
+		else
+			refreshBackground();
+	}
 
+	protected function refreshBackground():void {
 		graphics.clear();
 		super.setWidthHeight(w, Math.max(h, height + style.padding * 2));
 	}
@@ -316,8 +329,8 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 		nextX = style.padding;
 		nextY = style.padding;
 		var realWidth:int = w - style.padding * 2;
-		var colCount:int = realWidth / (itemWidth + itemPadding);
-		var extraPadding:int = (realWidth - colCount * (itemWidth + itemPadding)) / colCount;
+		var colCount:int = (realWidth + itemPadding) / (itemWidth + itemPadding);
+		var extraPadding:int = colCount > 1 ? (realWidth + itemPadding - colCount * (itemWidth + itemPadding)) / (colCount-1) : 0;
 		return function(item:BaseItem, index:int, arr:Vector.<BaseItem>):void {
 			// Jump another position if we're on the dropPos
 			if (index == dropPos) arguments.callee(null, -2, arr);

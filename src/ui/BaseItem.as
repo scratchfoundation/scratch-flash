@@ -120,6 +120,10 @@ public class BaseItem extends Sprite implements IDraggable {
 		if(inter) dispatchEvent(new Event(ITEM_INTERACTIVE, true));
 	}
 
+	public function isInteractive():Boolean {
+		return interactive;
+	}
+
 	public function duplicate():BaseItem {
 		var newData:Object = {};
 		for (var prop:String in data)
