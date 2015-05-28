@@ -32,8 +32,8 @@ package primitives {
 
 public class SensingPrims {
 
-	private var app:Scratch;
-	private var interp:Interpreter;
+	protected var app:Scratch;
+	protected var interp:Interpreter;
 
 	public function SensingPrims(app:Scratch, interpreter:Interpreter) {
 		this.app = app;
