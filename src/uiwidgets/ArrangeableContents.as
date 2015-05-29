@@ -20,17 +20,12 @@ import ui.styles.ContainerStyle;
 import ui.styles.ItemStyle;
 
 public class ArrangeableContents extends ScrollFrameContents implements DropTarget {
-	public static const TYPE_GRID:uint = 0;
-	public static const TYPE_STRIP_HORIZONTAL:uint = 1;
-	public static const TYPE_STRIP_VERTICAL:uint = 2;
-
 	public static const ORDER_CHANGE:String = 'orderChange';
 	public static const CONTENT_CHANGE:String = 'contentChange';
-//	private static const leftBehindAlpha:Number = 0.6;
+	private static const leftBehindAlpha:Number = 0.6;
 	public static const defaultStyle:ContainerStyle = new ContainerStyle();
 
 	// Fixed state variables
-	private var type:uint = 0;
 	protected var itemStyle:ItemStyle;
 	protected var style:ContainerStyle = defaultStyle;
 
@@ -39,8 +34,7 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 	private var h:uint = 100;
 	private var selectedItem:BaseItem;
 	private var editMode:Boolean;
-	public function ArrangeableContents(iStyle:ItemStyle, t:uint = TYPE_GRID, cStyle:ContainerStyle = null) {
-		type = t;
+	public function ArrangeableContents(iStyle:ItemStyle, cStyle:ContainerStyle = null) {
 		itemStyle = iStyle;
 		if (cStyle) style = cStyle;
 		setWidthHeight(w, h);
@@ -73,19 +67,13 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 					if (spr)
 						mi = Scratch.app.createMediaInfo(spr.duplicate()) as BaseItem;
 				}
-//				if (mi) {
-//					dup = findMatchingItem(mi);
-//					if (dup) {
-//						if ((mi  as MediaInfoOnline).fromBackpack) {
-//							dup.visible = false;
-//							arrangeItems(true);
-//						}
-//						else {
-//							// TODO: when do we ignore?
-//							//ignoredObj = event.draggedObject;
-//						}
-//					}
-//				}
+				else {
+					dup = findMatchingItem(mi);
+					if (dup) {
+						dup.visible = false;
+						arrangeItems(true);
+					}
+				}
 			case DragEvent.DRAG_MOVE:
 				if (ignoredObj == event.draggedObject) break;
 
@@ -93,30 +81,20 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 				arrangeItems(true);
 				break;
 
+			case DragEvent.DRAG_CANCEL:
 			case DragEvent.DRAG_STOP:
 			case DragEvent.DRAG_OUT:
-				mi = event.draggedObject as BaseItem;
-//				if (mi && (mi as MediaInfoOnline).fromBackpack) {
-//					dup = findMatchingItem(mi);
-//					if (dup) {
-//						dup.visible = true;
-//						dup.alpha = event.type == DragEvent.DRAG_OUT ? leftBehindAlpha : 1;
-//					}
-//				}
-				ignoredObj = null;
-				dropPos = -1;
-				arrangeItems(true);
-				break;
-
-			case DragEvent.DRAG_CANCEL:
 				mi = event.draggedObject as BaseItem;
 				if (mi) {
 					dup = findMatchingItem(mi);
 					if (dup) {
 						dup.visible = true;
-						dup.alpha = 1;
+						dup.alpha = event.type == DragEvent.DRAG_OUT ? leftBehindAlpha : 1;
 					}
 				}
+				ignoredObj = null;
+				dropPos = -1;
+				arrangeItems(true);
 				break;
 
 			case DragEvent.DRAG_DROP: // Handled by handleDrop right now
@@ -196,14 +174,14 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 		var loc:Point = globalToLocal(pt);
 		var i:int = 0;
 		var item:BaseItem;
-		if (type == TYPE_STRIP_HORIZONTAL) {
+		if (style.layout == ContainerStyle.TYPE_STRIP_HORIZONTAL) {
 			for each(item in allItems()) {
 				if (item.x + item.width / 2 > loc.x)
 					return forAdding ? getChildIndex(item)  : i;
 				++i;
 			}
 		}
-		else if (type == TYPE_STRIP_VERTICAL) {
+		else if (style.layout == ContainerStyle.TYPE_STRIP_VERTICAL) {
 			for each(item in allItems()) {
 				if (item.y + item.height / 2 > loc.y)
 					return forAdding ? getChildIndex(item) : i;
@@ -305,7 +283,7 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 		var itemWidth:uint = itemStyle.frameWidth;
 		var itemHeight:uint = itemStyle.frameHeight;
 		var itemPadding:uint = style.itemPadding;
-		if (type == TYPE_STRIP_HORIZONTAL) {
+		if (style.layout == ContainerStyle.TYPE_STRIP_HORIZONTAL) {
 			nextX = style.padding;
 			nextY = Math.floor((h - itemHeight) / 2);
 			return function(item:BaseItem, index:int, arr:Vector.<BaseItem>):void {
@@ -315,7 +293,7 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 				nextX += itemWidth + itemPadding;
 			};
 		}
-		else if (type == TYPE_STRIP_VERTICAL) {
+		else if (style.layout == ContainerStyle.TYPE_STRIP_VERTICAL) {
 			nextX = Math.floor((w - itemWidth) / 2);
 			nextY = style.padding;
 			return function(item:BaseItem, index:int, arr:Vector.<BaseItem>):void {
