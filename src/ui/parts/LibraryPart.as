@@ -191,6 +191,7 @@ public class LibraryPart extends UIPart implements ILibraryPart, DropTarget {
 		// Create thumbnails for all sprites. This function is called
 		// after loading project, or adding or deleting a sprite.
 		refreshText();
+		stageThumbnail.data.obj = app.stagePane;
 		stageThumbnail.refresh();
 		spritesPane.removeAllItems();
 		var sortedSprites:Array = app.stageObj().sprites();
