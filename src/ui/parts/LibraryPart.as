@@ -24,6 +24,7 @@
 
 package ui.parts {
 import flash.display.*;
+import flash.events.Event;
 import flash.text.*;
 import flash.utils.*;
 import scratch.*;
@@ -37,7 +38,6 @@ import ui.SpriteThumbnail;
 import ui.parts.base.ILibraryPart;
 import ui.styles.ContainerStyle;
 import ui.styles.ItemStyle;
-
 import uiwidgets.*;
 
 public class LibraryPart extends UIPart implements ILibraryPart, DropTarget {
@@ -92,6 +92,7 @@ public class LibraryPart extends UIPart implements ILibraryPart, DropTarget {
 		spriteDetails.visible = false;
 
 		updateTranslation();
+		spritesPane.addEventListener(ArrangeableContents.ORDER_CHANGE, onChange);
 	}
 
 	public static function strings():Array {
@@ -296,7 +297,9 @@ public class LibraryPart extends UIPart implements ILibraryPart, DropTarget {
 	}
 
 	protected function addSpritesArea():void {
-		spritesPane = new ArrangeableContents(new ItemStyle(), ArrangeableContents.TYPE_STRIP_VERTICAL);
+		var cStyle:ContainerStyle = ArrangeableContents.defaultStyle.clone();
+		cStyle.layout = ContainerStyle.TYPE_STRIP_VERTICAL;
+		spritesPane = new ArrangeableContents(new ItemStyle(), cStyle);
 		spritesPane.color = bgColor;
 		spritesPane.hExtra = spritesPane.vExtra = 0;
 		spritesFrame = new ScrollFrame();
@@ -457,6 +460,13 @@ public class LibraryPart extends UIPart implements ILibraryPart, DropTarget {
 
 	public function handleDrop(obj:*):Boolean {
 		return false;
+	}
+
+	// Fix the indices when sprites are re-ordered
+	protected function onChange(e:Event):void {
+		var index:uint = 0;
+		for each(var item:BaseItem in spritesPane.allItems(false))
+			((item as SpriteThumbnail).data.obj as ScratchSprite).indexInLibrary = index++;
 	}
 
 	protected function changeThumbnailOrder(dropped:ScratchSprite, dropX:int, dropY:int):void {
