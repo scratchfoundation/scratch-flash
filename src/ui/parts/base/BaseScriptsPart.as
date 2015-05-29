@@ -69,8 +69,6 @@ public class BaseScriptsPart extends UIPart implements IScriptsPart {
 	function BaseScriptsPart(app:Scratch, dragScroll:Boolean = false) {
 		this.app = app;
 		addChild(shape = new Shape());
-		addChild(spriteWatermark = new Bitmap());
-		addXYDisplay();
 		addChild(selector = getPaletteSelector());
 
 		var palette:BlockPalette = new BlockPalette();
@@ -89,6 +87,9 @@ public class BaseScriptsPart extends UIPart implements IScriptsPart {
 		}
 		scriptsFrame.setContents(scriptsPane);
 		addChild(scriptsFrame);
+
+		addChild(spriteWatermark = new Bitmap());
+		addXYDisplay();
 
 		app.palette = palette;
 		app.scriptsPane = scriptsPane;
