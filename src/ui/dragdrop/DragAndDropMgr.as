@@ -98,11 +98,11 @@ public class DragAndDropMgr {
 
 		draggedObj = spr;
 		startDrag();
-		draggedObj.x = origPos.x + transformGesture.offsetX;
-		draggedObj.y = origPos.y + transformGesture.offsetY;
 
 		// Let the original object know about the dragging and let it do what it needs to the dragging object
 		originalObj.dispatchEvent(new DragEvent(DragEvent.DRAG_START, draggedObj));
+		draggedObj.x = origPos.x + transformGesture.offsetX;
+		draggedObj.y = origPos.y + transformGesture.offsetY;
 		stage.addChild(draggedObj);
 
 		transformGesture.addEventListener(GestureEvent.GESTURE_CHANGED, onTransformChanged);
