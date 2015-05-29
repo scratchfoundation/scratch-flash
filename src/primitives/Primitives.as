@@ -151,16 +151,17 @@ public class Primitives {
 		// This is static so it can be used by the list "contains" primitive.
 		var n1:Number = Interpreter.asNumber(a1);
 		var n2:Number = Interpreter.asNumber(a2);
-		if (isNaN(n1) || isNaN(n2)) {
-			// Prefix the strings to avoid properties and methods of the Dictionary class (constructor, hasOwnProperty, etc)
-			a1 = '_'+a1;
-			a2 = '_'+a2;
+		// X != X is faster than isNaN()
+		if (n1 != n1 || n2 != n2) {
+			// Suffix the strings to avoid properties and methods of the Dictionary class (constructor, hasOwnProperty, etc)
+			if (a1 is String) a1 += '_';
+			if (a2 is String) a2 += '_';
 
 			// at least one argument can't be converted to a number: compare as strings
 			var s1:String = lcDict[a1];
-			if(!s1) s1 = lcDict[a1] = a1.toLowerCase();
+			if(!s1) s1 = lcDict[a1] = String(a1).toLowerCase();
 			var s2:String = lcDict[a2];
-			if(!s2) s2 = lcDict[a2] = a2.toLowerCase();
+			if(!s2) s2 = lcDict[a2] = String(a2).toLowerCase();
 			return s1.localeCompare(s2);
 		} else {
 			// compare as numbers
