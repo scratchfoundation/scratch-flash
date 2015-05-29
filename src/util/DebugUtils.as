@@ -42,4 +42,33 @@ public class DebugUtils {
 		}
 	}
 
+	private static function defaultData(dObj:DisplayObject):String {
+		return dObj.width+'x'+dObj.height+' @ '+dObj.x+','+dObj.y;
+	}
+
+	public static function getAncestry(dObj:DisplayObject, stop:DisplayObject = null, getData:Function = null):String {
+		if (!getData) getData = defaultData;
+		var str:String = getQualifiedClassName(dObj) + '(' + getData(dObj) + ')';
+		if (!stop) stop = Scratch.app.stage;
+		while(dObj.parent != stop && dObj.parent) {
+			dObj = dObj.parent;
+			str = getQualifiedClassName(dObj) + '(' + getData(dObj) + ') > ' + str;
+		}
+
+		return str;
+	}
+
+	public static function getMemoryAddress(o:Object):String {
+		var memoryHash:String;
+		try {
+			FakeClass(o);
+		}
+		catch (e:Error) {
+			memoryHash = String(e).replace(/.*([@|\$].*?) to .*$/gi, '$1');
+		}
+		return memoryHash;
+	}
+
 }}
+
+internal final class FakeClass { }
