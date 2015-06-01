@@ -102,8 +102,8 @@ public class Button extends Sprite {
 
 	protected function mouseOver(evt:MouseEvent):void { setColor(overColor) }
 	protected function mouseOut(evt:MouseEvent):void { setColor(normalColor) }
-	private function mouseDown(evt:MouseEvent):void { Menu.removeMenusFrom(stage) }
-	private function mouseUp(evt:MouseEvent):void {
+	protected function mouseDown(evt:MouseEvent):void { Menu.removeMenusFrom(stage) }
+	protected function mouseUp(evt:MouseEvent):void {
 		if (action != null) action();
 		evt.stopImmediatePropagation();
 	}
