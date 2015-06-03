@@ -86,6 +86,8 @@ public class Block extends Sprite {
 	public var subStack1:Block;
 	public var subStack2:Block;
 
+	public var currentIndex:int = 0; // Current index for "for each" c blocks
+
 	public var base:BlockShape;
 
 	private var suppressLayout:Boolean; // used to avoid extra layouts during block initialization
