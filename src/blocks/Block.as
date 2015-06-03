@@ -125,9 +125,12 @@ public class Block extends Sprite {
 		if ((type == " ") || (type == "") || (type == "w")) {
 			base = new BlockShape(BlockShape.CmdShape, color);
 			indentTop = 3;
-		} else if (type == "b") {
+		} else if (type == "b" || type == 'B') {
+			this.type = 'b';
 			base = new BlockShape(BlockShape.BooleanShape, color);
 			isReporter = true;
+			isRequester = (type == 'B');
+			forcedRequester = false;
 			indentLeft = 9;
 			indentRight = 7;
 		} else if (type == "r" || type == "R" || type == "rR") {
