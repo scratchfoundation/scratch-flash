@@ -621,6 +621,8 @@ public class ScratchRuntime {
 		if (v != null) {
 			v.name = newName;
 			if (v.watcher) v.watcher.changeVarName(newName);
+			delete owner.varDict["var_"+oldName];
+			owner.varDict["var_"+newName] = v;
 		} else {
 			owner.lookupOrCreateVar(newName);
 		}
