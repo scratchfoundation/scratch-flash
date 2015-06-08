@@ -93,7 +93,7 @@ public class AskPrompter extends Sprite {
 
 	private function addInputField(h:int):void {
 		input = new TextField();
-		input.defaultTextFormat = new TextFormat(CSS.font, fontSize, 0, false);;
+		input.defaultTextFormat = new TextFormat(CSS.font, fontSize, 0, false);
 		input.type = TextFieldType.INPUT;
 		input.background = true;
 		input.backgroundColor = inputFieldColor;

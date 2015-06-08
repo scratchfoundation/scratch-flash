@@ -21,11 +21,11 @@ package svgeditor.tools
 {
 	import flash.display.DisplayObject;
 	import flash.geom.Point;
-	
+
 	import svgeditor.DrawProperties;
 	import svgeditor.ImageEdit;
 	import svgeditor.objs.SVGShape;
-	
+
 	import svgutils.SVGElement;
 
 	public final class EllipseTool extends SVGCreateTool
@@ -62,7 +62,7 @@ package svgeditor.tools
 			newObject = new SVGShape(newElement);
 			contentLayer.addChild(newObject as DisplayObject);
 		}
-		
+
 		override protected function mouseMove(p:Point):void {
 			if(!createOrigin) return;
 
@@ -73,10 +73,10 @@ package svgeditor.tools
 			// Shift key makes a circle
 			if(currentEvent.shiftKey) {
 				w = h = Math.max(w, h);
-				p.x = createOrigin.x + (ofs.x < 0 ? w : -w);  
-				p.y = createOrigin.y + (ofs.y < 0 ? h : -h);  
+				p.x = createOrigin.x + (ofs.x < 0 ? w : -w);
+				p.y = createOrigin.y + (ofs.y < 0 ? h : -h);
 			}
-			
+
 			var rx:Number = w/2;
 			var ry:Number = h/2;
 			newElement.setAttribute('cx', Math.min(p.x, createOrigin.x) + rx);

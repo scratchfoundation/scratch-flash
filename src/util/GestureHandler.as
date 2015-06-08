@@ -49,7 +49,6 @@
 package util {
 	import flash.display.*;
 	import flash.events.MouseEvent;
-	import flash.external.ExternalInterface;
 	import flash.filters.*;
 	import flash.geom.*;
 	import flash.text.*;
@@ -57,12 +56,17 @@ package util {
 	import blocks.*;
 	import scratch.*;
 	import uiwidgets.*;
+	import svgeditor.*;
 	import watchers.*;
 
 public class GestureHandler {
 
 	private const DOUBLE_CLICK_MSECS:int = 400;
 	private const DEBUG:Boolean = false;
+
+	private const SCROLL_RANGE:Number = 60;
+	private const SCROLL_MAX_SPEED:Number = 1000 / 50;
+	private const SCROLL_MSECS:int = 500;
 
 	public var mouseIsDown:Boolean;
 
@@ -82,6 +86,11 @@ public class GestureHandler {
 	private var mouseDownEvent:MouseEvent;
 	private var inIE:Boolean;
 
+	private var scrollTarget:ScrollFrame;
+	private var scrollStartTime:int;
+	private var scrollXVelocity:Number;
+	private var scrollYVelocity:Number;
+
 	private var bubble:TalkBubble;
 	private var bubbleStartX:Number;
 	private var bubbleStartY:Number;
@@ -96,6 +105,7 @@ public class GestureHandler {
 
 	public function setDragClient(newClient:DragClient, evt:MouseEvent):void {
 		Menu.removeMenusFrom(stage);
+		if (carriedObj) return;
 		if (dragClient != null) dragClient.dragEnd(evt);
 		dragClient = newClient as DragClient;
 		dragClient.dragBegin(evt);
@@ -122,6 +132,17 @@ public class GestureHandler {
 				handleClick(mouseDownEvent);
 			}
 		}
+		if (carriedObj && scrollTarget && (getTimer() - scrollStartTime) > SCROLL_MSECS && (scrollXVelocity || scrollYVelocity)) {
+			scrollTarget.contents.x = Math.min(0, Math.max(-scrollTarget.maxScrollH(), scrollTarget.contents.x + scrollXVelocity));
+			scrollTarget.contents.y = Math.min(0, Math.max(-scrollTarget.maxScrollV(), scrollTarget.contents.y + scrollYVelocity));
+			scrollTarget.constrainScroll();
+			scrollTarget.updateScrollbars();
+			var b:Block = carriedObj as Block;
+			if (b) {
+				app.scriptsPane.findTargetsFor(b);
+				app.scriptsPane.updateFeedbackFor(b);
+			}
+		}
 	}
 
 	public function rightMouseClick(evt:MouseEvent):void {
@@ -143,7 +164,7 @@ public class GestureHandler {
 	private function findTargetFor(property:String, obj:*, x:int, y:int):DisplayObject {
 		// Return the innermost child  of obj that contains the given (global) point
 		// and implements the menu() method.
-		if (!obj.hitTestPoint(x, y, true)) return null;
+		if (!obj.visible || !obj.hitTestPoint(x, y, true)) return null;
 		if (obj is DisplayObjectContainer) {
 			for (var i:int = obj.numChildren - 1; i >= 0; i--) {
 				var found:DisplayObject = findTargetFor(property, obj.getChildAt(i), x, y);
@@ -155,7 +176,7 @@ public class GestureHandler {
 
 	public function mouseDown(evt:MouseEvent):void {
 		if(inIE && app.editMode && app.jsEnabled)
-			ExternalInterface.call('tip_bar_api.fixIE');
+			app.externalCall('tip_bar_api.fixIE');
 
 		evt.updateAfterEvent(); // needed to avoid losing display updates with later version of Flash 11
 		hideBubble();
@@ -226,6 +247,48 @@ public class GestureHandler {
 			spr.scratchX = stageP.x - 240;
 			spr.scratchY = 180 - stageP.y;
 			spr.updateBubble();
+		}
+		var oldTarget:ScrollFrame = scrollTarget;
+		scrollTarget = null;
+		var targets:Array = stage.getObjectsUnderPoint(new Point(stage.mouseX, stage.mouseY));
+		for each (var t:* in targets) {
+			if (t is ScrollFrameContents) {
+				scrollTarget = t.parent as ScrollFrame;
+				if (scrollTarget != oldTarget) {
+					scrollStartTime = getTimer();
+				}
+				break;
+			}
+		}
+		if (scrollTarget) {
+			var p:Point = scrollTarget.localToGlobal(new Point(0, 0));
+			var mx:int = stage.mouseX;
+			var my:int = stage.mouseY;
+			var d:Number = mx - p.x;
+			if (d >= 0 && d <= SCROLL_RANGE && scrollTarget.canScrollLeft()) {
+				scrollXVelocity = (1 - d / SCROLL_RANGE) * SCROLL_MAX_SPEED;
+			} else {
+				d = p.x + scrollTarget.visibleW() - mx;
+				if (d >= 0 && d <= SCROLL_RANGE && scrollTarget.canScrollRight()) {
+					scrollXVelocity = (d / SCROLL_RANGE - 1) * SCROLL_MAX_SPEED;
+				} else {
+					scrollXVelocity = 0;
+				}
+			}
+			d = my - p.y;
+			if (d >= 0 && d <= SCROLL_RANGE && scrollTarget.canScrollUp()) {
+				scrollYVelocity = (1 - d / SCROLL_RANGE) * SCROLL_MAX_SPEED;
+			} else {
+				d = p.y + scrollTarget.visibleH() - my;
+				if (d >= 0 && d <= SCROLL_RANGE && scrollTarget.canScrollDown()) {
+					scrollYVelocity = (d / SCROLL_RANGE - 1) * SCROLL_MAX_SPEED;
+				} else {
+					scrollYVelocity = 0;
+				}
+			}
+			if (!scrollXVelocity && !scrollYVelocity) {
+				scrollStartTime = getTimer();
+			}
 		}
 		if (bubble) {
 			var dx:Number = bubbleStartX - stage.mouseX;
@@ -338,6 +401,7 @@ public class GestureHandler {
 		Menu.removeMenusFrom(stage);
 		if (!('objToGrab' in mouseTarget)) return;
 		if (!app.editMode) {
+			if (app.loadInProgress) return;
 			if ((mouseTarget is ScratchSprite) && !ScratchSprite(mouseTarget).isDraggable) return; // don't drag locked sprites in presentation mode
 			if ((mouseTarget is Watcher) || (mouseTarget is ListWatcher)) return; // don't drag watchers in presentation mode
 		}
@@ -391,7 +455,7 @@ public class GestureHandler {
 			return;
 		}
 		if (t && 'handleTool' in t) t.handleTool(CursorTool.tool, evt);
-		if (isGrowShrink && (t is Block) && (t.isInPalette)) return; // grow/shrink sticky for scripting area
+		if (isGrowShrink && (t is Block && t.isInPalette || t is ImageCanvas)) return; // grow/shrink sticky for scripting area
 
 		if (!evt.shiftKey) app.clearTool(); // don't clear if shift pressed
 	}
@@ -411,10 +475,14 @@ public class GestureHandler {
 
 		if (obj is Block) {
 			var b:Block = Block(obj);
-			b.saveOriginalPosition();
+			b.saveOriginalState();
 			if (b.parent is Block) Block(b.parent).removeBlock(b);
 			if (b.parent != null) b.parent.removeChild(b);
 			app.scriptsPane.prepareToDrag(b);
+		} else if (obj is ScratchComment) {
+			var c:ScratchComment = ScratchComment(obj);
+			if (c.parent != null) c.parent.removeChild(c);
+			app.scriptsPane.prepareToDragComment(c);
 		} else {
 			var inStage:Boolean = (obj.parent == app.stagePane);
 			if (obj.parent != null) {
@@ -439,6 +507,7 @@ public class GestureHandler {
 		obj.startDrag();
 		if(obj is DisplayObject) obj.cacheAsBitmap = true;
 		carriedObj = obj;
+		scrollStartTime = getTimer();
 	}
 
 	private function dropHandled(droppedObj:*, evt:MouseEvent):Boolean {
@@ -452,9 +521,13 @@ public class GestureHandler {
 				possibleTargets.push(app.stagePane);
 		}
 		possibleTargets.reverse();
+		var tried:Array = [];
 		for each (var o:* in possibleTargets) {
 			while (o) { // see if some parent can handle the drop
-				if (('handleDrop' in o) && o.handleDrop(droppedObj)) return true;
+				if (tried.indexOf(o) == -1) {
+					if (('handleDrop' in o) && o.handleDrop(droppedObj)) return true;
+					tried.push(o);
+				}
 				o = o.parent;
 			}
 		}
@@ -469,7 +542,9 @@ public class GestureHandler {
 		carriedObj.parent.removeChild(carriedObj);
 
 		if (!dropHandled(carriedObj, evt)) {
-			if (originalParent) { // put carriedObj back where it came from
+			if (carriedObj is Block) {
+				Block(carriedObj).restoreOriginalState();
+			} else if (originalParent) { // put carriedObj back where it came from
 				carriedObj.x = originalPosition.x;
 				carriedObj.y = originalPosition.y;
 				carriedObj.scaleX = carriedObj.scaleY = originalScale;
@@ -506,7 +581,7 @@ public class GestureHandler {
 
 	public function showBubble(text:String, x:Number, y:Number, width:Number = 0):void {
 		hideBubble();
-		bubble = new TalkBubble(text || ' ', 'say', 'result');
+		bubble = new TalkBubble(text || ' ', 'say', 'result', this);
 		bubbleStartX = stage.mouseX;
 		bubbleStartY = stage.mouseY;
 		var bx:Number = x + width;

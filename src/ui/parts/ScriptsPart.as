@@ -35,8 +35,8 @@ public class ScriptsPart extends UIPart {
 	private var shape:Shape;
 	private var selector:PaletteSelector;
 	private var spriteWatermark:Bitmap;
-	private var paletteFrame:ScrollFrame;
-	private var scriptsFrame:ScrollFrame;
+	protected var paletteFrame:ScrollFrame;
+	protected var scriptsFrame:ScrollFrame;
 	private var zoomWidget:ZoomWidget;
 
 	private const readoutLabelFormat:TextFormat = new TextFormat(CSS.font, 12, CSS.textColor, true);
@@ -65,15 +65,19 @@ public class ScriptsPart extends UIPart {
 		paletteFrame.setContents(palette);
 		addChild(paletteFrame);
 
+		app.palette = palette;
+		app.scriptsPane = addScriptsPane();
+
+		addChild(zoomWidget = new ZoomWidget(app.scriptsPane));
+	}
+
+	protected function addScriptsPane():ScriptsPane {
 		var scriptsPane:ScriptsPane = new ScriptsPane(app);
 		scriptsFrame = new ScrollFrame();
 		scriptsFrame.setContents(scriptsPane);
 		addChild(scriptsFrame);
-
-		app.palette = palette;
-		app.scriptsPane = scriptsPane;
-
-		addChild(zoomWidget = new ZoomWidget(scriptsPane));
+		
+		return scriptsPane;
 	}
 
 	public function resetCategory():void { selector.select(Specs.motionCategory) }
@@ -93,9 +97,9 @@ public class ScriptsPart extends UIPart {
 	}
 
 	public function step():void {
-		// Update the mouse reaadouts. Do nothing if they are up-to-date (to minimize CPU load).
+		// Update the mouse readouts. Do nothing if they are up-to-date (to minimize CPU load).
 		var target:ScratchObj = app.viewedObj();
-		if (target.isStage) {
+		if (!target || target.isStage) {
 			if (xyDisplay.visible) xyDisplay.visible = false;
 		} else {
 			if (!xyDisplay.visible) xyDisplay.visible = true;

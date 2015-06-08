@@ -29,15 +29,15 @@ package svgeditor
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.text.TextFieldType;
-	
+
 	import svgeditor.objs.ISVGEditable;
 	import svgeditor.objs.SVGBitmap;
 	import svgeditor.objs.SVGGroup;
 	import svgeditor.objs.SVGShape;
 	import svgeditor.objs.SVGTextField;
-	
+
 	import svgutils.SVGElement;
-	
+
 	public class Selection implements IEventDispatcher
 	{
 		private var selectedObjects:Array;
@@ -75,7 +75,7 @@ package svgeditor
 		public function cloneObjs(contentLayer:Sprite):Array {
 			var copiedObjects:Array = null;
 			if(!selectedObjects.length) return copiedObjects;
-			
+
 			// Get a copy of the selected objects
 			var objsCopy:Array = [];
 			for(var i:uint=0; i<selectedObjects.length; ++i) {
@@ -155,7 +155,7 @@ package svgeditor
 					p.removeChild(selectedObjects[i]);
 			else
 				trace("Selection contained orphaned objects");
-			
+
 			selectedObjects = [];
 		}
 
@@ -174,7 +174,7 @@ package svgeditor
 
 				return new Selection([g]);
 			}
-			
+
 			return this;
 		}
 
@@ -194,7 +194,7 @@ package svgeditor
 					newSelObjs.push(dObj);
 
 					// Put the object at the same level the group was
-					g.parent.addChildAt(dObj,idx);					
+					g.parent.addChildAt(dObj,idx);
 				}
 
 				// Delete the group
@@ -224,7 +224,7 @@ package svgeditor
 		public function isImage():Boolean {
 			return (selectedObjects.length == 1 && selectedObjects[0] is SVGBitmap);
 		}
-		
+
 		public function getObjs():Array {
 			return selectedObjects;
 		}
@@ -250,7 +250,7 @@ package svgeditor
 				s.transform.matrix = m;
 				return s.rotation;
 			}
-			
+
 			return 0;
 		}
 
@@ -326,7 +326,7 @@ package svgeditor
 			}
 			anchorPt = refDispObj.parent.globalToLocal(refDispObj.localToGlobal(anchorPt));
 
-			// Maintain aspect ratio if we're resizing a shape and 
+			// Maintain aspect ratio if we're resizing a shape and
 			if(maintainAspectRatio) {
 				sx = sy = Math.min(sx, sy);
 			}
@@ -354,7 +354,7 @@ package svgeditor
 		public function flip(vertical:Boolean = false):void {
 			var r:Rectangle = getBounds(refDispObj.parent);
 			var anchorPt:Point = new Point((r.left+r.right)/2, (r.top+r.bottom)/2);
-			
+
 			for(var i:uint=0; i<selectedObjects.length; ++i) {
 				var obj:DisplayObject = selectedObjects[i];
 				flipAroundPoint(obj, anchorPt.x, anchorPt.y, vertical);
@@ -378,7 +378,7 @@ package svgeditor
 		public function startRotation(center:Point):void {
 			rotationCenter = refDispObj.parent.globalToLocal(center);
 			saveMatrices();
-			
+
 			initialTempMatrix = refDispObj.transform.matrix.clone();
 		}
 

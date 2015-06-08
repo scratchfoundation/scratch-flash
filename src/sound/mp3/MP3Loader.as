@@ -43,7 +43,7 @@ public class MP3Loader {
 		load(sndData, loaded);
 	}
 
-	private static function extractSamples(sndName:String, mp3Snd:Sound, mp3SampleCount:int, whenDone:Function):void {
+	public static function extractSamples(sndName:String, mp3Snd:Sound, mp3SampleCount:int, whenDone:Function):void {
 		// Extract the samples from the given mp3 Sound object and convert them into
 		// a ScratchSound object, merging stereo channels and downsampling to 22050 samples/second
 		// if needed. When finished, call whenDone with the new ScratchSound.
@@ -57,7 +57,7 @@ public class MP3Loader {
 		function convertNextChunk():void {
 			buf.position = 0;
 			var count:int = mp3Snd.extract(buf, 4000);
-			if (count == 0) { // finished!
+			if (count == 0 || convertedSamples >= mp3SampleCount) { // finished!
 				if (Scratch.app.lp) Scratch.app.lp.setTitle('Compressing...');
 				setTimeout(compressSamples, 50);
 				return;

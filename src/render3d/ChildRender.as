@@ -17,12 +17,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package {
+package render3d {
 	import flash.display.BitmapData;
 	import flash.display.DisplayObject;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
-	
+
 	public class ChildRender extends BitmapData {
 		private const allowPartial:Boolean = true;
 		private const maxSize:uint = 1022;
@@ -68,11 +68,11 @@ package {
 				}
 				if(bounds.right > orig_width)
 					bounds.width += orig_width - bounds.right;
-				
+
 				inner_x = bounds.x / orig_width;
 				inner_w = maxSize / orig_width;
 			}
-			
+
 			if(orig_height > maxSize) {
 				if(!bounds) bounds = getVisibleBounds(dispObj, penLayer);
 				bounds.inflate(0, halfSize - bounds.height / 2);
@@ -82,7 +82,7 @@ package {
 				}
 				if(bounds.bottom > orig_height)
 					bounds.height += orig_height - bounds.bottom;
-				
+
 				inner_y = bounds.y / orig_height;
 				inner_h = maxSize / orig_height;
 			}

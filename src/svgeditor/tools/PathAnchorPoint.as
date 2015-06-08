@@ -19,16 +19,11 @@
 
 package svgeditor.tools
 {
-	import flash.display.DisplayObject;
 	import flash.display.Graphics;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
-	
-	import svgeditor.ImageEdit;
-	import svgeditor.objs.ISVGEditable;
-	import svgeditor.objs.SVGShape;
 
 	public class PathAnchorPoint extends Sprite
 	{
@@ -83,14 +78,14 @@ package svgeditor.tools
 			isEndPoint = ep;
 			render(graphics, false, isEndPoint);
 		}
-		
+
 		public function get endPoint():Boolean {
 			return isEndPoint;
 		}
-		
+
 		private function removedFromStage(e:Event):void {
 			if(e.target != this) return;
-			
+
 			removeEventListener(Event.REMOVED, removedFromStage);
 			pathEditTool.removeChild(controlPoints.pop());
 			pathEditTool.removeChild(controlPoints.pop());

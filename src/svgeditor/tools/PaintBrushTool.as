@@ -22,10 +22,10 @@ package svgeditor.tools
 	import flash.display.DisplayObject;
 	import flash.events.*;
 	import flash.geom.*;
-	
+
 	import svgeditor.*;
 	import svgeditor.objs.*;
-	
+
 	import svgutils.SVGElement;
 
 	public final class PaintBrushTool extends SVGEditTool
@@ -85,7 +85,7 @@ package svgeditor.tools
 				elem = shapeUnderMouse.getElement();
 				elem.setAttribute('fill', oldFill);
 				elem.setAttribute('stroke', oldStroke);
-				elem.setAttribute('stroke-width', oldStrokeW);				
+				elem.setAttribute('stroke-width', oldStrokeW);
 				elem.setAttribute('stroke-opacity', oldStrokeO);
 				shapeUnderMouse.redraw();
 			}
@@ -110,7 +110,7 @@ package svgeditor.tools
 							elem.setAttribute('stroke-width', 2);
 					}
 					obj.redraw(true);
-					isOverStroke = (obj as DisplayObject).hitTestPoint(stage.mouseX, stage.mouseY, true);
+					isOverStroke = (obj as DisplayObject).hitTestPoint(STAGE.mouseX, STAGE.mouseY, true);
 				}
 				else {
 					isOverStroke = false;

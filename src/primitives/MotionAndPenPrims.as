@@ -24,13 +24,13 @@
 
 package primitives {
 	import blocks.*;
-	
+
 	import flash.display.*;
 	import flash.geom.*;
 	import flash.utils.Dictionary;
-	
+
 	import interpreter.*;
-	
+
 	import scratch.*;
 
 public class MotionAndPenPrims {
@@ -87,20 +87,26 @@ public class MotionAndPenPrims {
 
 	private function primTurnRight(b:Block):void {
 		var s:ScratchSprite = interp.targetSprite();
-		if (s != null) s.setDirection(s.direction + interp.numarg(b, 0));
-		if (s.visible) interp.redraw();
+		if (s != null) {
+			s.setDirection(s.direction + interp.numarg(b, 0));
+			if (s.visible) interp.redraw();
+		}
 	}
 
 	private function primTurnLeft(b:Block):void {
 		var s:ScratchSprite = interp.targetSprite();
-		if (s != null) s.setDirection(s.direction - interp.numarg(b, 0));
-		if (s.visible) interp.redraw();
+		if (s != null) {
+			s.setDirection(s.direction - interp.numarg(b, 0));
+			if (s.visible) interp.redraw();
+		}
 	}
 
 	private function primSetDirection(b:Block):void {
 		var s:ScratchSprite = interp.targetSprite();
-		if (s != null) s.setDirection(interp.numarg(b, 0));
-		if (s.visible) interp.redraw();
+		if (s != null) {
+			s.setDirection(interp.numarg(b, 0));
+			if (s.visible) interp.redraw();
+		}
 	}
 
 	private function primPointTowards(b:Block):void {
@@ -227,8 +233,19 @@ public class MotionAndPenPrims {
 	private function primPenDown(b:Block):void {
 		var s:ScratchSprite = interp.targetSprite();
 		if (s != null) s.penIsDown = true;
-		stroke(s, s.scratchX, s.scratchY, s.scratchX + 0.2, s.scratchY + 0.2);
+		touch(s, s.scratchX, s.scratchY);
 		interp.redraw();
+	}
+
+	private function touch(s:ScratchSprite, x:Number, y:Number):void {
+		var g:Graphics = app.stagePane.newPenStrokes.graphics;
+		g.lineStyle();
+		var alpha:Number = (0xFF & (s.penColorCache >> 24)) / 0xFF;
+		if (alpha == 0) alpha = 1;
+		g.beginFill(0xFFFFFF & s.penColorCache, alpha);
+		g.drawCircle(240 + x, 180 - y, s.penWidth / 2);
+		g.endFill();
+		app.stagePane.penActivity = true;
 	}
 
 	private function primPenUp(b:Block):void {
@@ -273,7 +290,13 @@ public class MotionAndPenPrims {
 
 	private function primStamp(b:Block):void {
 		var s:ScratchSprite = interp.targetSprite();
-		doStamp(s, s.img.transform.colorTransform.alphaMultiplier);
+		// In 3D mode, get the alpha from the ghost filter
+		// Otherwise, it can be easily accessed from the color transform.
+		var alpha:Number = (Scratch.app.isIn3D ?
+			1.0 - (Math.max(0, Math.min(s.filterPack.getFilterSetting('ghost'), 100)) / 100) :
+			s.img.transform.colorTransform.alphaMultiplier);
+
+		doStamp(s, alpha);
 	}
 
 	private function doStamp(s:ScratchSprite, stampAlpha:Number):void {
@@ -294,7 +317,9 @@ public class MotionAndPenPrims {
 
 	private function stroke(s:ScratchSprite, oldX:Number, oldY:Number, newX:Number, newY:Number):void {
 		var g:Graphics = app.stagePane.newPenStrokes.graphics;
-		g.lineStyle(s.penWidth, s.penColorCache);
+		var alpha:Number = (0xFF & (s.penColorCache >> 24)) / 0xFF;
+		if (alpha == 0) alpha = 1;
+		g.lineStyle(s.penWidth, 0xFFFFFF & s.penColorCache, alpha);
 		g.moveTo(240 + oldX, 180 - oldY);
 		g.lineTo(240 + newX, 180 - newY);
 //trace('pen line('+oldX+', '+oldY+', '+newX+', '+newY+')');
@@ -303,9 +328,9 @@ public class MotionAndPenPrims {
 
 	private function turnAwayFromEdge(s:ScratchSprite):Boolean {
 		// turn away from the nearest edge if it's close enough; otherwise do nothing
-		// Note: comparisions are in the stage coordinates, with origin (0, 0)
+		// Note: comparisons are in the stage coordinates, with origin (0, 0)
 		// use bounding rect of the sprite to account for costume rotation and scale
-		var r:Rectangle = s.getRect(app.stagePane);
+		var r:Rectangle = s.bounds();
 		// measure distance to edges
 		var d1:Number = Math.max(0, r.left);
 		var d2:Number = Math.max(0, r.top);
@@ -332,7 +357,7 @@ public class MotionAndPenPrims {
 	}
 
 	private function ensureOnStageOnBounce(s:ScratchSprite):void {
-		var r:Rectangle = s.getRect(app.stagePane);
+		var r:Rectangle = s.bounds();
 		if (r.left < 0) moveSpriteTo(s, s.scratchX - r.left, s.scratchY);
 		if (r.top < 0) moveSpriteTo(s, s.scratchX, s.scratchY + r.top);
 		if (r.right > ScratchObj.STAGEW) {

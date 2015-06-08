@@ -26,11 +26,11 @@ package svgeditor.tools
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
-	
+
 	import svgeditor.*;
 	import svgeditor.objs.ISVGEditable;
 	import svgeditor.objs.SVGShape;
-	
+
 	import svgutils.SVGElement;
 
 	public final class CloneTool extends SVGCreateTool
@@ -54,8 +54,10 @@ package svgeditor.tools
 			for each(var dObj:DisplayObject in objs) {
 				contentLayer.addChild(dObj);
 			}
-			previewObjects = (new Selection(objs)).cloneObjs(contentLayer);
-			copiedObjects = (new Selection(objs)).cloneObjs(contentLayer);
+			var s:Selection = new Selection(objs);
+			previewObjects = s.cloneObjs(contentLayer);
+			copiedObjects = s.cloneObjs(contentLayer);
+			s.shutdown();
 			for each(dObj in objs) {
 				contentLayer.removeChild(dObj);
 			}
@@ -66,7 +68,7 @@ package svgeditor.tools
 			copiedObjects = s.cloneObjs(contentLayer);
 			previewObjects = s.cloneObjs(contentLayer);
 		}
-		
+
 		override protected function init():void {
 			super.init();
 			editor.getToolsLayer().mouseEnabled = false;
@@ -118,17 +120,17 @@ package svgeditor.tools
 				dObj.y = pt.y;
 			}
 
-			// Save!
-			dispatchEvent(new Event(Event.CHANGE));
-
 			var s:Selection = new Selection(copiedObjects);
 			if(currentEvent.shiftKey) {
 				// Get another copy
 				copiedObjects = s.cloneObjs(contentLayer);
+				s.shutdown();
 			} else {
 				// Select the copied objects
 				editor.endCurrentTool(s);
 			}
+
+			dispatchEvent(new Event(Event.CHANGE));
 		}
 
 		private function createPreview():void {
@@ -139,7 +141,7 @@ package svgeditor.tools
 			holder.scaleX = m.deltaTransformPoint(new Point(0,1)).length;
 			holder.scaleY = m.deltaTransformPoint(new Point(1,0)).length;
 
-			// 
+			//
 			for(var i:uint=0; i<copiedObjects.length; ++i) {
 				var dObj:DisplayObject = previewObjects[i] as DisplayObject;
 				holder.addChild(dObj);
@@ -159,7 +161,7 @@ package svgeditor.tools
 		private var highlightedObj:DisplayObject;
 		private function checkUnderMouse(clear:Boolean = false):void {
 			var obj:ISVGEditable = clear ? null : getEditableUnderMouse();
-			
+
 			if(obj != highlightedObj) {
 				if(highlightedObj) highlightedObj.filters = [];
 				highlightedObj = obj as DisplayObject;

@@ -19,7 +19,7 @@
 
 package scratch {
 	import flash.display.*;
-	import flash.events.MouseEvent;
+	import flash.events.*;
 	import flash.geom.*;
 	import flash.ui.*;
 	import blocks.*;
@@ -41,6 +41,9 @@ public class BlockMenus implements DragClient {
 	private static const basicMathOps:Array = ['+', '-', '*', '/'];
 	private static const comparisonOps:Array = ['<', '=', '>'];
 
+	private static const spriteAttributes:Array = ['x position', 'y position', 'direction', 'costume #', 'costume name', 'size', 'volume'];
+	private static const stageAttributes:Array = ['backdrop #', 'backdrop name', 'volume'];
+
 	public static function BlockMenuHandler(evt:MouseEvent, block:Block, blockArg:BlockArg = null, menuName:String = null):void {
 		var menuHandler:BlockMenus = new BlockMenus(block, blockArg);
 		var op:String = block.op;
@@ -53,10 +56,7 @@ public class BlockMenus implements DragClient {
 			if ((comparisonOps.indexOf(op)) > -1) { menuHandler.changeOpMenu(evt, comparisonOps); return; }
 			if (menuName == null) { menuHandler.genericBlockMenu(evt); return; }
 		}
-		if (op.indexOf('.') > -1) {
-			menuHandler.extensionMenu(evt, menuName);
-			return;
-		}
+		if (op.indexOf('.') > -1 && menuHandler.extensionMenu(evt, menuName)) return;
 		if (menuName == 'attribute') menuHandler.attributeMenu(evt);
 		if (menuName == 'backdrop') menuHandler.backdropMenu(evt);
 		if (menuName == 'booleanSensor') menuHandler.booleanSensorMenu(evt);
@@ -74,7 +74,7 @@ public class BlockMenus implements DragClient {
 		if (menuName == 'listItem') menuHandler.listItem(evt, false);
 		if (menuName == 'mathOp') menuHandler.mathOpMenu(evt);
 		if (menuName == 'motorDirection') menuHandler.motorDirectionMenu(evt);
-		if (menuName == 'note') menuHandler.noteMenu(evt);
+		if (menuName == 'note') menuHandler.notePicker(evt);
 		if (menuName == 'procMenu') menuHandler.procMenu(evt);
 		if (menuName == 'rotationStyle') menuHandler.rotationStyleMenu(evt);
 		if (menuName == 'scrollAlign') menuHandler.scrollAlignMenu(evt);
@@ -135,9 +135,11 @@ public class BlockMenus implements DragClient {
 		}
 		return [
 			'up arrow', 'down arrow', 'right arrow', 'left arrow', 'space',
+			'other scripts in sprite', 'other scripts in stage',
 			'backdrop #', 'backdrop name', 'volume', 'OK', 'Cancel',
-			'Edit Block', 'Rename' , 'New name', 'Delete', 'Broadcast', 'Message Name',
+			'Edit Block', 'Rename' , 'New name', 'Delete', 'Broadcast', 'New Message', 'Message Name',
 			'delete variable', 'rename variable',
+			'video motion', 'video direction',
 			'Low C', 'Middle C', 'High C',
 		];
 	}
@@ -159,10 +161,7 @@ public class BlockMenus implements DragClient {
 		}
 		switch (menuName) {
 		case 'attribute':
-			var attributes:Array = [
-				'x position', 'y position', 'direction', 'costume #', 'costume name', 'size', 'volume',
-				'backdrop #', 'backdrop name', 'volume'];
-			return attributes.indexOf(item) > -1;
+			return spriteAttributes.indexOf(item) > -1 || stageAttributes.indexOf(item) > -1;
 		case 'backdrop':
 			return ['next backdrop', 'previous backdrop'].indexOf(item) > -1;
 		case 'broadcast':
@@ -174,6 +173,7 @@ public class BlockMenus implements DragClient {
 			return ['delete list'].indexOf(item) > -1;
 		case 'sound':
 			return ['record...'].indexOf(item) > -1;
+		case 'sprite':
 		case 'spriteOnly':
 		case 'spriteOrMouse':
 		case 'spriteOrStage':
@@ -190,8 +190,8 @@ public class BlockMenus implements DragClient {
 		m.color = block.base.color;
 		m.itemHeight = 22;
 		if (blockArg) {
-			var p:Point = blockArg.localToGlobal(new Point(0, 0));
-			m.showOnStage(app.stage, p.x - 9, p.y + blockArg.height);
+			var p:Point = blockArg.localToGlobal(new Point(0, blockArg.height));
+			m.showOnStage(app.stage, p.x - 9, p.y);
 		} else {
 			m.showOnStage(app.stage);
 		}
@@ -200,7 +200,7 @@ public class BlockMenus implements DragClient {
 	private function setBlockArg(selection:*):void {
 		if (blockArg != null) blockArg.setArgValue(selection);
 		Scratch.app.setSaveNeeded();
-		Scratch.app.runtime.checkForGraphicEffects();
+		SCRATCH::allow3d { Scratch.app.runtime.checkForGraphicEffects(); }
 	}
 
 	private function attributeMenu(evt:MouseEvent):void {
@@ -208,8 +208,7 @@ public class BlockMenus implements DragClient {
 		if (block && block.args[1]) {
 			obj = app.stagePane.objNamed(block.args[1].argValue);
 		}
-		var attributes:Array = ['x position', 'y position', 'direction', 'costume #', 'costume name', 'size', 'volume'];
-		if (obj is ScratchStage) attributes = ['backdrop #', 'backdrop name', 'volume'];
+		var attributes:Array = obj is ScratchStage ? stageAttributes : spriteAttributes;
 		var m:Menu = new Menu(setBlockArg, 'attribute');
 		for each (var s:String in attributes) m.addItem(s);
 		if (obj is ScratchObj) {
@@ -224,7 +223,7 @@ public class BlockMenus implements DragClient {
 		for each (var scene:ScratchCostume in app.stageObj().costumes) {
 			m.addItem(scene.costumeName);
 		}
-		if (block && (block.op.indexOf('startScene') > -1)) {
+		if (block && block.op.indexOf('startScene') > -1 || Menu.stringCollectionMode) {
 			m.addLine();
 			m.addItem('next backdrop');
 			m.addItem('previous backdrop');
@@ -277,12 +276,13 @@ public class BlockMenus implements DragClient {
 		showMenu(m);
 	}
 
-	private function extensionMenu(evt:MouseEvent, menuName:String):void {
+	private function extensionMenu(evt:MouseEvent, menuName:String):Boolean {
 		var items:Array = app.extensionManager.menuItemsFor(block.op, menuName);
-		if (app.viewedObj() == null) return;
+		if (!items) return false;
 		var m:Menu = new Menu(setBlockArg);
 		for each (var s:String in items) m.addItem(s);
 		showMenu(m);
+		return true;
 	}
 
 	private function instrumentMenu(evt:MouseEvent):void {
@@ -330,35 +330,13 @@ public class BlockMenus implements DragClient {
 		showMenu(m);
 	}
 
-	private function noteMenu(evt:MouseEvent):void {
-		var notes:Array = [
-			['Low C', 48],
-			['D', 50],
-			['E', 52],
-			['F', 53],
-			['G', 55],
-			['A', 57],
-			['B', 59],
-			['Middle C', 60],
-			['D', 62],
-			['E', 64],
-			['F', 65],
-			['G', 67],
-			['A', 69],
-			['B', 71],
-			['High C', 72],
-		];
-		if (!Menu.stringCollectionMode) {
-			for (var i:int = 0; i < notes.length; i++) {
-				notes[i][0] = '(' + notes[i][1] + ') ' + Translator.map(notes[i][0]); // show key number in menu
-			}
-			notes.reverse();
+	private function notePicker(evt:MouseEvent):void {
+		var piano:Piano = new Piano(block.base.color, app.viewedObj().instrument, setBlockArg);
+		if (!isNaN(blockArg.argValue)) {
+			piano.selectNote(int(blockArg.argValue));
 		}
-		var m:Menu = new Menu(setBlockArg, 'note');
-		for each (var pair:Array in notes) {
-			m.addItem(pair[0], pair[1]);
-		}
-		showMenu(m);
+		var p:Point = blockArg.localToGlobal(new Point(blockArg.width, blockArg.height));
+		piano.showOnStage(app.stage, int(p.x - piano.width / 2), p.y);
 	}
 
 	private function rotationStyleMenu(evt:MouseEvent):void {
@@ -386,12 +364,23 @@ public class BlockMenus implements DragClient {
 	}
 
 	private function soundMenu(evt:MouseEvent):void {
-		var m:Menu = new Menu(setBlockArg, 'sound');
+		function setSoundArg(s:*):void {
+			if (s is Function) s()
+			else setBlockArg(s);
+		}
+		var m:Menu = new Menu(setSoundArg, 'sound');
 		if (app.viewedObj() == null) return;
 		for (var i:int = 0; i < app.viewedObj().sounds.length; i++) {
 			m.addItem(app.viewedObj().sounds[i].soundName);
 		}
+		m.addLine();
+		m.addItem('record...', recordSound);
 		showMenu(m);
+	}
+
+	private function recordSound():void {
+		app.setTab('sounds');
+		app.soundsPart.recordSound();
 	}
 
 	private function spriteMenu(evt:MouseEvent, includeMouse:Boolean, includeEdge:Boolean, includeStage:Boolean, includeSelf:Boolean):void {
@@ -402,19 +391,27 @@ public class BlockMenus implements DragClient {
 			else if (s == 'myself') blockArg.setArgValue('_myself_', Translator.map('myself'));
 			else if (s == 'Stage') blockArg.setArgValue('_stage_', Translator.map('Stage'));
 			else blockArg.setArgValue(s);
+			if (block.op == 'getAttribute:of:') {
+				var obj:ScratchObj = app.stagePane.objNamed(s);
+				var attr:String = block.args[0].argValue;
+				var validAttrs:Array = obj && obj.isStage ? stageAttributes : spriteAttributes;
+				if (validAttrs.indexOf(attr) == -1 && !obj.ownsVar(attr)) {
+					block.args[0].setArgValue(validAttrs[0]);
+				}
+			}
 			Scratch.app.setSaveNeeded();
 		}
 		var spriteNames:Array = [];
 		var m:Menu = new Menu(setSpriteArg, 'sprite');
-		if (includeMouse) m.addItem('mouse-pointer', 'mouse-pointer');
-		if (includeEdge) m.addItem('edge', 'edge');
+		if (includeMouse) m.addItem(Translator.map('mouse-pointer'), 'mouse-pointer');
+		if (includeEdge) m.addItem(Translator.map('edge'), 'edge');
 		m.addLine();
 		if (includeStage) {
 			m.addItem(app.stagePane.objName, 'Stage');
 			m.addLine();
 		}
 		if (includeSelf && !app.viewedObj().isStage) {
-			m.addItem('myself', 'myself');
+			m.addItem(Translator.map('myself'), 'myself');
 			m.addLine();
 			spriteNames.push(app.viewedObj().objName);
 		}
@@ -436,8 +433,10 @@ public class BlockMenus implements DragClient {
 			Scratch.app.setSaveNeeded();
 		}
 		var m:Menu = new Menu(setStopType, 'stop');
-		m.addItem('all');
-		m.addItem('this script');
+		if (!block.nextBlock) {
+			m.addItem('all');
+			m.addItem('this script');
+		}
 		m.addItem(app.viewedObj().isStage ? 'other scripts in stage' : 'other scripts in sprite');
 		showMenu(m);
 	}
@@ -503,9 +502,9 @@ public class BlockMenus implements DragClient {
 		if (!isInPalette(block)) {
 			if (!block.isProcDef()) {
 				m.addItem('duplicate', duplicateStack);
-				m.addItem('delete', block.deleteStack);
-				m.addLine();
 			}
+			m.addItem('delete', block.deleteStack);
+			m.addLine();
 			m.addItem('add comment', block.addComment);
 		}
 		m.addItem('help', block.showHelp);
@@ -575,6 +574,7 @@ public class BlockMenus implements DragClient {
 			}
 		}
 		app.runtime.updateCalls();
+		app.scriptsPane.fixCommentLayout();
 		app.updatePalette();
 	}
 
@@ -582,15 +582,21 @@ public class BlockMenus implements DragClient {
 
 	private function listMenu(evt:MouseEvent):void {
 		var m:Menu = new Menu(varOrListSelection, 'list');
-		if (block.op == Specs.GET_LIST) {
+		var isGetter:Boolean = block.op == Specs.GET_LIST;
+		if (isGetter) {
 			if (isInPalette(block)) m.addItem('delete list', deleteVarOrList); // list reporter in palette
 			addGenericBlockItems(m);
-		} else {
-			var listName:String;
-			for each (listName in app.stageObj().listNames()) m.addItem(listName);
-			if (!app.viewedObj().isStage) {
-				m.addLine();
-				for each (listName in app.viewedObj().listNames()) m.addItem(listName);
+			m.addLine()
+		}
+		var myName:String = isGetter ? blockVarOrListName() : null;
+		var listName:String;
+		for each (listName in app.stageObj().listNames()) {
+			if (listName != myName) m.addItem(listName);
+		}
+		if (!app.viewedObj().isStage) {
+			m.addLine();
+			for each (listName in app.viewedObj().listNames()) {
+				if (listName != myName) m.addItem(listName);
 			}
 		}
 		showMenu(m);
@@ -636,18 +642,15 @@ public class BlockMenus implements DragClient {
 
 	private function renameVar():void {
 		function doVarRename(dialog:DialogBox):void {
-			var newName:String = dialog.fields['New name'].text.replace(/^\s+|\s+$/g, '');
-			if (newName.length == 0 || app.viewedObj().lookupVar(newName)) return;
-			if (block.op != Specs.GET_VAR) return;
+			var newName:String = dialog.getField('New name').replace(/^\s+|\s+$/g, '');
+			if (newName.length == 0 || block.op != Specs.GET_VAR) return;
 			var oldName:String = blockVarOrListName();
 
 			if (oldName.charAt(0) == '\u2601') { // Retain the cloud symbol
 				newName = '\u2601 ' + newName;
 			}
 
-			app.runtime.renameVariable(oldName, newName, block);
-			setBlockVarOrListName(newName);
-			app.updatePalette();
+			app.runtime.renameVariable(oldName, newName);
 		}
 		var d:DialogBox = new DialogBox(doVarRename);
 		d.addTitle(Translator.map('Rename') + ' ' + blockVarOrListName());
@@ -679,11 +682,11 @@ public class BlockMenus implements DragClient {
 			app.runtime.createVariable(newName);
 		}
 		if (blockArg != null) blockArg.setArgValue(newName);
-		if (block != null) {
-			if (block.op == Specs.GET_VAR) block.setSpec(newName);
+		if (block != null && (block.op == Specs.GET_VAR || block.op == Specs.GET_LIST)) {
+			block.setSpec(newName);
+			block.fixExpressionLayout();
 		}
 		Scratch.app.setSaveNeeded();
-		app.updatePalette();
 	}
 
 	// ***** Color picker support *****
@@ -694,10 +697,15 @@ public class BlockMenus implements DragClient {
 		if (pickingColor) {
 			pickingColor = false;
 			Mouse.cursor = MouseCursor.AUTO;
+			app.stage.removeChild(colorPickerSprite);
+			app.stage.removeEventListener(Event.RESIZE, fixColorPickerLayout);
 		} else {
 			pickingColor = true;
 			app.gh.setDragClient(this, evt);
 			Mouse.cursor = MouseCursor.BUTTON;
+			app.stage.addEventListener(Event.RESIZE, fixColorPickerLayout);
+			app.stage.addChild(colorPickerSprite = new Sprite);
+			fixColorPickerLayout();
 		}
 	}
 
@@ -708,15 +716,26 @@ public class BlockMenus implements DragClient {
 		}
 	}
 
+	private function fixColorPickerLayout(event:Event = null):void {
+		var g:Graphics = colorPickerSprite.graphics;
+		g.clear();
+		g.beginFill(0, 0);
+		g.drawRect(0, 0, app.stage.stageWidth, app.stage.stageHeight);
+	}
+
 	private var pickingColor:Boolean = false;
+	private var colorPickerSprite:Sprite;
 	private var onePixel:BitmapData = new BitmapData(1, 1);
 
 	private function pixelColorAt(x:int, y:int):int {
 		var m:Matrix = new Matrix();
 		m.translate(-x, -y);
 		onePixel.fillRect(onePixel.rect, 0);
+		if (app.isIn3D) app.stagePane.visible = true;
 		onePixel.draw(app, m);
-		return onePixel.getPixel(0, 0) | 0xFF000000; // alpha is always 0xFF
+		if (app.isIn3D) app.stagePane.visible = false;
+		var x:int = onePixel.getPixel32(0, 0);
+		return x ? x | 0xFF000000 : 0xFFFFFFFF; // alpha is always 0xFF
 	}
 
 	// ***** Broadcast menu *****
@@ -739,7 +758,7 @@ public class BlockMenus implements DragClient {
 
 	private function newBroadcast():void {
 		function changeBroadcast(dialog:DialogBox):void {
-			var newName:String = dialog.fields['Message Name'].text;
+			var newName:String = dialog.getField('Message Name');
 			if (newName.length == 0) return;
 			setBlockArg(newName);
 		}

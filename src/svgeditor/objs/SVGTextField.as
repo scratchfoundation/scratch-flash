@@ -28,12 +28,12 @@ package svgeditor.objs
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFieldType;
-	
+
 	import svgeditor.objs.ISVGEditable;
-	
+
 	import svgutils.SVGDisplayRender;
 	import svgutils.SVGElement;
-	
+
 	public class SVGTextField extends TextField implements ISVGEditable
 	{
 		private var element:SVGElement;

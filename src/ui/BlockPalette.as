@@ -25,8 +25,11 @@
 // creates a copy of that block when it is dragged out of the palette.
 
 package ui {
+	import flash.geom.*;
 	import blocks.Block;
+	import interpreter.Interpreter;
 	import uiwidgets.*;
+	import scratch.ScratchObj;
 	import scratch.ScratchComment;
 
 public class BlockPalette extends ScrollFrameContents {
@@ -38,40 +41,30 @@ public class BlockPalette extends ScrollFrameContents {
 		this.color = 0xE0E0E0;
 	}
 
+	override public function clear(scrollToOrigin:Boolean = true):void {
+		var interp:Interpreter = Scratch.app.interp;
+		var targetObj:ScratchObj = Scratch.app.viewedObj();
+		while (numChildren > 0) {
+			var b:Block = getChildAt(0) as Block;
+			if (interp.isRunning(b, targetObj)) interp.toggleThread(b, targetObj);
+			removeChildAt(0);
+		}
+		if (scrollToOrigin) x = y = 0;
+	}
+
 	public function handleDrop(obj:*):Boolean {
 		// Delete blocks and stacks dropped onto the palette.
-		var app:Scratch = root as Scratch;
 		var c:ScratchComment = obj as ScratchComment;
 		if (c) {
-			c.x = c.y = 20; // postion for undelete
+			c.x = c.y = 20; // position for undelete
 			c.deleteComment();
 			return true;
 		}
 		var b:Block = obj as Block;
 		if (b) {
-			if ((b.op == Specs.PROCEDURE_DEF) && hasCallers(b, app)) {
-				DialogBox.notify('Cannot Delete', 'To delete a block definition, first remove all uses of the block.', stage);
-				return false;
-			}
-			if (b.parent) b.parent.removeChild(b);
-			b.restoreOriginalPosition(); // restore position in case block is undeleted
-			Scratch.app.runtime.recordForUndelete(b, b.x, b.y, 0, Scratch.app.viewedObj());
-			app.scriptsPane.saveScripts();
-			app.updatePalette();
-			return true;
+			return b.deleteStack();
 		}
 		return false;
-	}
-
-	private function hasCallers(def:Block, app:Scratch):Boolean {
-		var callCount:int;
-		for each (var stack:Block in app.viewedObj().scripts) {
-			// for each block in stack
-			stack.allBlocksDo(function (b:Block):void {
-				if ((b.op == Specs.CALL) && (b.spec == def.spec)) callCount++;
-			});
-		}
-		return callCount > 0;
 	}
 
 	public static function strings():Array {

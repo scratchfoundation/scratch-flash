@@ -20,7 +20,7 @@
 package svgeditor.tools
 {
 	import assets.Resources;
-	
+
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.BlendMode;
@@ -35,14 +35,14 @@ package svgeditor.tools
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
-	
+
 	import svgeditor.DrawProperties;
 	import svgeditor.ImageEdit;
 	import svgeditor.objs.ISVGEditable;
 	import svgeditor.objs.SVGBitmap;
 	import svgeditor.objs.SVGGroup;
 	import svgeditor.objs.SVGShape;
-	
+
 	import svgutils.SVGElement;
 	import svgutils.SVGExport;
 	import svgutils.SVGPath;
@@ -51,8 +51,7 @@ package svgeditor.tools
 	{
 		private var eraserShape:Shape;
 		private var lastPos:Point;
-		private var origStrokeWidth:Number;
-		private var strokeWidth:Number;
+		private var eraserWidth:Number;
 		private var erased:Boolean;
 		public function EraserTool(ed:ImageEdit) {
 			super(ed);
@@ -60,17 +59,17 @@ package svgeditor.tools
 			eraserShape = new Shape();
 			lastPos = null;
 			erased = false;
-			
+
 			cursorHotSpot = new Point(7,18);
 		}
 
 		public function updateIcon():void {
 			var sp:DrawProperties = editor.getShapeProps();
-			if(strokeWidth != sp.strokeWidth) {
+			if(eraserWidth != sp.eraserWidth) {
 				var bm:Bitmap = Resources.createBmp('eraserOff');
 				var s:Shape = new Shape();
 				s.graphics.lineStyle(1);
-				s.graphics.drawCircle(0, 0, sp.strokeWidth * 0.65);
+				s.graphics.drawCircle(0, 0, sp.eraserWidth * 0.65);
 				var curBM:BitmapData = new BitmapData(32, 32, true, 0);
 				var m:Matrix = new Matrix();
 				m.translate(16, 18);
@@ -78,35 +77,33 @@ package svgeditor.tools
 				m.translate(-cursorHotSpot.x, -cursorHotSpot.y);
 				curBM.draw(bm, m);
 				editor.setCurrentCursor('eraserOff', curBM, new Point(16, 18), false);
-				strokeWidth = sp.strokeWidth;
+				eraserWidth = sp.eraserWidth;
 			}
 		}
 
 		override protected function init():void {
 			super.init();
 			editor.getWorkArea().addEventListener(MouseEvent.MOUSE_DOWN, mouseDown, false, 0, true);
-			stage.addChild(eraserShape);
+			STAGE.addChild(eraserShape);
 			updateIcon();
-			origStrokeWidth = editor.getShapeProps().strokeWidth;
 		}
 
 		override protected function shutdown():void {
 			editor.getWorkArea().removeEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
-			editor.getShapeProps().strokeWidth = origStrokeWidth;
 			super.shutdown();
-			stage.removeChild(eraserShape);
+			STAGE.removeChild(eraserShape);
 		}
 
 		private function mouseDown(e:MouseEvent):void {
 			editor.getWorkArea().addEventListener(MouseEvent.MOUSE_MOVE, erase, false, 0, true);
-			editor.stage.addEventListener(MouseEvent.MOUSE_UP, mouseUp, false, 0, true);
-			strokeWidth = editor.getShapeProps().strokeWidth;
+			STAGE.addEventListener(MouseEvent.MOUSE_UP, mouseUp, false, 0, true);
+			eraserWidth = editor.getShapeProps().eraserWidth;
 			erase();
 		}
 
 		private function mouseUp(e:MouseEvent):void {
 			editor.getWorkArea().removeEventListener(MouseEvent.MOUSE_MOVE, erase);
-			editor.stage.removeEventListener(MouseEvent.MOUSE_UP, mouseUp);
+			STAGE.removeEventListener(MouseEvent.MOUSE_UP, mouseUp);
 			erase();
 			lastPos = null;
 			dispatchEvent(new Event(Event.CHANGE));
@@ -122,7 +119,7 @@ package svgeditor.tools
 
 			lastPos = new Point(eraserShape.mouseX, eraserShape.mouseY);
 		}
-		
+
 		private function getObjectsUnderEraser():Array {
 			var objs:Array = [];
 			var cl:Sprite = editor.getContentLayer();
@@ -165,22 +162,22 @@ package svgeditor.tools
 
 		private function updateEraserShape():void {
 			var g:Graphics = eraserShape.graphics;
-			//var w:Number = strokeWidth * editor.getContentLayer().
+			//var w:Number = eraserWidth * editor.getContentLayer().
 			g.clear();
 			var p:Point = new Point(eraserShape.mouseX, eraserShape.mouseY);
 			if(lastPos) {
-				g.lineStyle(strokeWidth, 0xFF0000, 1, false, LineScaleMode.NORMAL, CapsStyle.ROUND);
+				g.lineStyle(eraserWidth, 0xFF0000, 1, false, LineScaleMode.NORMAL, CapsStyle.ROUND);
 				g.moveTo(lastPos.x, lastPos.y);
 				//var p:Point = obj.globalToLocal(lastPos).subtract(new Point(obj.mouseX, obj.mouseY));
 				g.lineTo(p.x, p.y);
 			} else {
 				g.lineStyle(0, 0, 0);
 				g.beginFill(0xFF0000);
-				g.drawCircle(p.x, p.y, strokeWidth * 0.65);
+				g.drawCircle(p.x, p.y, eraserWidth * 0.65);
 				g.endFill();
 				g.moveTo(p.x, p.y);
 			}
-			
+
 			// Force the draw cache to refresh
 			eraserShape.visible = true;
 			eraserShape.visible = false;
@@ -191,7 +188,7 @@ package svgeditor.tools
 			var m:Matrix = bmObj.transform.concatenatedMatrix;
 			m.invert();
 			bmObj.bitmapData.draw(eraserShape, m, null, BlendMode.ERASE, null);
-			
+
 			var r:Rectangle = bmObj.bitmapData.getColorBoundsRect(0xFF000000, 0x00000000, false);
 			if(!r || r.width == 0 || r.height == 0) {
 				bmObj.parent.removeChild(bmObj);
@@ -204,10 +201,10 @@ package svgeditor.tools
 			// Does the path collide with the backdrop shapes?
 			if(!PixelPerfectCollisionDetection.isColliding(svgShape, eraserShape)) return;
 			//trace("Path intersects with backdrop!");
-			
+
 			var thisSW:* = svgShape.getElement().getAttribute('stroke-width');
 			var thisSC:* = svgShape.getElement().getAttribute('stroke-linecap');
-			
+
 			// Make sure that it isn't just the stroke width that is causing the intersection.
 			// We want paths which intersect and not just "touch"
 			//svgShape.getElement().setAttribute('stroke-width', 2.0);
@@ -269,7 +266,7 @@ trace(str);
 				var endCmds:Array = path.slice(endIndex + 1);
 
 				var startTime:Number = inter.start.time;
-				if(startIndex == inter.end.index + ofs) { 
+				if(startIndex == inter.end.index + ofs) {
 					startTime = startTime / endTime;
 				}
 
@@ -295,7 +292,7 @@ trace(str);
 					// Copy the commands but not the ending 'Z' command
 					var cmds:Array = path.splice(indices[0], indices[1] + 1);
 					var stitchIndex:int = cmds.length - 1;
-					
+
 					// Re-insert the commands at the beginning
 					cmds.unshift(1);
 					cmds.unshift(0);

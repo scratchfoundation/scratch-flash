@@ -24,7 +24,7 @@ package svgeditor.tools
 	import flash.display.Sprite;
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
-	
+
 	import svgeditor.ImageEdit;
 	import svgeditor.tools.PathEndPointManager;
 	import svgeditor.objs.ISVGEditable;
@@ -63,6 +63,7 @@ package svgeditor.tools
 
 		private function proxyEvent(e:MouseEvent):void {
 			editor.getCanvasLayer().dispatchEvent(e);
+			e.stopImmediatePropagation();
 		}
 
 		private function showOrb(e:MouseEvent):void {

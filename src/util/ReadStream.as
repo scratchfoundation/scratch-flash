@@ -85,21 +85,46 @@ public class ReadStream {
 	public function nextToken():String {
 		skipWhiteSpace();
 		if (atEnd()) return '';
+		var token:String = '';
 		var isArg:Boolean;
 		var start:int = i;
 		while (i < src.length) {
 			if (src.charCodeAt(i) <= 32) break;
 			var ch:String = src.charAt(i);
+			if (ch == '\\') {
+				token += ch + src.charAt(i + 1);
+				i += 2;
+				continue;
+			}
 			if (ch == '%') {
 				if (i > start) break; // percent sign starts new token
 				isArg = true;
 			}
 			// certain punctuation marks following an argument start a new token
 			// example: 'touching %m?' (question mark after arg starts a new token) vs. 'loud?' (doesn't)
-			if (isArg && ((ch == '?') || (ch == '-'))) break;
+			if (isArg && (ch == '?' || ch == '-')) break;
+			token += ch;
 			i++;
 		}
-		return src.slice(start, i);
+		return token;
+	}
+
+	public static function escape(s:String):String {
+		return s.replace(/[\\%@]/g, '\\$&');
+	}
+
+	public static function unescape(s:String):String {
+		var result:String = '';
+		for (var i:int = 0; i < s.length; i++) {
+			var ch:String = s.charAt(i);
+			if (ch == '\\') {
+				result += s.charAt(i + 1);
+				i++;
+			} else {
+				result += ch;
+			}
+		}
+		return result;
 	}
 
 }}

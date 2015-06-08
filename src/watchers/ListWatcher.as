@@ -71,7 +71,8 @@ public class ListWatcher extends Sprite {
 		frame = new ResizeableFrame(0x949191, 0xC1C4C7, 14, false, 2);
 		frame.setWidthHeight(50, 100);
 		frame.showResizer();
-		frame.minWidth = frame.minHeight = 60;
+		frame.minWidth = 80;
+		frame.minHeight = 62;
 		addChild(frame);
 
 		title = createTextField(listName, titleFont);
@@ -131,45 +132,33 @@ public class ListWatcher extends Sprite {
 	private function importList():void {
 		// Prompt user for a file name and import that file.
 		// Each line of the file becomes a list item.
-		function fileSelected(event:Event):void {
-			if (fileList.fileList.length == 0) return;
-			file = FileReference(fileList.fileList[0]);
-			file.addEventListener(Event.COMPLETE, fileLoadHandler);
-			file.load();
-		}
-		function fileLoadHandler(event:Event):void {
+		function fileLoaded(event:Event):void {
+			var file:FileReference = FileReference(event.target);
 			var s:String = file.data.readUTFBytes(file.data.length);
-			var delimiter:String = '\n';
-			if (s.indexOf(delimiter) < 0) delimiter = '\r';
-			importLines(removeTrailingEmptyLines(s.split(delimiter)));
+			importLines(removeTrailingEmptyLines(s.split(/\r\n|[\r\n]/)));
 		}
-		var fileList:FileReferenceList = new FileReferenceList();
-		var file:FileReference;
-		fileList.addEventListener(Event.SELECT, fileSelected);
-		try {
-			// Ignore the exception that happens when you call browse() with the file browser open
-			fileList.browse();
-		} catch(e:*) {}
+
+		Scratch.loadSingleFile(fileLoaded);
 	}
 
 	private function exportList():void {
 		var file:FileReference = new FileReference();
-		var s:String = '';
-		for each (var el:* in contents) s += el + '\n';
-		if (s.length > 0) s = s.slice(0, s.length - 1); // remove final '\n'
+		var s:String = contents.join('\n') + '\n';
 		file.save(s, listName + '.txt');
 	}
 
-	private function hide():void { visible = false }
+	private function hide():void {
+		visible = false;
+		Scratch.app.updatePalette(false);
+	}
 
 	// -----------------------------
 	// Visual feedback for list changes
 	//------------------------------
 
 	private function removeTrailingEmptyLines(lines:Array):Array {
-		var i:int = lines.length - 1;
-		while ((i > 0) && (lines[i].length == 0)) i--;
-		return lines.slice(0, i + 1);
+		while (lines.length && !lines[lines.length - 1]) lines.pop();
+		return lines;
 	}
 
 	private function importLines(lines:Array):void {
@@ -222,7 +211,7 @@ public class ListWatcher extends Sprite {
 	//------------------------------
 
 	public function updateWatcher(i:int, readOnly:Boolean, interp:Interpreter):void {
-		// Colled by list primitives. Reccord access to entry at i and if list contents has changed.
+		// Called by list primitives. Record access to entry at i and whether list contents have changed.
 		// readOnly should be true for read operations, false for operations that change the list.
 		// Note: To reduce the cost of list operations, this function merely records changes,
 		// leaving the more time-consuming work of updating the visual feedback to step(), which
@@ -473,7 +462,7 @@ public class ListWatcher extends Sprite {
 	}
 
 	private function cellNumWidth():int {
-		// Return the estimated maxium cell number width. We assume that a list
+		// Return the estimated maximum cell number width. We assume that a list
 		// can display at most 20 elements, so we need enough width to display
 		// firstVisibleIndex + 20. Take the log base 10 to get the number of digits
 		// and measure the width of a textfield with that many zeros.
@@ -484,7 +473,7 @@ public class ListWatcher extends Sprite {
 	}
 
 	private function removeAllCells():void {
-		// Remove all children except the mask. Reycle ListCells and TextFields.
+		// Remove all children except the mask. Recycle ListCells and TextFields.
 		while (cellPane.numChildren > 1) {
 			var o:DisplayObject = cellPane.getChildAt(1);
 			if (o is ListCell) cellPool.push(o);
@@ -524,7 +513,7 @@ public class ListWatcher extends Sprite {
 	}
 
 	public function updateTitle():void {
-		title.text = ((target == null) || (target.isStage)) ? listName : target.objName + ' ' + listName;
+		title.text = ((target == null) || (target.isStage)) ? listName : target.objName + ': ' + listName;
 		title.width = title.textWidth + 5;
 		title.x = Math.floor((frame.w - title.width) / 2);
 	}
@@ -540,12 +529,15 @@ public class ListWatcher extends Sprite {
 	//------------------------------
 
 	private function textChanged(e:Event):void {
-		// Triggered by editing the contents of a cell. Copy the
-		// the cell contents into the underlying list.
+		// Triggered by editing the contents of a cell.
+		// Copy the cell contents into the underlying list.
 		var cellContents:TextField = e.target as TextField;
 		for (var i:int = 0; i < visibleCells.length; i++) {
 			var cell:ListCell = visibleCells[i];
-			if (cell.tf == cellContents) contents[firstVisibleIndex + i] = cellContents.text;
+			if (cell.tf == cellContents) {
+				contents[firstVisibleIndex + i] = cellContents.text;
+				return;
+			}
 		}
 	}
 

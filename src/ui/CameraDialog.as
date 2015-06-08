@@ -33,7 +33,7 @@ public class CameraDialog extends DialogBox {
 		return ['Camera', 'Save', 'Close'];
 	}
 
-	public function CameraDialog(saveFunc:Function) {	
+	public function CameraDialog(saveFunc:Function) {
 		super();
 		this.saveFunc = saveFunc;
 
@@ -41,7 +41,7 @@ public class CameraDialog extends DialogBox {
 
 		var container:Sprite = new Sprite();
 		addWidget(container);
-	
+
 		picture = new Bitmap();
 		picture.bitmapData = new BitmapData(320, 240, true);
 		picture.visible = false;
@@ -54,9 +54,9 @@ public class CameraDialog extends DialogBox {
 
 		var b:Button;
 		addChild(b = new Button(Translator.map('Save'), savePicture));
-		buttons.push(b);		
+		buttons.push(b);
 		addChild(b = new Button(Translator.map('Close'), closeDialog));
-		buttons.push(b);		
+		buttons.push(b);
 	}
 
 	private function savePicture():void {

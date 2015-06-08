@@ -130,11 +130,13 @@ package svgeditor.tools  {
 		}
 
 		override protected function shutdown():void {
+			var stageObject:Stage = STAGE;
+
 			// Remove event handlers
 			removeSelectionEventHandlers();
 			editor.getWorkArea().removeEventListener(MouseEvent.MOUSE_DOWN, selectionBoxHandler);
-			stage.removeEventListener(MouseEvent.MOUSE_MOVE, selectionBoxHandler);
-			stage.removeEventListener(MouseEvent.MOUSE_UP, selectionBoxHandler);
+			stageObject.removeEventListener(MouseEvent.MOUSE_MOVE, selectionBoxHandler);
+			stageObject.removeEventListener(MouseEvent.MOUSE_UP, selectionBoxHandler);
 
 			select(null);
 			setActive(false);
@@ -155,6 +157,7 @@ package svgeditor.tools  {
 				}
 			}
 			else {
+				if (editor.revertToCreateTool(event)) return;
 				if(targetObj && event && (event.shiftKey || event.ctrlKey)) {
 					targetObj.getObjs().push(obj);
 					select(targetObj);
@@ -182,7 +185,7 @@ package svgeditor.tools  {
 				preEditTF = targetObj.getObjs()[0] as TextField;
 				preEditTF.type = TextFieldType.INPUT;
 				preEditTF.addEventListener(FocusEvent.FOCUS_IN, handleTextFocus, false, 0, true);
-				stage.focus = null;
+				STAGE.focus = null;
 			}
 		}
 
@@ -253,7 +256,7 @@ package svgeditor.tools  {
 			toggleHandles(!!targetObj);
 			if(targetObj) {
 				targetObj.toggleHighlight(true);
-				// Add to the displaylist of the object's parent
+				// Add to the display list of the object's parent
 				targetObj.addEventListener(MouseEvent.MOUSE_DOWN, moveHandler, false, 0, true);
 				// Add the move cursor
 //trace('adding events');
@@ -271,9 +274,9 @@ package svgeditor.tools  {
 					moveHandler(new MouseEvent(MouseEvent.MOUSE_DOWN), true);
 				}
 
-				toolsLayer.stage.addEventListener(KeyboardEvent.KEY_DOWN, keyPressed, false, 0, true);
+				STAGE.addEventListener(KeyboardEvent.KEY_DOWN, keyPressed, false, 0, true);
 			} else {
-				if(toolsLayer && toolsLayer.stage) toolsLayer.stage.removeEventListener(KeyboardEvent.KEY_DOWN, keyPressed);
+				STAGE.removeEventListener(KeyboardEvent.KEY_DOWN, keyPressed);
 				transform.matrix = new Matrix();
 			}
 
@@ -285,7 +288,7 @@ package svgeditor.tools  {
 			// Dispatch the 'select' event if we aren't refreshing
 			if(!isRefreshing && !isShuttingDown) dispatchEvent(e);
 
-			if(!targetObj && currentEvent is MouseEvent && currentEvent.type == MouseEvent.MOUSE_DOWN) {
+			if(!isShuttingDown && !targetObj && currentEvent is MouseEvent && currentEvent.type == MouseEvent.MOUSE_DOWN) {
 				selectionBoxHandler(currentEvent);
 			}
 		}
@@ -334,20 +337,24 @@ package svgeditor.tools  {
 		}
 
 		private function removeSelectionEventHandlers():void {
-			stage.removeEventListener(MouseEvent.MOUSE_UP, moveHandler);
-			editor.removeEventListener(MouseEvent.MOUSE_MOVE, moveHandler);
+			var stageObject:Stage = STAGE;
+			if (stageObject) {
+				stageObject.removeEventListener(MouseEvent.MOUSE_UP, moveHandler);
+				stageObject.removeEventListener(MouseEvent.MOUSE_UP, resizeHandler);
+				stageObject.removeEventListener(MouseEvent.MOUSE_UP, rotateHandler);
+				stageObject.removeEventListener(MouseEvent.MOUSE_MOVE, rotateHandler);
+			}
 
-			stage.removeEventListener(MouseEvent.MOUSE_UP, resizeHandler);
-			editor.removeEventListener(MouseEvent.MOUSE_MOVE, resizeHandler);
-
-			stage.removeEventListener(MouseEvent.MOUSE_UP, rotateHandler);
-			stage.removeEventListener(MouseEvent.MOUSE_MOVE, rotateHandler);
+			if (editor) {
+				editor.removeEventListener(MouseEvent.MOUSE_MOVE, moveHandler);
+				editor.removeEventListener(MouseEvent.MOUSE_MOVE, resizeHandler);
+			}
 		}
 
 		private function keyPressed(e:KeyboardEvent):void {
 			if(isShuttingDown || !editor.isActive()) return;
-			if(stage && (stage.focus is TextField ||
-				(stage.focus is SVGTextField && (stage.focus as SVGTextField).type == TextFieldType.INPUT))) return;
+			if((STAGE.focus is TextField ||
+				(STAGE.focus is SVGTextField && (STAGE.focus as SVGTextField).type == TextFieldType.INPUT))) return;
 
 			var changed:Boolean = true;
 			switch(e.keyCode) {
@@ -472,7 +479,10 @@ package svgeditor.tools  {
 				// Keep the current operations cursor even if the mouse moves away from the handle
 				if(!isTransforming) {
 					//trace('removing cursor, no operation in progress');
-					editor.setCurrentCursor(null);
+					if(editor)
+						editor.setCurrentCursor(null);
+					else if(e.currentTarget)
+						e.currentTarget.removeEventListener(e.type, arguments.callee);
 				}
 				return;
 			}
@@ -498,7 +508,7 @@ package svgeditor.tools  {
 
 		private function updateResizeCursor(handle:Sprite):void {
 			var isDiagonal:Boolean = (scaleHandleDict[handle] as String).length > 6;
-			var r:Rectangle = targetObj.getBounds(stage);
+			var r:Rectangle = targetObj.getBounds(STAGE);
 			var center:Point = new Point((r.left + r.right)/2, (r.top + r.bottom)/2);
 			var up:Point = localToGlobal(new Point(handle.x, handle.y)).subtract(center);
 			up.normalize(1);
@@ -552,7 +562,7 @@ package svgeditor.tools  {
 				case MouseEvent.MOUSE_DOWN:
 					activeHandle = Sprite(e.target);
 					editor.addEventListener(MouseEvent.MOUSE_MOVE, arguments.callee, false, 0, true);
-					stage.addEventListener(MouseEvent.MOUSE_UP, arguments.callee, false, 0, true);
+					STAGE.addEventListener(MouseEvent.MOUSE_UP, arguments.callee, false, 0, true);
 					e.stopPropagation();
 
 					// Reset the center since we're resizing
@@ -570,7 +580,7 @@ package svgeditor.tools  {
 				case MouseEvent.MOUSE_UP:
 					setActive(false);
 					editor.removeEventListener(MouseEvent.MOUSE_MOVE, arguments.callee);
-					stage.removeEventListener(MouseEvent.MOUSE_UP, arguments.callee);
+					STAGE.removeEventListener(MouseEvent.MOUSE_UP, arguments.callee);
 					removeEventListener(MouseEvent.MOUSE_DOWN, arguments.callee);
 					activeHandle = null;
 					targetObj.saveTransform();
@@ -594,7 +604,7 @@ package svgeditor.tools  {
 					if(!targetObj.canMoveByMouse())
 						return;
 					editor.addEventListener(MouseEvent.MOUSE_MOVE, arguments.callee, false, 0, true);
-					stage.addEventListener(MouseEvent.MOUSE_UP, arguments.callee, false, 0, true);
+					STAGE.addEventListener(MouseEvent.MOUSE_UP, arguments.callee, false, 0, true);
 
 					// If they are pressing shift and clicking on the move handle, allow the user
 					// to move the handle (changing the center of rotation for the object)
@@ -609,17 +619,17 @@ package svgeditor.tools  {
 					//break;
 
 				case MouseEvent.MOUSE_MOVE:
-					if(!editor.getCanvasLayer().getBounds(stage).containsPoint(new Point(stage.mouseX, stage.mouseY)))
+					if(!editor.getCanvasLayer().getBounds(STAGE).containsPoint(new Point(STAGE.mouseX, STAGE.mouseY)))
 						break;
 
 					if(moveOffset) {
 						x = parent.mouseX - moveOffset.x;
 						y = parent.mouseY - moveOffset.y;
-						if(editor is BitmapEdit) {
-							var toolsP:Point = editor.snapToGrid(toolsLayer.globalToLocal(parent.localToGlobal(new Point(x, y))));
-							var parentP:Point = parent.globalToLocal(toolsLayer.localToGlobal(toolsP));
-							x = parentP.x;
-							y = parentP.y;
+						if (editor is BitmapEdit) {
+							var p:Point = toolsLayer.globalToLocal(localToGlobal(new Point(topLeftHandle.x, topLeftHandle.y)));
+							var snapped:Point = editor.snapToGrid(p);
+							x += snapped.x - p.x;
+							y += snapped.y - p.y;
 						}
 						updateTarget();
 					} else {
@@ -636,7 +646,7 @@ package svgeditor.tools  {
 					setActive(false);
 					centerMoved = (moveOffset == null);
 					editor.removeEventListener(MouseEvent.MOUSE_MOVE, arguments.callee);
-					stage.removeEventListener(MouseEvent.MOUSE_UP, arguments.callee);
+					STAGE.removeEventListener(MouseEvent.MOUSE_UP, arguments.callee);
 
 					targetObj.saveTransform();
 
@@ -652,8 +662,8 @@ package svgeditor.tools  {
 		private function rotateHandler(e:MouseEvent):void {
 			switch(e.type) {
 				case MouseEvent.MOUSE_DOWN:
-					stage.addEventListener(MouseEvent.MOUSE_MOVE, arguments.callee, false, 0, true);
-					stage.addEventListener(MouseEvent.MOUSE_UP, arguments.callee, false, 0, true);
+					STAGE.addEventListener(MouseEvent.MOUSE_MOVE, arguments.callee, false, 0, true);
+					STAGE.addEventListener(MouseEvent.MOUSE_UP, arguments.callee, false, 0, true);
 
 					// Make sure we can rotate around the center of the selection
 					e.stopPropagation();
@@ -683,8 +693,8 @@ package svgeditor.tools  {
 
 				case MouseEvent.MOUSE_UP:
 					setActive(false);
-					stage.removeEventListener(MouseEvent.MOUSE_MOVE, arguments.callee);
-					stage.removeEventListener(MouseEvent.MOUSE_UP, arguments.callee);
+					STAGE.removeEventListener(MouseEvent.MOUSE_MOVE, arguments.callee);
+					STAGE.removeEventListener(MouseEvent.MOUSE_UP, arguments.callee);
 					targetObj.saveTransform();
 
 					// The object changed!
@@ -773,13 +783,11 @@ package svgeditor.tools  {
 
 			switch(e.type) {
 				case MouseEvent.MOUSE_DOWN:
-					// The Bitmap Editor will want to return to the rectangle or ellipse tool if the user
-					// clicks outside of the selection and the selection is holding a just-drawn rectangle or ellipse.
-					if(editor is BitmapEdit && (editor as BitmapEdit).revertToCreateTool(e))
-						return;
+					// The editor will want to return to the rectangle or ellipse tool if the user clicks outside of the selection and the selection is holding a just-drawn rectangle or ellipse.
+					if (editor.revertToCreateTool(e)) return;
 
-					stage.addEventListener(MouseEvent.MOUSE_MOVE, arguments.callee, false, 0, true);
-					stage.addEventListener(MouseEvent.MOUSE_UP, arguments.callee, false, 0, true);
+					STAGE.addEventListener(MouseEvent.MOUSE_MOVE, arguments.callee, false, 0, true);
+					STAGE.addEventListener(MouseEvent.MOUSE_UP, arguments.callee, false, 0, true);
 					selectionOrigin = editor.snapToGrid(new Point(toolsLayer.mouseX, toolsLayer.mouseY));
 
 					currentEvent = null;
@@ -798,16 +806,17 @@ package svgeditor.tools  {
 
 				case MouseEvent.MOUSE_UP:
 					toolsLayer.graphics.clear();
-					stage.removeEventListener(MouseEvent.MOUSE_MOVE, arguments.callee);
-					stage.removeEventListener(MouseEvent.MOUSE_UP, arguments.callee);
+					STAGE.removeEventListener(MouseEvent.MOUSE_MOVE, arguments.callee);
+					STAGE.removeEventListener(MouseEvent.MOUSE_UP, arguments.callee);
 
 					if (editor is BitmapEdit) {
 						// Compute the selection rectangle relative to the bitmap content.
 						var contentP:Point = contentLayer.globalToLocal(toolsLayer.localToGlobal(rect.topLeft));
 						var scale:Number = editor.getWorkArea().getScale();
+						// trace(contentP.x, contentP.y, rect.width, rect.height, scale);
 						var r:Rectangle = new Rectangle(
-							2 * Math.floor(contentP.x), 2 * Math.floor(contentP.y),
-							2 * Math.ceil(rect.width / scale), 2 * Math.ceil(rect.height / scale));
+							Math.floor(contentP.x * 2), Math.floor(contentP.y * 2),
+							Math.ceil(rect.width / scale * 2), Math.ceil(rect.height / scale * 2));
 						var selectedBM:SVGBitmap = (editor as BitmapEdit).getSelection(r);
 						if (selectedBM) select(new Selection([selectedBM]));
 					} else {
@@ -843,4 +852,3 @@ package svgeditor.tools  {
 		}
 	}
 }
-

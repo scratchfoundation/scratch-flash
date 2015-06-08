@@ -25,12 +25,12 @@ package svgeditor.tools
 	import flash.events.MouseEvent;
 	import flash.geom.Matrix;
 	import flash.geom.Point;
-	
+
 	import svgeditor.BitmapEdit;
 	import svgeditor.ImageEdit;
 	import svgeditor.objs.ISVGEditable;
 	import svgeditor.objs.SVGBitmap;
-	
+
 	import svgutils.SVGElement;
 
 	public final class EyeDropperTool extends SVGTool
@@ -46,19 +46,19 @@ package svgeditor.tools
 			super.init();
 			editor.getWorkArea().addEventListener(MouseEvent.MOUSE_DOWN, mouseDown, false, 0, true);
 		}
-		
+
 		override protected function shutdown():void {
 			editor.getWorkArea().removeEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
 			mouseUp();
 			super.shutdown();
 		}
-		
+
 		private function mouseDown(event:MouseEvent):void {
 			currentEvent = event;
 			grabColor();
-			
-			editor.stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseMove, false, 0, true);
-			editor.stage.addEventListener(MouseEvent.MOUSE_UP, mouseUp, false, 0, true);
+
+			STAGE.addEventListener(MouseEvent.MOUSE_MOVE, mouseMove, false, 0, true);
+			STAGE.addEventListener(MouseEvent.MOUSE_UP, mouseUp, false, 0, true);
 			event.stopPropagation();
 		}
 
@@ -66,12 +66,12 @@ package svgeditor.tools
 			currentEvent = event;
 			grabColor();
 		}
-		
+
 		private function mouseUp(event:MouseEvent = null):void {
-			editor.stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
-			editor.stage.removeEventListener(MouseEvent.MOUSE_UP, mouseUp);
+			STAGE.removeEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
+			STAGE.removeEventListener(MouseEvent.MOUSE_UP, mouseUp);
 		}
-		
+
 		private function grabColor():void {
 			var c:uint;
 			var obj:ISVGEditable;

@@ -55,8 +55,8 @@ public class MediaLibraryItem extends Sprite {
 	private static var thumbnailCache:Object = {};
 
 	private var frame:Shape; // visible when selected
-	private var thumbnail:Bitmap;
-	private var label:TextField;
+	protected var thumbnail:Bitmap;
+	protected var label:DisplayObject;
 	private var info:TextField;
 	private var playButton:IconButton;
 
@@ -106,6 +106,7 @@ public class MediaLibraryItem extends Sprite {
 		return (i < 0) ? '' : s.slice(i + 1);
 	}
 
+	// all paths must call done() even on failure!
 	private function setImageThumbnail(md5:String, done:Function, spriteMD5:String = null):void {
 		var forStage:Boolean = (dbObj.width == 480); // if width is 480, format thumbnail for stage
 		var importer:SVGImporter;
@@ -114,17 +115,22 @@ public class MediaLibraryItem extends Sprite {
 				importer = new SVGImporter(XML(data));
 				importer.loadAllImages(svgImagesLoaded);
 			}
+			else {
+				done();
+			}
 		}
 		function svgImagesLoaded():void {
 			var c:ScratchCostume = new ScratchCostume('', null);
 			c.setSVGRoot(importer.root, false);
 			setThumbnail(c.thumbnail(thumbnailWidth, thumbnailHeight, forStage));
+			done();
 		}
 		function setThumbnail(bm:BitmapData):void {
-			if (!bm) return;
-			thumbnailCache[md5] = bm;
-			if (spriteMD5) thumbnailCache[spriteMD5] = bm;			
-			setThumbnailBM(bm);
+			if (bm) {
+				thumbnailCache[md5] = bm;
+				if (spriteMD5) thumbnailCache[spriteMD5] = bm;
+				setThumbnailBM(bm);
+			}
 			done();
 		}
 		// first, check the thumbnail cache
@@ -136,23 +142,29 @@ public class MediaLibraryItem extends Sprite {
 		else loaders.push(Scratch.app.server.getThumbnail(md5, thumbnailWidth, thumbnailHeight, setThumbnail));
 	}
 
+	// all paths must call done() even on failure!
 	private function setSpriteThumbnail(done:Function):void {
 		function gotJSONData(data:String):void {
-			if (!data) return; // fetch failed
-			var sprObj:Object = util.JSON.parse(data);
-			spriteCache[spriteMD5] = data;
-			dbObj.scriptCount = (sprObj.scripts is Array) ? sprObj.scripts.length : 0;
-			dbObj.costumeCount = (sprObj.costumes is Array) ? sprObj.costumes.length : 0;
-			dbObj.soundCount = (sprObj.sounds is Array) ? sprObj.sounds.length : 0;
-			if (dbObj.scriptCount > 0) setInfo(Translator.map('Scripts:') + ' ' + dbObj.scriptCount);
-			else if (dbObj.costumeCount > 1) setInfo(Translator.map('Costumes:') + ' ' + dbObj.costumeCount);
-			else setInfo('');
-			if ((sprObj.costumes is Array) && (sprObj.currentCostumeIndex is Number)) {
-				var cList:Array = sprObj.costumes;
-				var cObj:Object = cList[Math.round(sprObj.currentCostumeIndex) % cList.length];
-				var md5:String = cObj ? cObj.baseLayerMD5 : null;
-				if (md5) setImageThumbnail(md5, done, spriteMD5);
-			} else {
+			var md5:String;
+			if (data) {
+				var sprObj:Object = util.JSON.parse(data);
+				spriteCache[spriteMD5] = data;
+				dbObj.scriptCount = (sprObj.scripts is Array) ? sprObj.scripts.length : 0;
+				dbObj.costumeCount = (sprObj.costumes is Array) ? sprObj.costumes.length : 0;
+				dbObj.soundCount = (sprObj.sounds is Array) ? sprObj.sounds.length : 0;
+				if (dbObj.scriptCount > 0) setInfo(Translator.map('Scripts:') + ' ' + dbObj.scriptCount);
+				else if (dbObj.costumeCount > 1) setInfo(Translator.map('Costumes:') + ' ' + dbObj.costumeCount);
+				else setInfo('');
+				if ((sprObj.costumes is Array) && (sprObj.currentCostumeIndex is Number)) {
+					var cList:Array = sprObj.costumes;
+					var cObj:Object = cList[Math.round(sprObj.currentCostumeIndex) % cList.length];
+					if (cObj) md5 = cObj.baseLayerMD5;
+				}
+			}
+			if (md5) {
+				setImageThumbnail(md5, done, spriteMD5);
+			}
+			else {
 				done();
 			}
 		}
@@ -189,7 +201,7 @@ public class MediaLibraryItem extends Sprite {
 		addChild(frame);
 	}
 
-	private function addThumbnail():void {
+	protected function addThumbnail():void {
 		if (isSound) {
 			thumbnail = Resources.createBmp('speakerOff');
 			thumbnail.x = 22;
@@ -203,10 +215,11 @@ public class MediaLibraryItem extends Sprite {
 		addChild(thumbnail);
 	}
 
-	private function addLabel():void {
+	protected function addLabel():void {
 		var objName:String = dbObj.name ? dbObj.name : '';
-		label = Resources.makeLabel(objName, labelFormat);
-		label.x = ((frameWidth - label.textWidth) / 2) - 2;
+		var tf:TextField = Resources.makeLabel(objName, labelFormat);
+		label = tf;
+		label.x = ((frameWidth - tf.textWidth) / 2) - 2;
 		label.y = frameHeight - 32;
 		addChild(label);
 	}
@@ -217,7 +230,7 @@ public class MediaLibraryItem extends Sprite {
 		info.y = frameHeight - 17;
 		addChild(info);
 	}
-	
+
 	private function addPlayButton():void {
 		playButton = new IconButton(toggleSoundPlay, 'play');
 		playButton.x = 75;

@@ -30,22 +30,21 @@
 
 package scratch {
 import by.blooddy.crypto.MD5;
-
 import flash.utils.*;
-	import sound.*;
-	import sound.mp3.MP3Loader;
-	import util.*;
+import sound.*;
+import sound.mp3.MP3Loader;
+import util.*;
 
 public class ScratchSound {
 
 	public var soundName:String = '';
 	public var soundID:int;
 	public var md5:String;
-	public var soundData:ByteArray = new ByteArray();
+	private var __soundData:ByteArray = new ByteArray();
 	public var format:String = '';
 	public var rate:int = 44100;
 	public var sampleCount:int;
-	public var bitsPerSample:int; // used only for compressed Squeak sounds; not saved
+	public var bitsPerSample:int; // primarily used for compressed Squeak sounds; not saved
 
 	public var editorData:Object; // cache of data used by sound editor; not saved
 	private const WasEdited:int = -10; // special soundID used to indicate sounds that have been edited
@@ -58,12 +57,16 @@ public class ScratchSound {
 		this.soundName = name;
 		if (sndData != null) {
 			try {
-				var info:* = WAVFile.decode(sndData);
-				if (!((info.encoding == 1) || (info.encoding == 17))) throw Error('Unsupported WAV format');
+				var info:Object = WAVFile.decode(sndData);
+				if ([1, 3, 17].indexOf(info.encoding) == -1) throw Error('Unsupported WAV format');
 				soundData = sndData;
-				format = (info.encoding == 17) ? 'adpcm' : '';
+				if (info.encoding == 17)
+					format = 'adpcm';
+				else if (info.encoding == 3)
+					format = 'float';
 				rate = info.samplesPerSecond;
 				sampleCount = info.sampleCount;
+				bitsPerSample = info.bitsPerSample;
 				reduceSizeIfNeeded(info.channels);
 			} catch (e:*) {
 				setSamples(new Vector.<int>(0), 22050);
@@ -71,18 +74,27 @@ public class ScratchSound {
 		}
 	}
 
+	public function get soundData():ByteArray {
+		return __soundData;
+	}
+
+	public function set soundData(data:ByteArray):void {
+		__soundData = data;
+		md5 = null;
+	}
+
 	private function reduceSizeIfNeeded(channels:int):void {
 		// Convert stereo to mono, downsample if rate > 32000, or both.
 		// Compress if data is over threshold and not already compressed.
 		const compressionThreshold:int = 30 * 44100; // about 30 seconds
-		if ((rate > 32000) || (channels == 2)) {
+		if (rate > 32000 || channels == 2 || format == 'float') {
 			var newRate:int = (rate > 32000) ? rate / 2 : rate;
-			var oldSamples:Vector.<int> = WAVFile.extractSamples(soundData);
-			var newSamples:Vector.<int> =
-				(channels == 2) ?
-					stereoToMono(oldSamples, (newRate < rate)) :
-					downsample(oldSamples);
-			setSamples(newSamples, newRate, true);
+			var samples:Vector.<int> = WAVFile.extractSamples(soundData);
+			if (rate > 32000 || channels == 2)
+				samples = (channels == 2) ?
+					stereoToMono(samples, (newRate < rate)) :
+					downsample(samples);
+			setSamples(samples, newRate, true);
 			soundID = 0;
 		} else if ((soundData.length > compressionThreshold) && ('' == format)) {
 			// Compress large, uncompressed sounds

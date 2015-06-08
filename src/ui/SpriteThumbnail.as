@@ -58,6 +58,7 @@ public class SpriteThumbnail extends Sprite {
 		this.targetObj = targetObj;
 		this.app = app;
 
+		addFrame();
 		addSelectedFrame();
 		addHighlightFrame();
 
@@ -92,10 +93,22 @@ public class SpriteThumbnail extends Sprite {
 		addChild(detailsButton);
 	}
 
+	private function addFrame():void {
+		if (targetObj.isStage) return;
+
+		var frame:Shape = new Shape();
+		var g:Graphics = frame.graphics;
+		g.lineStyle(NaN);
+		g.beginFill(0xFFFFFF);
+		g.drawRoundRect(0, 0, frameW, frameH, 12, 12);
+		g.endFill();
+		addChild(frame);
+	}
+
 	private function addSelectedFrame():void {
 		selectedFrame = new Shape();
 		var g:Graphics = selectedFrame.graphics;
-		var h:int = targetObj.isStage ? stageFrameH : frameH
+		var h:int = targetObj.isStage ? stageFrameH : frameH;
 		g.lineStyle(3, CSS.overColor, 1, true);
 		g.beginFill(CSS.itemSelectedColor);
 		g.drawRoundRect(0, 0, frameW, h, 12, 12);
@@ -108,7 +121,7 @@ public class SpriteThumbnail extends Sprite {
 		const highlightColor:int = 0xE0E000;
 		highlightFrame = new Shape();
 		var g:Graphics = highlightFrame.graphics;
-		var h:int = targetObj.isStage ? stageFrameH : frameH
+		var h:int = targetObj.isStage ? stageFrameH : frameH;
 		g.lineStyle(2, highlightColor, 1, true);
 		g.drawRoundRect(1, 1, frameW - 1, h - 1, 12, 12);
 		highlightFrame.visible = false;
@@ -127,7 +140,7 @@ public class SpriteThumbnail extends Sprite {
 	}
 
 	public function showHighlight(flag:Boolean):void {
-		// Display a highlight if flag is true (e.g. to show broadcast sender/eceivers).
+		// Display a highlight if flag is true (e.g. to show broadcast senders/receivers).
 		highlightFrame.visible = flag;
 	}
 
@@ -233,9 +246,10 @@ public class SpriteThumbnail extends Sprite {
 		if (obj is Block) {
 			// copy a block/stack to this sprite
 			if (targetObj == app.viewedObj()) return false; // dropped on my own thumbnail; do nothing
-			var b:Block = obj as Block;
-			b.restoreOriginalPosition();
-			targetObj.scripts.push(b.duplicate(false, targetObj.isStage));
+			var copy:Block = Block(obj).duplicate(false, targetObj.isStage);
+			copy.x = app.scriptsPane.padding;
+			copy.y = app.scriptsPane.padding;
+			targetObj.scripts.push(copy);
 			return false; // do not consume the original block
 		}
 		return false;

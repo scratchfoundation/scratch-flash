@@ -25,7 +25,7 @@ public class WAVFile {
 
 	public static function empty():ByteArray {
 		// Return sound containing a single zero-valued sample.
-		// Note: A totally empty WAV file is considered broken by Quicktime and perhaps other sound tools.
+		// Note: A totally empty WAV file is considered broken by QuickTime and perhaps other sound tools.
 		var data:ByteArray = new ByteArray();
 		data.writeShort(0);
 		return encode(data, 1, 22050, false);
@@ -60,14 +60,22 @@ public class WAVFile {
 		// read format chunk
 		var formatChunk:ByteArray = extractChunk('fmt ', waveData);
 		if (formatChunk.length < 16) throw Error("WAVFile: format chunk is too small");
-		var encoding:int = formatChunk.readShort();
+		var encoding:uint = formatChunk.readUnsignedShort();
 
 		result.encoding = encoding;
-		result.channels = formatChunk.readShort();
-		result.samplesPerSecond = formatChunk.readInt();
-		result.bytesPerSecond = formatChunk.readInt();
-		result.blockAlignment = formatChunk.readShort();
-		result.bitsPerSample = formatChunk.readShort();
+		result.channels = formatChunk.readUnsignedShort();
+		result.samplesPerSecond = formatChunk.readUnsignedInt();
+		result.bytesPerSecond = formatChunk.readUnsignedInt();
+		result.blockAlignment = formatChunk.readUnsignedShort();
+		result.bitsPerSample = formatChunk.readUnsignedShort();
+		if (formatChunk.length >= 18 && encoding == 0xFFFE) {
+			var extensionSize:uint = formatChunk.readUnsignedShort();
+			if (extensionSize == 22) {
+				result.validBitsPerSample = formatChunk.readUnsignedShort();
+				result.channelMask = formatChunk.readUnsignedInt();
+				result.encoding = encoding = formatChunk.readUnsignedShort();
+			}
+		}
 
 		// get size of data chunk
 		var sampleDataStartAndSize:Array = dataChunkStartAndSize(waveData);
@@ -81,15 +89,18 @@ public class WAVFile {
 				throw Error("WAVFile: can only handle 8-bit or 16-bit uncompressed PCM data");
 			}
 			result.sampleCount = (result.bitsPerSample == 8) ? result.sampleDataSize : result.sampleDataSize / 2;
+		} else if (encoding == 3) {
+			result.sampleCount = Math.floor(result.sampleDataSize / (result.bitsPerSample >>> 3));
+			waveData.position = result.sampleDataStart;
 		} else if (encoding == 17) {
 			if (formatChunk.length < 20) throw Error("WAVFile: adpcm format chunk is too small");
 			if (result.channels != 1) throw Error("WAVFile: adpcm supports only one channel (monophonic)");
 			formatChunk.position += 2;  // skip extra header byte count
-			var samplesPerBlock:int = formatChunk.readShort();
+			var samplesPerBlock:int = formatChunk.readUnsignedShort();
 			result.adpcmBlockSize = ((samplesPerBlock - 1) / 2) + 4; // block size in bytes
 			var factChunk:ByteArray = extractChunk('fact', waveData);
 			if ((factChunk != null) && (factChunk.length == 4)) {
-				result.sampleCount = factChunk.readInt();				
+				result.sampleCount = factChunk.readUnsignedInt();
 			} else {
 				// this should never happen, since there should always be a 'fact' chunk
 				result.sampleCount = 2 * result.sampleDataSize;	 // slight over-estimate (doesn't take ADPCM headers into account)
@@ -97,7 +108,7 @@ public class WAVFile {
 		} else if (encoding == 85) {
 			factChunk = extractChunk('fact', waveData);
 			if ((factChunk != null) && (factChunk.length == 4)) {
-				result.sampleCount = factChunk.readInt();				
+				result.sampleCount = factChunk.readUnsignedInt();
 			}
 		} else {
 			throw Error("WAVFile: unknown encoding " + encoding);
@@ -109,11 +120,21 @@ public class WAVFile {
 	public static function extractSamples(waveData:ByteArray):Vector.<int> {
 		var result:Vector.<int> = new Vector.<int>();
 		var info:Object = WAVFile.decode(waveData);
+		var i:int;
 		var v:int;
 		if (info.encoding == 1) {
 			waveData.position = info.sampleDataStart;
-			for (var i:int = 0; i < info.sampleCount; i++) {
+			for (i = 0; i < info.sampleCount; i++) {
 				v = (info.bitsPerSample == 8) ? ((waveData.readUnsignedByte() - 128) << 8) : waveData.readShort();
+				result.push(v);
+			}
+		} else if (info.encoding == 3) {
+			waveData.position = info.sampleDataStart;
+			for (i = 0; i < info.sampleCount; i++) {
+				var f:Number = (info.bitsPerSample == 32 ? waveData.readFloat() : waveData.readDouble());
+				if (f > 1.0) f = 1.0;
+				if (f < -1.0) f = -1.0;
+				v = f * 0x7fff;
 				result.push(v);
 			}
 		} else if (info.encoding == 17) {
@@ -131,7 +152,8 @@ public class WAVFile {
 			var chunkType:String = waveData.readUTFBytes(4);
 			var chunkSize:int = waveData.readUnsignedInt();
 			if (chunkType == desiredType) {
-				if (chunkSize > waveData.bytesAvailable) return null;
+				if (chunkSize > waveData.bytesAvailable)
+					return null;
 				var result:ByteArray = new ByteArray();
 				result.endian = Endian.LITTLE_ENDIAN;
 				waveData.readBytes(result, 0, chunkSize);

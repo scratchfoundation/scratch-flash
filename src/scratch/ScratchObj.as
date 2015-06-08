@@ -25,23 +25,23 @@
 
 package scratch {
 	import blocks.*;
-	
+
 	import filters.FilterPack;
-	
+
 	import flash.display.*;
 	import flash.events.MouseEvent;
 import flash.geom.ColorTransform;
 import flash.utils.*;
-	
+
 	import interpreter.*;
-	
+
 	import scratch.ScratchComment;
 import scratch.ScratchSprite;
 
 import translation.Translator;
-	
+
 	import util.*;
-	
+
 	import watchers.*;
 
 public class ScratchObj extends Sprite {
@@ -126,23 +126,15 @@ public class ScratchObj extends Sprite {
 		updateImage();
 	}
 
-	public function updateCostume():void { updateImage() }
+	public function updateCostume():void { updateImage(); }
 
 	public function currentCostume():ScratchCostume {
-		return costumes[Math.round(currentCostumeIndex) % costumes.length]
+		return costumes[Math.round(currentCostumeIndex) % costumes.length];
 	}
 
 	public function costumeNumber():int {
 		// One-based costume number as seen by user (currentCostumeIndex is 0-based)
 		return currentCostumeIndex + 1;
-	}
-
-	public function isCostumeNameUsed(name:String):Boolean {
-		var existingNames:Array = [];
-		for each (var c:ScratchCostume in costumes) {
-			existingNames.push(c.costumeName.toLowerCase());
-		}
-		return (existingNames.indexOf(name.toLowerCase()) > -1);
 	}
 
 	public function unusedCostumeName(baseName:String = ''):String {
@@ -195,7 +187,8 @@ public class ScratchObj extends Sprite {
 	}
 
 	protected function updateRenderDetails(reason:uint):void {
-		if(((parent && parent is ScratchStage) || this is ScratchStage)) {
+	SCRATCH::allow3d {
+		if(this is ScratchStage || this is ScratchSprite || (parent && parent is ScratchStage)) {
 			var renderOpts:Object = {};
 			var costume:ScratchCostume = currentCostume();
 
@@ -223,17 +216,14 @@ public class ScratchObj extends Sprite {
 				else
 					renderOpts.bounds = getBounds(this);
 			}
-
-			if(parent is ScratchStage)
-				(parent as ScratchStage).updateRender(this, id, renderOpts);
-			else
-				(this as ScratchStage).updateRender(img, id, renderOpts);
+			if (Scratch.app.isIn3D) Scratch.app.render3D.updateRender((this is ScratchStage ? img : this), id, renderOpts);
 		}
+	}
 	}
 
 	protected function adjustForRotationCenter():void {
 		// Adjust the offset of img relative to it's parent. If this object is a
-		// ScratchSprite, then img is adusted based on the costume's rotation center.
+		// ScratchSprite, then img is adjusted based on the costume's rotation center.
 		// If it is a ScratchStage, img is centered on the stage.
 		var costumeObj:DisplayObject = img.getChildAt(0);
 		if (isStage) {
@@ -272,18 +262,20 @@ public class ScratchObj extends Sprite {
 			img.transform.colorTransform = cTrans;
 		}
 		else {
-			updateEffects();
+			updateEffectsFor3D();
 		}
 	}
 
-	protected function updateEffects():void {
-		if((parent && parent is ScratchStage) || this is ScratchStage) {
-			if(parent is ScratchStage)
-				(parent as ScratchStage).updateSpriteEffects(this, filterPack.getAllSettings());
-			else {
-				(this as ScratchStage).updateSpriteEffects(img, filterPack.getAllSettings());
-//				if((this as ScratchStage).videoImage)
-//					(this as ScratchStage).updateSpriteEffects((this as ScratchStage).videoImage, filterPack.getAllSettings());
+	public function updateEffectsFor3D():void {
+		SCRATCH::allow3d {
+			if((parent && parent is ScratchStage) || this is ScratchStage) {
+				if(parent is ScratchStage)
+					(parent as ScratchStage).updateSpriteEffects(this, filterPack.getAllSettings());
+				else {
+					(this as ScratchStage).updateSpriteEffects(img, filterPack.getAllSettings());
+//					if((this as ScratchStage).videoImage)
+//						(this as ScratchStage).updateSpriteEffects((this as ScratchStage).videoImage, filterPack.getAllSettings());
+				}
 			}
 		}
 	}
@@ -300,8 +292,10 @@ public class ScratchObj extends Sprite {
 		img.transform.colorTransform = clearColorTrans;
 		clearCachedBitmap();
 
-		if(parent && parent is ScratchStage) {
-			(parent as ScratchStage).updateSpriteEffects(this, null);
+		SCRATCH::allow3d {
+			if (parent && parent is ScratchStage) {
+				(parent as ScratchStage).updateSpriteEffects(this, null);
+			}
 		}
 	}
 
@@ -321,11 +315,10 @@ public class ScratchObj extends Sprite {
 	public function defaultArgsFor(op:String, specDefaults:Array):Array {
 		// Return an array of default parameter values for the given operation (primitive name).
 		// For most ops, this will simply return the array of default arg values from the command spec.
-		var app:Scratch = root as Scratch;
 		var sprites:Array;
 
 		if ((['broadcast:', 'doBroadcastAndWait', 'whenIReceive'].indexOf(op)) > -1) {
-			var msgs:Array = app.runtime.collectBroadcasts();
+			var msgs:Array = Scratch.app.runtime.collectBroadcasts();
 			return (msgs.length > 0) ? [msgs[0]] : ['message1'];
 		}
 		if ((['lookLike:', 'startScene', 'startSceneAndWait', 'whenSceneStarts'].indexOf(op)) > -1) {
@@ -336,11 +329,11 @@ public class ScratchObj extends Sprite {
 		}
 		if ('createCloneOf' == op) {
 			if (!isStage) return ['_myself_'];
-			sprites = app.stagePane.sprites();
+			sprites = Scratch.app.stagePane.sprites();
 			return (sprites.length > 0) ? [sprites[sprites.length - 1].objName] : [''];
 		}
 		if ('getAttribute:of:' == op) {
-			sprites = app.stagePane.sprites();
+			sprites = Scratch.app.stagePane.sprites();
 			return (sprites.length > 0) ? ['x position', sprites[sprites.length - 1].objName] : ['volume', '_stage_'];
 		}
 
@@ -453,12 +446,18 @@ public class ScratchObj extends Sprite {
 		return false;
 	}
 
+	public function hasName(varName:String):Boolean {
+		var p:ScratchObj = parent as ScratchObj;
+		return ownsVar(varName) || ownsList(varName) || p && (p.ownsVar(varName) || p.ownsList(varName));
+	}
+
 	public function lookupOrCreateVar(varName:String):Variable {
 		// Lookup and return a variable. If lookup fails, create the variable in this object.
 		var v:Variable = lookupVar(varName);
 		if (v == null) { // not found; create it
 			v = new Variable(varName, 0);
 			variables.push(v);
+			Scratch.app.updatePalette(false);
 		}
 		return v;
 	}
@@ -512,6 +511,7 @@ public class ScratchObj extends Sprite {
 		if (list == null) { // not found; create it
 			list = new ListWatcher(listName, [], this);
 			lists.push(list);
+			Scratch.app.updatePalette(false);
 		}
 		return list;
 	}
@@ -552,7 +552,7 @@ public class ScratchObj extends Sprite {
 		var now:uint = getTimer();
 		app.runtime.startClickedHats(this);
 		if ((now - lastClickTime) < DOUBLE_CLICK_MSECS) {
-			if (!isStage && ScratchSprite(this).isClone) return;
+			if (isStage || ScratchSprite(this).isClone) return;
 			app.selectSprite(this);
 			lastClickTime = 0;
 		} else {
@@ -605,16 +605,16 @@ public class ScratchObj extends Sprite {
 
 	public function readJSON(jsonObj:Object):void {
 		objName = jsonObj.objName;
-		variables = (jsonObj.variables == undefined) ? [] : jsonObj.variables;
+		variables = jsonObj.variables || [];
 		for (var i:int = 0; i < variables.length; i++) {
 			var varObj:Object = variables[i];
 			variables[i] = Scratch.app.runtime.makeVariable(varObj);
 		}
-		lists = (jsonObj.lists == undefined) ? [] : jsonObj.lists;
-		scripts = (jsonObj.scripts == undefined) ? [] : jsonObj.scripts;
-		scriptComments = (jsonObj.scriptComments == undefined) ? [] : jsonObj.scriptComments;
-		sounds = (jsonObj.sounds == undefined) ? [] : jsonObj.sounds;
-		costumes = jsonObj.costumes;
+		lists = jsonObj.lists || [];
+		scripts = jsonObj.scripts || [];
+		scriptComments = jsonObj.scriptComments || [];
+		sounds = jsonObj.sounds || [];
+		costumes = jsonObj.costumes || [];
 		currentCostumeIndex = jsonObj.currentCostumeIndex;
 		if (isNaNOrInfinity(currentCostumeIndex)) currentCostumeIndex = 0;
 	}
@@ -670,6 +670,55 @@ public class ScratchObj extends Sprite {
 			costumes[i] = new ScratchCostume('json temp', null);
 			costumes[i].readJSON(jsonObj);
 		}
+	}
+
+	public function getSummary():String {
+		var s:Array = [];
+		s.push(h1(objName));
+		if (variables.length) {
+			s.push(h2(Translator.map("Variables")));
+			for each (var v:Variable in variables) {
+				s.push("- " + v.name + " = " + v.value);
+			}
+			s.push("");
+		}
+		if (lists.length) {
+			s.push(h2(Translator.map("Lists")));
+			for each (var list:ListWatcher in lists) {
+				s.push("- " + list.listName + (list.contents.length ? ":" : ""));
+				for each (var item:* in list.contents) {
+					s.push("    - " + item);
+				}
+			}
+			s.push("");
+		}
+		s.push(h2(Translator.map(isStage ? "Backdrops" : "Costumes")));
+		for each (var costume:ScratchCostume in costumes) {
+			s.push("- " + costume.costumeName);
+		}
+		s.push("");
+		if (sounds.length) {
+			s.push(h2(Translator.map("Sounds")));
+			for each (var sound:ScratchSound in sounds) {
+				s.push("- " + sound.soundName);
+			}
+			s.push("");
+		}
+		if (scripts.length) {
+			s.push(h2(Translator.map("Scripts")));
+			for each (var script:Block in scripts) {
+				s.push(script.getSummary());
+				s.push("")
+			}
+		}
+		return s.join("\n");
+	}
+
+	protected static function h1(s:String, ch:String = "="):String {
+		return s + "\n" + new Array(s.length + 1).join(ch) + "\n";
+	}
+	protected static function h2(s:String):String {
+		return h1(s, "-");
 	}
 
 }}

@@ -242,6 +242,12 @@ public class SpriteInfoPart extends UIPart implements DragClient {
 		draggableLabel.y = nextY;
 		draggableButton.x = draggableLabel.x + draggableLabel.textWidth + 10;
 		draggableButton.y = nextY + 4;
+
+		nextY += 22;
+		showSpriteLabel.x = left;
+		showSpriteLabel.y = nextY;
+		showSpriteButton.x = showSpriteLabel.x + showSpriteLabel.textWidth + 10;
+		showSpriteButton.y = nextY + 4;
 	}
 
 	private function closeSpriteInfo(ignore:*):void {
@@ -340,11 +346,8 @@ public class SpriteInfoPart extends UIPart implements DragClient {
 	}
 
 	private function nameChanged():void {
-		app.viewedObj().objName = spriteName.contents();
-		for each (var lw:ListWatcher in app.viewedObj().lists) {
-			lw.updateTitle();
-		}
-		app.setSaveNeeded();
+		app.runtime.renameSprite(spriteName.contents());
+		spriteName.setContents(app.viewedObj().objName);
 	}
 
 	public function updateThumbnail():void {

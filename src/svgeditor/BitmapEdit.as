@@ -23,7 +23,7 @@ John:
   [x] deactivate when media library showing (so cursor doesn't disappear)
   [ ] snap costume center to grid
   [ ] allow larger pens (make size slider be non-linear)
-  [ ] when converting stage from bm to vector, trim white area (?)
+  [ ] when converting stage from bitmap to vector, trim white area (?)
   [ ] minor: small shift when baking in after moving selection
   [ ] add readout for pen size
   [ ] add readout for zoom
@@ -61,22 +61,11 @@ public class BitmapEdit extends ImageEdit {
 	];
 
 	private var offscreenBM:BitmapData;
-	private var lastToolMode:String;
 
 	public function BitmapEdit(app:Scratch, imagesPart:ImagesPart) {
 		super(app, imagesPart);
 		addStampTool();
 		setToolMode('bitmapBrush');
-	}
-
-	public function revertToCreateTool(e:MouseEvent):Boolean {
-		// If just finished creating and placing a rect or ellipse, return to that tool.
-		if (toolMode == 'bitmapSelect' && ((lastToolMode == 'rect') || (lastToolMode == 'ellipse'))) {
-			setToolMode(lastToolMode);
-			(currentTool as SVGCreateTool).eventHandler(e);
-			return true;
-		}
-		return false;
 	}
 
 	protected override function getToolDefs():Array { return bitmapTools }
@@ -103,7 +92,7 @@ public class BitmapEdit extends ImageEdit {
 		var toolsLayer:Sprite = getToolsLayer();
 		var contentLayer:Sprite = workArea.getContentLayer();
 		var p:Point = contentLayer.globalToLocal(toolsLayer.localToGlobal(toolsP));
-		var roundedP:Point = new Point(2 * Math.round(p.x / 2), 2 * Math.round(p.y / 2)); // round to nearest half pixel
+		var roundedP:Point = workArea.getScale() == 1 ? new Point(Math.round(p.x), Math.round(p.y)) : new Point(Math.round(p.x * 2) / 2, Math.round(p.y * 2) / 2);
 		return toolsLayer.globalToLocal(contentLayer.localToGlobal(roundedP));
 	}
 
@@ -112,7 +101,7 @@ public class BitmapEdit extends ImageEdit {
 		r = r.intersection(bm.rect); // constrain selection to bitmap content
 		if ((r.width < 1) || (r.height < 1)) return null; // empty rectangle
 
-		var selectionBM:BitmapData = new BitmapData(r.width, r.height, true, 0);;
+		var selectionBM:BitmapData = new BitmapData(r.width, r.height, true, 0);
 		selectionBM.copyPixels(bm, r, new Point(0, 0));
 		if (stampMode) {
 			highlightTool('bitmapSelect');
@@ -156,14 +145,28 @@ public class BitmapEdit extends ImageEdit {
 			bakeIntoBitmap();
 			saveToCostume();
 		}
+
+		var cropToolEnabled:Boolean = (currentTool is ObjectTransformer && !!(currentTool as ObjectTransformer).getSelection());
+		imagesPart.setCanCrop(cropToolEnabled);
 	}
 
-	public function deletingSelection():void {
-		if (app.runtime.shiftIsDown) {
+	public function cropToSelection():void {
+		var sel:Selection;
+		var transformTool:ObjectTransformer = currentTool as ObjectTransformer;
+		if (transformTool) {
+			sel = transformTool.getSelection();
+		}
+		if (sel) {
 			var bm:BitmapData = workArea.getBitmap().bitmapData;
 			bm.fillRect(bm.rect, 0);
 			app.runtime.shiftIsDown = false;
 			bakeIntoBitmap(false);
+		}
+	}
+
+	public function deletingSelection():void {
+		if (app.runtime.shiftIsDown) {
+			cropToSelection();
 		}
 	}
 
@@ -190,8 +193,8 @@ public class BitmapEdit extends ImageEdit {
 		var el:SVGElement = SVGElement.makeBitmapEl(c.bitmapForEditor(isScene), 0.5);
 		var sel:SVGBitmap = new SVGBitmap(el, el.bitmap);
 		sel.redraw();
-		sel.x = destP.x;
-		sel.y = destP.y;
+		sel.x = destP.x - c.width() / 2;
+		sel.y = destP.y - c.height() / 2;
 		workArea.getContentLayer().addChild(sel);
 
 		setToolMode('bitmapSelect');
@@ -219,49 +222,33 @@ public class BitmapEdit extends ImageEdit {
 			if (r.width >= 1 && r.height >= 1) {
 				newBM = new BitmapData(r.width, r.height, true, 0);
 				newBM.copyPixels(bm, r, new Point(0, 0));
+				c.setBitmapData(newBM, Math.floor(480 - r.x), Math.floor(360 - r.y));
 			} else {
 				newBM = new BitmapData(2, 2, true, 0); // empty bitmap
+				c.setBitmapData(newBM, 0, 0);
 			}
-			c.setBitmapData(newBM, Math.floor(480 - r.x), Math.floor(360 - r.y));
 		}
 		recordForUndo(c.baseLayerBitmap.clone(), c.rotationCenterX, c.rotationCenterY);
 		Scratch.app.setSaveNeeded();
 	}
 
-	override public function setToolMode(newMode:String, bForce:Boolean = false):void {
+	override public function setToolMode(newMode:String, bForce:Boolean = false, fromButton:Boolean = false):void {
+		imagesPart.setCanCrop(false);
 		highlightTool('none');
-		if (('bitmapSelect' == newMode) && (('ellipse' == toolMode) || ('rect' == toolMode))) {
-			lastToolMode = toolMode;
-		} else {
-			lastToolMode = '';
-		}
 		var obj:ISVGEditable = null;
 		if (newMode != toolMode && currentTool is SVGEditTool)
 			obj = (currentTool as SVGEditTool).getObject();
 
 		var prevToolMode:String = toolMode;
-		super.setToolMode(newMode, bForce);
-		if (lastToolMode != '') highlightTool(lastToolMode);
+		super.setToolMode(newMode, bForce, fromButton);
 
 		if (obj) {
-			if (currentTool is TextTool && prevToolMode == 'bitmapSelect') {
-				(currentTool as TextTool).setObject(obj);
-			}
-			else if (!(currentTool is ObjectTransformer)) {
+			if (!(currentTool is ObjectTransformer)) {
 				// User was editing an object and switched tools, bake the object
 				bakeIntoBitmap();
 				saveToCostume();
 			}
 		}
-	}
-
-	private function highlightTool(toolName:String):void {
-		// Hack! This method forces a given to be highlighted even if that's not the
-		// actual mode. Used to force shape buttons to stay highlighted even when moving
-		// the shape around with the select tool.
-		if (!toolName || (toolName == '')) return;
-		for each (var btn:IconButton in toolButtons) btn.turnOff();
-		if (toolButtons[toolName]) toolButtons[toolName].turnOn();
 	}
 
 	private function createdObjectIsEmpty():Boolean {
@@ -345,7 +332,7 @@ public class BitmapEdit extends ImageEdit {
 	public override function translateContents(x:Number, y:Number):void {
 		var bm:BitmapData = workArea.getBitmap().bitmapData;
 		var newBM:BitmapData = new BitmapData(bm.width, bm.height, true, 0);
-		newBM.copyPixels(bm, bm.rect, new Point(2 * x, 2 * y));
+		newBM.copyPixels(bm, bm.rect, new Point(Math.round(2 * x), Math.round(2 * y)));
 		workArea.getBitmap().bitmapData = newBM;
 	}
 

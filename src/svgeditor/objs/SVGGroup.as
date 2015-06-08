@@ -21,11 +21,11 @@ package svgeditor.objs
 {
 	import flash.display.DisplayObject;
 	import flash.display.Sprite;
-	
+
 	import svgeditor.objs.ISVGEditable;
-	
+
 	import svgutils.SVGElement;
-	
+
 	public class SVGGroup extends Sprite implements ISVGEditable
 	{
 		private var element:SVGElement;
@@ -34,13 +34,13 @@ package svgeditor.objs
 			super();
 			element = elem;
 		}
-		
+
 		public function getElement():SVGElement {
 			element.subElements = getSubElements();
 			element.transform = transform.matrix;
 			return element;
 		}
-		
+
 		public function redraw(forHitTest:Boolean = false):void {
 			if(element.transform) transform.matrix = element.transform;
 
@@ -63,7 +63,7 @@ package svgeditor.objs
 			}
 			return elements;
 		}
-		
+
 		public function clone():ISVGEditable {
 			var copy:SVGGroup = new SVGGroup(element.clone());
 			(copy as DisplayObject).transform.matrix = transform.matrix.clone();

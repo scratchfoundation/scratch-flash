@@ -28,17 +28,15 @@ import flash.display.DisplayObject;
 import flash.display.Sprite;
 import flash.events.Event;
 
-public interface IRenderIn3D {
+public interface IRenderIn3D {SCRATCH::allow3d{
 	function setStage(stage:Sprite, penLayer:DisplayObject):void;
 	function getUIContainer():Sprite;
 	function getRenderedChild(dispObj:DisplayObject, width:Number, height:Number, for_carry:Boolean = false):BitmapData;
 	function getOtherRenderedChildren(skipObj:DisplayObject, scale:Number):BitmapData;
 	function updateRender(dispObj:DisplayObject, renderID:String = null, renderOpts:Object = null):void;
 	function updateFilters(dispObj:DisplayObject, effects:Object):void;
-	function updateGeometry(dispObj:DisplayObject):void;
 	function onStageResize(e:Event = null):void;
 	function getRender(bmd:BitmapData):void;
 	function setStatusCallback(callback:Function):void;
-	function spriteIsLarge(dispObj:DisplayObject):Boolean;
-}
+}}
 }

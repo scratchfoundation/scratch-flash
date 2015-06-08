@@ -43,7 +43,7 @@ public class PaletteSelectorItem extends Sprite {
 		setSelected(false);
 		addEventListener(MouseEvent.MOUSE_OVER, mouseOver);
 		addEventListener(MouseEvent.MOUSE_OUT, mouseOut);
-		addEventListener(MouseEvent.MOUSE_UP, mouseUp);
+		addEventListener(MouseEvent.CLICK, mouseUp);
 	}
 
 	private function addLabel(s:String):void {

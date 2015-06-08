@@ -208,6 +208,8 @@ public class Resources {
 	// Paint Tools
 	[Embed(source='UI/paint/ellipseOff.png')] private static const ellipseOff:Class;
 	[Embed(source='UI/paint/ellipseOn.png')] private static const ellipseOn:Class;
+	[Embed(source='UI/paint/cropOff.png')] private static const cropOff:Class;
+	[Embed(source='UI/paint/cropOn.png')] private static const cropOn:Class;
 	[Embed(source='UI/paint/flipHOff.gif')] private static const flipHOff:Class;
 	[Embed(source='UI/paint/flipHOn.gif')] private static const flipHOn:Class;
 	[Embed(source='UI/paint/flipVOff.gif')] private static const flipVOff:Class;

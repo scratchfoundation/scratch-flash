@@ -109,7 +109,10 @@ public class DrawPropertyUI extends Sprite {
 			'Line width', 'Eraser width'];
 	}
 
+	public var w:int, h:int;
 	public function setWidthHeight(w:int, h:int):void {
+		this.w = w;
+		this.h = h;
 		var g:Graphics = bg.graphics;
 		g.clear();
 		g.lineStyle(1, CSS.borderColor);
@@ -124,9 +127,10 @@ public class DrawPropertyUI extends Sprite {
 		zoomButtons.x = w - zoomButtons.width - 5;
 		zoomButtons.y = 5;
 
-		modeLabel.x = w - 103;
+		var modeX:int = w - 5 - Math.max(modeLabel.width, modeButton.width) / 2;
+		modeLabel.x = modeX - modeLabel.width / 2;
 		modeLabel.y = h - 47;
-		modeButton.x = modeLabel.x + Math.round((modeLabel.width - modeButton.width) / 2);
+		modeButton.x = modeX - modeButton.width / 2;
 		modeButton.y = modeLabel.y + 22;
 
 		// hide in embedded editor???
@@ -141,7 +145,7 @@ public class DrawPropertyUI extends Sprite {
 	public function set settings(props:DrawProperties):void {
 		currentValues = props;
 		colorPicker.pickColor();
-		strokeWidthSlider.value = props.strokeWidth;
+		strokeWidthSlider.value = eraserStrokeMode ? props.eraserWidth : props.strokeWidth;
 		updateStrokeWidthDisplay();
 	}
 
@@ -204,7 +208,7 @@ public class DrawPropertyUI extends Sprite {
 		strokeWidthSlider.visible = isStroke || isEraser;
 		disableEvents = true;
 		SimpleTooltips.add(strokeWidthSlider.parent, {text: (isEraser ? 'Eraser width' : 'Line width'), direction: 'top'});
-		strokeWidthSlider.value = currentValues.strokeWidth;
+		strokeWidthSlider.value = isEraser ? currentValues.eraserWidth : currentValues.strokeWidth;
 		disableEvents = false;
 		updateStrokeWidthDisplay();
 	}
@@ -337,6 +341,15 @@ public class DrawPropertyUI extends Sprite {
 		currentValues.fontName = fontName;
 	}
 
+	public function updateTranslation():void {
+		fontLabel.text = Translator.map('Font:');
+		smoothStrokeBtn.setLabel(Translator.map('Smooth'));
+		modeLabel.text = Translator.map(editor is SVGEdit ? 'Vector Mode' : 'Bitmap Mode');
+		modeButton.setLabel(Translator.map(editor is SVGEdit ? 'Convert to bitmap' : 'Convert to vector'));
+		SimpleTooltips.add(strokeWidthSlider.parent, {text: eraserStrokeMode ? 'Eraser width' : 'Line width', direction: 'top'});
+		fixLayout(w, h);
+	}
+
 	private function makeShapeUI():void {
 		shapeUI = new Sprite();
 
@@ -429,11 +442,16 @@ public class DrawPropertyUI extends Sprite {
 
 	private function makeStrokeUI():void {
 		function updateStrokeWidth(w:Number):void {
-			currentValues.strokeWidth = w;
+			if (eraserStrokeMode) {
+				currentValues.eraserWidth = w;
+			}
+			else {
+				currentValues.strokeWidth = w;
+			}
 			updateStrokeWidthDisplay();
 			sendChangeEvent();
 		}
-		
+
 		var ttBg:Sprite = new Sprite();
 		addChild(ttBg);
 
@@ -465,7 +483,7 @@ public class DrawPropertyUI extends Sprite {
 	}
 
 	private function updateStrokeWidthDisplay(ignore:* = null):void {
-		var w:Number = currentValues.strokeWidth;
+		var w:Number = eraserStrokeMode ? currentValues.eraserWidth : currentValues.strokeWidth;
 		if (editor is BitmapEdit) {
 			if (19 == w) w = 17;
 			if (29 == w) w = 20;

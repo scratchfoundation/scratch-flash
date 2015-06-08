@@ -24,25 +24,23 @@
 // socket-based communications with local and server-based extension helper applications.
 
 package extensions {
-import blocks.BlockArg;
-
-import flash.events.*;
-	import flash.external.ExternalInterface;
+	import flash.errors.IllegalOperationError;
+	import flash.events.*;
 	import flash.net.*;
+	import flash.utils.Dictionary;
 	import flash.utils.getTimer;
 	import blocks.Block;
 	import interpreter.*;
-
-import uiwidgets.DialogBox;
-
-import uiwidgets.IndicatorLight;
+	import uiwidgets.DialogBox;
+	import uiwidgets.IndicatorLight;
 	import util.*;
 
 public class ExtensionManager {
 
 	private var app:Scratch;
-	private var extensionDict:Object = new Object(); // extension name -> extension record
+	protected var extensionDict:Object = new Object(); // extension name -> extension record
 	private var justStartedWait:Boolean;
+	private var pollInProgress:Dictionary = new Dictionary(true);
 	static public const wedoExt:String = 'LEGO WeDo';
 
 	public function ExtensionManager(app:Scratch) {
@@ -59,6 +57,11 @@ public class ExtensionManager {
 	}
 
 	public function clearImportedExtensions():void {
+		for each(var ext:ScratchExtension in extensionDict) {
+			if(ext.showBlocks)
+				setEnabled(ext.name, false);
+		}
+
 		// Clear imported extensions before loading a new project.
 		extensionDict = {};
 		extensionDict['PicoBoard'] = ScratchExtension.PicoBoard();
@@ -90,13 +93,15 @@ public class ExtensionManager {
 		var ext:ScratchExtension = extensionDict[extName];
 		if (ext && ext.showBlocks != flag) {
 			ext.showBlocks = flag;
-			if(app.jsEnabled) {
-				if(flag && ext.javascriptURL) {
-					ExternalInterface.call('ScratchExtensions.loadExternalJS', ext.javascriptURL);
+			if(app.jsEnabled && ext.javascriptURL) {
+				if(flag) {
+					var javascriptURL:String = ext.isInternal ? Scratch.app.fixExtensionURL(ext.javascriptURL) : ext.javascriptURL;
+					app.externalCall('ScratchExtensions.loadExternalJS', null, javascriptURL);
 					ext.showBlocks = false; // Wait for it to load
 				}
-				else if(!flag) {
-					ExternalInterface.call('ScratchExtensions.unregister', extName);
+				else {
+					app.externalCall('ScratchExtensions.unregister', null, extName);
+					if(!ext.isInternal) delete extensionDict[extName];
 				}
 			}
 		}
@@ -124,35 +129,6 @@ public class ExtensionManager {
 		}
 	}
 
-	// -----------------------------
-	// Importing
-	//------------------------------
-
-	public function importExtension():void {
-		function fileSelected(event:Event):void {
-			if (fileList.fileList.length == 0) return;
-			var file:FileReference = FileReference(fileList.fileList[0]);
-			file.addEventListener(Event.COMPLETE, fileLoaded);
-			file.load();
-		}
-		function fileLoaded(event:Event):void {
-			var extObj:Object;
-			try {
-				extObj = util.JSON.parse(FileReference(event.target).data.toString());
-			} catch(e:*) {}
-			if (!extObj || !('extensionName' in extObj) || !('extensionPort' in extObj)) return;
-			if (!extObj.blockSpecs) extObj.blockSpecs = [];
-
-			loadRawExtension(extObj);
-		}
-		var fileList:FileReferenceList = new FileReferenceList();
-		fileList.addEventListener(Event.SELECT, fileSelected);
-		try {
-			// Ignore the exception that happens when you call browse() with the file browser open
-			fileList.browse();
-		} catch(e:*) {}
-	}
-
 	public function extensionsToSave():Array {
 		// Answer an array of extension descriptor objects for imported extensions to be saved with the project.
 		var result:Array = [];
@@ -169,6 +145,10 @@ public class ExtensionManager {
 		}
 		return result;
 	}
+
+	// -----------------------------
+	// Communications
+	//------------------------------
 
 	public function callCompleted(extensionName:String, id:Number):void {
 		var ext:ScratchExtension = extensionDict[extensionName];
@@ -195,11 +175,34 @@ public class ExtensionManager {
 		}
 	}
 
-	public function loadRawExtension(extObj:Object):void {
+	// -----------------------------
+	// Loading
+	//------------------------------
+
+	public function loadCustom(ext:ScratchExtension):void {
+		if(!extensionDict[ext.name] && ext.javascriptURL) {
+			extensionDict[ext.name] = ext;
+			ext.showBlocks = false;
+			setEnabled(ext.name, true);
+		}
+	}
+
+	public function loadRawExtension(extObj:Object):ScratchExtension {
 		var ext:ScratchExtension = extensionDict[extObj.extensionName];
-		if(!ext || (ext.blockSpecs && ext.blockSpecs.length))
-				ext = new ScratchExtension(extObj.extensionName, extObj.extensionPort);
+		if(!ext)
+			ext = new ScratchExtension(extObj.extensionName, extObj.extensionPort);
+		ext.port = extObj.extensionPort;
 		ext.blockSpecs = extObj.blockSpecs;
+		if (app.isOffline && (ext.port == 0)) {
+			// Fix up block specs to force reporters to be treated as requesters.
+			// This is because the offline JS interface doesn't support returning values directly.
+			for each(var spec:Object in ext.blockSpecs) {
+				if(spec[0] == 'r') {
+					// 'r' is reporter, 'R' is requester, and 'rR' is a reporter forced to act as a requester.
+					spec[0] = 'rR';
+				}
+			}
+		}
 		if(extObj.url) ext.url = extObj.url;
 		ext.showBlocks = true;
 		ext.menus = extObj.menus;
@@ -217,29 +220,37 @@ public class ExtensionManager {
 				break;
 			}
 		}
+
+		return ext;
 	}
 
 	public function loadSavedExtensions(savedExtensions:Array):void {
 		// Reset the system extensions and load the given array of saved extensions.
 		if (!savedExtensions) return; // no saved extensions
 		for each (var extObj:Object in savedExtensions) {
+			if (isInternal(extObj.extensionName)) {
+				setEnabled(extObj.extensionName, true);
+				continue; // internal extension overrides one saved in project
+			}
+
 			if (!('extensionName' in extObj) ||
 				(!('extensionPort' in extObj) && !('javascriptURL' in extObj)) ||
 				!('blockSpecs' in extObj)) {
 					continue;
 			}
-			if (extensionDict[extObj.extensionName] &&
-				extensionDict[extObj.extensionName].isInternal) {
-					setEnabled(extObj.extensionName, true);
-					continue; // internal extension overrides one saved in project
-			}
 
 			var ext:ScratchExtension = new ScratchExtension(extObj.extensionName, extObj.extensionPort || 0);
+			extensionDict[extObj.extensionName] = ext;
 			ext.blockSpecs = extObj.blockSpecs;
 			ext.showBlocks = true;
+			ext.isInternal = false; // For now?
 			ext.menus = extObj.menus;
-			if(extObj.javascriptURL) ext.javascriptURL = extObj.javascriptURL;
-			extensionDict[extObj.extensionName] = ext;
+			if(extObj.javascriptURL) {
+				ext.javascriptURL = extObj.javascriptURL;
+				ext.showBlocks = false;
+				if(extObj.id) ext.id = extObj.id;
+				setEnabled(extObj.extensionName, true);
+			}
 		}
 		Scratch.app.updatePalette();
 	}
@@ -253,7 +264,7 @@ public class ExtensionManager {
 		var i:int = op.indexOf('.');
 		if (i < 0) return null;
 		var ext:ScratchExtension = extensionDict[op.slice(0, i)];
-		if (ext == null) return null; // unknown extension
+		if (!ext || !ext.menus) return null; // unknown extension
 		return ext.menus[menuName];
 	}
 
@@ -266,26 +277,29 @@ public class ExtensionManager {
 			var msecsSinceLastResponse:uint = getTimer() - ext.lastPollResponseTime;
 			if (msecsSinceLastResponse > 500) indicator.setColorAndMsg(0xE00000, 'Cannot find helper app');
 			else if (ext.problem != '') indicator.setColorAndMsg(0xE0E000, ext.problem);
-			else indicator.setColorAndMsg(0x00C000, 'Okay');
+			else indicator.setColorAndMsg(0x00C000, ext.success);
 		}
 		else if(app.jsEnabled) {
-			var retval:Object = ExternalInterface.call('ScratchExtensions.getStatus', ext.name);
-			if(!retval) retval = {status: 0, msg: 'Cannot communicate with extension.'};
+			function statusCallback(retval:Object):void {
+				if(!retval) retval = {status: 0, msg: 'Cannot communicate with extension.'};
 
-			var color:uint;
-			if(retval.status == 2) color = 0x00C000;
-			else if(retval.status == 1) color = 0xE0E000;
-			else {
-				color = 0xE00000;
-				if(firstTime) {
-					Scratch.app.showTip('extensions');
+				var color:uint;
+				if(retval.status == 2) color = 0x00C000;
+				else if(retval.status == 1) color = 0xE0E000;
+				else {
+					color = 0xE00000;
+					if(firstTime) {
+						Scratch.app.showTip('extensions');
 //					DialogBox.notify('Extension Problem', 'It looks like the '+ext.name+' is not working properly.' +
 //							'Please read the extensions help in the tips window.', Scratch.app.stage);
-					DialogBox.notify('Extension Problem', 'See the Tips window (on the right) to install the plug-in and get the extension working.', Scratch.app.stage);
+						DialogBox.notify('Extension Problem', 'See the Tips window (on the right) to install the plug-in and get the extension working.');
+					}
 				}
+
+				indicator.setColorAndMsg(color, retval.msg);
 			}
 
-			indicator.setColorAndMsg(color, retval.msg);
+			app.externalCall('ScratchExtensions.getStatus', statusCallback, ext.name);
 		}
 	}
 
@@ -321,12 +335,18 @@ public class ExtensionManager {
 			else {
 				var sensorName:String = primOrVarName;
 				if(ext.port > 0) {  // we were checking ext.isInternal before, should we?
-					for each (var a:* in args) sensorName += '/' + a; // append menu args
+					sensorName = encodeURIComponent(sensorName);
+					for each (var a:* in args) sensorName += '/' + encodeURIComponent(a); // append menu args
 					value = ext.stateVars[sensorName];
 				}
 				else if(Scratch.app.jsEnabled) {
-					// Javascript
-					value = ExternalInterface.call('ScratchExtensions.getReporter', ext.name, sensorName, args);
+					// JavaScript
+					if (Scratch.app.isOffline) {
+						throw new IllegalOperationError("JS reporters must be requesters in Offline.");
+					}
+					app.externalCall('ScratchExtensions.getReporter', function(v:*):void {
+						value = v;
+					}, ext.name, sensorName, args);
 				}
 				if (value == undefined) value = 0; // default to zero if missing
 				if ('b' == b.type) value = (ext.port>0 ? 'true' == value : true == value); // coerce value to a boolean
@@ -339,13 +359,13 @@ public class ExtensionManager {
 					var id:int = ++ext.nextID; // assign a unique ID for this call
 					ext.busy.push(id);
 					activeThread.tmp = id;
-					activeThread.firstTime = false;
 					app.interp.doYield();
 					justStartedWait = true;
 
 					if(ext.port == 0) {
+						activeThread.firstTime = false;
 						if(app.jsEnabled)
-							ExternalInterface.call('ScratchExtensions.runAsync', ext.name, primOrVarName, args, id);
+							app.externalCall('ScratchExtensions.runAsync', null, ext.name, primOrVarName, args, id);
 						else
 							ext.busy.pop();
 
@@ -388,7 +408,7 @@ public class ExtensionManager {
 			if(op == 'reset_all') op = 'resetAll';
 
 			// call a JavaScript extension function with the given arguments
-			if(Scratch.app.jsEnabled) ExternalInterface.call('ScratchExtensions.runCommand', ext.name, op, args);
+			if(Scratch.app.jsEnabled) app.externalCall('ScratchExtensions.runCommand', null, ext.name, op, args);
 			app.interp.redraw(); // make sure interpreter doesn't do too many extension calls in one cycle
 		}
 	}
@@ -409,7 +429,14 @@ public class ExtensionManager {
 			++ext.nextID;
 			ext.busy.push(ext.nextID);
 			ext.waiting[b] = ext.nextID;
-			ExternalInterface.call('ScratchExtensions.getReporterAsync', ext.name, op, args, ext.nextID);
+
+			if (b.forcedRequester) {
+				// We're forcing a non-requester to be treated as a requester
+				app.externalCall('ScratchExtensions.getReporterForceAsync', null, ext.name, op, args, ext.nextID);
+			} else {
+				// Normal request
+				app.externalCall('ScratchExtensions.getReporterAsync', null, ext.name, op, args, ext.nextID);
+			}
 		}
 	}
 
@@ -432,18 +459,18 @@ public class ExtensionManager {
 		b.requestState = 1;
 		b.requestLoader = loader;
 
-		var url:String = 'http://' + ext.host + ':' + ext.port + '/' + op;
+		var url:String = 'http://' + ext.host + ':' + ext.port + '/' + encodeURIComponent(op);
 		for each (var arg:* in args) {
-			url += '/' + ((arg is String) ? escape(arg) : arg);
+			url += '/' + ((arg is String) ? encodeURIComponent(arg) : arg);
 		}
 		loader.load(new URLRequest(url));
 	}
 
 	private function httpCall(ext:ScratchExtension, op:String, args:Array):void {
 		function errorHandler(e:Event):void { } // ignore errors
-		var url:String = 'http://' + ext.host + ':' + ext.port + '/' + op;
+		var url:String = 'http://' + ext.host + ':' + ext.port + '/' + encodeURIComponent(op);
 		for each (var arg:* in args) {
-			url += '/' + ((arg is String) ? escape(arg) : arg);
+			url += '/' + ((arg is String) ? encodeURIComponent(arg) : arg);
 		}
 		var loader:URLLoader = new URLLoader();
 		loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, errorHandler);
@@ -454,7 +481,7 @@ public class ExtensionManager {
 	public function getStateVar(extensionName:String, varName:String, defaultValue:*):* {
 		var ext:ScratchExtension = extensionDict[extensionName];
 		if (ext == null) return defaultValue; // unknown extension
-		var value:* = ext.stateVars[varName];
+		var value:* = ext.stateVars[encodeURIComponent(varName)];
 		return (value == undefined) ? defaultValue : value;
 	}
 
@@ -496,16 +523,28 @@ public class ExtensionManager {
 	}
 
 	private function httpPoll(ext:ScratchExtension):void {
+
+		if (pollInProgress[ext]) {
+			// Don't poll again if there's already one in progress.
+			// This can happen a lot if the connection is timing out.
+			return;
+		}
+
 		// Poll via HTTP.
 		function completeHandler(e:Event):void {
+			delete pollInProgress[ext];
 			processPollResponse(ext, loader.data);
 		}
-		function errorHandler(e:Event):void { } // ignore errors
+		function errorHandler(e:Event):void {
+			// ignore errors
+			delete pollInProgress[ext];
+		}
 		var url:String = 'http://' + ext.host + ':' + ext.port + '/poll';
 		var loader:URLLoader = new URLLoader();
 		loader.addEventListener(Event.COMPLETE, completeHandler);
 		loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, errorHandler);
 		loader.addEventListener(IOErrorEvent.IO_ERROR, errorHandler);
+		pollInProgress[ext] = true;
 		loader.load(new URLRequest(url));
 	}
 
@@ -518,24 +557,34 @@ public class ExtensionManager {
 		if (justStartedWait) justStartedWait = false;
 		else ext.busy = [];
 
+		var i:int;
 		var lines:Array = response.split('\n');
 		for each (var line:String in lines) {
-			var tokens:Array = ReadStream.tokenize(line);
-			if (tokens.length > 1) {
-				var key:String = tokens[0];
-				if (key.indexOf('_') == 0) { // internal status update or response
-					if ('_busy' == key) {
-						for (var i:int = 1; i < tokens.length; i++) {
-							var id:int = parseInt(tokens[i]);
-							if (ext.busy.indexOf(id) == -1) ext.busy.push(id);
-						}
-					}
-					if ('_problem' == key) ext.problem = line.slice(9);
-				} else { // sensor value
-					var val:String = tokens[1];
-					var n:Number = Number(val);
-					ext.stateVars[key] = isNaN(n) ? val : n;
+			i = line.indexOf(' ');
+			if (i == -1) i = line.length;
+			var key:String = line.slice(0, i);
+			var value:String = decodeURIComponent(line.slice(i + 1));
+			switch (key) {
+			case '_busy':
+				for each (var token:String in value.split(' ')) {
+					var id:int = parseInt(token);
+					if (ext.busy.indexOf(id) == -1) ext.busy.push(id);
 				}
+				break;
+			case '_problem':
+				ext.problem = value;
+				break;
+			case '_success':
+				ext.success = value;
+				break;
+			default:
+				var n:Number = Interpreter.asNumber(value);
+				var path:Array = key.split('/');
+				for (i = 0; i < path.length; i++) {
+					// normalize URL encoding for each path segment
+					path[i] = encodeURIComponent(decodeURIComponent(path[i]));
+				}
+				ext.stateVars[path.join('/')] = n == n ? n : value;
 			}
 		}
 	}

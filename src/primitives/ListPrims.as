@@ -129,10 +129,10 @@ public class ListPrims {
 	}
 
 	protected function listReplace(list:ListWatcher, i:int, item:*):void {
-		list.contents.splice(i - 1, 1, item);
+		list.contents[i - 1] = item;
 	}
 
-	private function primGetItem(b:Block):String {
+	private function primGetItem(b:Block):* {
 		var list:ListWatcher = listarg(b, 1);
 		if (!list) return '';
 		var i:int = computeIndex(interp.arg(b, 0), list.contents.length);
@@ -153,7 +153,7 @@ public class ListPrims {
 		var item:* = interp.arg(b, 1);
 		if (list.contents.indexOf(item) >= 0) return true;
 		for each (var el:* in list.contents) {
-			// use Scratch comparision operator (Scratch considers the string '123' equal to the number 123)
+			// use Scratch comparison operator (Scratch considers the string '123' equal to the number 123)
 			if (Primitives.compare(el, item) == 0) return true;
 		}
 		return false;

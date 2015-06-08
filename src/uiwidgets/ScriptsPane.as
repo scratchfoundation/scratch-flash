@@ -42,6 +42,7 @@ public class ScriptsPane extends ScrollFrameContents {
 	private const INSERT_WRAP:int = 4;
 
 	public var app:Scratch;
+	public var padding:int = 10;
 
 	private var viewedObj:ScratchObj;
 	private var commentLines:Shape;
@@ -127,6 +128,10 @@ public class ScriptsPane extends ScrollFrameContents {
 		addFeedbackShape();
 	}
 
+	public function prepareToDragComment(c:ScratchComment):void {
+		c.scaleX = c.scaleY = scaleX;
+	}
+
 	public function draggingDone():void {
 		hideFeedbackShape();
 		possibleTargets = [];
@@ -134,10 +139,37 @@ public class ScriptsPane extends ScrollFrameContents {
 	}
 
 	public function updateFeedbackFor(b:Block):void {
-		nearestTarget = nearestTargetForBlockIn(b, possibleTargets);
-		if (nearestTarget != null) {
-			var localP:Point = globalToLocal(nearestTarget[0]);
+
+		function updateHeight(): void {
+			var h:int = BlockShape.EmptySubstackH;
+			if (nearestTarget != null) {
+				var t:* = nearestTarget[1];
+				var o:Block = null;
+				switch (nearestTarget[2]) {
+					case INSERT_NORMAL:
+						o = t.nextBlock;
+						break;
+					case INSERT_WRAP:
+						o = t;
+						break;
+					case INSERT_SUB1:
+						o = t.subStack1;
+						break;
+					case INSERT_SUB2:
+						o = t.subStack2;
+						break;
+				}
+				if (o) {
+					h = o.height;
+					if (!o.bottomBlock().isTerminal) h -= BlockShape.NotchDepth;
+				}
+			}
+			b.previewSubstack1Height(h);
+		}
+
+		function updateFeedbackShape() : void {
 			var t:* = nearestTarget[1];
+			var localP:Point = globalToLocal(nearestTarget[0]);
 			feedbackShape.x = localP.x;
 			feedbackShape.y = localP.y;
 			feedbackShape.visible = true;
@@ -150,9 +182,24 @@ public class ScriptsPane extends ScrollFrameContents {
 				var isInsertion:Boolean = (insertionType != INSERT_ABOVE) && (insertionType != INSERT_WRAP);
 				feedbackShape.copyFeedbackShapeFrom(b, false, isInsertion, wrapH);
 			}
-		} else {
+		}
+
+		if (mouseX + x >= 0) {
+			nearestTarget = nearestTargetForBlockIn(b, possibleTargets);
+			if (nearestTarget != null) {
+				updateFeedbackShape();
+			} else {
+				hideFeedbackShape();
+			}
+			if (b.base.canHaveSubstack1() && !b.subStack1) {
+				updateHeight();
+			}
+		}
+		else {
+			nearestTarget = null;
 			hideFeedbackShape();
 		}
+
 		fixCommentLayout();
 	}
 
@@ -198,7 +245,7 @@ public class ScriptsPane extends ScrollFrameContents {
 		app.runtime.blockDropped(b);
 	}
 
-	private function findTargetsFor(b:Block):void {
+	public function findTargetsFor(b:Block):void {
 		possibleTargets = [];
 		var bEndWithTerminal:Boolean = b.bottomBlock().isTerminal;
 		var bCanWrap:Boolean = b.base.canHaveSubstack1() && !b.subStack1; // empty C or E block
@@ -221,7 +268,7 @@ public class ScriptsPane extends ScrollFrameContents {
 							p = target.localToGlobal(new Point(-BlockShape.SubstackInset, -(b.base.substack1y() - BlockShape.NotchDepth)));
 							possibleTargets.push([p, target, INSERT_WRAP]);
 						}
-						if (!b.isHat) findCommandTargetsIn(target, bEndWithTerminal);
+						if (!b.isHat) findCommandTargetsIn(target, bEndWithTerminal && !bCanWrap);
 					}
 				}
 			}
@@ -242,7 +289,7 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 		var target:Block = stack;
 		while (target != null) {
 			var p:Point = target.localToGlobal(new Point(0, 0));
-			if (!target.isTerminal && (!endsWithTerminal || (target.nextBlock == null))) {
+			if (!target.isTerminal && (!endsWithTerminal || target.nextBlock == null)) {
 				// insert stack after target block:
 				// target block must not be a terminal
 				// if stack does not end with a terminal, it can be inserted between blocks
@@ -250,11 +297,11 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 				p = target.localToGlobal(new Point(0, target.base.nextBlockY() - 3));
 				possibleTargets.push([p, target, INSERT_NORMAL]);
 			}
-			if (target.base.canHaveSubstack1()) {
+			if (target.base.canHaveSubstack1() && (!endsWithTerminal || target.subStack1 == null)) {
 				p = target.localToGlobal(new Point(15, target.base.substack1y()));
 				possibleTargets.push([p, target, INSERT_SUB1]);
 			}
-			if (target.base.canHaveSubstack2()) {
+			if (target.base.canHaveSubstack2() && (!endsWithTerminal || target.subStack2 == null)) {
 				p = target.localToGlobal(new Point(15, target.base.substack2y()));
 				possibleTargets.push([p, target, INSERT_SUB2]);
 			}
@@ -321,7 +368,7 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 			if (Block(target).isEmbeddedParameter()) return false;
 		}
 		var dropType:String = droppedBlock.type;
-		var targetType:String = (target is Block) ? Block(target).type : BlockArg(target).type;
+		var targetType:String = target is Block ? Block(target.parent).argType(target).slice(1) : BlockArg(target).type;
 		if (targetType == 'm') {
 			if (Block(target.parent).type == 'h') return false;
 			return menusThatAcceptReporters.indexOf(BlockArg(target).menuName) > -1;
@@ -402,12 +449,14 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 		var y:Number = mouseY;
 		function newComment():void { addComment(null, x, y) }
 		var m:Menu = new Menu();
-		m.addItem('cleanup', cleanup);
+		m.addItem('clean up', cleanUp);
 		m.addItem('add comment', newComment);
 		return m;
 	}
 
 	public function setScale(newScale:Number):void {
+		x *= newScale / scaleX;
+		y *= newScale / scaleY;
 		newScale = Math.max(1/6, Math.min(newScale, 6.0));
 		scaleX = scaleY = newScale;
 		updateSize();
@@ -423,6 +472,7 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 		addChild(c);
 		saveScripts();
 		updateSize();
+		c.startEditText();
 	}
 
 	public function fixCommentLayout():void {
@@ -459,29 +509,28 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 
 	/* Stack cleanup */
 
-	private function cleanup():void {
-		// Cleanup the layout of stacks and blocks in the scripts pane.
+	private function cleanUp():void {
+		// Clean up the layout of stacks and blocks in the scripts pane.
 		// Steps:
 		//	1. Collect stacks and sort by x
 		//	2. Assign stacks to columns such that the y-ranges of all stacks in a column do not overlap
 		//	3. Compute the column widths
 		//	4. Move stacks into place
 
-		var pad:int = 10;
 		var stacks:Array = stacksSortedByX();
 		var columns:Array = assignStacksToColumns(stacks);
 		var columnWidths:Array = computeColumnWidths(columns);
 
-		var nextX:int = pad;
+		var nextX:int = padding;
 		for (var i:int = 0; i < columns.length; i++) {
 			var col:Array = columns[i];
-			var nextY:int = pad;
+			var nextY:int = padding;
 			for each (var b:Block in col) {
 				b.x = nextX;
 				b.y = nextY;
-				nextY += b.height + pad;
+				nextY += b.height + padding;
 			}
-			nextX += columnWidths[i] + pad;
+			nextX += columnWidths[i] + padding;
 		}
 		saveScripts();
 	}

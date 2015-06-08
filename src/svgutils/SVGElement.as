@@ -31,7 +31,7 @@ package svgutils {
 	import flash.display.*;
 	import flash.geom.*;
 	import flash.text.*;
-	
+
 	import svgeditor.DrawProperties;
 
 public class SVGElement {
@@ -241,7 +241,7 @@ public class SVGElement {
 			getAttribute('font-size', 18),
 			0, // textColor is set below
 			(getAttribute('font-weight') == 'bold'),
-			(getAttribute('font-weight') == 'italic')
+			(getAttribute('font-style') == 'italic')
 		);
 		if (useEmbeddedFont) {
 			if (!hasEmbeddedFont(fmt.font)) {

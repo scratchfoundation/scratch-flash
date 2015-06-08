@@ -36,7 +36,7 @@
 //		c. instantiate stage, sprite, costume, sound, and watcher objects
 //		d. dereference object references (Ref objects) in the fields list of
 //		   user-classes and in fixed-format collection objects.
-//		e. initalize variable and list watchers
+//		e. initialize variable and list watchers
 //		f. initialize costumes and sounds
 //
 //	Typically, the client calls readObjTable(), then scans the processed object table to

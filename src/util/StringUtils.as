@@ -16,29 +16,17 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+package util {
+import flash.utils.Dictionary;
 
-package {
-	import flash.display.BitmapData;
-	
-	public class SpriteStamp extends BitmapData {
-		private var fx:Object;
-		public function SpriteStamp(width:int, height:int, fx:Object) {
-			super(width, height, true, 0x00ffffff);
-			effects = fx;
+public class StringUtils {
+	// format('My {animal} is named {name}.', {animal:'goat',name:'Eric'}) => 'My goat is named Eric.'
+	// Tokens not contained in the dictionary will not be modified.
+	public static function substitute(s:String, context:Dictionary):String {
+		for (var token:String in context) {
+			s = s.replace('{'+token+'}', context[token]);
 		}
-
-		public function set effects(o:Object):void {
-			fx = null;
-
-			if(o) {
-				fx = {};
-				for(var prop:String in o)
-					fx[prop] = o[prop];
-			}
-		}
-		
-		public function get effects():Object {
-			return fx;
-		}
+		return s;
 	}
+}
 }

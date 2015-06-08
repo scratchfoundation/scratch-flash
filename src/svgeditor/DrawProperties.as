@@ -27,28 +27,40 @@ public class DrawProperties {
 	public function set color(c:uint):void { rawColor = c }
 	public function get color():uint { return rawColor & 0xFFFFFF }
 	public function get alpha():Number { return ((rawColor >> 24) & 0xFF) / 0xFF }
-	
+
 	public function set secondColor(c:uint):void { rawSecondColor = c }
 	public function get secondColor():uint { return rawSecondColor & 0xFFFFFF }
 	public function get secondAlpha():Number { return ((rawSecondColor >> 24) & 0xFF) / 0xFF }
-	
+
 	// stroke
 	public var smoothness:Number = 1;
 	private var rawStrokeWidth:Number = 1;
+	private var rawEraserWidth:Number = 4;
 
 	public function set strokeWidth(w:int):void { rawStrokeWidth = w }
+	public function set eraserWidth(w:int):void { rawEraserWidth = w }
 
 	public function get strokeWidth():int {
-		if (Scratch.app.imagesPart && (Scratch.app.imagesPart.editor is SVGEdit)) return rawStrokeWidth;
+		return adjustWidth(rawStrokeWidth);
+	}
+
+	public function get eraserWidth():int {
+		return adjustWidth(rawEraserWidth);
+	}
+
+	private static function adjustWidth(raw:int):int {
+		if (Scratch.app.imagesPart && (Scratch.app.imagesPart.editor is SVGEdit)) return raw;
 
 		// above 10, use Squeak brush sizes
-		var n:Number = Math.max(1, Math.round(rawStrokeWidth));
-		if (11 == n) return 13;
-		if (12 == n) return 19;
-		if (13 == n) return 29;
-		if (14 == n) return 47;
-		if (15 == n) return 75;
-		return n;
+		const n:Number = Math.max(1, Math.round(raw));
+		switch(n) {
+			case 11: return 13;
+			case 12: return 19;
+			case 13: return 29;
+			case 14: return 47;
+			case 15: return 75;
+			default: return n;
+		}
 	}
 
 	// fill

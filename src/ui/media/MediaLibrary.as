@@ -18,19 +18,19 @@
  */
 
 package ui.media {
-	import flash.display.*;
-	import flash.events.*;
-	import flash.net.*;
-	import flash.text.*;
-	import flash.ui.*;
-	import flash.utils.*;
-	import assets.Resources;
-	import extensions.ScratchExtension;
-	import scratch.*;
-	import sound.mp3.MP3Loader;
-	import translation.Translator;
-	import uiwidgets.*;
-	import util.*;
+import flash.display.*;
+import flash.events.*;
+import flash.media.Sound;
+import flash.net.*;
+import flash.text.*;
+import flash.utils.*;
+import assets.Resources;
+import extensions.ScratchExtension;
+import scratch.*;
+import sound.mp3.MP3Loader;
+import translation.Translator;
+import uiwidgets.*;
+import util.*;
 
 public class MediaLibrary extends Sprite {
 
@@ -39,7 +39,7 @@ public class MediaLibrary extends Sprite {
 	private static const backdropCategories:Array = [
 		'All', 'Indoors', 'Outdoors', 'Other'];
 	private static const costumeCategories:Array = [
-		'All', 'Animals', 'Fantasy', 'People', 'Things', 'Transportation'];
+		'All', 'Animals', 'Fantasy', 'Letters', 'People', 'Things', 'Transportation'];
 	private static const extensionCategories:Array = [
 		'All', 'Hardware'];
 	private static const soundCategories:Array = [
@@ -58,24 +58,24 @@ public class MediaLibrary extends Sprite {
 	protected var app:Scratch;
 	private var assetType:String;
 	protected var whenDone:Function;
-	private var allItems:Array = [];
+	protected var allItems:Array = [];
 
 	private var title:TextField;
 	private var outerFrame:Shape;
 	private var innerFrame:Shape;
 	private var resultsFrame:ScrollFrame;
-	private var resultsPane:ScrollFrameContents;
+	protected var resultsPane:ScrollFrameContents;
 
-	private var categoryFilter:MediaFilter;
-	private var themeFilter:MediaFilter;
-	private var imageTypeFilter:MediaFilter;
-	private var spriteFeaturesFilter:MediaFilter;
+	protected var categoryFilter:MediaFilter;
+	protected var themeFilter:MediaFilter;
+	protected var imageTypeFilter:MediaFilter;
+	protected var spriteFeaturesFilter:MediaFilter;
 
 	private var closeButton:IconButton;
 	private var okayButton:Button;
 	private var cancelButton:Button;
 
-	private static var libraryCache:Array; // cache of all mediaLibrary entries
+	private static var libraryCache:Object = {}; // cache of all mediaLibrary entries
 
 	public function MediaLibrary(app:Scratch, type:String, whenDone:Function) {
 		this.app = app;
@@ -125,20 +125,7 @@ public class MediaLibrary extends Sprite {
 		else importImagesOrSpritesFromDisk();
 	}
 
-	public function importMediaList(items:Array):void {
-		// Called from JS. Call whenDone() with each of the media items from the given list.
-		Mouse.cursor = MouseCursor.AUTO; // reset the cursor (was sometimes left as pointing finger by JS)
-		var io:ProjectIO = new ProjectIO(app);
-		for each (var pair:Array in items) {
-			var itemName:String = pair[0];
-			var md5:String = pair[1];
-			if (md5.slice(-5) == '.json') io.fetchSprite(md5, whenDone);
-			else if (assetType == 'sound') io.fetchSound(md5, itemName, whenDone);
-			else io.fetchImage(md5, itemName, whenDone);
-		}
-	}
-
-	private function close(ignore:* = null):void {
+	public function close(ignore:* = null):void {
 		stopLoadingThumbnails();
 		parent.removeChild(this);
 		app.mediaLibrary = null;
@@ -229,11 +216,11 @@ public class MediaLibrary extends Sprite {
 
 	private function addTitle():void {
 		var s:String = assetType;
-		if ('backdrop' == s) s = Translator.map('Backdrop Library');
-		if ('costume' == s) s = Translator.map('Costume Library');
-		if ('extension' == s) s = Translator.map('Extension Library');
-		if ('sprite' == s) s = Translator.map('Sprite Library');
-		if ('sound' == s) s = Translator.map('Sound Library');
+		if ('backdrop' == s) s = 'Backdrop Library';
+		if ('costume' == s) s = 'Costume Library';
+		if ('extension' == s) s = 'Extension Library';
+		if ('sprite' == s) s = 'Sprite Library';
+		if ('sound' == s) s = 'Sound Library';
 		addChild(title = Resources.makeLabel(Translator.map(s), titleFormat));
 	}
 
@@ -300,17 +287,17 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 		function gotLibraryData(data:ByteArray):void {
 			if (!data) return; // failure
 			var s:String = data.readUTFBytes(data.length);
-			libraryCache = util.JSON.parse(stripComments(s)) as Array;
+			libraryCache[assetType] = util.JSON.parse(stripComments(s)) as Array;
 			collectEntries();
 		}
 		function collectEntries():void {
 			allItems = [];
-			for each (var entry:Object in libraryCache) {
+			for each (var entry:Object in libraryCache[assetType]) {
 				if (entry.type == assetType) {
 					if (entry.tags is Array) entry.category = entry.tags[0];
 					var info:Array = entry.info as Array;
 					if (info) {
-						if ((entry.type == 'backdrop') || (assetType == 'costume')) {
+						if (entry.type == 'backdrop') {
 							entry.width = info[0];
 							entry.height = info[1];
 						}
@@ -333,18 +320,18 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 			addScratchExtensions();
 			return;
 		}
-		if (!libraryCache) app.server.getMediaLibrary(gotLibraryData);
+		if (!libraryCache[assetType]) app.server.getMediaLibrary(assetType, gotLibraryData);
 		else collectEntries();
 	}
 
 
-	private function addScratchExtensions():void {
+	protected function addScratchExtensions():void {
 		const extList:Array = [
 			ScratchExtension.PicoBoard(),
 			ScratchExtension.WeDo()];
 		allItems = [];
 		for each (var ext:ScratchExtension in extList) {
-			allItems.push(new MediaLibraryItem({ 
+			allItems.push(new MediaLibraryItem({
 				extension: ext,
 				name: ext.name,
 				md5: ext.thumbnailMD5,
@@ -352,7 +339,7 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 			}));
 		}
 		showFilteredItems();
-		startLoadingThumbnails();		
+		startLoadingThumbnails();
 	}
 
 	private function stripComments(s:String):String {
@@ -367,7 +354,7 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 		return result;
 	}
 
-	private function showFilteredItems():void {
+	protected function showFilteredItems():void {
 		var tag:String = '';
 		if (categoryFilter.currentSelection != '') tag = categoryFilter.currentSelection;
 		if (themeFilter.currentSelection != '') tag = themeFilter.currentSelection;
@@ -402,7 +389,7 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 		return true;
 	}
 
-	private function appendItems(items:Array):void {
+	protected function appendItems(items:Array):void {
 		if (items.length == 0) return;
 		var itemWidth:int = (items[0] as MediaLibraryItem).frameWidth + 6;
 		var totalWidth:int = resultsFrame.width - 15;
@@ -435,14 +422,27 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 			var item:MediaLibraryItem = resultsPane.getChildAt(i) as MediaLibraryItem;
 			if (item && item.isHighlighted()) {
 				var md5AndExt:String = item.dbObj.md5;
+				var obj:Object = null;
 				if (assetType == 'extension') {
 					whenDone(item.dbObj.extension);
 				} else if (md5AndExt.slice(-5) == '.json') {
 					io.fetchSprite(md5AndExt, whenDone);
 				} else if (assetType == 'sound') {
 					io.fetchSound(md5AndExt, item.dbObj.name, whenDone);
-				} else {
-					io.fetchImage(md5AndExt, item.dbObj.name, whenDone);
+				} else if (assetType == 'costume') {
+					obj = {
+						centerX: item.dbObj.info[0],
+						centerY: item.dbObj.info[1],
+						bitmapResolution: 1
+					};
+					if (item.dbObj.info.length == 3)
+						obj.bitmapResolution = item.dbObj.info[2];
+
+					io.fetchImage(md5AndExt, item.dbObj.name, 0, whenDone, obj);
+				} else { // assetType == backdrop
+					if (item.dbObj.info.length == 2 && item.dbObj.info[0] == 960 && item.dbObj.info[1] == 720)
+						obj = { centerX: 99999, centerY: 99999,	bitmapResolution: 2 };
+					io.fetchImage(md5AndExt, item.dbObj.name, 0, whenDone, obj);
 				}
 			}
 		}
@@ -452,7 +452,7 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 	// Thumbnail loading
 	//------------------------------
 
-	private function startLoadingThumbnails():void {
+	protected function startLoadingThumbnails():void {
 		function loadSomeThumbnails():void {
 			var count:int = 10 - inProgress;
 			while ((next < allItems.length) && (count-- > 0)) {
@@ -518,12 +518,19 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 			costumeOrSprite = s;
 			uploadSprite(s, uploadComplete);
 		}
+		function imagesDecoded():void {
+			sprite.updateScriptsAfterTranslation();
+			spriteDecoded(sprite);
+		}
 		function uploadComplete():void {
 			app.removeLoadProgressBox();
 			whenDone(costumeOrSprite);
 		}
 		function decodeError():void {
 			DialogBox.notify('Error decoding image', 'Sorry, Scratch was unable to load the image '+fName+'.', Scratch.app.stage);
+		}
+		function spriteError():void {
+			DialogBox.notify('Error decoding sprite', 'Sorry, Scratch was unable to load the sprite '+fName+'.', Scratch.app.stage);
 		}
 		var costumeOrSprite:*;
 		var fExt:String = '';
@@ -550,7 +557,29 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 			costumeOrSprite.setSVGData(data, true);
 			uploadCostume(costumeOrSprite as ScratchCostume, uploadComplete);
 		} else {
-			new ProjectIO(app).decodeSpriteFromZipFile(data, spriteDecoded);
+			data.position = 0;
+			if (data.readUTFBytes(4) != 'ObjS') {
+				data.position = 0;
+				new ProjectIO(app).decodeSpriteFromZipFile(data, spriteDecoded, spriteError);
+			} else {
+				var info:Object;
+				var objTable:Array;
+				data.position = 0;
+				var reader:ObjReader = new ObjReader(data);
+				try { info = reader.readInfo() } catch (e:Error) { data.position = 0 }
+				try { objTable = reader.readObjTable() } catch (e:Error) { }
+				if (!objTable) {
+					spriteError();
+					return;
+				}
+				var newProject:ScratchStage = new OldProjectReader().extractProject(objTable);
+				var sprite:ScratchSprite = newProject.numChildren > 3 ? newProject.getChildAt(3) as ScratchSprite : null;
+				if (!sprite) {
+					spriteError();
+					return;
+				}
+				new ProjectIO(app).decodeAllImages(newProject.allObjects(), imagesDecoded, spriteError);
+			}
 		}
 	}
 
@@ -649,11 +678,34 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 			snd = new ScratchSound(sndName, data); // try reading the data as a WAV file
 		} catch (e:Error) { }
 
-		if (snd && (snd.sampleCount > 0)) { // WAV data
+		if (snd && snd.sampleCount > 0) { // WAV data
 			startSoundUpload(snd, origName, uploadComplete);
 		} else { // try to read data as an MP3 file
-			if (app.lp) app.lp.setTitle('Converting mp3...');
-			setTimeout(function():void { MP3Loader.convertToScratchSound(sndName, data, function(s:ScratchSound):void { startSoundUpload(s, origName, uploadComplete); }) }, 1);
+			if (app.lp) app.lp.setTitle('Converting mp3 file...');
+			var sound:Sound;
+			SCRATCH::allow3d {
+				sound = new Sound();
+				try {
+					data.position = 0;
+					sound.loadCompressedDataFromByteArray(data, data.length);
+					MP3Loader.extractSamples(origName, sound, sound.length * 44.1, function (out:ScratchSound):void {
+						snd = out;
+						startSoundUpload(out, origName, uploadComplete);
+					});
+				}
+				catch(e:Error) {
+					trace(e);
+					uploadComplete();
+				}
+			}
+
+			if (!sound)
+				setTimeout(function():void {
+					MP3Loader.convertToScratchSound(sndName, data, function(s:ScratchSound):void {
+						snd = s;
+						startSoundUpload(s, origName, uploadComplete);
+					});
+				}, 1);
 		}
 	}
 
