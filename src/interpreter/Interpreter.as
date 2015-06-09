@@ -303,8 +303,9 @@ public class Interpreter {
 			else b.opFunction = (primTable[op] == undefined) ? primNoop : primTable[op];
 		}
 
-		// TODO: Optimize this into a cached check if the args *could* block at all
-		if(b.args.length && checkBlockingArgs(b)) {
+		// TLF: blockingCount value is propagated up through blocks, so only
+		// need to yield if it finds a non-zero blockingCount
+		if(b.blockingCount) {
 			doYield();
 			return null;
 		}

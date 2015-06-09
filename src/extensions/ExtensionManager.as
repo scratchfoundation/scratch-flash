@@ -168,8 +168,14 @@ public class ExtensionManager {
 			for(var b:Object in ext.waiting) {
 				if(ext.waiting[b] == id) {
 					delete ext.waiting[b];
-					(b as Block).response = retval;
-					(b as Block).requestState = 2;
+					b = b as Block;
+					if(b) {  // TLF: we probably don't need this...?
+						b.response = retval;
+						if(b.requestState!=2) {  // TLF: just in case...?
+							b.requestState = 2;
+							b.decreaseBlockingCount();
+						}
+					}
 				}
 			}
 		}
@@ -323,6 +329,9 @@ public class ExtensionManager {
 			if(b.isRequester) {
 				if(b.requestState == 2) {
 					b.requestState = 0;
+					// TLF: should it increase the blocking count here instead...?
+					// If so then it'll need also increasing in resetArgsBlockingCount
+					// for any blocks which are requesters.
 					return b.response;
 				}
 				else if(b.requestState == 0) {
@@ -418,6 +427,8 @@ public class ExtensionManager {
 		if (ext == null) {
 			// unknown extension, skip the block
 			b.requestState = 2;
+			// TLF: never increased blockingCount for this, so don't need to decrease?
+			// (unless we should be increasing it when requestState is set to zero...)
 			return;
 		}
 
@@ -425,7 +436,10 @@ public class ExtensionManager {
 			httpRequest(ext, op, args, b);
 		} else if(Scratch.app.jsEnabled) {
 			// call a JavaScript extension function with the given arguments
-			b.requestState = 1;
+			if(b.requestState!=1) { // TLF: just in case...?
+				b.requestState = 1;
+				b.increaseBlockingCount();  // TLF: should this happen when set to zero instead?
+			}
 			++ext.nextID;
 			ext.busy.push(ext.nextID);
 			ext.waiting[b] = ext.nextID;
@@ -447,7 +461,10 @@ public class ExtensionManager {
 			else
 				b.response = '';
 
-			b.requestState = 2;
+			if(b.requestState!=2) {  // TLF: just in case...?
+				b.requestState = 2;
+				b.decreaseBlockingCount();
+			}
 			b.requestLoader = null;
 		}
 
@@ -456,8 +473,11 @@ public class ExtensionManager {
 		loader.addEventListener(IOErrorEvent.IO_ERROR, responseHandler);
 		loader.addEventListener(Event.COMPLETE, responseHandler);
 
-		b.requestState = 1;
 		b.requestLoader = loader;
+		if(b.requestState!=1) {  // TLF; just in case...?
+			b.requestState = 1;
+			b.increaseBlockingCount();  // TLF: should this happen when set to zero instead?
+		}
 
 		var url:String = 'http://' + ext.host + ':' + ext.port + '/' + encodeURIComponent(op);
 		for each (var arg:* in args) {
