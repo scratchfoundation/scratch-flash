@@ -318,7 +318,7 @@ public class Interpreter {
 	}
 
 	// Returns true if the thread needs to yield while data is requested
-	public function checkBlockingArgs(b:Block):Boolean {
+/*	public function checkBlockingArgs(b:Block):Boolean {
 		// Do any of the arguments request data?  If so, start any requests and yield.
 		var shouldYield:Boolean = false;
 		var args:Array = b.args;
@@ -337,7 +337,7 @@ public class Interpreter {
 		}
 
 		return shouldYield;
-	}
+	}*/
 
 	public function arg(b:Block, i:int):* {
 		var args:Array = b.args;
