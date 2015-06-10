@@ -7,7 +7,7 @@ alias fc0, CONST_0(1, 2, 0, 0.5);
 alias fc1, CONST_1(3.1415926535, 180, 60, 120);
 alias fc2, CONST_2(240, 3, 4, 5);
 alias fc3, CONST_3(6, 0.11, 0.09, 0.001);
-alias fc4, CONST_4(360, 0, 0, 0);
+alias fc4, CONST_4(360, 1234567, 1234567, 1234567); // bogus values prevent the assembler from assuming zeroes
 
 // These functions are missing from AGALMacroAssembler's "standard library"
 macro cos(x) { cos out, x }
