@@ -273,7 +273,10 @@ public class ExtensionManager {
 	//------------------------------
 
 	public function updateIndicator(indicator:IndicatorLight, ext:ScratchExtension, firstTime:Boolean = false):void {
-		if(ext.port > 0) {
+		if (ext.useScratchPrimitives) { // If internal primitives are being used, this is most likely to work.
+			indicator.setColorAndMsg(0x00C000, ext.success);
+		}
+		else if(ext.port > 0) {
 			var msecsSinceLastResponse:uint = getTimer() - ext.lastPollResponseTime;
 			if (msecsSinceLastResponse > 500) indicator.setColorAndMsg(0xE00000, 'Cannot find helper app');
 			else if (ext.problem != '') indicator.setColorAndMsg(0xE0E000, ext.problem);
