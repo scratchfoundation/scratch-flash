@@ -515,7 +515,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 
 		drawMatrix.identity();
 		drawMatrix.appendScale(bounds.width, bounds.height, 1);
-		drawMatrix.appendTranslation(bounds.top, bounds.left, 0);
+		drawMatrix.appendTranslation(bounds.left, bounds.top, 0);
 		var scale:Number = dispObj.scaleX;
 		drawMatrix.appendScale(scale, scale, 1);
 		drawMatrix.appendRotation(dispObj.rotation, Vector3D.Z_AXIS);
