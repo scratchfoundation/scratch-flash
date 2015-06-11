@@ -258,7 +258,7 @@ public class ProjectIO {
 			if (fail != null) fail();
 		}
 		if (imageDict[imageData] != null) return; // already loading or loaded
-		if (imageData.length == 0) {
+		if (!imageData || imageData.length == 0) {
 			if (fail != null) fail();
 			return;
 		}
