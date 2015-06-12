@@ -451,7 +451,6 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		if(textureDirty)
 			packTextureBitmaps();
 
-		__context.setProgram(currentShader);
 		__context.clear(0, 0, 0, 0);
 
 		if (childrenChanged) {// || effectsChanged) {
@@ -508,6 +507,10 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 //			h *= childRender.inner_h;
 //		}
 
+		// Pick the correct shader before settings its constants
+		const effects:Object = (renderOpts ? renderOpts.effects : null);
+		switchShaders(effects);
+
 		// Setup the texture data
 		const texIndex:int = textureIndexByID[bmID];
 		const texture:ScratchTextureBitmap = textures[texIndex];
@@ -550,11 +553,6 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		FC5[2] = right - left;
 		FC5[3] = bottom - top;
 		__context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 5, FC5);
-
-		// Setup the shader data
-		const effects:Object = (renderOpts ? renderOpts.effects : null);
-
-		switchShaders(effects);
 
 		if (effects) {
 			var scale:Number = ('isStage' in dispObj && dispObj['isStage'] ? 1 : appScale);
