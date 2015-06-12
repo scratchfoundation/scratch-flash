@@ -727,7 +727,14 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 
 	public function updateFilters(dispObj:DisplayObject, effects:Object):void {
 		var spriteOpts:Object = spriteRenderOpts[dispObj] || (spriteRenderOpts[dispObj] = {});
-		spriteOpts.effects = effects || {};
+		if (!effects) {
+			effects = {};
+			// Do this so we don't have to check for `undefined` later.
+			forEachEffect(function(effectName:String):void {
+				effects[effectName] = 0;
+			});
+		}
+		spriteOpts.effects = effects;
 	}
 
 	// TODO: store multiple sizes of bitmaps?
