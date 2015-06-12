@@ -103,8 +103,6 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 	private var unrenderedChildren:Dictionary;
 	private var stampsByID:Object;
 
-	private var indexBufferUploaded:Boolean;
-	private var vertexBufferUploaded:Boolean;
 	private var uiContainer:StageUIContainer;
 	private var scratchStage:Sprite;
 	private var stagePenLayer:DisplayObject;
@@ -139,11 +137,8 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		pixelateAll = false;
 		unrenderedChildren = new Dictionary();
 		stampsByID = {};
-		indexData.endian = Endian.LITTLE_ENDIAN;
-		vertexData.endian = Endian.LITTLE_ENDIAN;
-		indexBufferUploaded = false;
-		vertexBufferUploaded = false;
 		loadShaders();
+		makeBufferData();
 	}
 
 	public function setStatusCallback(callback:Function):void {
@@ -346,78 +341,72 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		}
 	}
 
-	private function checkBuffers():void {
-		var resized:Boolean = false;
-		var vertexDataMinSize:int = 4 * 5; // 4 verts per child
-		if (vertexDataMinSize > vertexData.length) {
-			indexData.length = 12;
-			indexData.position = 0;
-			indexData.writeShort(0);
-			indexData.writeShort(1);
-			indexData.writeShort(2);
-			indexData.writeShort(2);
-			indexData.writeShort(3);
-			indexData.writeShort(0);
+	private function makeBufferData():void {
+		indexData.clear();
+		indexData.endian = Endian.LITTLE_ENDIAN;
+		//indexData.length = 12;
 
-			vertexData.position = 0;
-			// Top left
-			vertexData.writeFloat(0);				// x
-			vertexData.writeFloat(0);				// y
-			vertexData.writeFloat(0);				// z - use index?
-			vertexData.writeFloat(0);				// u
-			vertexData.writeFloat(0);				// v
-			// Bottom left
-			vertexData.writeFloat(0);				// x
-			vertexData.writeFloat(1);				// y
-			vertexData.writeFloat(0);
-			vertexData.writeFloat(0);				// u
-			vertexData.writeFloat(1);				// v
-			// Bottom right
-			vertexData.writeFloat(1);				// x
-			vertexData.writeFloat(1);				// y
-			vertexData.writeFloat(0);
-			vertexData.writeFloat(1);				// u
-			vertexData.writeFloat(1);				// v
-			// Top right
-			vertexData.writeFloat(1);				// x
-			vertexData.writeFloat(0);				// y
-			vertexData.writeFloat(0);
-			vertexData.writeFloat(1);				// u
-			vertexData.writeFloat(0);				// v
+		indexData.position = 0;
+		indexData.writeShort(0);
+		indexData.writeShort(1);
+		indexData.writeShort(2);
+		indexData.writeShort(2);
+		indexData.writeShort(3);
+		indexData.writeShort(0);
 
-			resized = true;
-		}
+		vertexData.clear();
+		vertexData.endian = Endian.LITTLE_ENDIAN;
+		//vertexData.length = 80;
 
+		// Top left
+		vertexData.writeFloat(0);				// x
+		vertexData.writeFloat(0);				// y
+		vertexData.writeFloat(0);				// z - use index?
+		vertexData.writeFloat(0);				// u
+		vertexData.writeFloat(0);				// v
+		// Bottom left
+		vertexData.writeFloat(0);				// x
+		vertexData.writeFloat(1);				// y
+		vertexData.writeFloat(0);
+		vertexData.writeFloat(0);				// u
+		vertexData.writeFloat(1);				// v
+		// Bottom right
+		vertexData.writeFloat(1);				// x
+		vertexData.writeFloat(1);				// y
+		vertexData.writeFloat(0);
+		vertexData.writeFloat(1);				// u
+		vertexData.writeFloat(1);				// v
+		// Top right
+		vertexData.writeFloat(1);				// x
+		vertexData.writeFloat(0);				// y
+		vertexData.writeFloat(0);
+		vertexData.writeFloat(1);				// u
+		vertexData.writeFloat(0);				// v
+	}
+
+	private function checkBuffers():Boolean {
 		if(__context) {
-			if (resized)  {
-				if (indexBuffer) {
-					indexBuffer.dispose();
-					indexBuffer = null;
-				}
-				if (vertexBuffer) {
-					vertexBuffer.dispose();
-					vertexBuffer = null;
-				}
-			}
-
 			if (indexBuffer == null) {
-				indexBuffer = __context.createIndexBuffer(indexData.length >> 1);
-				//for (var i:int=0; i<indexData.length)
-				indexBuffer.uploadFromByteArray(indexData, 0, 0, indexData.length >> 1);
-				indexBufferUploaded = true;
+				var numIndices:int = 6; // two triangles to make a quad
+				indexBuffer = __context.createIndexBuffer(numIndices);
+//  			trace('uploading indexBuffer when indexData length = '+indexData.length);
+				indexBuffer.uploadFromByteArray(indexData, 0, 0, numIndices);
 			}
 
 			if (vertexBuffer == null) {
-				//trace('creating vertexBuffer of length = '+(indexData.length / 3));
-				vertexBuffer = __context.createVertexBuffer(indexData.length / 3, 5);
-				vertexBufferUploaded = false;
+				var numVertices:int = 4;
+				var data32PerVertex:int = 5; // x,y,z,u,v
+				vertexBuffer = __context.createVertexBuffer(numVertices, data32PerVertex);
+//			    trace('uploading vertexBuffer when vertexData length = '+vertexData.length);
+				vertexBuffer.uploadFromByteArray(vertexData, 0, 0, numVertices);
 			}
 
-			uploadBuffers();
+			return true;
 		}
 		else {
-			indexBufferUploaded = false;
-			vertexBufferUploaded = false;
+			indexBuffer = null;
+			vertexBuffer = null;
+			return false;
 		}
 	}
 
@@ -430,7 +419,6 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		var dispObj:DisplayObject;
 
 		checkBuffers();
-		uploadBuffers();
 
 		if(childrenChanged) {
 			if(debugTexture) {
@@ -473,20 +461,6 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 			delete unrenderedChildren[key];
 	}
 
-	private function uploadBuffers():void {
-		if (!indexBufferUploaded) {
-//			trace('uploading indexBuffer when indexData length = '+indexData.length);
-			indexBuffer.uploadFromByteArray(indexData, 0, 0, indexData.length >> 1);
-			indexBufferUploaded = true;
-		}
-//		trace('uploading vertexBuffer when indexData length = '+indexData.length);
-//		trace('uploadFromByteArray(vertexData, 0, 0, '+((indexData.length / 12) * 4)+')');
-//		if (!vertexBufferUploaded) {
-			vertexBuffer.uploadFromByteArray(vertexData, 0, 0, indexData.length / 3);
-			vertexBufferUploaded = true;
-//		}
-	}
-
 	private var boundsDict:Dictionary = new Dictionary();
 	private var drawMatrix:Matrix3D = new Matrix3D();
 	private function drawChild(dispObj:DisplayObject, blend:Boolean = true):Boolean {
@@ -527,13 +501,6 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 
 		__context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, drawMatrix, true);
 
-		// Constants for the fragment shader
-		__context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, FC0);
-		__context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 1, FC1);
-		__context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 2, FC2);
-		__context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 3, FC3);
-		__context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 4, FC4);
-
 		const dw:Number = bounds.width * scale;
 		const dh:Number = bounds.height * scale;
 		const rect:Rectangle = texture.getRect(bmID);
@@ -548,70 +515,66 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 			left = tmp;
 		}
 
-		FC5[0] = left;
-		FC5[1] = top;
-		FC5[2] = right - left;
-		FC5[3] = bottom - top;
-		__context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 5, FC5);
+		FC[5][0] = left;
+		FC[5][1] = top;
+		FC[5][2] = right - left;
+		FC[5][3] = bottom - top;
+
+		var componentIndex:int = 4 * 6 + 0; // skip to register 6, component 0
 
 		if (effects) {
-			var scale:Number = ('isStage' in dispObj && dispObj['isStage'] ? 1 : appScale);
-			var srcWidth:Number = dw * scale; // Is this right?
-			var srcHeight:Number = dh * scale;
+			function getEffectValue(effectName:String):Number {
+				var value:Number = effects[effectName];
+				return isNaN(value) ? 0 : value; // Note: isNaN(undefined) is true
+			}
 
-			var index:int = 0;
-			var n:Number;
+			var effectValue:Number;
 
-			var currVect:Vector.<Number> = FC6;
-			if ((n = effects[FX_PIXELATE]) != 0) {
-				var pixelate:Number = (Math.abs(n * scale) / 10) + 1;
+			if ((effectValue = getEffectValue(FX_PIXELATE)) != 0) {
+				var pixelate:Number = (Math.abs(effectValue * scale) / 10) + 1;
 				var pixelX:Number = (pixelate > 1 || forcePixelate ? pixelate / rect.width : -1);
 				var pixelY:Number = (pixelate > 1 || forcePixelate ? pixelate / rect.height : -1);
 				if(pixelate > 1) {
+					var srcScale:Number = ('isStage' in dispObj && dispObj['isStage'] ? 1 : appScale);
+					var srcWidth:Number = dw * srcScale; // Is this right?
+					var srcHeight:Number = dh * srcScale;
 					pixelX *= rect.width / srcWidth;
 					pixelY *= rect.height / srcHeight;
 				}
-				currVect[index++] = pixelX;
-				currVect[index++] = pixelY;
-				FC4[1] = pixelX / 2;
-				FC4[2] = pixelY / 2;
-				__context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 4, FC4);
+				FC[componentIndex >> 2][(componentIndex++) & 3] = pixelX;
+				FC[componentIndex >> 2][(componentIndex++) & 3] = pixelY;
+				FC[4][1] = pixelX / 2;
+				FC[4][2] = pixelY / 2;
 			}
 
-			var usesColor:Boolean = false;
-			if ((n = effects[FX_COLOR]) != 0) {
-				currVect[index++] = ((360.0 * n) / 200.0) % 360.0;
-				usesColor = true;
+			if ((effectValue = getEffectValue(FX_COLOR)) != 0) {
+				FC[componentIndex >> 2][(componentIndex++) & 3] = ((360.0 * effectValue) / 200.0) % 360.0;
 			}
 
-			if ((n = effects[FX_FISHEYE]) != 0) {
-				currVect[index++] = Math.max(0, (n + 100) / 100);
-				if (index == 4) currVect = FC7;
+			if ((effectValue = getEffectValue(FX_FISHEYE)) != 0) {
+				FC[componentIndex >> 2][(componentIndex++) & 3] = Math.max(0, (effectValue + 100) / 100);
 			}
 
-			if ((n = effects[FX_WHIRL]) != 0) {
-				currVect[index++] = (Math.PI * n) / 180;
-				if (index == 4) currVect = FC7;
+			if ((effectValue = getEffectValue(FX_WHIRL)) != 0) {
+				FC[componentIndex >> 2][(componentIndex++) & 3] = (Math.PI * effectValue) / 180;
 			}
 
-			if ((n = effects[FX_MOSAIC]) != 0) {
-				n = Math.round((Math.abs(n) + 10) / 10);
-				currVect[index++] = Math.floor(Math.max(1, Math.min(n, Math.min(srcWidth, srcHeight))));
-				if (index == 4) currVect = FC7;
+			if ((effectValue = getEffectValue(FX_MOSAIC)) != 0) {
+				effectValue = Math.round((Math.abs(effectValue) + 10) / 10);
+				FC[componentIndex >> 2][(componentIndex++) & 3] = Math.floor(Math.max(1, Math.min(effectValue, Math.min(srcWidth, srcHeight))));
 			}
 
-			if ((n = effects[FX_BRIGHTNESS]) != 0 || usesColor) {
-				currVect[index++] = Math.max(-100, Math.min(n, 100)) / 100;
-				if (index == 4) currVect = FC7;
+			if ((effectValue = getEffectValue(FX_BRIGHTNESS)) != 0/* || usesColor*/) {
+				FC[componentIndex >> 2][(componentIndex++) & 3] = Math.max(-100, Math.min(effectValue, 100)) / 100;
 			}
 
-			if ((n = effects[FX_GHOST]) != 0) {
-				currVect[index] = 1.0 - (Math.max(0, Math.min(n, 100)) / 100.0);
+			if ((effectValue = getEffectValue(FX_GHOST)) != 0) {
+				FC[componentIndex >> 2][(componentIndex++) & 3] = 1.0 - (Math.max(0, Math.min(effectValue, 100)) / 100.0);
 			}
+		}
 
-			__context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 6, FC6);
-			if (currVect == FC7)
-				__context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 7, FC7);
+		for (var registerIndex:int = 0; (registerIndex << 2) < componentIndex; ++registerIndex) {
+			__context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, registerIndex, FC[registerIndex]);
 		}
 
 		// x, y, z
@@ -1200,14 +1163,17 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		return cr;
 	}
 
-	private const FC0:Vector.<Number> = Vector.<Number>([1, 2, 0, 0.5]);
-	private const FC1:Vector.<Number> = Vector.<Number>([Math.PI, 180, 60, 120]);
-	private const FC2:Vector.<Number> = Vector.<Number>([240, 3, 4, 5]);
-	private const FC3:Vector.<Number> = Vector.<Number>([6, 0.11, 0.09, 0.001]);
-	private var FC4:Vector.<Number> = Vector.<Number>([360, 0, 0, 0]);
-	private var FC5:Vector.<Number> = Vector.<Number>([0, 0, 0, 0]);
-	private var FC6:Vector.<Number> = Vector.<Number>([0, 0, 0, 0]);
-	private var FC7:Vector.<Number> = Vector.<Number>([0, 0, 0, 0]);
+	private var FC:Vector.<Vector.<Number>> = Vector.<Vector.<Number>>([
+			Vector.<Number>([1, 2, 0, 0.5]), // FC0
+			Vector.<Number>([Math.PI, 180, 60, 120]), // FC1
+			Vector.<Number>([240, 3, 4, 5]), // FC2
+			Vector.<Number>([6, 0.11, 0.09, 0.001]), // FC3
+			Vector.<Number>([360, 0, 0, 0]), // FC4, partially available
+			Vector.<Number>([0, 0, 0, 0]), // FC5, available
+			Vector.<Number>([0, 0, 0, 0]), // FC6, available
+			Vector.<Number>([0, 0, 0, 0]) // FC7, available
+	]);
+
 	private function setupContext3D(e:Event = null):void {
 		if(!__context) {
 			requestContext3D();
@@ -1369,9 +1335,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		}
 
 		if(indexBuffer) {
-			//trace('disposing of indexBuffer!');
 			indexBuffer.dispose();
-			//trace('indexBuffer disposed');
 			indexBuffer = null;
 		}
 
@@ -1384,8 +1348,6 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 			stampsByID[id].dispose();
 		stampsByID = {};
 
-		indexBufferUploaded = false;
-		vertexBufferUploaded = false;
 		scissorRect = null;
 
 		if(!e) requestContext3D();
