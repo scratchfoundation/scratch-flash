@@ -501,10 +501,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 
 		__context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, drawMatrix, true);
 
-		const dw:Number = bounds.width * scale;
-		const dh:Number = bounds.height * scale;
 		const rect:Rectangle = texture.getRect(bmID);
-		var forcePixelate:Boolean = pixelateAll || (renderOpts && rot % 90 == 0 && (closeTo(dw, rect.width) || renderOpts.bitmap!=null));
 		var left:Number = rect.left / texture.width;
 		var right:Number = rect.right / texture.width;
 		var top:Number = rect.top / texture.height;
@@ -523,21 +520,20 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		var componentIndex:int = 4 * 6 + 0; // skip to register 6, component 0
 
 		if (effects) {
-			function getEffectValue(effectName:String):Number {
-				var value:Number = effects[effectName];
-				return isNaN(value) ? 0 : value; // Note: isNaN(undefined) is true
-			}
+			var dw:Number = bounds.width * scale;
+			var dh:Number = bounds.height * scale;
+			var srcScale:Number = ('isStage' in dispObj && dispObj['isStage'] ? 1 : appScale);
+			var srcWidth:Number = dw * srcScale; // Is this right?
+			var srcHeight:Number = dh * srcScale;
 
 			var effectValue:Number;
 
-			if ((effectValue = getEffectValue(FX_PIXELATE)) != 0) {
+			if ((effectValue = effects[FX_PIXELATE]) != 0) {
+				var forcePixelate:Boolean = pixelateAll || (renderOpts && rot % 90 == 0 && (closeTo(dw, rect.width) || renderOpts.bitmap!=null));
 				var pixelate:Number = (Math.abs(effectValue * scale) / 10) + 1;
 				var pixelX:Number = (pixelate > 1 || forcePixelate ? pixelate / rect.width : -1);
 				var pixelY:Number = (pixelate > 1 || forcePixelate ? pixelate / rect.height : -1);
 				if(pixelate > 1) {
-					var srcScale:Number = ('isStage' in dispObj && dispObj['isStage'] ? 1 : appScale);
-					var srcWidth:Number = dw * srcScale; // Is this right?
-					var srcHeight:Number = dh * srcScale;
 					pixelX *= rect.width / srcWidth;
 					pixelY *= rect.height / srcHeight;
 				}
@@ -547,28 +543,28 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 				FC[4][2] = pixelY / 2;
 			}
 
-			if ((effectValue = getEffectValue(FX_COLOR)) != 0) {
+			if ((effectValue = effects[FX_COLOR]) != 0) {
 				FC[componentIndex >> 2][(componentIndex++) & 3] = ((360.0 * effectValue) / 200.0) % 360.0;
 			}
 
-			if ((effectValue = getEffectValue(FX_FISHEYE)) != 0) {
+			if ((effectValue = effects[FX_FISHEYE]) != 0) {
 				FC[componentIndex >> 2][(componentIndex++) & 3] = Math.max(0, (effectValue + 100) / 100);
 			}
 
-			if ((effectValue = getEffectValue(FX_WHIRL)) != 0) {
+			if ((effectValue = effects[FX_WHIRL]) != 0) {
 				FC[componentIndex >> 2][(componentIndex++) & 3] = (Math.PI * effectValue) / 180;
 			}
 
-			if ((effectValue = getEffectValue(FX_MOSAIC)) != 0) {
+			if ((effectValue = effects[FX_MOSAIC]) != 0) {
 				effectValue = Math.round((Math.abs(effectValue) + 10) / 10);
 				FC[componentIndex >> 2][(componentIndex++) & 3] = Math.floor(Math.max(1, Math.min(effectValue, Math.min(srcWidth, srcHeight))));
 			}
 
-			if ((effectValue = getEffectValue(FX_BRIGHTNESS)) != 0/* || usesColor*/) {
+			if ((effectValue = effects[FX_BRIGHTNESS]) != 0) {
 				FC[componentIndex >> 2][(componentIndex++) & 3] = Math.max(-100, Math.min(effectValue, 100)) / 100;
 			}
 
-			if ((effectValue = getEffectValue(FX_GHOST)) != 0) {
+			if ((effectValue = effects[FX_GHOST]) != 0) {
 				FC[componentIndex >> 2][(componentIndex++) & 3] = 1.0 - (Math.max(0, Math.min(effectValue, 100)) / 100.0);
 			}
 		}
@@ -588,7 +584,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		else
 			__context.setBlendFactors(Context3DBlendFactor.SOURCE_ALPHA, Context3DBlendFactor.ZERO);
 
-		// draw all sprites
+		// draw the sprite
 		__context.drawTriangles(indexBuffer, 0, 2);
 
 		return true;
