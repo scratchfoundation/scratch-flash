@@ -1070,21 +1070,17 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		var oldY:Number = dispObj.y;
 		dispObj.x = -bounds.x * dispObj.scaleX;
 		dispObj.y = -bounds.y * dispObj.scaleY;
-		vertexData.position = 0;
 
-		// assign shader program
 		__context.clear(1, 1, 1, 0);
 		__context.setScissorRectangle(new Rectangle(0, 0, bmd.width + 1, bmd.height + 1));
+		drawChild(dispObj, false);
+		__context.drawToBitmapData(bmd);
 
-		var drawn:Boolean = drawChild(dispObj, false);
 		dispObj.x = oldX;
 		dispObj.y = oldY;
 		dispObj.scaleX = oldScaleX;
 		dispObj.scaleY = oldScaleY;
 		dispObj.rotation = rot;
-
-		if(!drawn)
-			__context.drawToBitmapData(bmd);
 
 		if (changeBackBuffer) {
 			scissorRect = null;
