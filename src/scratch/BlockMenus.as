@@ -678,6 +678,7 @@ public class BlockMenus implements DragClient {
 
 	private function setBlockVarOrListName(newName:String):void {
 		if (newName.length == 0) return;
+		block.variableIndex = 0;  // need to force new lookup
 		if ((block.op == Specs.GET_VAR) || (block.op == Specs.SET_VAR) || (block.op == Specs.CHANGE_VAR)) {
 			app.runtime.createVariable(newName);
 		}

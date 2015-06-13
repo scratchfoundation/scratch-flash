@@ -677,21 +677,37 @@ public class Interpreter {
 	// a reference to the Variable object is cached in the target object.
 
 	private function primVarGet(b:Block):* {
-		var v:Variable = activeThread.target.varCache[b.spec];
-		if (v == null) {
-			v = activeThread.target.varCache[b.spec] = activeThread.target.lookupOrCreateVar(b.spec);
-			if (v == null) return 0;
+		var vpos:int = app.varsAreDirty ? 0 : b.variableIndex; // can't hack this block (right??)
+		if (vpos>0) {
+			var v:Variable = activeThread.target.variables[vpos-1];
+		} else if (vpos<0) {
+			v = app.stagePane.variables[-vpos-1]
+		} else {
+			v = activeThread.target.varCache[b.spec];
+			if (!v) {
+				v = activeThread.target.varCache[b.spec] = activeThread.target.lookupOrCreateVar(b.spec);
+				if (!v) return 0;
+			}
+			b.variableIndex = app.varsAreDirty ? 0 : v.pos;
 		}
 		// XXX: Do we need a get() for persistent variables here ?
 		return v.value;
 	}
 
 	protected function primVarSet(b:Block):Variable {
-		var name:String = arg(b, 0);
-		var v:Variable = activeThread.target.varCache[name];
-		if (!v) {
-			v = activeThread.target.varCache[name] = activeThread.target.lookupOrCreateVar(name);
-			if (!v) return null;
+		var vpos:int = app.varsAreDirty || b.args[0] is Block ? 0 : b.variableIndex; // also catch hacked block case
+		if (vpos>0) {
+			var v:Variable = activeThread.target.variables[vpos-1];
+		} else if (vpos<0) {
+			v = app.stagePane.variables[-vpos-1]
+		} else {
+			var name:String = arg(b, 0);
+			v = activeThread.target.varCache[name];
+			if (!v) {
+				v = activeThread.target.varCache[name] = activeThread.target.lookupOrCreateVar(name);
+				if (!v) return null;
+			}
+			b.variableIndex = app.varsAreDirty ? 0 : v.pos;
 		}
 		var oldvalue:* = v.value;
 		v.value = arg(b, 1);
@@ -699,11 +715,19 @@ public class Interpreter {
 	}
 
 	protected function primVarChange(b:Block):Variable {
-		var name:String = arg(b, 0);
-		var v:Variable = activeThread.target.varCache[name];
-		if (!v) {
-			v = activeThread.target.varCache[name] = activeThread.target.lookupOrCreateVar(name);
-			if (!v) return null;
+		var vpos:int = app.varsAreDirty || b.args[0] is Block ? 0 : b.variableIndex; // also catch hacked block case
+		if (vpos>0) {
+			var v:Variable = activeThread.target.variables[vpos-1];
+		} else if (vpos<0) {
+			v = app.stagePane.variables[-vpos-1]
+		} else {
+			var name:String = arg(b, 0);
+			v = activeThread.target.varCache[name];
+			if (!v) {
+				v = activeThread.target.varCache[name] = activeThread.target.lookupOrCreateVar(name);
+				if (!v) return null;
+			}
+			b.variableIndex = app.varsAreDirty ? 0 : v.pos;
 		}
 		v.value = Number(v.value) + numarg(b, 1);
 		return v;

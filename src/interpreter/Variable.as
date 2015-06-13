@@ -31,10 +31,17 @@ public class Variable {
 	public var value:*;
 	public var watcher:*;
 	public var isPersistent:Boolean;
+	// The following is the variable's position (1-based) in its owner's
+	// variable list. If the variable is global (i.e.Stage) then negative.
+	// This value is placed into a block's variableIndex to provide a very
+	// quick way to reference the variable.
+	// It cannot be relied upon if app.varsAreDirty is true.
+	public var pos:int = 0;
 
-	public function Variable(vName:String, initialValue:*) {
+	public function Variable(vName:String, initialValue:*, vPos:int) {
 		name = vName;
 		value = initialValue;
+		pos = vPos;
 	}
 
 	public function writeJSON(json:util.JSON):void {
