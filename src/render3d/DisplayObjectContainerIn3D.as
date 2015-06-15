@@ -1201,12 +1201,11 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 	private var vertexShaderParts:Array = [];
 	private var fragmentShaderParts:Array = [];
 	private function switchShaders(effects:Object):void {
-		// Number of 32-bit values associated with each effect
-		// Must be kept in sync with FilterPack.filterNames, vertex format setup, and vertex buffer fill.
+		var effectName:String;
 		var shaderID:int = 0;
 		if (effects)
 			for (var i:int = 0, l:int = effectNames.length; i < l; ++i) {
-				var effectName:String = effectNames[i];
+				effectName = effectNames[i];
 				shaderID = (shaderID << 1) | (effects[effectName] != 0 ? 1 : 0);
 			}
 
@@ -1216,7 +1215,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 			fragmentShaderParts.length = 0;
 			var ri:int = 0;
 			for (i = 0, l = effectNames.length; i < l; ++i) {
-				var effectName:String = effectNames[i];
+				effectName = effectNames[i];
 				var isActive:Boolean = effects && effects[effectName] != 0;
 				fragmentShaderParts.push(['#define ENABLE_', effectName, ' ', int(isActive)].join(''));
 				if (isActive) {
