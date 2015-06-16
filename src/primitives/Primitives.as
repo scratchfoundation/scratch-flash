@@ -141,7 +141,7 @@ public class Primitives {
 		case "ln": return Math.log(n);
 		case "log": return Math.log(n) / Math.LN10;
 		case "e ^": return Math.exp(n);
-		case "10 ^": return Math.exp(n * Math.LN10);
+		case "10 ^": return Math.pow(10, n);
 		}
 		return 0;
 	}
