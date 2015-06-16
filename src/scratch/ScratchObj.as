@@ -64,6 +64,7 @@ public class ScratchObj extends Sprite {
 	public var instrument:int = 0;
 	public var filterPack:FilterPack;
 	public var isClone:Boolean;
+	public var origSprite:ScratchSprite = null;  // the original sprite Object
 
 	public var img:Sprite; // holds a bitmap or svg object, after applying image filters, scale, and rotation
 	private var lastCostume:ScratchCostume;
@@ -73,14 +74,102 @@ public class ScratchObj extends Sprite {
 	public var procCache:Object = {};
 	public var varCache:Object = {};
 
+	// Use null if cache not yet created, rather than just empty.
+	// Note clones use cache from original sprite, since they share scripts
+	public var receiverCache:Object = null;
+	public var edgeTriggeredCache:Array = null;
+	public var keyPressedCache:Array = null;
+	public var whenClickedCache:Array = null;
+
+	public function clearHatCaches():void {
+		// these are set to null to distinguish from just being empty
+		receiverCache = null;
+		edgeTriggeredCache = null;
+		keyPressedCache = null;
+		whenClickedCache = null;
+	}
 	public function clearCaches():void {
 		// Clear the list, procedure, and variable caches for this object.
 		listCache = {};
 		procCache = {};
 		varCache = {};
+		clearHatCaches();
 	}
 
 	public function allObjects():Array { return [this] }
+
+	public function collectReceiverHats(msgToFind:String):Array {
+		// Note this is used for both receivers and scenes. If it's a receiver
+		// then msgToFind already comes prefixed with "rcv_", otherwise "scn_"
+		if (isClone) return origSprite.collectReceiverHats(msgToFind);  // get it from original sprite
+		if (receiverCache==null) {
+			receiverCache = {};
+			for each (var stack:Block in scripts) {
+				if (stack.op == "whenIReceive") {
+					var msg:String = stack.args[0].argValue.toLowerCase();
+					var receivers:Array = receiverCache["rcv_"+msg];
+					if (receivers==null) {
+						receivers = [stack];
+					} else {
+						receivers.push(stack);
+					}
+					receiverCache["rcv_"+msg] = receivers;
+				} else if (stack.op == "whenSceneStarts") {
+					msg = stack.args[0].argValue;
+					receivers = receiverCache["scn_"+msg];
+					if (receivers==null) {
+						receivers = [stack];
+					} else {
+						receivers.push(stack);
+					}
+					receiverCache["scn_"+msg] = receivers;
+				}
+			}
+		}
+		return receiverCache[msgToFind];
+	}
+
+	public function collectEdgeTriggeredHats():Array {
+		if (isClone) return origSprite.collectEdgeTriggeredHats();  // get it from original sprite
+		if (edgeTriggeredCache==null) {
+			edgeTriggeredCache = [];
+			for each (var hat:Block in scripts) {
+				if ('whenSensorGreaterThan' == hat.op) {
+					edgeTriggeredCache.push(hat);
+				} else if ('whenSensorConnected' == hat.op) {
+					edgeTriggeredCache.push(hat);
+				} else if (Scratch.app.jsEnabled) {
+					var dotIndex:int = hat.op.indexOf('.');
+					if (dotIndex > -1) {
+						edgeTriggeredCache.push(hat);
+					}
+				}
+			}
+		}
+		return edgeTriggeredCache;
+	}
+
+	public function collectKeyPressedHats():Array {
+		if (isClone) return origSprite.collectKeyPressedHats();  // get it from original sprite
+		if (keyPressedCache==null) {
+			keyPressedCache = [];
+			for each (var hat:Block in scripts) {
+				if (hat.op == 'whenKeyPressed') keyPressedCache.push(hat);
+			}
+		}
+		return keyPressedCache;
+	}
+
+	public function collectThisClickedHats():Array {
+		if (isClone) return origSprite.collectThisClickedHats();  // get it from original sprite
+		if (whenClickedCache==null) {
+			whenClickedCache = [];
+			for each (var hat:Block in scripts) {
+				if (hat.op == 'whenClicked') whenClickedCache.push(hat);
+			}
+		}
+		return whenClickedCache;
+	}
 
 	public function deleteCostume(c:ScratchCostume):void {
 		if (costumes.length < 2) return; // a sprite must have at least one costume

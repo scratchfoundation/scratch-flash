@@ -175,10 +175,8 @@ public class ScratchRuntime {
 	}
 
 	public function startClickedHats(clickedObj:ScratchObj):void {
-		for each (var stack:Block in clickedObj.scripts) {
-			if (stack.op == 'whenClicked') {
-				interp.restartThread(stack, clickedObj);
-			}
+		for each (var stack:Block in clickedObj.collectThisClickedHats()) {
+			interp.restartThread(stack, clickedObj);
 		}
 	}
 
@@ -192,13 +190,15 @@ public class ScratchRuntime {
 		if (31 == ch) keyName = 'down arrow';
 		if (32 == ch) keyName = 'space';
 		if (keyName == null) return;
-		var startMatchingKeyHats:Function = function (stack:Block, target:ScratchObj):void {
-			if ((stack.op == 'whenKeyPressed') && (stack.args[0].argValue == keyName)) {
-				// only start the stack if it is not already running
-				if (!interp.isRunning(stack, target)) interp.toggleThread(stack, target);
+		var startMatchingKeyHats:Function = function (target:ScratchObj):void {
+			for each (var stack:Block in target.collectKeyPressedHats()) {
+				if (stack.args[0].argValue == keyName) {
+					// only start the stack if it is not already running
+					if (!interp.isRunning(stack, target)) interp.toggleThread(stack, target);
+				}
 			}
 		}
-		allStacksAndOwnersDo(startMatchingKeyHats);
+		allOwnersDo(startMatchingKeyHats);
 	}
 
 	public function collectBroadcasts():Array {
@@ -271,10 +271,11 @@ public class ScratchRuntime {
 
 	protected var triggeredHats:Array = [];
 
-	private function clearEdgeTriggeredHats():void { edgeTriggersEnabled = true; triggeredHats = [] }
+	private function clearEdgeTriggeredHats():void { edgeTriggersEnabled = true; triggeredHats = []; }
 
 	// hats whose triggering condition is currently true
 	protected var activeHats:Array = [];
+
 	protected function startEdgeTriggeredHats(hat:Block, target:ScratchObj):void {
 		if (!hat.isHat || !hat.nextBlock) return; // skip disconnected hats
 
@@ -331,11 +332,18 @@ public class ScratchRuntime {
 	private function processEdgeTriggeredHats():void {
 		if (!edgeTriggersEnabled) return;
 		activeHats = [];
-		allStacksAndOwnersDo(startEdgeTriggeredHats);
+		function startOwnersEdgeTriggers(target:ScratchObj):void {
+			for each (var hat:Block in target.collectEdgeTriggeredHats()) {
+				startEdgeTriggeredHats(hat,target);
+			}
+		}
+		allOwnersDo(startOwnersEdgeTriggers);
 		triggeredHats = activeHats;
 	}
 
 	public function blockDropped(stack:Block):void {
+		// if this is a hat block, force rebuild of hat caches
+		if (stack.isHat) clearAllHatCaches();
 		// Turn on video the first time a video sensor reporter or hat block is added.
 		stack.allBlocksDo(function(b:Block):void {
 			var op:String = b.op;
@@ -880,9 +888,20 @@ public class ScratchRuntime {
 		return result;
 	}
 
+	public function allOwnersDo(f:Function):void {
+		// Call the given function on stage and every sprite/clone in the project
+		// This method is used by broadcast, so enumerate sprites/stage from front to back to match Scratch.
+		var stage:ScratchStage = app.stagePane;
+		for (var i:int = stage.numChildren - 1; i >= 0; i--) {
+			var o:* = stage.getChildAt(i);
+			if (o is ScratchObj) f(o);
+		}
+		f(stage);
+	}
+
 	public function allStacksAndOwnersDo(f:Function):void {
 		// Call the given function on every stack in the project, passing the stack and owning sprite/stage.
-		// This method is used by broadcast, so enumerate sprites/stage from front to back to match Scratch.
+		// This method *was* used by broadcast, so enumerate sprites/stage from front to back to match Scratch.
 		var stage:ScratchStage = app.stagePane;
 		var stack:Block;
 		for (var i:int = stage.numChildren - 1; i >= 0; i--) {
@@ -894,8 +913,16 @@ public class ScratchRuntime {
 		for each (stack in stage.scripts) f(stack, stage);
 	}
 
+	public function clearAllReceiverCaches():void {
+		for each (var obj:ScratchObj in app.stagePane.allObjects()) obj.receiverCache=null;
+	}
+
 	public function clearAllCaches():void {
 		for each (var obj:ScratchObj in app.stagePane.allObjects()) obj.clearCaches();
+	}
+
+	public function clearAllHatCaches():void {
+		for each (var obj:ScratchObj in app.stagePane.allObjects()) obj.clearHatCaches();
 	}
 
 	// -----------------------------

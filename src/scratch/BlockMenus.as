@@ -742,8 +742,12 @@ public class BlockMenus implements DragClient {
 
 	private function broadcastMenu(evt:MouseEvent):void {
 		function broadcastMenuSelection(selection:*):void {
-			if (selection is Function) selection();
-			else setBlockArg(selection);
+			if (selection is Function) {
+				selection();
+			} else {
+				setBlockArg(selection);
+				app.runtime.clearAllReceiverCaches();
+			}
 		}
 		var msgNames:Array = app.runtime.collectBroadcasts();
 		if (msgNames.indexOf('message1') <= -1) msgNames.push('message1');
@@ -761,6 +765,7 @@ public class BlockMenus implements DragClient {
 			var newName:String = dialog.getField('Message Name');
 			if (newName.length == 0) return;
 			setBlockArg(newName);
+			app.runtime.clearAllReceiverCaches();
 		}
 		var d:DialogBox = new DialogBox(changeBroadcast);
 		d.addTitle('New Message');
