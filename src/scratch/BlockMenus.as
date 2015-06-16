@@ -200,6 +200,8 @@ public class BlockMenus implements DragClient {
 	private function setBlockArg(selection:*):void {
 		if (blockArg != null) blockArg.setArgValue(selection);
 		Scratch.app.setSaveNeeded();
+		// rebuild receiver caches need rebuild if this was a receiver/backdrop-switched hat block
+		if (block.op=='whenSceneStarts' || block.op=='whenIReceive') app.runtime.clearAllReceiverCaches();
 		SCRATCH::allow3d { Scratch.app.runtime.checkForGraphicEffects(); }
 	}
 
@@ -742,12 +744,8 @@ public class BlockMenus implements DragClient {
 
 	private function broadcastMenu(evt:MouseEvent):void {
 		function broadcastMenuSelection(selection:*):void {
-			if (selection is Function) {
-				selection();
-			} else {
-				setBlockArg(selection);
-				app.runtime.clearAllReceiverCaches();
-			}
+			if (selection is Function) selection();
+			else setBlockArg(selection);
 		}
 		var msgNames:Array = app.runtime.collectBroadcasts();
 		if (msgNames.indexOf('message1') <= -1) msgNames.push('message1');
@@ -765,7 +763,6 @@ public class BlockMenus implements DragClient {
 			var newName:String = dialog.getField('Message Name');
 			if (newName.length == 0) return;
 			setBlockArg(newName);
-			app.runtime.clearAllReceiverCaches();
 		}
 		var d:DialogBox = new DialogBox(changeBroadcast);
 		d.addTitle('New Message');
