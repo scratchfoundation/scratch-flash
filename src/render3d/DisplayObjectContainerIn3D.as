@@ -487,7 +487,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		if (renderOpts) {
 			effects = renderOpts.effects;
 			shaderID = renderOpts.shaderID;
-			if (isNaN(shaderID)) {
+			if (shaderID < 0) {
 				shaderID = renderOpts.shaderID = calculateShaderID(effects);
 			}
 		}
@@ -605,7 +605,8 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 	private static function calculateShaderID(effects:Object):int {
 		var shaderID:int = 0;
 		if (effects) {
-			for (var i:int = 0; i < effectNames.length; ++i) {
+			var numEffects:int = effectNames.length;
+			for (var i:int = 0; i < numEffects; ++i) {
 				var effectName:String = effectNames[i];
 				shaderID = (shaderID << 1) | (effects[effectName] != 0 ? 1 : 0);
 			}
@@ -709,7 +710,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 			}
 		}
 		spriteOpts.effects = effects;
-		spriteOpts.shaderID = null; // recalculate at next draw time
+		spriteOpts.shaderID = -1; // recalculate at next draw time
 	}
 
 	// TODO: store multiple sizes of bitmaps?
@@ -1237,7 +1238,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		var ri:int = 0;
 		for (var i:int = 0, l:int = effectNames.length; i < l; ++i) {
 			var effectName:String = effectNames[i];
-			var isActive:Boolean = (shaderID & (1 << i)) != 0;
+			var isActive:Boolean = (shaderID & (1 << (l - i - 1))) != 0; // iterate bits "backwards" to match calculateShaderID
 			fragmentShaderParts.push(['#define ENABLE_', effectName, ' ', int(isActive)].join(''));
 			if (isActive) {
 				if (effectName == FX_PIXELATE) {
