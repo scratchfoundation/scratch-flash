@@ -483,7 +483,8 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 
 		// Pick the correct shader before settings its constants
 		const effects:Object = (renderOpts ? renderOpts.effects : null);
-		switchShaders(effects);
+		const shaderID:int = (renderOpts ? renderOpts.shaderID : 0);
+		switchShaders(shaderID);
 
 		// Setup the texture data
 		const texIndex:int = textureIndexByID[bmID];
@@ -691,7 +692,13 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 				effects[effectName] = 0;
 			});
 		}
+		var shaderID:int = 0;
+		for (var i:int = 0, l:int = effectNames.length; i < l; ++i) {
+			var effectName:String = effectNames[i];
+			shaderID = (shaderID << 1) | (effects[effectName] != 0 ? 1 : 0);
+		}
 		spriteOpts.effects = effects;
+		spriteOpts.shaderID = shaderID;
 	}
 
 	// TODO: store multiple sizes of bitmaps?
@@ -1200,59 +1207,58 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 	];
 	private var vertexShaderParts:Array = [];
 	private var fragmentShaderParts:Array = [];
-	private function switchShaders(effects:Object):void {
-		var effectName:String;
-		var shaderID:int = 0;
-		if (effects)
-			for (var i:int = 0, l:int = effectNames.length; i < l; ++i) {
-				effectName = effectNames[i];
-				shaderID = (shaderID << 1) | (effects[effectName] != 0 ? 1 : 0);
-			}
+	private function switchShaders(shaderID:int):void {
+		var desiredShader:Program3D = shaderCache[shaderID];
 
-		currentShader = shaderCache[shaderID];
-		if (!currentShader) {
-			vertexShaderParts.length = 0;
-			fragmentShaderParts.length = 0;
-			var ri:int = 0;
-			for (i = 0, l = effectNames.length; i < l; ++i) {
-				effectName = effectNames[i];
-				var isActive:Boolean = effects && effects[effectName] != 0;
-				fragmentShaderParts.push(['#define ENABLE_', effectName, ' ', int(isActive)].join(''));
-				if (isActive) {
-					if (effectName == FX_PIXELATE) {
-						fragmentShaderParts.push('alias fc6.xyxy, FX_' + effectName);
-						fragmentShaderParts.push('alias fc4.yzyz, FX_' + effectName + '_half');
-						++ri; // consume an extra register in the fragment shader
-					}
-					else {
-						fragmentShaderParts.push(['alias ', availableEffectRegisters[ri], ', FX_', effectName].join(''));
-					}
-					++ri;
-				}
-			}
-
-			vertexShaderParts.push(vertexShaderCode);
-			fragmentShaderParts.push(fragmentShaderCode);
-
-			var completeVertexShaderCode:String = vertexShaderParts.join('\n');
-			var completeFragmentShaderCode:String = fragmentShaderParts.join('\n');
-
-			vertexShaderAssembler.assemble(Context3DProgramType.VERTEX, completeVertexShaderCode);
-			if (vertexShaderAssembler.error.length > 0) {
-				Scratch.app.logMessage('Error building vertex shader: ' + vertexShaderAssembler.error);
-			}
-
-			fragmentShaderAssembler.assemble(Context3DProgramType.FRAGMENT, completeFragmentShaderCode);
-			if (fragmentShaderAssembler.error.length > 0) {
-				Scratch.app.logMessage('Error building fragment shader: ' + fragmentShaderAssembler.error);
-			}
-			var program:Program3D = __context.createProgram();
-			program.upload(vertexShaderAssembler.agalcode, fragmentShaderAssembler.agalcode);
-
-			currentShader = shaderCache[shaderID] = program;
+		if (!desiredShader) {
+			shaderCache[shaderID] = desiredShader = buildShader(shaderID);
 		}
 
-		__context.setProgram(currentShader);
+		if (currentShader != desiredShader) {
+			currentShader = desiredShader;
+			__context.setProgram(currentShader);
+		}
+	}
+
+	private function buildShader(shaderID:int): Program3D {
+		vertexShaderParts.length = 0;
+		fragmentShaderParts.length = 0;
+		var ri:int = 0;
+		for (var i:int = 0, l:int = effectNames.length; i < l; ++i) {
+			var effectName:String = effectNames[i];
+			var isActive:Boolean = (shaderID & (1 << i)) != 0;
+			fragmentShaderParts.push(['#define ENABLE_', effectName, ' ', int(isActive)].join(''));
+			if (isActive) {
+				if (effectName == FX_PIXELATE) {
+					fragmentShaderParts.push('alias fc6.xyxy, FX_' + effectName);
+					fragmentShaderParts.push('alias fc4.yzyz, FX_' + effectName + '_half');
+					++ri; // consume an extra register in the fragment shader (we use both fc6.x and fc6.y)
+				}
+				else {
+					fragmentShaderParts.push(['alias ', availableEffectRegisters[ri], ', FX_', effectName].join(''));
+				}
+				++ri;
+			}
+		}
+
+		vertexShaderParts.push(vertexShaderCode);
+		fragmentShaderParts.push(fragmentShaderCode);
+
+		var completeVertexShaderCode:String = vertexShaderParts.join('\n');
+		var completeFragmentShaderCode:String = fragmentShaderParts.join('\n');
+
+		vertexShaderAssembler.assemble(Context3DProgramType.VERTEX, completeVertexShaderCode);
+		if (vertexShaderAssembler.error.length > 0) {
+			Scratch.app.logMessage('Error building vertex shader: ' + vertexShaderAssembler.error);
+		}
+
+		fragmentShaderAssembler.assemble(Context3DProgramType.FRAGMENT, completeFragmentShaderCode);
+		if (fragmentShaderAssembler.error.length > 0) {
+			Scratch.app.logMessage('Error building fragment shader: ' + fragmentShaderAssembler.error);
+		}
+		var program:Program3D = __context.createProgram();
+		program.upload(vertexShaderAssembler.agalcode, fragmentShaderAssembler.agalcode);
+		return program;
 	}
 
 	private function context3DCreated(e:Event):void {
@@ -1316,6 +1322,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 			config.dispose();
 		}
 		shaderCache = {};
+		currentShader = null;
 
 		for(var i:int=0; i<textures.length; ++i)
 			(textures[i] as ScratchTextureBitmap).disposeTexture();
