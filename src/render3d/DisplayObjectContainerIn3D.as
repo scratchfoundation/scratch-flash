@@ -481,9 +481,20 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 //			h *= childRender.inner_h;
 //		}
 
-		// Pick the correct shader before settings its constants
-		const effects:Object = (renderOpts ? renderOpts.effects : null);
-		const shaderID:int = (renderOpts ? renderOpts.shaderID : 0);
+		// Pick the correct shader before setting its constants
+		var effects:Object;
+		var shaderID:int;
+		if (renderOpts) {
+			effects = renderOpts.effects;
+			shaderID = renderOpts.shaderID;
+			if (isNaN(shaderID)) {
+				shaderID = renderOpts.shaderID = calculateShaderID(effects);
+			}
+		}
+		else {
+			effects = null;
+			shaderID = 0;
+		}
 		switchShaders(shaderID);
 
 		// Setup the texture data
@@ -591,6 +602,17 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		return true;
 	}
 
+	private static function calculateShaderID(effects:Object):int {
+		var shaderID:int = 0;
+		if (effects) {
+			for (var i:int = 0; i < effectNames.length; ++i) {
+				var effectName:String = effectNames[i];
+				shaderID = (shaderID << 1) | (effects[effectName] != 0 ? 1 : 0);
+			}
+		}
+		return shaderID;
+	}
+
 	private function cleanUpUnusedBitmaps():void {
 		var deletedBMs:Array = [];
 		for (var k:Object in bitmapsByID) {
@@ -676,26 +698,18 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 	}
 
 	public function updateFilters(dispObj:DisplayObject, effects:Object):void {
-		var numEffects:int = effectNames.length;
-		var i:int;
-		var effectName:String;
-
 		var spriteOpts:Object = spriteRenderOpts[dispObj] || (spriteRenderOpts[dispObj] = {});
 		if (!effects) {
 			effects = {};
 			// Do this so we don't have to check for `undefined` later.
-			for (i = 0; i < numEffects; ++i) {
-				effectName = effectNames[i];
+			var numEffects:int = effectNames.length;
+			for (var i:int = 0; i < numEffects; ++i) {
+				var effectName:String = effectNames[i];
 				effects[effectName] = 0;
 			}
 		}
-		var shaderID:int = 0;
-		for (i = 0; i < numEffects; ++i) {
-			effectName = effectNames[i];
-			shaderID = (shaderID << 1) | (effects[effectName] != 0 ? 1 : 0);
-		}
 		spriteOpts.effects = effects;
-		spriteOpts.shaderID = shaderID;
+		spriteOpts.shaderID = null; // recalculate at next draw time
 	}
 
 	// TODO: store multiple sizes of bitmaps?
