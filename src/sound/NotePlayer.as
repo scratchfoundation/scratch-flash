@@ -94,7 +94,7 @@ public class NotePlayer extends ScratchSoundPlayer {
 		 envelopeValue = (attackEnd > 0) ? 1 / 33000 : 1;
 	}
 
-	override protected function interpolatedSample():Number {
+	protected override function interpolatedSample():Number {
 		if (samplesRemaining-- <= 0) { noteFinished(); return 0 }
 		index += stepSize;
 		if(index >= endOffset) {

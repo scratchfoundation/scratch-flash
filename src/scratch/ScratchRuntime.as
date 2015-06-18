@@ -279,16 +279,26 @@ public class ScratchRuntime {
 	protected function startEdgeTriggeredHats(hat:Block, target:ScratchObj):void {
 		if (!hat.isHat || !hat.nextBlock) return; // skip disconnected hats
 
-		var triggerCondition:Boolean = false;
 		if ('whenSensorGreaterThan' == hat.op) {
 			var sensorName:String = interp.arg(hat, 0);
 			var threshold:Number = interp.numarg(hat, 1);
-			trigger(
-				('loudness' == sensorName && soundLevel() > threshold) ||
+			if (('loudness' == sensorName && soundLevel() > threshold) ||
 				('timer' == sensorName && timer() > threshold) ||
-				('video motion' == sensorName && target.visible && VideoMotionPrims.readMotionSensor('motion', target) > threshold));
+					('video motion' == sensorName && target.visible && VideoMotionPrims.readMotionSensor('motion', target) > threshold)) {
+				if (triggeredHats.indexOf(hat) == -1) { // not already trigged
+					// only start the stack if it is not already running
+					if (!interp.isRunning(hat, target)) interp.toggleThread(hat, target);
+				}
+				activeHats.push(hat);
+			}
 		} else if ('whenSensorConnected' == hat.op) {
-			trigger(getBooleanSensor(interp.arg(hat, 0)));
+			if (getBooleanSensor(interp.arg(hat, 0))) {
+				if (triggeredHats.indexOf(hat) == -1) { // not already trigged
+					// only start the stack if it is not already running
+					if (!interp.isRunning(hat, target)) interp.toggleThread(hat, target);
+				}
+				activeHats.push(hat);
+			}
 		} else if (app.jsEnabled) {
 			var dotIndex:int = hat.op.indexOf('.');
 			if (dotIndex > -1) {
@@ -300,13 +310,15 @@ public class ScratchRuntime {
 					for (var i:uint=0; i<args.length; ++i)
 						finalArgs[i] = interp.arg(hat, i);
 
-					app.externalCall('ScratchExtensions.getReporter', trigger, extName, op, finalArgs);
+					processExtensionReporter(hat, target, extName, op, finalArgs);
 				}
 			}
 		}
+			}
 
+	private function processExtensionReporter(hat:Block, target:ScratchObj, extName:String, op:String, finalArgs:Array):void {
 		// TODO: Is it safe to do this in a callback, or must it happen before we return from startEdgeTriggeredHats?
-		function trigger(triggerCondition:Boolean):void {
+		app.externalCall('ScratchExtensions.getReporter', function(triggerCondition:Boolean):void {
 			if (triggerCondition) {
 				if (triggeredHats.indexOf(hat) == -1) { // not already trigged
 					// only start the stack if it is not already running
@@ -314,7 +326,7 @@ public class ScratchRuntime {
 				}
 				activeHats.push(hat);
 			}
-		}
+		}, extName, op, finalArgs);
 	}
 
 	private function processEdgeTriggeredHats():void {

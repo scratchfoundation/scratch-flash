@@ -477,7 +477,7 @@ public class Block extends Sprite implements IDraggable {
 		for (i = 0; i < labelsAndArgs.length; i++) {
 			item = labelsAndArgs[i];
 			item.y = indentTop + ((maxH - item.height) / 2) + vOffset;
-			if ((item is BlockArg) && (!BlockArg(item).isNumber)) item.y += 1;
+			if ((item is BlockArg) && (!BlockArg(item).numberType)) item.y += 1;
 		}
 
 		if ([' ', '', 'o'].indexOf(type) >= 0) x = Math.max(x, minCommandWidth); // minimum width for command blocks
@@ -1020,10 +1020,10 @@ public class Block extends Sprite implements IDraggable {
 			space = true;
 			var ba:BlockArg, b:Block, tf:TextField;
 			if ((ba = x as BlockArg)) {
-				s += ba.isNumber ? "(" : "[";
+				s += ba.numberType ? "(" : "[";
 				s += ba.argValue;
 				if (!ba.isEditable) s += " v";
-				s += ba.isNumber ? ")" : "]";
+				s += ba.numberType ? ")" : "]";
 			} else if ((b = x as Block)) {
 				s += b.getSummary();
 			} else if ((tf = x as TextField)) {

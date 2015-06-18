@@ -7,7 +7,7 @@ alias fc0, CONST_0(1, 2, 0, 0.5);
 alias fc1, CONST_1(3.1415926535, 180, 60, 120);
 alias fc2, CONST_2(240, 3, 4, 5);
 alias fc3, CONST_3(6, 0.11, 0.09, 0.001);
-alias fc4, CONST_4(360, 0, 0, 0);
+alias fc4, CONST_4(360, 1234567, 1234567, 1234567); // bogus values prevent the assembler from assuming zeroes
 
 // These functions are missing from AGALMacroAssembler's "standard library"
 macro cos(x) { cos out, x }
@@ -23,10 +23,8 @@ macro sqt(x) { sqt out, x }
 // These aliases are always used
 // FX-related aliases are generated and prepended by AS3
 alias v0.xyxy, Tex_uv
-alias v0.zwzw, Tex_u0v0
-alias v1.xyxy, Tex_wh
-alias v1.zzzz, Tex_index
-
+alias fc5.xyxy, Tex_u0v0
+alias fc5.zwzw, Tex_wh
 
 /*** Mosaic effect ***/
 #if ENABLE_mosaic
@@ -45,15 +43,16 @@ ft2.xyzw -= ft1.xyzw
 ft2.xyzw *= FX_pixelate
 
 // Get the middle pixel
-ft1.xy = FX_pixelate / fc0.yy
-ft2.xyzw = ft2.xyxy + ft1.xyxy
+ft1.xy = FX_pixelate_half
+// ft2.xyzw = ft2.xyxy + ft1.xyxy
+ft0.xyzw = ft2.xyxy + ft1.xyxy
 
 // Use the pixelated UV?
-ft1.x = FX_pixelate >= 0 // is pixelate_x >= 0?
-ft2.xyzw *= ft1.xxxx // then use the pixelated UV
-ft1.x = FX_pixelate < 0 // is pixelate_x < 0?
-ft0.xyzw *= ft1.xxxx // then use the pixelated UV
-ft0.xyzw += ft2.xyzw // Add them together
+// ft1.x = FX_pixelate >= 0 // is pixelate_x >= 0?
+// ft2.xyzw *= ft1.xxxx // then use the pixelated UV
+// ft1.x = FX_pixelate < 0 // is pixelate_x < 0?
+// ft0.xyzw *= ft1.xxxx // then use the pixelated UV
+// ft0.xyzw += ft2.xyzw // Add them together
 #endif // ENABLE_pixelate
 
 /*** Whirl effect ***/
@@ -119,51 +118,8 @@ ft0.xy += ft2.xy
 ft0.xyzw *= Tex_wh
 ft0.xy += Tex_u0v0
 
-/*** Floor the texture index ***/
-ft3.xyzw = frc(Tex_index)
-ft3.x = Tex_index - ft3.x
-
-/*** Select texture to use ***/
 // Get the texture pixel using ft0.xy as the coordinates
-ft5 = ft3.x == 0 // Use texture 0?
-ft2 = tex<2d,clamp,linear,nomip>(ft0, fs0)
-ft2 *= ft5
-ft1 = ft2
-
-#if MAXTEXTURE > 0
-ft5 = ft3.x == 1 // Use texture 1?
-ft2 = tex<2d,clamp,linear,nomip>(ft0, fs1)
-ft2 *= ft5
-ft1 += ft2
-#endif // MAXTEXTURE > 0
-
-#if MAXTEXTURE > 1
-ft5 = ft3.x == 2 // Use texture 2?
-ft2 = tex<2d,clamp,linear,nomip>(ft0, fs2)
-ft2 *= ft5
-ft1 += ft2
-#endif // MAXTEXTURE > 1
-
-#if MAXTEXTURE > 2
-ft5 = ft3.x == 3 // Use texture 3?
-ft2 = tex<2d,clamp,linear,nomip>(ft0, fs3)
-ft2 *= ft5
-ft1 += ft2
-#endif // MAXTEXTURE > 2
-
-#if MAXTEXTURE > 3
-ft5 = ft3.x == 4 // Use texture 4?
-ft2 = tex<2d,clamp,linear,nomip>(ft0, fs4)
-ft2 *= ft5
-ft1 += ft2
-#endif // MAXTEXTURE > 3
-
-#if MAXTEXTURE > 4
-ft5 = ft3.x == 5 // Use texture 5?
-ft2 = tex<2d,clamp,linear,nomip>(ft0, fs5)
-ft2 *= ft5
-ft1 += ft2
-#endif // MAXTEXTURE > 4
+ft1 = tex<2d,clamp,linear,nomip>(ft0, fs0)
 
 /*** ft1 == (r, g, b, a) ***/
 // Now de-multiply the color values that Flash pre-multiplied
@@ -248,7 +204,7 @@ ft2.y *= ft3.z //float s = s_span_not_zero * span_not_zero;	s	= ft2.y
 //				if (hueShift != 0.0 && v < 0.11) { v = 0.11; s = 1.0; }
 /*** ft3 is now free ***/  // Check this section for accuracy / mistakes
 #if ENABLE_color
-ft3.y = FX_color != 0 //int hs_not_zero = (hueShift != 0.0);	hs_not_zero	= ft3.y
+ft3.y = 1
 #else // ENABLE_color
 ft3.y = 0
 #endif // ENABLE_color

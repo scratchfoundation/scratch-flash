@@ -500,9 +500,10 @@ public class LibraryPart extends UIPart implements ILibraryPart, DropTarget {
 	// Misc
 	//------------------------------
 
+	private var result:Vector.<BaseItem> = new Vector.<BaseItem>();
 	protected function allThumbnails():Vector.<BaseItem> {
 		// Return a list containing all thumbnails.
-		var result:Vector.<BaseItem> = new Vector.<BaseItem>();
+		result.length = 0;
 		result.push(stageThumbnail);
 		return result.concat(spritesPane.allItems(false));
 	}
