@@ -675,26 +675,23 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		var boundsOffset:Point = bounds.topLeft.subtract(rawBounds.topLeft);
 	}
 
-	// Calls perEffect(effectName:String) for each supported effect name.
-	private function forEachEffect(perEffect:Function): void {
-		for (var i:int = 0; i < effectNames.length; ++i) {
-			var effectName:String = effectNames[i];
-			perEffect(effectName);
-		}
-	}
-
 	public function updateFilters(dispObj:DisplayObject, effects:Object):void {
+		var numEffects:int = effectNames.length;
+		var i:int;
+		var effectName:String;
+
 		var spriteOpts:Object = spriteRenderOpts[dispObj] || (spriteRenderOpts[dispObj] = {});
 		if (!effects) {
 			effects = {};
 			// Do this so we don't have to check for `undefined` later.
-			forEachEffect(function(effectName:String):void {
+			for (i = 0; i < numEffects; ++i) {
+				effectName = effectNames[i];
 				effects[effectName] = 0;
-			});
+			}
 		}
 		var shaderID:int = 0;
-		for (var i:int = 0, l:int = effectNames.length; i < l; ++i) {
-			var effectName:String = effectNames[i];
+		for (i = 0; i < numEffects; ++i) {
+			effectName = effectNames[i];
 			shaderID = (shaderID << 1) | (effects[effectName] != 0 ? 1 : 0);
 		}
 		spriteOpts.effects = effects;
