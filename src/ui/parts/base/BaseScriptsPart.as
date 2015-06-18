@@ -157,7 +157,8 @@ public class BaseScriptsPart extends UIPart implements IScriptsPart {
 				yReadout.text = String(lastY);
 			}
 		}
-		updateExtensionIndicators();
+		if (selector.selectedCategory == Specs.extensionsCategory)
+			updateExtensionIndicators();
 	}
 
 	private function updateExtensionIndicators():void {

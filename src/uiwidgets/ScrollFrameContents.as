@@ -73,11 +73,11 @@ public class ScrollFrameContents extends Sprite {
 
 	public function setWidthHeight(w:Number, h:Number):void {
 		// Draw myself using the texture bitmap, if available, or a solid gray color if not.
-		graphics.clear();
-		if (texture) graphics.beginBitmapFill(texture)
-		else graphics.beginFill(color);
-		graphics.drawRect(0, 0, w, h);
-		graphics.endFill();
+//		graphics.clear();
+//		if (texture) graphics.beginBitmapFill(texture)
+//		else graphics.beginFill(color);
+//		graphics.drawRect(0, 0, w, h);
+//		graphics.endFill();
 	}
 
 	public function updateSize():void {

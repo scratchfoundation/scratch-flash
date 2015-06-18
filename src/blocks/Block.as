@@ -630,6 +630,10 @@ public class Block extends Sprite implements IDraggable {
 		}
 	}
 
+	public function toArray():Array {
+		return [x, y, BlockIO.stackToArray(this)];
+	}
+
 	public function removeBlock(b:Block):void {
 		if (b.parent == this) removeChild(b);
 		if (b == nextBlock) {

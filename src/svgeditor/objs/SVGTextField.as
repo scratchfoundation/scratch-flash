@@ -19,19 +19,9 @@
 
 package svgeditor.objs
 {
-	import flash.display.DisplayObject;
-	import flash.display.Shape;
-	import flash.events.Event;
-	import flash.events.FocusEvent;
-	import flash.events.KeyboardEvent;
 	import flash.text.AntiAliasType;
 	import flash.text.TextField;
-	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFieldType;
-
-	import svgeditor.objs.ISVGEditable;
-
-	import svgutils.SVGDisplayRender;
 	import svgutils.SVGElement;
 
 	public class SVGTextField extends TextField implements ISVGEditable
