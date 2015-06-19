@@ -616,8 +616,8 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 	}
 
 	private function setEffectConstants(componentIndex:int):void {
-		componentIndex >>= 2;
-		for (var registerIndex:int = 4; registerIndex <= componentIndex; ++registerIndex)
+		componentIndex = (componentIndex + 3) >> 2; // ceil(componentIndex / 4)
+		for (var registerIndex:int = 4; registerIndex < componentIndex; ++registerIndex)
 			__context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, registerIndex, FC[registerIndex]);
 	}
 
