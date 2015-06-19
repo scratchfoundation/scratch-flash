@@ -465,7 +465,6 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 	private var drawMatrix:Matrix3D = new Matrix3D();
 	private function drawChild(dispObj:DisplayObject, blend:Boolean = true):Boolean {
 		// Setup the geometry data
-		var rot:Number = dispObj.rotation;
 		const bounds:Rectangle = boundsDict[dispObj];
 		if(!bounds)
 			return false;
@@ -500,8 +499,32 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		// Setup the texture data
 		const texIndex:int = textureIndexByID[bmID];
 		const texture:ScratchTextureBitmap = textures[texIndex];
-		__context.setTextureAt(0, texture.getTexture(__context));
+		setTexture(texture);
 
+		setMatrix(dispObj, bounds);
+
+		const rect:Rectangle = texture.getRect(bmID);
+
+		setFC5(rect, renderOpts, texture);
+
+		var componentIndex:int = setEffects(dispObj, bounds, rect, renderOpts, effects);
+
+		setProgramConstants(componentIndex);
+
+		setVertexBuffers();
+
+		setBlendFactors(blend);
+
+		drawTriangles();
+
+		return true;
+	}
+
+	private function setTexture(texture:ScratchTextureBitmap):void {
+		__context.setTextureAt(0, texture.getTexture(__context));
+	}
+
+	private function setMatrix(dispObj:DisplayObject, bounds:Rectangle):void {
 		drawMatrix.identity();
 		drawMatrix.appendScale(bounds.width, bounds.height, 1);
 		drawMatrix.appendTranslation(bounds.left, bounds.top, 0);
@@ -512,8 +535,9 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		drawMatrix.append(projMatrix);
 
 		__context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, drawMatrix, true);
+	}
 
-		const rect:Rectangle = texture.getRect(bmID);
+	private function setFC5(rect:Rectangle, renderOpts:Object, texture:ScratchTextureBitmap):void {
 		var left:Number = rect.left / texture.width;
 		var right:Number = rect.right / texture.width;
 		var top:Number = rect.top / texture.height;
@@ -528,10 +552,13 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		FC[5][1] = top;
 		FC[5][2] = right - left;
 		FC[5][3] = bottom - top;
+	}
 
+	private function setEffects(dispObj:DisplayObject, bounds:Rectangle, rect:Rectangle, renderOpts:Object, effects:Object):int {
 		var componentIndex:int = 4 * 6 + 0; // skip to register 6, component 0
 
 		if (effects) {
+			var scale:Number = dispObj.scaleX;
 			var dw:Number = bounds.width * scale;
 			var dh:Number = bounds.height * scale;
 			var srcScale:Number = ('isStage' in dispObj && dispObj['isStage'] ? 1 : appScale);
@@ -541,7 +568,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 			var effectValue:Number;
 
 			if ((effectValue = effects[FX_PIXELATE]) != 0) {
-				var forcePixelate:Boolean = pixelateAll || (renderOpts && rot % 90 == 0 && (closeTo(dw, rect.width) || renderOpts.bitmap!=null));
+				var forcePixelate:Boolean = pixelateAll || (renderOpts && dispObj.rotation % 90 == 0 && (closeTo(dw, rect.width) || renderOpts.bitmap!=null));
 				var pixelate:Number = (Math.abs(effectValue * scale) / 10) + 1;
 				var pixelX:Number = (pixelate > 1 || forcePixelate ? pixelate / rect.width : -1);
 				var pixelY:Number = (pixelate > 1 || forcePixelate ? pixelate / rect.height : -1);
@@ -581,25 +608,33 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 			}
 		}
 
+		return componentIndex;
+	}
+
+	private function setProgramConstants(componentIndex:int):void {
 		for (var registerIndex:int = 0; (registerIndex << 2) < componentIndex; ++registerIndex) {
 			__context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, registerIndex, FC[registerIndex]);
 		}
+	}
 
+	private function setVertexBuffers():void {
 		// x, y, z
 		__context.setVertexBufferAt(0, vertexBuffer, 0, Context3DVertexBufferFormat.FLOAT_3);
 
 		// u, v
 		__context.setVertexBufferAt(1, vertexBuffer, 3, Context3DVertexBufferFormat.FLOAT_2);
+	}
 
+	private function setBlendFactors(blend:Boolean):void {
 		if(blend)
 			__context.setBlendFactors(Context3DBlendFactor.SOURCE_ALPHA, Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA);
 		else
 			__context.setBlendFactors(Context3DBlendFactor.SOURCE_ALPHA, Context3DBlendFactor.ZERO);
+	}
 
+	private function drawTriangles():void {
 		// draw the sprite
 		__context.drawTriangles(indexBuffer, 0, 2);
-
-		return true;
 	}
 
 	private static function calculateShaderID(effects:Object):int {
