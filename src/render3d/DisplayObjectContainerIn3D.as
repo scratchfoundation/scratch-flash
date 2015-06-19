@@ -399,6 +399,8 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 				vertexBuffer = __context.createVertexBuffer(numVertices, data32PerVertex);
 //			    trace('uploading vertexBuffer when vertexData length = '+vertexData.length);
 				vertexBuffer.uploadFromByteArray(vertexData, 0, 0, numVertices);
+
+				uploadConstantValues();
 			}
 
 			return true;
@@ -507,11 +509,9 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 
 		setFC5(rect, renderOpts, texture);
 
-		var componentIndex:int = setEffects(dispObj, bounds, rect, renderOpts, effects);
+		var componentIndex:int = calculateEffects(dispObj, bounds, rect, renderOpts, effects);
 
-		setProgramConstants(componentIndex);
-
-		setVertexBuffers();
+		setEffectConstants(componentIndex);
 
 		setBlendFactors(blend);
 
@@ -520,8 +520,12 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		return true;
 	}
 
+	private var currTexture:ScratchTextureBitmap = null;
 	private function setTexture(texture:ScratchTextureBitmap):void {
+		if (texture == currTexture) return;
+
 		__context.setTextureAt(0, texture.getTexture(__context));
+		currTexture = texture;
 	}
 
 	private function setMatrix(dispObj:DisplayObject, bounds:Rectangle):void {
@@ -554,7 +558,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		FC[5][3] = bottom - top;
 	}
 
-	private function setEffects(dispObj:DisplayObject, bounds:Rectangle, rect:Rectangle, renderOpts:Object, effects:Object):int {
+	private function calculateEffects(dispObj:DisplayObject, bounds:Rectangle, rect:Rectangle, renderOpts:Object, effects:Object):int {
 		var componentIndex:int = 4 * 6 + 0; // skip to register 6, component 0
 
 		if (effects) {
@@ -611,25 +615,32 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		return componentIndex;
 	}
 
-	private function setProgramConstants(componentIndex:int):void {
-		for (var registerIndex:int = 0; (registerIndex << 2) < componentIndex; ++registerIndex) {
+	private function setEffectConstants(componentIndex:int):void {
+		componentIndex >>= 2;
+		for (var registerIndex:int = 4; registerIndex <= componentIndex; ++registerIndex)
 			__context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, registerIndex, FC[registerIndex]);
-		}
 	}
 
-	private function setVertexBuffers():void {
+	private function uploadConstantValues():void {
+		__context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, FC[0]);
+		__context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 1, FC[1]);
+		__context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 2, FC[2]);
+		__context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 3, FC[3]);
+
 		// x, y, z
 		__context.setVertexBufferAt(0, vertexBuffer, 0, Context3DVertexBufferFormat.FLOAT_3);
-
 		// u, v
 		__context.setVertexBufferAt(1, vertexBuffer, 3, Context3DVertexBufferFormat.FLOAT_2);
 	}
 
+
+	private var currentBlendFactor:String;
 	private function setBlendFactors(blend:Boolean):void {
-		if(blend)
-			__context.setBlendFactors(Context3DBlendFactor.SOURCE_ALPHA, Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA);
-		else
-			__context.setBlendFactors(Context3DBlendFactor.SOURCE_ALPHA, Context3DBlendFactor.ZERO);
+		var newBlendFactor:String = blend ? Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA : Context3DBlendFactor.ZERO;
+		if (newBlendFactor == currentBlendFactor) return;
+
+		__context.setBlendFactors(Context3DBlendFactor.SOURCE_ALPHA, newBlendFactor);
+		currentBlendFactor = newBlendFactor;
 	}
 
 	private function drawTriangles():void {
@@ -1011,6 +1022,8 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 				break;
 			}
 		}
+
+		currTexture = null;
 	}
 
 	private var drawCount:uint = 0;
@@ -1210,14 +1223,14 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 	}
 
 	private var FC:Vector.<Vector.<Number>> = Vector.<Vector.<Number>>([
-			Vector.<Number>([1, 2, 0, 0.5]), // FC0
-			Vector.<Number>([Math.PI, 180, 60, 120]), // FC1
-			Vector.<Number>([240, 3, 4, 5]), // FC2
-			Vector.<Number>([6, 0.11, 0.09, 0.001]), // FC3
-			Vector.<Number>([360, 0, 0, 0]), // FC4, partially available
-			Vector.<Number>([0, 0, 0, 0]), // FC5, available
-			Vector.<Number>([0, 0, 0, 0]), // FC6, available
-			Vector.<Number>([0, 0, 0, 0]) // FC7, available
+		Vector.<Number>([1, 2, 0, 0.5]), // FC0
+		Vector.<Number>([Math.PI, 180, 60, 120]), // FC1
+		Vector.<Number>([240, 3, 4, 5]), // FC2
+		Vector.<Number>([6, 0.11, 0.09, 0.001]), // FC3
+		Vector.<Number>([360, 0, 0, 0]), // FC4, partially available
+		Vector.<Number>([0, 0, 0, 0]), // FC5, available
+		Vector.<Number>([0, 0, 0, 0]), // FC6, available
+		Vector.<Number>([0, 0, 0, 0]) // FC7, available
 	]);
 
 	private function setupContext3D(e:Event = null):void {
@@ -1370,6 +1383,8 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		}
 		shaderCache = {};
 		currentShader = null;
+		currTexture = null;
+		currentBlendFactor = null;
 
 		for(var i:int=0; i<textures.length; ++i)
 			(textures[i] as ScratchTextureBitmap).disposeTexture();
