@@ -528,19 +528,28 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 	}
 
 	private var matrixScratchpad:Vector.<Number> = new Vector.<Number>(16, true);
+	private const DegreesToRadians:Number = (2 * Math.PI) / -360; // negative because Flash uses clockwise rotation
 	private function setMatrix(dispObj:DisplayObject, bounds:Rectangle):void {
 		var scale:Number = dispObj.scaleX;
-		// scratchpad = Scale(width,height) * Translate(left,top) * Scale(scale,scale)
-		matrixScratchpad[0] = scale * bounds.width;
-		matrixScratchpad[5] = scale * bounds.height;
+		var theta:Number = dispObj.rotation * DegreesToRadians;
+		var boundsTop:Number = bounds.top;
+		var boundsLeft:Number = bounds.left;
+		var boundsWidth:Number = bounds.width;
+		var boundsHeight:Number = bounds.height;
+		var cosThetaScale:Number = Math.cos(theta) * scale;
+		var sinThetaScale:Number = Math.sin(theta) * scale;
+
+		// scratchpad = Scale(bounds) * Translate(bounds) * Scale(dispObj) * Rotate(dispObj) * Translate(dispObj)
+		matrixScratchpad[0] = boundsWidth * cosThetaScale;
+		matrixScratchpad[1] = boundsWidth * -sinThetaScale;
+		matrixScratchpad[4] = boundsHeight * sinThetaScale;
+		matrixScratchpad[5] = boundsHeight * cosThetaScale;
 		matrixScratchpad[10] = 1;
-		matrixScratchpad[12] = scale * bounds.left;
-		matrixScratchpad[13] = scale * bounds.top;
+		matrixScratchpad[12] = dispObj.x + boundsTop * sinThetaScale + boundsLeft * cosThetaScale;
+		matrixScratchpad[13] = dispObj.y + boundsTop * cosThetaScale - boundsLeft * sinThetaScale;
 		matrixScratchpad[15] = 1;
-		// copy scratchpad to matrix then apply the ops that aren't trivial to do in the scratchpad
+
 		drawMatrix.rawData = matrixScratchpad;
-		drawMatrix.appendRotation(dispObj.rotation, Vector3D.Z_AXIS);
-		drawMatrix.appendTranslation(dispObj.x, dispObj.y, 0);
 		drawMatrix.append(projMatrix);
 
 		__context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, drawMatrix, true);
