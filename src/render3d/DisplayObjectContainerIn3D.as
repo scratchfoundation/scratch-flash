@@ -466,7 +466,6 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 	private var boundsDict:Dictionary = new Dictionary();
 	private var drawMatrix:Matrix3D = new Matrix3D();
 	private function drawChild(dispObj:DisplayObject, blend:Boolean = true):Boolean {
-		// Setup the geometry data
 		const bounds:Rectangle = boundsDict[dispObj];
 		if(!bounds)
 			return false;
@@ -520,20 +519,26 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		return true;
 	}
 
-	private var currTexture:ScratchTextureBitmap = null;
+	private var currentTexture:ScratchTextureBitmap = null;
 	private function setTexture(texture:ScratchTextureBitmap):void {
-		if (texture == currTexture) return;
+		if (texture == currentTexture) return;
 
 		__context.setTextureAt(0, texture.getTexture(__context));
-		currTexture = texture;
+		currentTexture = texture;
 	}
 
+	private var matrixScratchpad:Vector.<Number> = new Vector.<Number>(16, true);
 	private function setMatrix(dispObj:DisplayObject, bounds:Rectangle):void {
-		drawMatrix.identity();
-		drawMatrix.appendScale(bounds.width, bounds.height, 1);
-		drawMatrix.appendTranslation(bounds.left, bounds.top, 0);
 		var scale:Number = dispObj.scaleX;
-		drawMatrix.appendScale(scale, scale, 1);
+		// scratchpad = Scale(width,height) * Translate(left,top) * Scale(scale,scale)
+		matrixScratchpad[0] = scale * bounds.width;
+		matrixScratchpad[5] = scale * bounds.height;
+		matrixScratchpad[10] = 1;
+		matrixScratchpad[12] = scale * bounds.left;
+		matrixScratchpad[13] = scale * bounds.top;
+		matrixScratchpad[15] = 1;
+		// copy scratchpad to matrix then apply the ops that aren't trivial to do in the scratchpad
+		drawMatrix.rawData = matrixScratchpad;
 		drawMatrix.appendRotation(dispObj.rotation, Vector3D.Z_AXIS);
 		drawMatrix.appendTranslation(dispObj.x, dispObj.y, 0);
 		drawMatrix.append(projMatrix);
@@ -1023,7 +1028,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 			}
 		}
 
-		currTexture = null;
+		currentTexture = null;
 	}
 
 	private var drawCount:uint = 0;
@@ -1383,7 +1388,7 @@ public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {S
 		}
 		shaderCache = {};
 		currentShader = null;
-		currTexture = null;
+		currentTexture = null;
 		currentBlendFactor = null;
 
 		for(var i:int=0; i<textures.length; ++i)
