@@ -26,7 +26,7 @@ package render3d {
 
 import flash.display.Sprite;
 
-public class DisplayObjectContainerIn3D extends Sprite implements IRenderIn3D {SCRATCH::allow3d{
+public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 	import com.adobe.utils.*;
 
 	import filters.FilterPack;

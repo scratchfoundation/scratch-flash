@@ -71,7 +71,7 @@ public class Scratch extends Sprite {
 	public var isSmallPlayer:Boolean; // true when displaying as a scaled-down player (e.g. in search results)
 	public var stageIsContracted:Boolean; // true when the stage is half size to give more space on small screens
 	public var isIn3D:Boolean;
-	public var render3D:IRenderIn3D;
+	public var render3D:DisplayObjectContainerIn3D;
 	public var isArmCPU:Boolean;
 	public var jsEnabled:Boolean = false; // true when the SWF can talk to the webpage
 	public var ignoreResize:Boolean = false; // If true, temporarily ignore resize events.
@@ -268,7 +268,7 @@ public class Scratch extends Sprite {
 				var majorVersion:int = parseInt(versionParts[0]);
 				var minorVersion:int = parseInt(versionParts[1]);
 				if ((majorVersion > 11 || (majorVersion == 11 && minorVersion >= 7)) && !isArmCPU && Capabilities.cpuArchitecture == 'x86') {
-					render3D = (new DisplayObjectContainerIn3D() as IRenderIn3D);
+					render3D = new DisplayObjectContainerIn3D();
 					render3D.setStatusCallback(handleRenderCallback);
 					return;
 				}
