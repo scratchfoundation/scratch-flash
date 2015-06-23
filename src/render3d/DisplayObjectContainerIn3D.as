@@ -340,7 +340,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 
 		var displayObject:DisplayObject = e.target as DisplayObject;
 		if (displayObject) {
-			updateFilters(displayObject, {});
+			updateFilters(displayObject, null);
 			delete spriteRenderOpts[displayObject];
 		}
 	}
@@ -592,7 +592,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 
 			var effectValue:Number;
 
-			if ((effectValue = effects[FX_PIXELATE]) != 0) {
+			if (!!(effectValue = effects[FX_PIXELATE])) {
 				var forcePixelate:Boolean = pixelateAll || (renderOpts && dispObj.rotation % 90 == 0 && (closeTo(dw, rect.width) || renderOpts.bitmap != null));
 				var pixelate:Number = (Math.abs(effectValue * scale) / 10) + 1;
 				var pixelX:Number = (pixelate > 1 || forcePixelate ? pixelate / rect.width : -1);
@@ -607,28 +607,28 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 				FC[4][2] = pixelY / 2;
 			}
 
-			if ((effectValue = effects[FX_COLOR]) != 0) {
+			if (!!(effectValue = effects[FX_COLOR])) {
 				FC[componentIndex >> 2][(componentIndex++) & 3] = ((360.0 * effectValue) / 200.0) % 360.0;
 			}
 
-			if ((effectValue = effects[FX_FISHEYE]) != 0) {
+			if (!!(effectValue = effects[FX_FISHEYE])) {
 				FC[componentIndex >> 2][(componentIndex++) & 3] = Math.max(0, (effectValue + 100) / 100);
 			}
 
-			if ((effectValue = effects[FX_WHIRL]) != 0) {
+			if (!!(effectValue = effects[FX_WHIRL])) {
 				FC[componentIndex >> 2][(componentIndex++) & 3] = (Math.PI * effectValue) / 180;
 			}
 
-			if ((effectValue = effects[FX_MOSAIC]) != 0) {
+			if (!!(effectValue = effects[FX_MOSAIC])) {
 				effectValue = Math.round((Math.abs(effectValue) + 10) / 10);
 				FC[componentIndex >> 2][(componentIndex++) & 3] = Math.floor(Math.max(1, Math.min(effectValue, Math.min(srcWidth, srcHeight))));
 			}
 
-			if ((effectValue = effects[FX_BRIGHTNESS]) != 0) {
+			if (!!(effectValue = effects[FX_BRIGHTNESS])) {
 				FC[componentIndex >> 2][(componentIndex++) & 3] = Math.max(-100, Math.min(effectValue, 100)) / 100;
 			}
 
-			if ((effectValue = effects[FX_GHOST]) != 0) {
+			if (!!(effectValue = effects[FX_GHOST])) {
 				FC[componentIndex >> 2][(componentIndex++) & 3] = 1.0 - (Math.max(0, Math.min(effectValue, 100)) / 100.0);
 			}
 		}
@@ -676,7 +676,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 			var numEffects:int = effectNames.length;
 			for (var i:int = 0; i < numEffects; ++i) {
 				var effectName:String = effectNames[i];
-				shaderID = (shaderID << 1) | (effects[effectName] != 0 ? 1 : 0);
+				shaderID = (shaderID << 1) | (!!effects[effectName] ? 1 : 0);
 			}
 		}
 		return shaderID;
@@ -768,16 +768,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 
 	public function updateFilters(dispObj:DisplayObject, effects:Object):void {
 		var spriteOpts:Object = spriteRenderOpts[dispObj] || (spriteRenderOpts[dispObj] = {});
-		if (!effects) {
-			effects = {};
-			// Do this so we don't have to check for `undefined` later.
-			var numEffects:int = effectNames.length;
-			for (var i:int = 0; i < numEffects; ++i) {
-				var effectName:String = effectNames[i];
-				effects[effectName] = 0;
-			}
-		}
-		spriteOpts.effects = effects;
+		spriteOpts.effects = effects || {};
 		spriteOpts.shaderID = -1; // recalculate at next draw time
 	}
 
