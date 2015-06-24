@@ -1145,15 +1145,15 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 			pScale = 1;
 		}
 
-		dispObj.scaleX = width / Math.floor(bounds.width * dispObj.scaleX * pScale);
-		dispObj.scaleY = height / Math.floor(bounds.height * dispObj.scaleY * pScale);
+		dispObj.scaleX = width / Math.floor(bounds.width * pScale);
+		dispObj.scaleY = height / Math.floor(bounds.height * pScale);
 
 		var oldX:Number = dispObj.x;
 		var oldY:Number = dispObj.y;
 		dispObj.x = -bounds.x * dispObj.scaleX;
 		dispObj.y = -bounds.y * dispObj.scaleY;
 
-		__context.clear(1, 1, 1, 0);
+		__context.clear(0, 0, 0, 0);
 		__context.setScissorRectangle(new Rectangle(0, 0, bmd.width + 1, bmd.height + 1));
 		drawChild(dispObj, false);
 		__context.drawToBitmapData(bmd);
