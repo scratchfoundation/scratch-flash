@@ -320,8 +320,14 @@ ft1.xyz = sat(ft7.xyz)			// Move the shifted color into ft1
 #endif // ENABLE_color || ENABLE_brightness
 
 /*** Ghost effect ***/
-#if ENABLE_ghost
+#if ENABLE_ghost && !ENABLE_FlashAlpha
 ft1.w *= FX_ghost
-#endif // ENABLE_ghost
+#endif // ENABLE_ghost && !ENABLE_FlashAlpha
 
+/*** Flash-style pre-multiplied alpha **/
+#if ENABLE_FlashAlpha
+ft1.xyz *= ft1.www
+#endif // ENABLE_FlashAlpha
+
+/*** Output color ***/
 oc = ft1
