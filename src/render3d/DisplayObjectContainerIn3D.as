@@ -74,7 +74,6 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 	private var vertexBuffer:VertexBuffer3D;
 	private var currentShader:Program3D; // contains Program3D, vertex size, etc.
 	private var shaderCache:Object; // mapping of shader config ID -> currentShader
-	private var bitmapShaderCache:Object; // like shaderCache, but for drawing to BitmapData objects
 	private var vertexShaderCode:String;
 	private var fragmentShaderCode:String;
 	private var fragmentShaderAssembler:AGALMacroAssembler;
@@ -127,7 +126,6 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		spriteBitmaps = new Dictionary();
 		spriteRenderOpts = new Dictionary();
 		shaderCache = {};
-		bitmapShaderCache = {};
 		fragmentShaderAssembler = new AGALMacroAssembler();
 		vertexShaderAssembler = new AGALMacroAssembler();
 		bitmapsByID = {};
@@ -473,9 +471,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 	private var boundsDict:Dictionary = new Dictionary();
 	private var drawMatrix:Matrix3D = new Matrix3D();
 
-	// Set `forBitmap` when the results will be collected into a BitmapData with drawToBitmapData().
-	// This has effects on blending and in the shader, and also suppresses the Ghost effect.
-	private function drawChild(dispObj:DisplayObject, forBitmap:Boolean = false):Boolean {
+	private function drawChild(dispObj:DisplayObject):Boolean {
 		const bounds:Rectangle = boundsDict[dispObj];
 		if (!bounds)
 			return false;
@@ -505,7 +501,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 			effects = null;
 			shaderID = 0;
 		}
-		switchShaders(shaderID, forBitmap);
+		switchShaders(shaderID);
 
 		// Setup the texture data
 		const texIndex:int = textureIndexByID[bmID];
@@ -521,13 +517,6 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		var componentIndex:int = calculateEffects(dispObj, bounds, rect, renderOpts, effects);
 
 		setEffectConstants(componentIndex);
-
-		if (forBitmap) {
-			setBlendFactors(Context3DBlendFactor.ONE, Context3DBlendFactor.ZERO);
-		}
-		else {
-			setBlendFactors(Context3DBlendFactor.SOURCE_ALPHA, Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA);
-		}
 
 		drawTriangles();
 
@@ -661,18 +650,6 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		__context.setVertexBufferAt(0, vertexBuffer, 0, Context3DVertexBufferFormat.FLOAT_3);
 		// u, v
 		__context.setVertexBufferAt(1, vertexBuffer, 3, Context3DVertexBufferFormat.FLOAT_2);
-	}
-
-
-	private var currentSourceBlendFactor:String;
-	private var currentDestinationBlendFactor:String;
-	private function setBlendFactors(sourceFactor:String,destinationFactor:String):void {
-		if (currentSourceBlendFactor == sourceFactor && currentDestinationBlendFactor == destinationFactor)
-			return;
-
-		__context.setBlendFactors(sourceFactor, destinationFactor);
-		currentSourceBlendFactor = sourceFactor;
-		currentDestinationBlendFactor = destinationFactor;
 	}
 
 	private function drawTriangles():void {
@@ -1165,7 +1142,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 
 		__context.clear(0, 0, 0, 0);
 		__context.setScissorRectangle(new Rectangle(0, 0, bmd.width + 1, bmd.height + 1));
-		drawChild(dispObj, true);
+		drawChild(dispObj);
 		__context.drawToBitmapData(bmd);
 
 		dispObj.x = oldX;
@@ -1271,6 +1248,10 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		__context.setDepthTest(false, Context3DCompareMode.ALWAYS);
 		__context.enableErrorChecking = true;
 
+		// These are the standard blending factors for premultiplied alpha.
+		// This works for rendering both to bitmaps and the screen as long as the shader multiplies by alpha.
+		__context.setBlendFactors(Context3DBlendFactor.ONE, Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA);
+
 		tlPoint = scratchStage.localToGlobal(originPt);
 	}
 
@@ -1293,12 +1274,11 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 	private var vertexShaderParts:Array = [];
 	private var fragmentShaderParts:Array = [];
 
-	private function switchShaders(shaderID:int, forBitmap:Boolean):void {
-		var cache:Object = forBitmap ? bitmapShaderCache : shaderCache;
-		var desiredShader:Program3D = cache[shaderID];
+	private function switchShaders(shaderID:int):void {
+		var desiredShader:Program3D = shaderCache[shaderID];
 
 		if (!desiredShader) {
-			cache[shaderID] = desiredShader = buildShader(shaderID, forBitmap);
+			shaderCache[shaderID] = desiredShader = buildShader(shaderID);
 		}
 
 		if (currentShader != desiredShader) {
@@ -1307,7 +1287,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		}
 	}
 
-	private function buildShader(shaderID:int, forBitmap:Boolean):Program3D {
+	private function buildShader(shaderID:int):Program3D {
 		vertexShaderParts.length = 0;
 		fragmentShaderParts.length = 0;
 		var ri:int = 0;
@@ -1327,7 +1307,6 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 				++ri;
 			}
 		}
-		fragmentShaderParts.push('#define ENABLE_FlashAlpha ' + int(forBitmap));
 
 		vertexShaderParts.push(vertexShaderCode);
 		fragmentShaderParts.push(fragmentShaderCode);
@@ -1406,18 +1385,12 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 	}
 
 	private function onContextLoss(e:Event = null):void {
-		var config:Object;
-		for each(config in shaderCache) {
-			config.dispose();
-		}
-		for each(config in bitmapShaderCache) {
+		for each(var config:Object in shaderCache) {
 			config.dispose();
 		}
 		shaderCache = {};
-		bitmapShaderCache = {};
 		currentShader = null;
 		currentTexture = null;
-		currentSourceBlendFactor = currentDestinationBlendFactor = null;
 
 		for (var i:int = 0; i < textures.length; ++i)
 			(textures[i] as ScratchTextureBitmap).disposeTexture();
