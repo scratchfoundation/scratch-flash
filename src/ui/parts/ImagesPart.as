@@ -474,23 +474,24 @@ public class ImagesPart extends UIPart {
 		addAndSelectCostume(ScratchCostume.emptyBitmapCostume('', isStage()));
 	}
 
-	private function costumeFromCamera(ignore:* = null):void {
-		function savePhotoAsCostume(photo:BitmapData):void {
-			app.closeCameraDialog();
-			var obj:ScratchObj = app.viewedObj();
-			if (obj == null) return;
-			if (obj.isStage) { // resize photo to stage
-				var scale:Number = 480 / photo.width;
-				var m:Matrix = new Matrix();
-				m.scale(scale, scale);
-				var scaledPhoto:BitmapData = new BitmapData(480, 360, true, 0);
-				scaledPhoto.draw(photo, m);
-				photo = scaledPhoto;
-			}
-			var c:ScratchCostume = new ScratchCostume(Translator.map('photo1'), photo);
-			addAndSelectCostume(c);
-			editor.getWorkArea().zoom();
+	protected function savePhotoAsCostume(photo:BitmapData):void {
+		app.closeCameraDialog();
+		var obj:ScratchObj = app.viewedObj();
+		if (obj == null) return;
+		if (obj.isStage) { // resize photo to stage
+			var scale:Number = 480 / photo.width;
+			var m:Matrix = new Matrix();
+			m.scale(scale, scale);
+			var scaledPhoto:BitmapData = new BitmapData(480, 360, true, 0);
+			scaledPhoto.draw(photo, m);
+			photo = scaledPhoto;
 		}
+		var c:ScratchCostume = new ScratchCostume(Translator.map('photo1'), photo);
+		addAndSelectCostume(c);
+		editor.getWorkArea().zoom();
+	}
+
+	private function costumeFromCamera(ignore:* = null):void {
 		app.openCameraDialog(savePhotoAsCostume);
 	}
 
