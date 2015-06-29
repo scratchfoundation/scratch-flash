@@ -115,7 +115,7 @@ public class ExtensionDevManager extends ExtensionManager {
 			FileReference(e.target).addEventListener(Event.COMPLETE, self.extensionFileLoaded);
 			self.localExt = ext;
 			self.extensionFileLoaded(e);
-		}, [filter]);
+		}, filter);
 	}
 
 	public function stopWatchingExtensionFile():void {

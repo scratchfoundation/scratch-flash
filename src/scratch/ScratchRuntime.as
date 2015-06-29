@@ -380,14 +380,15 @@ public class ScratchRuntime {
 			installProjectFromFile(fileName, data);
 		}
 		stopAll();
-		var filter1:FileFilter = new FileFilter('Scratch Project', '*.sb;*.sb2');
+
+		var filter:FileFilter;
 		if (Scratch.app.isExtensionDevMode) {
-			var filter2:FileFilter = new FileFilter('ScratchX Project', '*.sbx;*.sb;*.sb2');
-			Scratch.loadSingleFile(fileLoadHandler, [filter2, filter1])
+			filter = new FileFilter('ScratchX Project', '*.sbx;*.sb;*.sb2');
 		}
 		else {
-			Scratch.loadSingleFile(fileLoadHandler, filter1)
+			filter = new FileFilter('Scratch Project', '*.sb;*.sb2');
 		}
+		Scratch.loadSingleFile(fileLoadHandler, filter);
 	}
 
 	public function installProjectFromFile(fileName:String, data:ByteArray):void {
