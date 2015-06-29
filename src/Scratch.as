@@ -941,10 +941,13 @@ public class Scratch extends Sprite {
 				modalOverlay.graphics.drawRect(0, 0, stage.width, stage.height);
 				modalOverlay.addEventListener(MouseEvent.CLICK, eatEvent);
 				modalOverlay.addEventListener(MouseEvent.MOUSE_DOWN, eatEvent);
-				modalOverlay.addEventListener(MouseEvent.RIGHT_CLICK, eatEvent);
-				modalOverlay.addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, eatEvent);
-				modalOverlay.addEventListener(MouseEvent.MIDDLE_CLICK, eatEvent);
-				modalOverlay.addEventListener(MouseEvent.MIDDLE_MOUSE_DOWN, eatEvent);
+				if (SCRATCH::allow3d) { // TODO: use a better flag or rename this one
+					// These events are only available in flash 11.2 and above.
+					modalOverlay.addEventListener(MouseEvent.RIGHT_CLICK, eatEvent);
+					modalOverlay.addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, eatEvent);
+					modalOverlay.addEventListener(MouseEvent.MIDDLE_CLICK, eatEvent);
+					modalOverlay.addEventListener(MouseEvent.MIDDLE_MOUSE_DOWN, eatEvent);
+				}
 				stage.addChild(modalOverlay);
 			}
 			else {

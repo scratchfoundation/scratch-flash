@@ -81,7 +81,10 @@ public class ExtensionDevManager extends ExtensionManager {
 
 		// TODO: button tip link
 		var button:Button = new Button(Translator.map('Load Experimental Extension'));
-		button.addEventListener(MouseEvent.RIGHT_CLICK, showShiftMenu);
+		if (SCRATCH::allow3d) { // TODO: use a better flag or rename this one
+			// This event is only available in flash 11.2 and above.
+			button.addEventListener(MouseEvent.RIGHT_CLICK, showShiftMenu);
+		}
 		button.setEventAction(function (evt:MouseEvent):void {
 			if (evt.shiftKey) {
 				showShiftMenu(evt);
