@@ -451,6 +451,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		if (childrenChanged) {// || effectsChanged) {
 			vertexData.position = 0;
 			childrenDrawn = 0;
+			setBlendFactors(true);
 			var skipped:uint = 0;
 			for (i = 0; i < numChildren; ++i) {
 				dispObj = scratchStage.getChildAt(i);
@@ -650,6 +651,17 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		__context.setVertexBufferAt(0, vertexBuffer, 0, Context3DVertexBufferFormat.FLOAT_3);
 		// u, v
 		__context.setVertexBufferAt(1, vertexBuffer, 3, Context3DVertexBufferFormat.FLOAT_2);
+	}
+
+	private var currentBlendFactor:String;
+
+	private function setBlendFactors(blend:Boolean):void {
+		var newBlendFactor:String = blend ? Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA : Context3DBlendFactor.ZERO;
+		if (newBlendFactor == currentBlendFactor) return;
+
+		// Since we use pre-multiplied alpha, the source blend factor is always ONE
+		__context.setBlendFactors(Context3DBlendFactor.ONE, newBlendFactor);
+		currentBlendFactor = newBlendFactor;
 	}
 
 	private function drawTriangles():void {
@@ -1142,6 +1154,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 
 		__context.clear(0, 0, 0, 0);
 		__context.setScissorRectangle(new Rectangle(0, 0, bmd.width + 1, bmd.height + 1));
+		setBlendFactors(false);
 		drawChild(dispObj);
 		__context.drawToBitmapData(bmd);
 
@@ -1246,11 +1259,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		//__context.addEventListener(Event.DEACTIVATE, onContextLoss);
 
 		__context.setDepthTest(false, Context3DCompareMode.ALWAYS);
-		__context.enableErrorChecking = true;
-
-		// These are the standard blending factors for premultiplied alpha.
-		// This works for rendering both to bitmaps and the screen as long as the shader multiplies by alpha.
-		__context.setBlendFactors(Context3DBlendFactor.ONE, Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA);
+		__context.enableErrorChecking = false;
 
 		tlPoint = scratchStage.localToGlobal(originPt);
 	}
@@ -1391,6 +1400,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		shaderCache = {};
 		currentShader = null;
 		currentTexture = null;
+		currentBlendFactor = null;
 
 		for (var i:int = 0; i < textures.length; ++i)
 			(textures[i] as ScratchTextureBitmap).disposeTexture();
