@@ -139,6 +139,9 @@ public class ExtensionManager {
 			descriptor.extensionName = ext.name;
 			descriptor.blockSpecs = ext.blockSpecs;
 			descriptor.menus = ext.menus;
+			if(ext.tags) descriptor.tags = ext.tags;
+			if(ext.thumbnailMD5) descriptor.thumbnailMD5 = ext.thumbnailMD5;			
+			if(ext.url) descriptor.url = ext.url;
 			if(ext.port) descriptor.extensionPort = ext.port;
 			else if(ext.javascriptURL) descriptor.javascriptURL = ext.javascriptURL;
 			result.push(descriptor);
@@ -187,32 +190,34 @@ public class ExtensionManager {
 		}
 	}
 
-	public function loadRawExtension(extObj:Object):ScratchExtension {
-		var ext:ScratchExtension = extensionDict[extObj.extensionName];
-		if(!ext)
-			ext = new ScratchExtension(extObj.extensionName, extObj.extensionPort);
-		ext.port = extObj.extensionPort;
-		ext.blockSpecs = extObj.blockSpecs;
-		if (app.isOffline && (ext.port == 0)) {
-			// Fix up block specs to force reporters to be treated as requesters.
-			// This is because the offline JS interface doesn't support returning values directly.
-			for each(var spec:Object in ext.blockSpecs) {
-				if(spec[0] == 'r') {
-					// 'r' is reporter, 'R' is requester, and 'rR' is a reporter forced to act as a requester.
-					spec[0] = 'rR';
-				}
-			}
-		}
-		if(extObj.url) ext.url = extObj.url;
-		ext.showBlocks = true;
-		ext.menus = extObj.menus;
-		ext.javascriptURL = extObj.javascriptURL;
-		if (extObj.host) ext.host = extObj.host; // non-local host allowed but not saved in project
+	public function loadExtensionData(ext:ScratchExtension, extObj:Object):void {		
 		extensionDict[extObj.extensionName] = ext;
-		Scratch.app.translationChanged();
-		Scratch.app.updatePalette();
-
-		// Update the indicator
+ 		ext.port = extObj.extensionPort;
+ 		ext.blockSpecs = extObj.blockSpecs;
+		// Fix up block specs to force reporters to be treated as requesters.
+		// This is because the offline JS interface doesn't support returning values directly.
+		// 'r' is reporter, 'R' is requester, and 'rR' is a reporter forced to act as a requester.
+		// A saved .sb2 file may contain either 'r' or 'rR', so fix in both directions
+		for each(var spec:Object in ext.blockSpecs) {
+			if (app.isOffline && (ext.port == 0)) {
+				if (spec[0] == 'r') spec[0] = 'rR';
+			} else {
+				if(spec[0] == 'rR') spec[0] = 'r';		
+ 			}
+ 		}
+ 		if(extObj.url) ext.url = extObj.url;
+		if(extObj.tags) ext.tags = extObj.tags;
+		if(extObj.thumbnailMD5) ext.thumbnailMD5 = extObj.thumbnailMD5;	
+ 		ext.showBlocks = true;
+ 		ext.menus = extObj.menus;
+		ext.isInternal = false; // For now?
+		if(extObj.javascriptURL) {
+			ext.javascriptURL = extObj.javascriptURL;
+			ext.showBlocks = false;
+			//if(extObj.id) ext.id = extObj.id;
+			setEnabled(extObj.extensionName, true);
+		}
+ 		// Update the indicator
 		for (var i:int = 0; i < app.palette.numChildren; i++) {
 			var indicator:IndicatorLight = app.palette.getChildAt(i) as IndicatorLight;
 			if (indicator && indicator.target === ext) {
@@ -220,7 +225,17 @@ public class ExtensionManager {
 				break;
 			}
 		}
+ 	}
 
+	public function loadRawExtension(extObj:Object):ScratchExtension {
+		var ext:ScratchExtension = extensionDict[extObj.extensionName];
+		if(!ext)
+			ext = new ScratchExtension(extObj.extensionName, extObj.extensionPort);
+		loadExtensionData(ext, extObj);	
+		//not within loadExtensionData() as not safe to load from a saved file
+		if (extObj.host) ext.host = extObj.host; // non-local host allowed but not saved in project
+		Scratch.app.translationChanged();
+		Scratch.app.updatePalette();
 		return ext;
 	}
 
@@ -232,26 +247,15 @@ public class ExtensionManager {
 				setEnabled(extObj.extensionName, true);
 				continue; // internal extension overrides one saved in project
 			}
-
 			if (!('extensionName' in extObj) ||
 				(!('extensionPort' in extObj) && !('javascriptURL' in extObj)) ||
 				!('blockSpecs' in extObj)) {
 					continue;
 			}
-
 			var ext:ScratchExtension = new ScratchExtension(extObj.extensionName, extObj.extensionPort || 0);
-			extensionDict[extObj.extensionName] = ext;
-			ext.blockSpecs = extObj.blockSpecs;
-			ext.showBlocks = true;
-			ext.isInternal = false; // For now?
-			ext.menus = extObj.menus;
-			if(extObj.javascriptURL) {
-				ext.javascriptURL = extObj.javascriptURL;
-				ext.showBlocks = false;
-				if(extObj.id) ext.id = extObj.id;
-				setEnabled(extObj.extensionName, true);
-			}
+			loadExtensionData(ext, extObj);	
 		}
+		Scratch.app.translationChanged();
 		Scratch.app.updatePalette();
 	}
 
