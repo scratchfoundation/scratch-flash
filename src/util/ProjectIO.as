@@ -258,6 +258,10 @@ public class ProjectIO {
 			if (fail != null) fail();
 		}
 		if (imageDict[imageData] != null) return; // already loading or loaded
+		if (!imageData || imageData.length == 0) {
+			if (fail != null) fail();
+			return;
+		}
 		imageDict[imageData] = 'loading...';
 		var loader:Loader = new Loader();
 		loader.contentLoaderInfo.addEventListener(Event.COMPLETE, loadDone);
