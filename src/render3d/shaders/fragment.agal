@@ -124,15 +124,10 @@ ft1 = tex<2d,clamp,linear,nomip>(ft0, fs0)
 /*** ft1 == (r, g, b, a) ***/
 // Now de-multiply the color values that Flash pre-multiplied
 // TODO: De-multiply the color values BEFORE texture atlasing
-ft3.y = ft1.w == 0 //int alpha_eq_zero = (alpha == 0);	alpha_eq_zero	= ft3.y
-ft3.z = ft1.w != 0 //int alpha_neq_zero = (alpha != 0);	alpha_neq_zero	= ft3.z
-ft3.x = 0.001 * ft3.y //tiny = 0.000001 * alpha_eq_zero;		tiny		= ft3.x
-ft1.w += ft3.x //alpha = alpha + tiny;				Avoid division by zero, alpha != 0
-ft2.xyz = ft1.xyz / ft1.www //new_rgb = rgb / alpha
-ft2.xyz *= ft3.zzz //new_rgb = new_rgb * alpha_neq_zero
-
-ft1.xyz *= ft3.yyy //rgb = rgb * alpha_eq_zero
-ft1.xyz += ft2.xyz //rgb = rgb + new_rgb
+ft3.z = ft1.w != 0 //int alpha_neq_zero = (alpha != 0); alpha_neq_zero is ft3.z
+ft1.w += 0.001 //alpha = alpha + 0.001; Avoid division by zero by making sure alpha != 0
+ft1.xyz /= ft1.www // rgb /= alpha; 0.001 is smaller than 1/256 so it won't affect output rounding.
+ft1.xyz *= ft3.zzz // rgb *= alpha_neq_zero; Make rgb 0 if alpha was 0. Is this necessary?
 
 // Clamp the color
 ft1 = sat(ft1)
@@ -329,4 +324,8 @@ ft1.xyz = sat(ft7.xyz)			// Move the shifted color into ft1
 ft1.w *= FX_ghost
 #endif // ENABLE_ghost
 
+/*** Flash-style pre-multiplied alpha **/
+ft1.xyz *= ft1.www
+
+/*** Output color ***/
 oc = ft1

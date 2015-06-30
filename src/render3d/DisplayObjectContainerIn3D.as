@@ -471,7 +471,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 	private var boundsDict:Dictionary = new Dictionary();
 	private var drawMatrix:Matrix3D = new Matrix3D();
 
-	private function drawChild(dispObj:DisplayObject, blend:Boolean = true):Boolean {
+	private function drawChild(dispObj:DisplayObject):Boolean {
 		const bounds:Rectangle = boundsDict[dispObj];
 		if (!bounds)
 			return false;
@@ -517,8 +517,6 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		var componentIndex:int = calculateEffects(dispObj, bounds, rect, renderOpts, effects);
 
 		setEffectConstants(componentIndex);
-
-		setBlendFactors(blend);
 
 		drawTriangles();
 
@@ -652,17 +650,6 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		__context.setVertexBufferAt(0, vertexBuffer, 0, Context3DVertexBufferFormat.FLOAT_3);
 		// u, v
 		__context.setVertexBufferAt(1, vertexBuffer, 3, Context3DVertexBufferFormat.FLOAT_2);
-	}
-
-
-	private var currentBlendFactor:String;
-
-	private function setBlendFactors(blend:Boolean):void {
-		var newBlendFactor:String = blend ? Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA : Context3DBlendFactor.ZERO;
-		if (newBlendFactor == currentBlendFactor) return;
-
-		__context.setBlendFactors(Context3DBlendFactor.SOURCE_ALPHA, newBlendFactor);
-		currentBlendFactor = newBlendFactor;
 	}
 
 	private function drawTriangles():void {
@@ -1145,17 +1132,17 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 			pScale = 1;
 		}
 
-		dispObj.scaleX = width / Math.floor(bounds.width * dispObj.scaleX * pScale);
-		dispObj.scaleY = height / Math.floor(bounds.height * dispObj.scaleY * pScale);
+		dispObj.scaleX = width / Math.floor(bounds.width * pScale);
+		dispObj.scaleY = height / Math.floor(bounds.height * pScale);
 
 		var oldX:Number = dispObj.x;
 		var oldY:Number = dispObj.y;
 		dispObj.x = -bounds.x * dispObj.scaleX;
 		dispObj.y = -bounds.y * dispObj.scaleY;
 
-		__context.clear(1, 1, 1, 0);
+		__context.clear(0, 0, 0, 0);
 		__context.setScissorRectangle(new Rectangle(0, 0, bmd.width + 1, bmd.height + 1));
-		drawChild(dispObj, false);
+		drawChild(dispObj);
 		__context.drawToBitmapData(bmd);
 
 		dispObj.x = oldX;
@@ -1260,6 +1247,10 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 
 		__context.setDepthTest(false, Context3DCompareMode.ALWAYS);
 		__context.enableErrorChecking = true;
+
+		// These are the standard blending factors for premultiplied alpha.
+		// This works for rendering both to bitmaps and the screen as long as the shader multiplies by alpha.
+		__context.setBlendFactors(Context3DBlendFactor.ONE, Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA);
 
 		tlPoint = scratchStage.localToGlobal(originPt);
 	}
@@ -1400,7 +1391,6 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		shaderCache = {};
 		currentShader = null;
 		currentTexture = null;
-		currentBlendFactor = null;
 
 		for (var i:int = 0; i < textures.length; ++i)
 			(textures[i] as ScratchTextureBitmap).disposeTexture();
