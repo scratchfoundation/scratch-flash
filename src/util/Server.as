@@ -40,6 +40,7 @@ import flash.net.URLLoaderDataFormat;
 import flash.net.URLRequest;
 import flash.net.URLRequestHeader;
 import flash.net.URLRequestMethod;
+import flash.system.Security;
 import flash.utils.ByteArray;
 
 public class Server implements IServer {
@@ -89,6 +90,14 @@ public class Server implements IServer {
 //				else
 //					Scratch.app.logMessage('Failed server request for '+url);
 //			}
+		// We shouldn't have SecurityErrorEvents unless the crossdomain file failed to load
+		// Re-trying here should help project save failures but we'll need to add more code to re-try loading projects
+		if (event is SecurityErrorEvent) {
+			var urlPathStart:int = url.indexOf('/', 10);
+			var policyFileURL:String = url.substr(0, urlPathStart) + '/crossdomain.xml?cb='+Math.random();
+			Security.loadPolicyFile(policyFileURL);
+			Scratch.app.log('Reloading policy file from : ' + policyFileURL);
+		}
 		if (data || url.indexOf('/set/') > -1) {
 			// TEMPORARY HOTFIX: Don't send this message since it seems to saturate our logging backend.
 			//Scratch.app.logMessage('Failed server request for '+url+' with data ['+data+']');
@@ -103,6 +112,9 @@ public class Server implements IServer {
 			Scratch.app.logException(exception);
 		}
 	}
+
+	// TODO: Maybe should have this or onCallServerError() but not both
+	public var callServerErrorInfo:Object; // only valid during a whenDone() call reporting failure.
 
 	// Make a GET or POST request to the given URL (do a POST if the data is not null).
 	// The whenDone() function is called when the request is done, either with the
@@ -125,13 +137,21 @@ public class Server implements IServer {
 
 		function completeHandler(event:Event):void {
 			removeListeners();
+			callServerErrorInfo = null;
 			whenDone(loader.data);
 		}
 
+		var httpStatus:int = 0;
 		function errorHandler(event:ErrorEvent):void {
 			removeListeners();
 			onCallServerError(url, data, event);
+			callServerErrorInfo = {
+				url: url,
+				httpStatus: httpStatus,
+				errorEvent: event
+			};
 			whenDone(null);
+			callServerErrorInfo = null;
 		}
 
 		function exceptionHandler(exception:*):void {
@@ -141,6 +161,7 @@ public class Server implements IServer {
 		}
 
 		function statusHandler(e:HTTPStatusEvent):void {
+			httpStatus = e.status;
 			onCallServerHttpStatus(url, data, e);
 		}
 
