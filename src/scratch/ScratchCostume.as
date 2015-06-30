@@ -257,6 +257,7 @@ public class ScratchCostume {
 
 	private static var shapeDict:Object = {};
 	public function getShape():Shape {
+		if (!baseLayerMD5) prepareToSave();
 		var id:String = baseLayerMD5;
 		if(id && textLayerMD5) id += textLayerMD5;
 		else if(textLayerMD5) id = textLayerMD5;
@@ -372,6 +373,7 @@ public class ScratchCostume {
 			H[i++] = R[j]; //right part;
 
 		R.length = L.length = 0;
+		image.dispose();
 
 //trace('found bounds: '+new Rectangle(minX, minY, maxX - minX, maxY - minY));
 		return H;
@@ -392,16 +394,16 @@ public class ScratchCostume {
 		dup.rotationCenterY = rotationCenterY;
 
 		dup.baseLayerBitmap = baseLayerBitmap;
-		dup.baseLayerMD5 = baseLayerMD5;
 		dup.baseLayerData = baseLayerData;
+		dup.baseLayerMD5 = baseLayerMD5;
 
 		dup.svgRoot = svgRoot;
 		dup.svgWidth = svgWidth;
 		dup.svgHeight = svgHeight;
 
 		dup.textLayerBitmap = textLayerBitmap;
-		dup.textLayerMD5 = textLayerMD5;
 		dup.textLayerData = textLayerData;
+		dup.textLayerMD5 = textLayerMD5;
 
 		dup.text = text;
 		dup.textRect = textRect;
@@ -481,9 +483,10 @@ public class ScratchCostume {
 		var centerX:Number = r.x + (r.width / 2);
 		var centerY:Number = r.y + (r.height / 2);
 		var bm:BitmapData = new BitmapData(w, h, true, 0x00FFFFFF); // transparent fill color
-		var scale:Number = Math.min(1, w / r.width, h / r.height);
+		var scale:Number = Math.min(w / r.width, h / r.height);
+		if (bitmap) scale = Math.min(1, scale);
 		var m:Matrix = new Matrix();
-		if (scale < 1) m.scale(scale, scale); // scale down a large image
+		if (scale < 1 || !bitmap) m.scale(scale, scale); // don't scale up bitmaps
 		m.translate((w / 2) - (scale * centerX), (h / 2) - (scale * centerY));
 		bm.draw(dispObj, m);
 		return bm;
