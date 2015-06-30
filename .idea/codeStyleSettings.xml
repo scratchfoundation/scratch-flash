@@ -8,6 +8,7 @@
         </XML>
         <codeStyleSettings language="ECMA Script Level 4">
           <option name="KEEP_LINE_BREAKS" value="false" />
+          <option name="BLANK_LINES_AROUND_METHOD" value="0" />
           <option name="ELSE_ON_NEW_LINE" value="true" />
           <option name="ALIGN_MULTILINE_PARAMETERS_IN_CALLS" value="true" />
           <option name="CALL_PARAMETERS_WRAP" value="1" />
