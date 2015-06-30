@@ -1246,7 +1246,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		//__context.addEventListener(Event.DEACTIVATE, onContextLoss);
 
 		__context.setDepthTest(false, Context3DCompareMode.ALWAYS);
-		__context.enableErrorChecking = true;
+		__context.enableErrorChecking = false;
 
 		// These are the standard blending factors for premultiplied alpha.
 		// This works for rendering both to bitmaps and the screen as long as the shader multiplies by alpha.
