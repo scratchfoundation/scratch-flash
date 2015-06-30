@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="as3corelib" type="flex">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/libs/as3corelib.swc!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

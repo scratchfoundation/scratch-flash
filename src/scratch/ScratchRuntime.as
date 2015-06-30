@@ -70,7 +70,7 @@ public class ScratchRuntime {
 	//------------------------------
 
 	public function stepRuntime():void {
-		if (projectToInstall != null && app.isOffline) {
+		if (projectToInstall != null && (app.isOffline || app.isExtensionDevMode)) {
 			installProject(projectToInstall);
 			if (saveAfterInstall) app.setSaveNeeded(true);
 			projectToInstall = null;
@@ -380,8 +380,15 @@ public class ScratchRuntime {
 			installProjectFromFile(fileName, data);
 		}
 		stopAll();
-		var filter1:FileFilter = new FileFilter('Scratch Project', '*.sb;*.sb2');
-		Scratch.loadSingleFile(fileLoadHandler, filter1)
+
+		var filter:FileFilter;
+		if (Scratch.app.isExtensionDevMode) {
+			filter = new FileFilter('ScratchX Project', '*.sbx;*.sb;*.sb2');
+		}
+		else {
+			filter = new FileFilter('Scratch Project', '*.sb;*.sb2');
+		}
+		Scratch.loadSingleFile(fileLoadHandler, filter);
 	}
 
 	public function installProjectFromFile(fileName:String, data:ByteArray):void {

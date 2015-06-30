@@ -18,10 +18,10 @@
  */
 
 package uiwidgets {
-	import flash.display.*;
-	import flash.events.MouseEvent;
-	import flash.geom.Matrix;
-	import flash.text.*;
+import flash.display.*;
+import flash.events.MouseEvent;
+import flash.geom.Matrix;
+import flash.text.*;
 
 public class Button extends Sprite {
 
@@ -30,7 +30,8 @@ public class Button extends Sprite {
 	private var minWidth:int = 50;
 	private var compact:Boolean;
 
-	private var action:Function;
+	private var action:Function; // takes no arguments
+	private var eventAction:Function; // like action, but takes the event as an argument
 	private var tipName:String;
 
 	public function Button(label:String, action:Function = null, compact:Boolean = false, tipName:String = null) {
@@ -54,7 +55,7 @@ public class Button extends Sprite {
 			if ((labelOrIcon != null) && (labelOrIcon.parent != null)) labelOrIcon.parent.removeChild(labelOrIcon);
 			addLabel(s);
 		}
-	 }
+	}
 
 	public function setIcon(icon:DisplayObject):void {
 		if ((labelOrIcon != null) && (labelOrIcon.parent != null)) {
@@ -81,20 +82,36 @@ public class Button extends Sprite {
 		graphics.clear();
 		graphics.lineStyle(0.5, CSS.borderColor, 1, true);
 		if (color is Array) {
-	 		var matr:Matrix = new Matrix();
- 			matr.createGradientBox(minW, minH, Math.PI / 2, 0, 0);
- 			graphics.beginGradientFill(GradientType.LINEAR, CSS.titleBarColors , [100, 100], [0x00, 0xFF], matr);
-  		}
+			var matr:Matrix = new Matrix();
+			matr.createGradientBox(minW, minH, Math.PI / 2, 0, 0);
+			graphics.beginGradientFill(GradientType.LINEAR, CSS.titleBarColors, [100, 100], [0x00, 0xFF], matr);
+		}
 		else graphics.beginFill(color);
 		graphics.drawRoundRect(0, 0, minW, minH, 12);
- 		graphics.endFill();
+		graphics.endFill();
 	}
 
-	private function mouseOver(evt:MouseEvent):void { setColor(CSS.overColor) }
-	private function mouseOut(evt:MouseEvent):void { setColor(CSS.titleBarColors) }
-	private function mouseDown(evt:MouseEvent):void { Menu.removeMenusFrom(stage) }
+	public function setEventAction(newEventAction:Function):Function {
+		var oldEventAction:Function = eventAction;
+		eventAction = newEventAction;
+		return oldEventAction;
+	}
+
+	private function mouseOver(evt:MouseEvent):void {
+		setColor(CSS.overColor)
+	}
+
+	private function mouseOut(evt:MouseEvent):void {
+		setColor(CSS.titleBarColors)
+	}
+
+	private function mouseDown(evt:MouseEvent):void {
+		Menu.removeMenusFrom(stage)
+	}
+
 	private function mouseUp(evt:MouseEvent):void {
 		if (action != null) action();
+		if (eventAction != null) eventAction(evt);
 		evt.stopImmediatePropagation();
 	}
 
@@ -123,4 +140,5 @@ public class Button extends Sprite {
 		addChild(label);
 	}
 
-}}
+}
+}

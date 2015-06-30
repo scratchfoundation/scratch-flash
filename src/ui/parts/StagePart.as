@@ -36,8 +36,9 @@ package ui.parts {
 
 public class StagePart extends UIPart {
 
-	private const readoutLabelFormat:TextFormat = new TextFormat(CSS.font, 12, CSS.textColor, true);
-	private const readoutFormat:TextFormat = new TextFormat(CSS.font, 10, CSS.textColor);
+	private const readoutTextColor:int = Scratch.app.isExtensionDevMode ? CSS.white : CSS.textColor;
+	private const readoutLabelFormat:TextFormat = new TextFormat(CSS.font, 12, readoutTextColor, true);
+	private const readoutFormat:TextFormat = new TextFormat(CSS.font, 10, readoutTextColor);
 
 	private const topBarHeightNormal:int = 39;
 	private const topBarHeightSmallPlayerMode:int = 26;

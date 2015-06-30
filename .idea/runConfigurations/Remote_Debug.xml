@@ -1,0 +1,14 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Remote Debug" type="RemoteFlashRunConfigurationType" factoryName="Flash Remote Debug" singleton="true">
+    <option name="BCName" value="Debug" />
+    <option name="debugTransport" value="USB" />
+    <option name="moduleName" value="scratch-flash" />
+    <option name="remoteDebugTarget" value="Computer" />
+    <option name="usbDebugPort" value="7936" />
+    <RunnerSettings RunnerId="Basic" />
+    <RunnerSettings RunnerId="FlexDebugRunner" />
+    <ConfigurationWrapper RunnerId="Basic" />
+    <ConfigurationWrapper RunnerId="FlexDebugRunner" />
+    <method />
+  </configuration>
+</component>
