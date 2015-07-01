@@ -165,7 +165,7 @@ public class Scratch extends Sprite {
 		stage.align = StageAlign.TOP_LEFT;
 		stage.scaleMode = StageScaleMode.NO_SCALE;
 		stage.frameRate = 30;
-		stage.color = CSS.backgroundColor();
+		stage['color'] = CSS.backgroundColor(); // this setter doesn't exist on Air 2.6, so silently does nothing.
 
 		Block.setFonts(10, 9, true, 0); // default font sizes
 		Block.MenuHandlerFunction = BlockMenus.BlockMenuHandler;
