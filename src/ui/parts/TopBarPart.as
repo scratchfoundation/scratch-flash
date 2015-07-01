@@ -72,6 +72,11 @@ public class TopBarPart extends UIPart {
 		addToolButtons();
 		if (Scratch.app.isExtensionDevMode) {
 			addChild(logoButton = new IconButton(app.logoButtonPressed, Resources.createBmp('scratchxlogo')));
+			const desiredButtonHeight:Number = 20;
+			logoButton.scaleX = logoButton.scaleY = 1;
+			var scale:Number = desiredButtonHeight / logoButton.height;
+			logoButton.scaleX = logoButton.scaleY = scale;
+
 			addChild(exportButton = new Button('Save Project', function():void { app.exportProjectToFile(); }));
 			addChild(extensionLabel = makeLabel('My Extension', offlineNoticeFormat, 2, 2));
 
@@ -115,20 +120,21 @@ public class TopBarPart extends UIPart {
 		fixLayout();
 	}
 
-	protected function fixLayout():void {
-		const buttonSpace:int = 12;
-		const buttonY:int = 5;
+	protected function fixLogoLayout():int {
 		var nextX:int = 9;
-
 		if (logoButton) {
-			const desiredButtonHeight:Number = 20;
-			logoButton.scaleX = logoButton.scaleY = 1;
-			var scale:Number = desiredButtonHeight / logoButton.height;
-			logoButton.scaleX = logoButton.scaleY = scale;
 			logoButton.x = nextX;
-			logoButton.y = buttonY;
+			logoButton.y = 5;
 			nextX += logoButton.width + buttonSpace;
 		}
+		return nextX;
+	}
+
+	protected const buttonSpace:int = 12;
+	protected function fixLayout():void {
+		const buttonY:int = 5;
+
+		var nextX:int = fixLogoLayout();
 
 		languageButton.x = nextX;
 		languageButton.y = buttonY - 1;
