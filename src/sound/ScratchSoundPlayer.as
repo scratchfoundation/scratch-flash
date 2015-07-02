@@ -105,6 +105,7 @@ public class ScratchSoundPlayer {
 		if (i >= 0) activeSounds.splice(i, 1);
 	}
 
+	SCRATCH::allow3d
 	public function createNative():void {
 		if (!!scratchSound.nativeSound) return;
 
@@ -128,9 +129,21 @@ public class ScratchSoundPlayer {
 		stopIfAlreadyPlaying();
 		activeSounds.push(this);
 
-		createNative();
+		if (SCRATCH::allow3d)
+		{
+			createNative();
 
-		soundChannel = scratchSound.nativeSound.play();
+			soundChannel = scratchSound.nativeSound.play();
+		}
+		else {
+			bytePosition = startOffset;
+			nextSample = getSample();
+
+			var flashSnd:Sound = new Sound();
+			flashSnd.addEventListener(SampleDataEvent.SAMPLE_DATA, writeSampleData);
+			soundChannel = flashSnd.play();
+		}
+
 		if (soundChannel) {
 			soundChannel.addEventListener(Event.SOUND_COMPLETE, function(e:Event):void {
 				soundChannel = null;
