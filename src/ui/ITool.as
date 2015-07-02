@@ -2,9 +2,9 @@
  * Created by shanemc on 12/8/14.
  */
 package ui {
-import flash.events.MouseEvent;
+import ui.events.PointerEvent;
 
 public interface ITool {
 	function shutdown():void;
-	function mouseHandler(e:MouseEvent):Boolean;
+	function mouseHandler(e:PointerEvent):Boolean;
 }}

@@ -27,6 +27,8 @@ package ui.media {
 	import translation.Translator;
 	import flash.events.MouseEvent;
 
+import ui.events.PointerEvent;
+
 public class MediaFilter extends Sprite {
 
 	private const titleFormat:TextFormat = new TextFormat(CSS.font, 15, CSS.buttonLabelOverColor, false);
@@ -75,7 +77,7 @@ public class MediaFilter extends Sprite {
 		var sel:TextField = Resources.makeLabel(Translator.map(selName), selectorFormat);
 		sel.addEventListener(MouseEvent.MOUSE_OVER, mouseOver);
 		sel.addEventListener(MouseEvent.MOUSE_OUT, mouseOver);
-		sel.addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
+		sel.addEventListener(PointerEvent.POINTER_DOWN, mouseDown);
 		selectorNames.push(selName);
 		selectors.push(sel);
 		addChild(sel);

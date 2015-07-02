@@ -30,6 +30,8 @@ import svgeditor.BitmapEdit;
 import svgeditor.ImageEdit;
 import svgeditor.objs.ISVGEditable;
 
+import ui.events.PointerEvent;
+
 public final class EyeDropperTool extends SVGTool
 	{
 		public function EyeDropperTool(svgEditor:ImageEdit) {
@@ -50,23 +52,23 @@ public final class EyeDropperTool extends SVGTool
 			super.stop();
 		}
 
-		private function mouseDown(event:MouseEvent):void {
+		private function mouseDown(event:PointerEvent):void {
 			currentEvent = event;
 			grabColor();
 
-			editor.stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseMove, false, 0, true);
-			editor.stage.addEventListener(MouseEvent.MOUSE_UP, mouseUp, false, 0, true);
+			editor.stage.addEventListener(PointerEvent.POINTER_MOVE, mouseMove, false, 0, true);
+			editor.stage.addEventListener(PointerEvent.POINTER_UP, mouseUp, false, 0, true);
 			event.stopPropagation();
 		}
 
-		private function mouseMove(event:MouseEvent):void {
+		private function mouseMove(event:PointerEvent):void {
 			currentEvent = event;
 			grabColor();
 		}
 
-		private function mouseUp(event:MouseEvent = null):void {
-			editor.stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
-			editor.stage.removeEventListener(MouseEvent.MOUSE_UP, mouseUp);
+		private function mouseUp(event:PointerEvent = null):void {
+			editor.stage.removeEventListener(PointerEvent.POINTER_MOVE, mouseMove);
+			editor.stage.removeEventListener(PointerEvent.POINTER_UP, mouseUp);
 		}
 
 		private function grabColor():void {

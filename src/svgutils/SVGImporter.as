@@ -52,6 +52,12 @@ import util.Base64Encoder;
 	import flash.events.Event;
 	import flash.geom.*;
 
+import util.StringAndPos;
+
+import util.StringAndPos;
+
+import util.StringUtils;
+
 public class SVGImporter {
 
 	public var root:SVGElement; // root of the visible element tree
@@ -383,32 +389,34 @@ public class SVGImporter {
 		while (xform) {
 			var m:Matrix = new Matrix();
 			var type:String = xform[1].toLowerCase();
-			var args:Array = el.extractNumericArgs(xform[2]);
+			var str:StringAndPos = new StringAndPos(xform[2]);
+			var n:Number = str.getNextNumber();
 			switch (type) {
 			case 'translate' :
-				m.translate(args[0], args.length > 1 ? args[1] : 0);
+				m.translate(n, str.getNextNumber(-1, 0));
 				break;
 			case 'scale' :
-				m.scale(args[0], args.length > 1 ? args[1] : args[0]);
+				m.scale(n, str.getNextNumber(-1, n));
 				break;
 			case 'rotate' :
-				if (args.length > 1) {
-					var tx:Number = args.length > 1 ? args[1] : 0;
-					var ty:Number = args.length > 2 ? args[2] : 0;
+				var n2:Number = str.getNextNumber();
+				if (n2 == n2) {
+					var tx:Number = n2;
+					var ty:Number = str.getNextNumber(-1, 0);
 					m.translate(-tx, -ty);
-					m.rotate(args[0] * degToRadians);
+					m.rotate(n * degToRadians);
 					m.translate(tx, ty);
 				}
-				else m.rotate(args[0] * degToRadians);
+				else m.rotate(n * degToRadians);
 				break;
 			case 'skewx' :
-				m.c = Math.tan(args[0] * degToRadians);
+				m.c = Math.tan(n * degToRadians);
 				break;
 			case 'skewy' :
-				m.b = Math.tan(args[0] * degToRadians);
+				m.b = Math.tan(n * degToRadians);
 				break;
 			case 'matrix':
-				m = new Matrix(args[0], args[1], args[2], args[3], args[4], args[5]);
+				m = new Matrix(n, str.getNextNumber(), str.getNextNumber(), str.getNextNumber(), str.getNextNumber(), str.getNextNumber());
 				break;
 			}
 			m.concat(result);

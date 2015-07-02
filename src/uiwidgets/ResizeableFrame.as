@@ -25,6 +25,7 @@ import flash.geom.Point;
 
 import ui.ITool;
 import ui.ToolMgr;
+import ui.events.PointerEvent;
 
 public class ResizeableFrame extends Sprite implements ITool {
 
@@ -73,7 +74,7 @@ public class ResizeableFrame extends Sprite implements ITool {
 		g.moveTo(4, 10);
 		g.lineTo(10, 4);
 		addChild(resizer);
-		addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
+		addEventListener(PointerEvent.POINTER_DOWN, mouseDown);
 	}
 
 	public function hideResizer():void {
@@ -81,7 +82,7 @@ public class ResizeableFrame extends Sprite implements ITool {
 			resizer.parent.removeChild(resizer);
 			resizer = null;
 		}
-		removeEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
+		removeEventListener(PointerEvent.POINTER_DOWN, mouseDown);
 	}
 
 	public function setWidthHeight(w:int, h:int):void {
@@ -115,19 +116,19 @@ public class ResizeableFrame extends Sprite implements ITool {
 		return f;
 	}
 
-	public function mouseDown(evt:MouseEvent):void {
+	public function mouseDown(evt:PointerEvent):void {
 		if ((root is Scratch) && !(root as Scratch).editMode) return;
 		if (resizer && resizer.hitTestPoint(evt.stageX, evt.stageY)) {
-			ToolMgr.activateTool(this);
+			ToolMgr.activateTool(this, evt);
 		}
 	}
 
-	public function mouseHandler(e:MouseEvent):Boolean {
+	public function mouseHandler(e:PointerEvent):Boolean {
 		switch (e.type) {
-			case MouseEvent.MOUSE_DOWN:
+			case PointerEvent.POINTER_DOWN:
 				break;
 
-			case MouseEvent.MOUSE_MOVE:
+			case PointerEvent.POINTER_MOVE:
 				var pt:Point = this.globalToLocal(new Point(e.stageX, e.stageY));
 				var newW:int = Math.max(minWidth, pt.x + 3);
 				var newH:int = Math.max(minHeight, pt.y + 3);
@@ -135,7 +136,7 @@ public class ResizeableFrame extends Sprite implements ITool {
 				if (parent && ('fixLayout' in parent)) (parent as Object).fixLayout();
 				break;
 
-			case MouseEvent.MOUSE_UP:
+			case PointerEvent.POINTER_UP:
 				ToolMgr.deactivateTool(this);
 				break;
 		}

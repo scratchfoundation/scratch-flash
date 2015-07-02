@@ -40,6 +40,7 @@ import scratch.ScratchSound;
 
 import ui.ITool;
 import ui.ToolMgr;
+import ui.events.PointerEvent;
 import ui.parts.SoundsPart;
 
 public class WaveformView extends Sprite implements ITool {
@@ -79,7 +80,7 @@ public class WaveformView extends Sprite implements ITool {
 		addChild(playCursor = new Shape());
 		addRecordingMessage();
 		playCursor.visible = false;
-		addEventListener(MouseEvent.MOUSE_DOWN, mouseHandler);
+		addEventListener(PointerEvent.POINTER_DOWN, mouseHandler);
 		addEventListener(Event.ENTER_FRAME, step);
 	}
 
@@ -573,10 +574,10 @@ public class WaveformView extends Sprite implements ITool {
 
 	private var selectMode:String; // when not dragging, null; when dragging, one of: new, start, end
 	private var startOffset:int; // offset where drag started
-	public function mouseHandler(e:MouseEvent):Boolean {
+	public function mouseHandler(e:PointerEvent):Boolean {
 		switch(e.type) {
-			case MouseEvent.MOUSE_DOWN:
-				ToolMgr.activateTool(this);
+			case PointerEvent.POINTER_DOWN:
+				PointerEvent.setPointerCapture(this, e.pointerID);
 				// Decide how to make or adjust the selection.
 				const close:int = 8;
 				startOffset = Math.max(0, offsetAtMouse() - 1);
@@ -590,7 +591,7 @@ public class WaveformView extends Sprite implements ITool {
 					else if (Math.abs(startOffset - selectionEnd) < close) selectMode = 'end';
 				}
 
-			case MouseEvent.MOUSE_MOVE:
+			case PointerEvent.POINTER_MOVE:
 				var thisOffset:int = offsetAtMouse();
 				if ('start' == selectMode) {
 					selectionStart = thisOffset;
@@ -612,9 +613,8 @@ public class WaveformView extends Sprite implements ITool {
 				drawWave();
 				break;
 
-			case MouseEvent.MOUSE_UP:
+			case PointerEvent.POINTER_UP:
 				selectMode = null;
-				ToolMgr.deactivateTool(this);
 				break;
 		}
 
@@ -644,7 +644,7 @@ public class WaveformView extends Sprite implements ITool {
 			var localX:int = globalToLocal(new Point(stage.mouseX, 0)).x;
 			if (localX < 0) scrollTo(scrollStart + (localX / 4));
 			else if (localX > frame.width) scrollTo(scrollStart + ((localX - frame.width) / 4));
-			mouseHandler(new MouseEvent(MouseEvent.MOUSE_MOVE));
+			mouseHandler(new PointerEvent(PointerEvent.POINTER_MOVE));
 		}
 		if (soundChannel) {
 			// update the play cursor while playing

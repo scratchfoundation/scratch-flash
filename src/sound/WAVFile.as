@@ -60,14 +60,22 @@ public class WAVFile {
 		// read format chunk
 		var formatChunk:ByteArray = extractChunk('fmt ', waveData);
 		if (formatChunk.length < 16) throw Error("WAVFile: format chunk is too small");
-		var encoding:int = formatChunk.readShort();
+		var encoding:uint = formatChunk.readUnsignedShort();
 
 		result.encoding = encoding;
-		result.channels = formatChunk.readShort();
-		result.samplesPerSecond = formatChunk.readInt();
-		result.bytesPerSecond = formatChunk.readInt();
-		result.blockAlignment = formatChunk.readShort();
-		result.bitsPerSample = formatChunk.readShort();
+		result.channels = formatChunk.readUnsignedShort();
+		result.samplesPerSecond = formatChunk.readUnsignedInt();
+		result.bytesPerSecond = formatChunk.readUnsignedInt();
+		result.blockAlignment = formatChunk.readUnsignedShort();
+		result.bitsPerSample = formatChunk.readUnsignedShort();
+		if (formatChunk.length >= 18 && encoding == 0xFFFE) {
+			var extensionSize:uint = formatChunk.readUnsignedShort();
+			if (extensionSize == 22) {
+				result.validBitsPerSample = formatChunk.readUnsignedShort();
+				result.channelMask = formatChunk.readUnsignedInt();
+				result.encoding = encoding = formatChunk.readUnsignedShort();
+			}
+		}
 
 		// get size of data chunk
 		var sampleDataStartAndSize:Array = dataChunkStartAndSize(waveData);
@@ -123,7 +131,7 @@ public class WAVFile {
 		} else if (info.encoding == 3) {
 			waveData.position = info.sampleDataStart;
 			for (i = 0; i < info.sampleCount; i++) {
-				var f:Number = (info.bitsPerSample == 32 ? waveData.readFloat() : waveData.readDouble());
+				var f:Number = waveData.readFloat();
 				if (f > 1.0) f = 1.0;
 				if (f < -1.0) f = -1.0;
 				v = f * 0x7fff;

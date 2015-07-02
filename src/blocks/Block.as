@@ -43,6 +43,7 @@ import translation.Translator;
 import ui.BlockPalette;
 import ui.dragdrop.*;
 import ui.events.DragEvent;
+import ui.events.PointerEvent;
 
 import util.*;
 import uiwidgets.*;
@@ -119,8 +120,8 @@ public class Block extends Sprite implements IDraggable {
 		setSpec(this.spec, defaultArgs);
 
 		addEventListener(FocusEvent.KEY_FOCUS_CHANGE, focusChange);
-		addEventListener(MouseEvent.CLICK, click);
-		addEventListener(MouseEvent.DOUBLE_CLICK, doubleClick);
+		addEventListener(PointerEvent.TAP, click);
+		addEventListener(PointerEvent.DOUBLE_TAP, doubleClick); // implement double_tap
 		addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, menu);
 		addEventListener(DragEvent.DRAG_START, handleDragEvent);
 		addEventListener(DragEvent.DRAG_CANCEL, handleDragEvent);

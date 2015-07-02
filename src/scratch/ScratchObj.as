@@ -37,6 +37,9 @@ import interpreter.*;
 import org.gestouch.events.GestureEvent;
 import org.gestouch.gestures.TapGesture;
 import translation.Translator;
+
+import ui.events.PointerEvent;
+
 import util.*;
 import watchers.*;
 
@@ -72,8 +75,7 @@ public class ScratchObj extends Sprite {
 	function ScratchObj() {
 		super();
 
-		var tap:TapGesture = new TapGesture(this);
-		tap.addEventListener(GestureEvent.GESTURE_RECOGNIZED, click);
+		addEventListener(PointerEvent.TAP, click);
 	}
 
 	public function clearCaches():void {
@@ -270,11 +272,11 @@ public class ScratchObj extends Sprite {
 			img.transform.colorTransform = cTrans;
 		}
 		else {
-			updateEffects();
+			updateEffectsFor3D();
 		}
 	}
 
-	protected function updateEffects():void {
+	public function updateEffectsFor3D():void {
 		SCRATCH::allow3d {
 			if((parent && parent is ScratchStage) || this is ScratchStage) {
 				if(parent is ScratchStage)

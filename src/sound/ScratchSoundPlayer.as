@@ -26,9 +26,9 @@
 // which sounds are playing to support stopAllSounds().
 
 package sound {
-	import flash.events.*;
-	import flash.media.*;
-	import flash.utils.*;
+import flash.events.*;
+import flash.media.*;
+import flash.utils.*;
 import flash.utils.ByteArray;
 
 import scratch.ScratchSound;
@@ -70,18 +70,21 @@ public class ScratchSoundPlayer {
 	public function ScratchSoundPlayer(wavFileData:ByteArray) {
 		getSample = getSample16Uncompressed;
 		if (wavFileData != null) {
-			var info:* = WAVFile.decode(wavFileData);
-			soundData = wavFileData;
-			startOffset = info.sampleDataStart;
-			endOffset = startOffset + info.sampleDataSize;
-			stepSize = info.samplesPerSecond / 44100.0;
-			if (info.encoding == 17) {
-				adpcmBlockSize = info.adpcmBlockSize;
-				getSample = getSampleADPCM;
-			} else {
-				if (info.bitsPerSample == 8) getSample = getSample8Uncompressed;
-				if (info.bitsPerSample == 16) getSample = getSample16Uncompressed;
+			try {
+				var info:* = WAVFile.decode(wavFileData);
+				soundData = wavFileData;
+				startOffset = info.sampleDataStart;
+				endOffset = startOffset + info.sampleDataSize;
+				stepSize = info.samplesPerSecond / 44100.0;
+				if (info.encoding == 17) {
+					adpcmBlockSize = info.adpcmBlockSize;
+					getSample = getSampleADPCM;
+				} else {
+					if (info.bitsPerSample == 8) getSample = getSample8Uncompressed;
+					if (info.bitsPerSample == 16) getSample = getSample16Uncompressed;
+				}
 			}
+			catch (e:*) {}
 		}
 	}
 
@@ -89,7 +92,7 @@ public class ScratchSoundPlayer {
 		return (activeSounds.indexOf(this) > -1 && (!snd || soundData == snd));
 	}
 
-	public function atEnd():Boolean { return soundChannel == null }
+	public function atEnd():Boolean { return soundChannel == null; }
 
 	public function stopPlaying():void {
 		if (soundChannel != null) {
@@ -102,12 +105,48 @@ public class ScratchSoundPlayer {
 		if (i >= 0) activeSounds.splice(i, 1);
 	}
 
+	public function createNative():void {
+		if (!!scratchSound.nativeSound) return;
+
+		var flashSnd:Sound = scratchSound.nativeSound = new Sound();
+		var convertedSamples:ByteArray = new ByteArray();
+		convertedSamples.length = endOffset - startOffset;
+		bytePosition = startOffset;
+		var sampleCount:uint = 0;
+		while (bytePosition < endOffset) {
+			var n:Number = interpolatedSample();
+			convertedSamples.writeFloat(n);
+			convertedSamples.writeFloat(n);
+			++sampleCount;
+		}
+
+		convertedSamples.position = 0;
+		flashSnd.loadPCMFromByteArray(convertedSamples, sampleCount);
+	}
+
 	public function startPlaying(doneFunction:Function = null):void {
 		stopIfAlreadyPlaying();
 		activeSounds.push(this);
+
+		createNative();
+
+		soundChannel = scratchSound.nativeSound.play();
+		if (soundChannel) {
+			soundChannel.addEventListener(Event.SOUND_COMPLETE, function(e:Event):void {
+				soundChannel = null;
+				if (doneFunction != null) doneFunction();
+			});
+		} else {
+			// User has no sound card or too many sounds already playing.
+			stopPlaying();
+			if (doneFunction != null) doneFunction();
+		}
+
+		return;
 		bytePosition = startOffset;
 		nextSample = getSample();
 
+		return;
 		var flashSnd:Sound = new Sound();
 		flashSnd.addEventListener(SampleDataEvent.SAMPLE_DATA, writeSampleData);
 		soundChannel = flashSnd.play();
@@ -170,8 +209,8 @@ public class ScratchSoundPlayer {
 			fraction -= 1.0;
 		}
 		var out:int = (fraction == 0) ?
-			thisSample :
-			thisSample + (fraction * (nextSample - thisSample));
+				thisSample :
+		thisSample + (fraction * (nextSample - thisSample));
 		return (volume * out) / 32768.0;
 	}
 

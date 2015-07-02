@@ -85,7 +85,7 @@ public class ScratchTextureBitmap extends BitmapData
 
 		// Render the packed bitmaps
 		var rect:Rectangle;
-		var m:Matrix = new Matrix();
+//		var m:Matrix = new Matrix();
 		rectangles = {};
 		var packedIDs:Array = [];
 		for (i=0; i<rectPacker.rectangleCount; ++i) {
@@ -101,9 +101,10 @@ public class ScratchTextureBitmap extends BitmapData
 			rect.x = rect.y = 0;
 			bmd = bitmapsByID[bmID];
 			//trace('Copying pixels from bitmap with id: '+bmID+' @ '+bmd.width+'x'+bmd.height+'  -  '+tmpPt);
-			m.tx = tmpPt.x;
-			m.ty = tmpPt.y;
-			draw(bmd, m);
+			copyPixels(bmd, rect, tmpPt, null, null, false);
+//			m.tx = tmpPt.x;
+//			m.ty = tmpPt.y;
+//			draw(bmd, m);
 
 			if(bmd is ChildRender) {
 				rectangles[bmID].width = (bmd as ChildRender).renderWidth;

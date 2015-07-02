@@ -378,10 +378,10 @@ public class ScratchSprite extends ScratchObj implements IDraggable {
 			if (Scratch.app.isIn3D) {
 				var oldGhost:Number = filterPack.getFilterSetting('ghost');
 				filterPack.setFilter('ghost', 0);
-				updateEffects();
+				updateEffectsFor3D();
 				var bm:BitmapData = Scratch.app.render3D.getRenderedChild(this, b.width * scaleX, b.height * scaleY);
 				filterPack.setFilter('ghost', oldGhost);
-				updateEffects();
+				updateEffectsFor3D();
 //	    		if(objName == 'Tank 2 down bumper ') {
 //		    		if(!testSpr.parent) {
 //			    		testBM.filters = [new GlowFilter(0xFF00FF, 0.8)];

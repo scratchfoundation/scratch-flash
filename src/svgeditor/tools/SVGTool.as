@@ -32,12 +32,13 @@ import svgutils.SVGPath;
 
 import ui.ITool;
 import ui.ToolMgr;
+import ui.events.PointerEvent;
 
 public class SVGTool extends Sprite implements ITool
 	{
 		protected var editor:ImageEdit;
 		protected var isShuttingDown:Boolean;
-		protected var currentEvent:MouseEvent;
+		protected var currentEvent:PointerEvent;
 		protected var cursorBMName:String;
 		protected var cursorName:String;
 		protected var cursorHotSpot:Point;
@@ -158,7 +159,7 @@ public class SVGTool extends Sprite implements ITool
 
 //	public function isSticky():Boolean { return true; }
 	public function shutdown():void {}
-	public function mouseHandler(e:MouseEvent):Boolean {
+	public function mouseHandler(e:PointerEvent):Boolean {
 		return false;
 	}
 }}

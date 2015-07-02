@@ -28,6 +28,8 @@ import svgeditor.objs.*;
 
 import svgutils.SVGElement;
 
+import ui.events.PointerEvent;
+
 public final class PaintBrushTool extends SVGEditTool
 	{
 		private var shapeUnderMouse:ISVGEditable;
@@ -39,7 +41,7 @@ public final class PaintBrushTool extends SVGEditTool
 			cursorHotSpot = new Point(17,16); // for Champika's paint bucket (experimental)
 		}
 
-		override protected function edit(obj:ISVGEditable, event:MouseEvent):void {
+		override protected function edit(obj:ISVGEditable, event:PointerEvent):void {
 			// Use the shapeObj
 			if(shapeUnderMouse) {
 				dispatchEvent(new Event(Event.CHANGE)); // save after doing the fill change
@@ -56,18 +58,18 @@ public final class PaintBrushTool extends SVGEditTool
 		override protected function stop():void {
 			editor.getContentLayer().removeEventListener(MouseEvent.ROLL_OVER, rollOver);
 			editor.getContentLayer().removeEventListener(MouseEvent.ROLL_OUT, rollOut);
-			editor.getContentLayer().removeEventListener(MouseEvent.MOUSE_MOVE, previewColorChange);
+			editor.getContentLayer().removeEventListener(PointerEvent.POINTER_MOVE, previewColorChange);
 			super.stop();
 		}
 
 		private function rollOver(e:MouseEvent):void {
-			editor.getContentLayer().addEventListener(MouseEvent.MOUSE_MOVE, previewColorChange, false, 0, true);
+			editor.getContentLayer().addEventListener(PointerEvent.POINTER_MOVE, previewColorChange, false, 0, true);
 			previewColorChange(e);
 			//timer.start();
 		}
 
 		private function rollOut(e:MouseEvent):void {
-			editor.getContentLayer().removeEventListener(MouseEvent.MOUSE_MOVE, previewColorChange);
+			editor.getContentLayer().removeEventListener(PointerEvent.POINTER_MOVE, previewColorChange);
 			previewColorChange();
 		}
 

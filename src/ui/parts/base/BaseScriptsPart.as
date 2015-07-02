@@ -97,6 +97,8 @@ public class BaseScriptsPart extends UIPart implements IScriptsPart {
 		addChild(zoomWidget = new ZoomWidget(scriptsPane));
 	}
 
+	public function showPalette():void {}
+
 	protected function getPaletteFrame(dragScroll:Boolean):ScrollFrame {
 		return new ScrollFrame(dragScroll);
 	}

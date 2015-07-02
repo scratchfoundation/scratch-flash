@@ -84,7 +84,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 	private var textures:Array;
 	private var testBMs:Array;
 	private var textureIndexByID:Object;
-	private static var texSizeMax:int = 4096;
+	private static var texSizeMax:int = 2048;
 	private static var texSize:int = 1024;
 	private var penPacked:Boolean;
 
@@ -121,21 +121,21 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		}
 		uiContainer = new StageUIContainer();
 		uiContainer.graphics.lineStyle(1);
-		spriteBitmaps = new Dictionary();
-		spriteRenderOpts = new Dictionary();
+		spriteBitmaps = new Dictionary(true);
+		spriteRenderOpts = new Dictionary(true);
 		shaderCache = {};
 		fragmentShaderAssembler = new AGALMacroAssembler();
 		vertexShaderAssembler = new AGALMacroAssembler();
 		bitmapsByID = {};
 		textureIndexByID = {};
 		textures = [];
-		cachedOtherRenderBitmaps = new Dictionary();
+		cachedOtherRenderBitmaps = new Dictionary(true);
 		penPacked = false;
 		testBMs = [];
 		textureCount = 0;
 		childrenChanged = false;
 		pixelateAll = false;
-		unrenderedChildren = new Dictionary();
+		unrenderedChildren = new Dictionary(true);
 		stampsByID = {};
 		loadShaders();
 		makeBufferData();
@@ -271,8 +271,8 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		var p:Point = scratchStage.localToGlobal(originPt);
 		stage3D.x = p.x;
 		stage3D.y = p.y;
-		var width:uint = Math.ceil(480*appScale),
-				height:uint = Math.ceil(360*appScale);
+		var width:uint = Math.ceil(480 * appScale);
+		var height:uint = Math.ceil(360 * appScale);
 		var rect:Rectangle = new Rectangle(0, 0, width, height);
 		if(stage3D.context3D && (!scissorRect || !scissorRect.equals(rect))) {
 			scissorRect = rect;
@@ -334,7 +334,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 
 		var displayObject:DisplayObject = e.target as DisplayObject;
 		if (displayObject) {
-			updateFilters(displayObject, {});
+			updateFilters(displayObject, null);
 			delete spriteRenderOpts[displayObject];
 		}
 	}
@@ -398,10 +398,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 //			    trace('uploading vertexBuffer when vertexData length = '+vertexData.length);
 				vertexBuffer.uploadFromByteArray(vertexData, 0, 0, numVertices);
 
-				// x, y, z
-				__context.setVertexBufferAt(0, vertexBuffer, 0, Context3DVertexBufferFormat.FLOAT_3);
-				// u, v
-				__context.setVertexBufferAt(1, vertexBuffer, 3, Context3DVertexBufferFormat.FLOAT_2);
+				uploadConstantValues();
 			}
 
 			return true;
@@ -445,7 +442,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		__context.clear(0, 0, 0, 0);
 
 		if (childrenChanged) {// || effectsChanged) {
-//			vertexData.position = 0;
+			vertexData.position = 0;
 			childrenDrawn = 0;
 			var skipped:uint = 0;
 			for(i=0; i<numChildren; ++i) {
@@ -467,8 +464,6 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 	private var boundsDict:Dictionary = new Dictionary();
 	private var drawMatrix:Matrix3D = new Matrix3D();
 	private function drawChild(dispObj:DisplayObject, blend:Boolean = true):Boolean {
-		// Setup the geometry data
-		var rot:Number = dispObj.rotation;
 		const bounds:Rectangle = boundsDict[dispObj];
 		if(!bounds)
 			return false;
@@ -490,7 +485,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		if (renderOpts) {
 			effects = renderOpts.effects;
 			shaderID = renderOpts.shaderID;
-			if (isNaN(shaderID)) {
+			if (shaderID < 0) {
 				shaderID = renderOpts.shaderID = calculateShaderID(effects);
 			}
 		}
@@ -503,20 +498,62 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		// Setup the texture data
 		const texIndex:int = textureIndexByID[bmID];
 		const texture:ScratchTextureBitmap = textures[texIndex];
-		__context.setTextureAt(0, texture.getTexture(__context));
+		setTexture(texture);
 
-		drawMatrix.identity();
-		drawMatrix.appendScale(bounds.width, bounds.height, 1);
-		drawMatrix.appendTranslation(bounds.left, bounds.top, 0);
+		setMatrix(dispObj, bounds);
+
+		const rect:Rectangle = texture.getRect(bmID);
+
+		setFC5(rect, renderOpts, texture);
+
+		var componentIndex:int = calculateEffects(dispObj, bounds, rect, renderOpts, effects);
+
+		setEffectConstants(componentIndex);
+
+		setBlendFactors(blend);
+
+		drawTriangles();
+
+		return true;
+	}
+
+	private var currentTexture:ScratchTextureBitmap = null;
+	private function setTexture(texture:ScratchTextureBitmap):void {
+		if (texture == currentTexture) return;
+
+		__context.setTextureAt(0, texture.getTexture(__context));
+		currentTexture = texture;
+	}
+
+	private var matrixScratchpad:Vector.<Number> = new Vector.<Number>(16, true);
+	private const DegreesToRadians:Number = (2 * Math.PI) / -360; // negative because Flash uses clockwise rotation
+	private function setMatrix(dispObj:DisplayObject, bounds:Rectangle):void {
 		var scale:Number = dispObj.scaleX;
-		drawMatrix.appendScale(scale, scale, 1);
-		drawMatrix.appendRotation(dispObj.rotation, Vector3D.Z_AXIS);
-		drawMatrix.appendTranslation(dispObj.x, dispObj.y, 0);
+		var theta:Number = dispObj.rotation * DegreesToRadians;
+		var boundsTop:Number = bounds.top;
+		var boundsLeft:Number = bounds.left;
+		var boundsWidth:Number = bounds.width;
+		var boundsHeight:Number = bounds.height;
+		var cosThetaScale:Number = Math.cos(theta) * scale;
+		var sinThetaScale:Number = Math.sin(theta) * scale;
+
+		// scratchpad = Scale(bounds) * Translate(bounds) * Scale(dispObj) * Rotate(dispObj) * Translate(dispObj)
+		matrixScratchpad[0] = boundsWidth * cosThetaScale;
+		matrixScratchpad[1] = boundsWidth * -sinThetaScale;
+		matrixScratchpad[4] = boundsHeight * sinThetaScale;
+		matrixScratchpad[5] = boundsHeight * cosThetaScale;
+		matrixScratchpad[10] = 1;
+		matrixScratchpad[12] = dispObj.x + boundsTop * sinThetaScale + boundsLeft * cosThetaScale;
+		matrixScratchpad[13] = dispObj.y + boundsTop * cosThetaScale - boundsLeft * sinThetaScale;
+		matrixScratchpad[15] = 1;
+
+		drawMatrix.rawData = matrixScratchpad;
 		drawMatrix.append(projMatrix);
 
 		__context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, drawMatrix, true);
+	}
 
-		const rect:Rectangle = texture.getRect(bmID);
+	private function setFC5(rect:Rectangle, renderOpts:Object, texture:ScratchTextureBitmap):void {
 		var left:Number = rect.left / texture.width;
 		var right:Number = rect.right / texture.width;
 		var top:Number = rect.top / texture.height;
@@ -531,10 +568,13 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		FC[5][1] = top;
 		FC[5][2] = right - left;
 		FC[5][3] = bottom - top;
+	}
 
+	private function calculateEffects(dispObj:DisplayObject, bounds:Rectangle, rect:Rectangle, renderOpts:Object, effects:Object):int {
 		var componentIndex:int = 4 * 6 + 0; // skip to register 6, component 0
 
 		if (effects) {
+			var scale:Number = dispObj.scaleX;
 			var dw:Number = bounds.width * scale;
 			var dh:Number = bounds.height * scale;
 			var srcScale:Number = ('isStage' in dispObj && dispObj['isStage'] ? 1 : appScale);
@@ -543,8 +583,8 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 
 			var effectValue:Number;
 
-			if ((effectValue = effects[FX_PIXELATE]) != 0) {
-				var forcePixelate:Boolean = pixelateAll || (renderOpts && rot % 90 == 0 && (closeTo(dw, rect.width) || renderOpts.bitmap!=null));
+			if (!!(effectValue = effects[FX_PIXELATE])) {
+				var forcePixelate:Boolean = pixelateAll || (renderOpts && dispObj.rotation % 90 == 0 && (closeTo(dw, rect.width) || renderOpts.bitmap!=null));
 				var pixelate:Number = (Math.abs(effectValue * scale) / 10) + 1;
 				var pixelX:Number = (pixelate > 1 || forcePixelate ? pixelate / rect.width : -1);
 				var pixelY:Number = (pixelate > 1 || forcePixelate ? pixelate / rect.height : -1);
@@ -558,53 +598,75 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 				FC[4][2] = pixelY / 2;
 			}
 
-			if ((effectValue = effects[FX_COLOR]) != 0) {
+			if (!!(effectValue = effects[FX_COLOR])) {
 				FC[componentIndex >> 2][(componentIndex++) & 3] = ((360.0 * effectValue) / 200.0) % 360.0;
 			}
 
-			if ((effectValue = effects[FX_FISHEYE]) != 0) {
+			if (!!(effectValue = effects[FX_FISHEYE])) {
 				FC[componentIndex >> 2][(componentIndex++) & 3] = Math.max(0, (effectValue + 100) / 100);
 			}
 
-			if ((effectValue = effects[FX_WHIRL]) != 0) {
+			if (!!(effectValue = effects[FX_WHIRL])) {
 				FC[componentIndex >> 2][(componentIndex++) & 3] = (Math.PI * effectValue) / 180;
 			}
 
-			if ((effectValue = effects[FX_MOSAIC]) != 0) {
+			if (!!(effectValue = effects[FX_MOSAIC])) {
 				effectValue = Math.round((Math.abs(effectValue) + 10) / 10);
 				FC[componentIndex >> 2][(componentIndex++) & 3] = Math.floor(Math.max(1, Math.min(effectValue, Math.min(srcWidth, srcHeight))));
 			}
 
-			if ((effectValue = effects[FX_BRIGHTNESS]) != 0) {
+			if (!!(effectValue = effects[FX_BRIGHTNESS])) {
 				FC[componentIndex >> 2][(componentIndex++) & 3] = Math.max(-100, Math.min(effectValue, 100)) / 100;
 			}
 
-			if ((effectValue = effects[FX_GHOST]) != 0) {
+			if (!!(effectValue = effects[FX_GHOST])) {
 				FC[componentIndex >> 2][(componentIndex++) & 3] = 1.0 - (Math.max(0, Math.min(effectValue, 100)) / 100.0);
 			}
 		}
 
-		for (var registerIndex:int = 0; (registerIndex << 2) < componentIndex; ++registerIndex) {
+		return componentIndex;
+	}
+
+	private function setEffectConstants(componentIndex:int):void {
+		componentIndex = (componentIndex + 3) >> 2; // ceil(componentIndex / 4)
+		for (var registerIndex:int = 4; registerIndex < componentIndex; ++registerIndex)
 			__context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, registerIndex, FC[registerIndex]);
-		}
+	}
 
-		if(blend)
-			__context.setBlendFactors(Context3DBlendFactor.SOURCE_ALPHA, Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA);
-		else
-			__context.setBlendFactors(Context3DBlendFactor.SOURCE_ALPHA, Context3DBlendFactor.ZERO);
+	private function uploadConstantValues():void {
+		__context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, FC[0]);
+		__context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 1, FC[1]);
+		__context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 2, FC[2]);
+		__context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 3, FC[3]);
 
+		// x, y, z
+		__context.setVertexBufferAt(0, vertexBuffer, 0, Context3DVertexBufferFormat.FLOAT_3);
+		// u, v
+		__context.setVertexBufferAt(1, vertexBuffer, 3, Context3DVertexBufferFormat.FLOAT_2);
+	}
+
+
+	private var currentBlendFactor:String;
+	private function setBlendFactors(blend:Boolean):void {
+		var newBlendFactor:String = blend ? Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA : Context3DBlendFactor.ZERO;
+		if (newBlendFactor == currentBlendFactor) return;
+
+		__context.setBlendFactors(Context3DBlendFactor.SOURCE_ALPHA, newBlendFactor);
+		currentBlendFactor = newBlendFactor;
+	}
+
+	private function drawTriangles():void {
 		// draw the sprite
 		__context.drawTriangles(indexBuffer, 0, 2);
-
-		return true;
 	}
 
 	private static function calculateShaderID(effects:Object):int {
 		var shaderID:int = 0;
 		if (effects) {
-			for (var i:int = 0; i < effectNames.length; ++i) {
+			var numEffects:int = effectNames.length;
+			for (var i:int = 0; i < numEffects; ++i) {
 				var effectName:String = effectNames[i];
-				shaderID = (shaderID << 1) | (effects[effectName] != 0 ? 1 : 0);
+				shaderID = (shaderID << 1) | (!!effects[effectName] ? 1 : 0);
 			}
 		}
 		return shaderID;
@@ -696,15 +758,8 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 
 	public function updateFilters(dispObj:DisplayObject, effects:Object):void {
 		var spriteOpts:Object = spriteRenderOpts[dispObj] || (spriteRenderOpts[dispObj] = {});
-		if (!effects) {
-			effects = {};
-			// Do this so we don't have to check for `undefined` later.
-			for (var i:int = 0; i < effectNames.length; ++i) {
-				effects[effectNames[i]] = 0;
-			}
-		}
 		spriteOpts.effects = effects;
-		spriteOpts.shaderID = null; // recalculate at next draw time
+		spriteOpts.shaderID = -1; // recalculate at next draw time
 	}
 
 	// TODO: store multiple sizes of bitmaps?
@@ -867,7 +922,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		}
 	}
 
-	private var maxTextures:uint = 5;
+	private var maxTextures:uint = 10;
 	private function packTextureBitmaps():void {
 		var penID:String = spriteBitmaps[stagePenLayer];
 		if(textures.length < 1)
@@ -970,6 +1025,8 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 				break;
 			}
 		}
+
+		currentTexture = null;
 	}
 
 	private var drawCount:uint = 0;
@@ -1218,7 +1275,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 
 		if (!desiredShader) {
 			shaderCache[shaderID] = desiredShader = buildShader(shaderID);
-			}
+		}
 
 		if (currentShader != desiredShader) {
 			currentShader = desiredShader;
@@ -1232,7 +1289,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		var ri:int = 0;
 		for (var i:int = 0, l:int = effectNames.length; i < l; ++i) {
 			var effectName:String = effectNames[i];
-			var isActive:Boolean = (shaderID & (1 << i)) != 0;
+			var isActive:Boolean = (shaderID & (1 << (l - i - 1))) != 0; // iterate bits "backwards" to match calculateShaderID
 			fragmentShaderParts.push(['#define ENABLE_', effectName, ' ', int(isActive)].join(''));
 			if (isActive) {
 				if (effectName == FX_PIXELATE) {
@@ -1328,6 +1385,9 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 			config.dispose();
 		}
 		shaderCache = {};
+		currentShader = null;
+		currentTexture = null;
+		currentBlendFactor = null;
 
 		for(var i:int=0; i<textures.length; ++i)
 			(textures[i] as ScratchTextureBitmap).disposeTexture();

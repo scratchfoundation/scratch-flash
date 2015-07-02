@@ -37,6 +37,8 @@ import svgeditor.objs.SVGTextField;
 
 import svgutils.SVGElement;
 
+import ui.events.PointerEvent;
+
 // TODO: Make it non-sticky when the editor is a BitmapEdit instance
 	public final class TextTool extends SVGEditTool
 	{
@@ -76,7 +78,7 @@ import svgutils.SVGElement;
 			}
 		}
 
-		override protected function edit(obj:ISVGEditable, e:MouseEvent):void {
+		override protected function edit(obj:ISVGEditable, e:PointerEvent):void {
 			super.edit(obj, e);
 			graphics.clear();
 			if(!object) return;
@@ -154,7 +156,7 @@ import svgutils.SVGElement;
 			dispatchEvent(new Event(Event.CHANGE));
 		}
 
-		override public function mouseDown(event:MouseEvent):void {
+		override public function mouseDown(event:PointerEvent):void {
 			var wasEditing:Boolean = !!object;
 			var obj:ISVGEditable = getEditableUnderMouse(false);
 			var origObj:ISVGEditable = object;

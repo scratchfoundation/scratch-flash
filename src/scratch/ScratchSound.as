@@ -30,6 +30,8 @@
 
 package scratch {
 import by.blooddy.crypto.MD5;
+
+import flash.media.Sound;
 import flash.utils.*;
 import sound.*;
 import sound.mp3.MP3Loader;
@@ -44,10 +46,13 @@ public class ScratchSound {
 	public var format:String = '';
 	public var rate:int = 44100;
 	public var sampleCount:int;
-	public var bitsPerSample:int; // used only for compressed Squeak sounds; not saved
+	public var sampleDataStart:int;
+	public var bitsPerSample:int; // primarily used for compressed Squeak sounds; not saved
 
 	public var editorData:Object; // cache of data used by sound editor; not saved
+	public var channels:uint = 1;
 	private const WasEdited:int = -10; // special soundID used to indicate sounds that have been edited
+	public var nativeSound:Sound;
 
 	// Undo support; not saved
 	public var undoList:Array = [];
@@ -57,12 +62,18 @@ public class ScratchSound {
 		this.soundName = name;
 		if (sndData != null) {
 			try {
-				var info:* = WAVFile.decode(sndData);
-				if (!((info.encoding == 1) || (info.encoding == 17))) throw Error('Unsupported WAV format');
+				var info:Object = WAVFile.decode(sndData);
+				if ([1, 3, 17].indexOf(info.encoding) == -1) throw Error('Unsupported WAV format');
 				soundData = sndData;
-				format = (info.encoding == 17) ? 'adpcm' : '';
+				if (info.encoding == 17)
+					format = 'adpcm';
+				else if (info.encoding == 3)
+					format = 'float';
 				rate = info.samplesPerSecond;
 				sampleCount = info.sampleCount;
+				bitsPerSample = info.bitsPerSample;
+				channels = info.channels;
+				sampleDataStart = info.sampleDataStart;
 				reduceSizeIfNeeded(info.channels);
 			} catch (e:*) {
 				setSamples(new Vector.<int>(0), 22050);
@@ -131,6 +142,7 @@ public class ScratchSound {
 	public function convertMP3IfNeeded():void {
 		// Support for converting MP3 format sounds in Scratch projects was removed during alpha test.
 		// If this is on old, MP3 formatted sound, convert it to WAV format. Otherwise, do nothing.
+		var self:ScratchSound = this;
 		function whenDone(snd:ScratchSound):void {
 Scratch.app.log('Converting MP3 to WAV: ' + soundName);
 			md5 = null;
@@ -143,12 +155,15 @@ Scratch.app.log('Converting MP3 to WAV: ' + soundName);
 			if (soundData) MP3Loader.convertToScratchSound('', soundData, whenDone);
 			else setSamples(new Vector.<int>, 22050);
 		}
+
+		var ssp:ScratchSoundPlayer = sndplayer();
+		ssp.createNative();
 	}
 
 	public function sndplayer():ScratchSoundPlayer {
 		var player:ScratchSoundPlayer;
 		if (format == 'squeak') player = new SqueakSoundPlayer(soundData, bitsPerSample, rate);
-		else if ((format == '') || (format == 'adpcm')) player = new ScratchSoundPlayer(soundData);
+		else if (format == '' || format == 'adpcm' || format == 'float') player = new ScratchSoundPlayer(soundData);
 		else player = new ScratchSoundPlayer(WAVFile.empty()); // player on empty sound
 		player.scratchSound = this;
 		return player;

@@ -27,6 +27,7 @@ import svgeditor.Selection;
 import svgeditor.objs.ISVGEditable;
 
 import ui.ToolMgr;
+import ui.events.PointerEvent;
 
 public class SVGEditTool extends SVGTool
 {
@@ -55,7 +56,7 @@ public class SVGEditTool extends SVGTool
 
 	// When overriding this method, usually an event handler will be added with a higher priority
 	// so that the mouseDown method below is overridden
-	protected function edit(obj:ISVGEditable, event:MouseEvent):void {
+	protected function edit(obj:ISVGEditable, event:PointerEvent):void {
 		if(obj == object) return;
 
 		if(object) {
@@ -85,8 +86,8 @@ public class SVGEditTool extends SVGTool
 			setObject(null);
 	}
 
-	override public function mouseHandler(e:MouseEvent):Boolean {
-		if (e.type == MouseEvent.MOUSE_DOWN) {
+	override public function mouseHandler(e:PointerEvent):Boolean {
+		if (e.type == PointerEvent.POINTER_DOWN) {
 			mouseDown(e);
 			return true;
 		}
@@ -94,7 +95,7 @@ public class SVGEditTool extends SVGTool
 		return false;
 	}
 
-	public function mouseDown(event:MouseEvent):void {
+	public function mouseDown(event:PointerEvent):void {
 		if (!stage) {
 			ToolMgr.deactivateTool(this);
 			return;

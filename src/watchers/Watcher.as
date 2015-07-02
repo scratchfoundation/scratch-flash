@@ -40,12 +40,13 @@ import translation.Translator;
 
 import ui.ITool;
 import ui.ToolMgr;
+import ui.events.PointerEvent;
 
 import uiwidgets.*;
 
 import util.*;
 
-public class Watcher extends Sprite implements ITool {
+public class Watcher extends Sprite {
 
 	private static const decimalPlaces:uint = 6;
 	public static function formatValue(value:*):String {
@@ -91,7 +92,7 @@ public class Watcher extends Sprite implements ITool {
 		addChild(readout);
 		addSliderAndKnob();
 		slider.visible = knob.visible = false;
-		addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
+		addEventListener(PointerEvent.POINTER_DOWN, mouseDown);
 		addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, menu);
 	}
 
@@ -411,33 +412,31 @@ public class Watcher extends Sprite implements ITool {
 	}
 
 	/* Slider */
-
-	private function mouseDown(evt:MouseEvent):void {
+	private function mouseDown(evt:PointerEvent):void {
 		if (mode != SLIDER_MODE) return;
 		var p:Point = globalToLocal(new Point(evt.stageX, evt.stageY));
 		if (p.y > 20) {
-			ToolMgr.activateTool(this);
+			PointerEvent.setPointerCapture(this, evt.pointerID);
 			mouseHandler(evt);
 		}
 	}
 
-	public function mouseHandler(e:MouseEvent):Boolean {
+	public function mouseHandler(e:PointerEvent):Boolean {
 		var p:Point = globalToLocal(new Point(e.stageX, e.stageY));
 
 		switch (e.type) {
-			case MouseEvent.MOUSE_DOWN:
+			case PointerEvent.POINTER_DOWN:
 				mouseMoved = false;
 				break;
 
-			case MouseEvent.MOUSE_MOVE:
+			case PointerEvent.POINTER_MOVE:
 				var xOffset:Number = p.x - slider.x - 4;
 				setSliderValue(((xOffset / (slider.width - 10)) * (sliderMax - sliderMin)) + sliderMin);
 				mouseMoved = true;
 				break;
 
-			case MouseEvent.MOUSE_UP:
+			case PointerEvent.POINTER_UP:
 				if (!mouseMoved) clickAt(p.x);
-				ToolMgr.deactivateTool(this);
 				break;
 		}
 
@@ -449,8 +448,6 @@ public class Watcher extends Sprite implements ITool {
 		var delta:Number = (isDiscrete) ? sign : sign * ((sliderMax - sliderMin) / 100.0);
 		setSliderValue(Number(readout.contents) + delta);
 	}
-
-	public function shutdown():void {}
 
 	private function setSliderValue(newValue:Number):void {
 		var sliderVal:Number = isDiscrete ? Math.round(newValue) : Math.round(newValue * 100) / 100;

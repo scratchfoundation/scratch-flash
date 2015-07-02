@@ -46,6 +46,7 @@ import scratch.BlockMenus;
 	import translation.Translator;
 
 import ui.dragdrop.DragAndDropMgr;
+import ui.events.PointerEvent;
 
 import util.Color;
 
@@ -138,16 +139,16 @@ public class BlockArg extends Sprite {
 		} else if (type == 'c') {
 			base = makeBlockShape(BlockShape.RectShape, c);
 			this.menuName = 'colorPicker';
-			addEventListener(MouseEvent.MOUSE_DOWN, invokeMenu);
+			addEventListener(PointerEvent.POINTER_DOWN, invokeMenu);
 		} else if (type == 'd') {
 			base = makeBlockShape(BlockShape.NumberShape, c);
 			numberType = NT_FLOAT;
 			this.menuName = menuName;
-			addEventListener(MouseEvent.MOUSE_DOWN, invokeMenu);
+			addEventListener(PointerEvent.POINTER_DOWN, invokeMenu);
 		} else if (type == 'm') {
 			base = makeBlockShape(BlockShape.RectShape, c);
 			this.menuName = menuName;
-			addEventListener(MouseEvent.MOUSE_DOWN, invokeMenu);
+			addEventListener(PointerEvent.POINTER_DOWN, invokeMenu);
 		} else if (type == 'n') {
 			base = makeBlockShape(BlockShape.NumberShape, c);
 			numberType = NT_FLOAT;
