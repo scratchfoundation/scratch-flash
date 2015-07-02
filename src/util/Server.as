@@ -50,6 +50,8 @@ public class Server implements IServer {
 	protected var URLs:Object = {};
 
 	public function Server() {
+		setDefaultURLs();
+
 		// Accept URL overrides from the flash variables
 		try {
 			var urlOverrides:String = Scratch.app.loaderInfo.parameters['urlOverrides'];
@@ -58,6 +60,9 @@ public class Server implements IServer {
 		catch (e:*) {
 		}
 	}
+
+	// No default URLs
+	protected function setDefaultURLs():void {}
 
 	public function overrideURLs(overrides:Object):void {
 		for (var name:String in overrides) {
