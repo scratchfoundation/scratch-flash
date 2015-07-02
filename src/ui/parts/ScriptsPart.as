@@ -146,20 +146,32 @@ public class ScriptsPart extends UIPart {
 	}
 
 	private function fixlayout():void {
-		selector.x = 1;
-		selector.y = 5;
-		paletteFrame.x = selector.x;
-		paletteFrame.y = selector.y + selector.height + 2;
-		paletteFrame.setWidthHeight(selector.width + 1, h - paletteFrame.y - 2); // 5
-		scriptsFrame.x = selector.x + selector.width + 2;
-		scriptsFrame.y = selector.y + 1;
+		if (!app.isMicroworld) {
+			selector.x = 1;
+			selector.y = 5;
+			paletteFrame.x = selector.x;
+			paletteFrame.y = selector.y + selector.height + 2;
+			paletteFrame.setWidthHeight(selector.width + 1, h - paletteFrame.y - 2); // 5
+
+			scriptsFrame.x = selector.x + selector.width + 2;
+			scriptsFrame.y = selector.y + 1;
+
+			zoomWidget.x = w - zoomWidget.width - 15;
+			zoomWidget.y = h - zoomWidget.height - 15;
+		}
+		else {
+			scriptsFrame.x = 1;
+			scriptsFrame.y = 1;
+
+			selector.visible = false;
+			paletteFrame.visible = false;
+			zoomWidget.visible = false;
+		}
 		scriptsFrame.setWidthHeight(w - scriptsFrame.x - 5, h - scriptsFrame.y - 5);
 		spriteWatermark.x = w - 60;
 		spriteWatermark.y = scriptsFrame.y + 10;
 		xyDisplay.x = spriteWatermark.x + 1;
 		xyDisplay.y = spriteWatermark.y + 43;
-		zoomWidget.x = w - zoomWidget.width - 15;
-		zoomWidget.y = h - zoomWidget.height - 15;
 	}
 
 	private function redraw():void {
@@ -178,10 +190,12 @@ public class ScriptsPart extends UIPart {
 		var lineY:int = selector.y + selector.height;
 		var darkerBorder:int = CSS.borderColor - 0x141414;
 		var lighterBorder:int = 0xF2F2F2;
-		g.lineStyle(1, darkerBorder, 1, true);
-		hLine(g, paletteFrame.x + 8, lineY, paletteW - 20);
-		g.lineStyle(1, lighterBorder, 1, true);
-		hLine(g, paletteFrame.x + 8, lineY + 1, paletteW - 20);
+		if (!app.isMicroworld) {
+			g.lineStyle(1, darkerBorder, 1, true);
+			hLine(g, paletteFrame.x + 8, lineY, paletteW - 20);
+			g.lineStyle(1, lighterBorder, 1, true);
+			hLine(g, paletteFrame.x + 8, lineY + 1, paletteW - 20);
+		}
 
 		g.lineStyle(1, darkerBorder, 1, true);
 		g.drawRect(scriptsFrame.x - 1, scriptsFrame.y - 1, scriptsW + 1, scriptsH + 1);
