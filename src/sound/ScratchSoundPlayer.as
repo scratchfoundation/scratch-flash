@@ -70,43 +70,87 @@ public class ScratchSoundPlayer {
 	public function ScratchSoundPlayer(wavFileData:ByteArray) {
 		getSample = getSample16Uncompressed;
 		if (wavFileData != null) {
-			var info:* = WAVFile.decode(wavFileData);
-			soundData = wavFileData;
-			startOffset = info.sampleDataStart;
-			endOffset = startOffset + info.sampleDataSize;
-			stepSize = info.samplesPerSecond / 44100.0;
-			if (info.encoding == 17) {
-				adpcmBlockSize = info.adpcmBlockSize;
-				getSample = getSampleADPCM;
-			} else {
-				if (info.bitsPerSample == 8) getSample = getSample8Uncompressed;
-				if (info.bitsPerSample == 16) getSample = getSample16Uncompressed;
+			try {
+				var info:* = WAVFile.decode(wavFileData);
+				soundData = wavFileData;
+				startOffset = info.sampleDataStart;
+				endOffset = startOffset + info.sampleDataSize;
+				stepSize = info.samplesPerSecond / 44100.0;
+				if (info.encoding == 17) {
+					adpcmBlockSize = info.adpcmBlockSize;
+					getSample = getSampleADPCM;
+				} else {
+					if (info.bitsPerSample == 8) getSample = getSample8Uncompressed;
+					if (info.bitsPerSample == 16) getSample = getSample16Uncompressed;
+				}
+			}
+			catch (e:*) {
+				Scratch.app.logException(e);
 			}
 		}
 	}
 
-	public function atEnd():Boolean { return soundChannel == null }
+	public function isPlaying(snd:ByteArray = null):Boolean {
+		return (activeSounds.indexOf(this) > -1 && (!snd || soundData == snd));
+	}
+
+	public function atEnd():Boolean { return soundChannel == null; }
 
 	public function stopPlaying():void {
 		if (soundChannel != null) {
-			soundChannel.stop();
+			var sc:SoundChannel = soundChannel;
 			soundChannel = null;
+			sc.stop();
+			sc.dispatchEvent(new Event(Event.SOUND_COMPLETE));
 		}
 		var i:int = activeSounds.indexOf(this);
 		if (i >= 0) activeSounds.splice(i, 1);
 	}
 
+	SCRATCH::allow3d
+	public function createNative():void {
+		if (!!scratchSound.nativeSound) return;
+
+		var flashSnd:Sound = scratchSound.nativeSound = new Sound();
+		var convertedSamples:ByteArray = new ByteArray();
+		convertedSamples.length = endOffset - startOffset;
+		bytePosition = startOffset;
+		var sampleCount:uint = 0;
+		while (bytePosition < endOffset) {
+			var n:Number = interpolatedSample();
+			convertedSamples.writeFloat(n);
+			convertedSamples.writeFloat(n);
+			++sampleCount;
+		}
+
+		convertedSamples.position = 0;
+		flashSnd.loadPCMFromByteArray(convertedSamples, sampleCount);
+	}
+
 	public function startPlaying(doneFunction:Function = null):void {
 		stopIfAlreadyPlaying();
 		activeSounds.push(this);
-		bytePosition = startOffset;
-		nextSample = getSample();
 
-		var flashSnd:Sound = new Sound();
-		flashSnd.addEventListener(SampleDataEvent.SAMPLE_DATA, writeSampleData);
-		soundChannel = flashSnd.play();
+		if (SCRATCH::allow3d)
+		{
+			createNative();
+
+			soundChannel = scratchSound.nativeSound.play();
+		}
+		else {
+			bytePosition = startOffset;
+			nextSample = getSample();
+
+			var flashSnd:Sound = new Sound();
+			flashSnd.addEventListener(SampleDataEvent.SAMPLE_DATA, writeSampleData);
+			soundChannel = flashSnd.play();
+		}
+
 		if (soundChannel) {
-			if (doneFunction != null) soundChannel.addEventListener(Event.SOUND_COMPLETE, doneFunction);
+			soundChannel.addEventListener(Event.SOUND_COMPLETE, function(e:Event):void {
+				soundChannel = null;
+				if (doneFunction != null) doneFunction();
+			});
 		} else {
 			// User has no sound card or too many sounds already playing.
 			stopPlaying();
