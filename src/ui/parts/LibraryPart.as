@@ -70,7 +70,7 @@ public class LibraryPart extends UIPart {
 		shape = new Shape();
 		addChild(shape);
 
-		spritesTitle = makeLabel(Translator.map('Sprites'), CSS.titleFormat, stageAreaWidth + 10, 5);
+		spritesTitle = makeLabel(Translator.map('Sprites'), CSS.titleFormat, app.isMicroworld ? 10: stageAreaWidth + 10, 5);
 		addChild(spritesTitle);
 
 		addChild(newSpriteLabel = makeLabel(Translator.map('New sprite:'), CSS.titleFormat, 10, 5));
@@ -79,9 +79,11 @@ public class LibraryPart extends UIPart {
 		addChild(importButton = makeButton(spriteFromComputer, 'import'));
 		addChild(photoButton = makeButton(spriteFromCamera, 'camera'));
 
-		addStageArea();
-		addNewBackdropButtons();
-		addVideoControl();
+		if (!app.isMicroworld) {
+			addStageArea();
+			addNewBackdropButtons();
+			addVideoControl();
+		}
 		addSpritesArea();
 
 		spriteDetails = new SpriteInfoPart(app);
@@ -102,9 +104,10 @@ public class LibraryPart extends UIPart {
 	public function updateTranslation():void {
 		spritesTitle.text = Translator.map('Sprites');
 		newSpriteLabel.text = Translator.map('New sprite:');
-		newBackdropLabel.text = Translator.map('New backdrop:');
-		videoLabel.text = Translator.map('Video on:');
-		stageThumbnail.updateThumbnail(true);
+		if (newBackdropLabel) newBackdropLabel.text = Translator.map('New backdrop:');
+		if (videoLabel) videoLabel.text = Translator.map('Video on:');
+		if (stageThumbnail)
+			stageThumbnail.updateThumbnail(true);
 		spriteDetails.updateTranslation();
 
 		SimpleTooltips.add(libraryButton, {text: 'Choose sprite from library', direction: 'bottom'});
@@ -129,12 +132,14 @@ public class LibraryPart extends UIPart {
 		g.lineStyle(1, CSS.borderColor, 1, true);
 		g.drawRect(0, CSS.titleBarH, w, h - CSS.titleBarH);
 		g.lineStyle(1, CSS.borderColor);
-		g.moveTo(stageAreaWidth, 0);
-		g.lineTo(stageAreaWidth, h);
-		g.lineStyle();
-		g.beginFill(CSS.tabColor);
-		g.drawRect(1, CSS.titleBarH + 1, stageAreaWidth - 1, h - CSS.titleBarH - 1);
-		g.endFill();
+		if (!app.isMicroworld) {
+			g.moveTo(stageAreaWidth, 0);
+			g.lineTo(stageAreaWidth, h);
+			g.lineStyle();
+			g.beginFill(CSS.tabColor);
+			g.drawRect(1, CSS.titleBarH + 1, stageAreaWidth - 1, h - CSS.titleBarH - 1);
+			g.endFill();
+		}
 		fixLayout();
 		if (app.viewedObj()) refresh(); // refresh, but not during initialization
 	}
@@ -142,23 +147,33 @@ public class LibraryPart extends UIPart {
 	private function fixLayout():void {
 		var buttonY:int = 4;
 
-		libraryButton.x = 380;
-		if (app.stageIsContracted) libraryButton.x = 138;
-		libraryButton.y = buttonY + 0;
-		paintButton.x = libraryButton.x + libraryButton.width + 3;
-		paintButton.y = buttonY + 1;
-		importButton.x = paintButton.x + paintButton.width + 4;
-		importButton.y = buttonY + 0;
-		photoButton.x = importButton.x + importButton.width + 8;
-		photoButton.y = buttonY + 2;
+		if (!app.isMicroworld) {
+			libraryButton.x = 380;
+			if (app.stageIsContracted) libraryButton.x = 138;
+			libraryButton.y = buttonY + 0;
+			paintButton.x = libraryButton.x + libraryButton.width + 3;
+			paintButton.y = buttonY + 1;
+			importButton.x = paintButton.x + paintButton.width + 4;
+			importButton.y = buttonY + 0;
+			photoButton.x = importButton.x + importButton.width + 8;
+			photoButton.y = buttonY + 2;
 
-		newSpriteLabel.x = libraryButton.x - newSpriteLabel.width - 6;
-		newSpriteLabel.y = 6;
+			stageThumbnail.x = 2;
+			stageThumbnail.y = CSS.titleBarH + 2;
+			spritesFrame.x = stageAreaWidth + 1;
 
-		stageThumbnail.x = 2;
-		stageThumbnail.y = CSS.titleBarH + 2;
+			newSpriteLabel.x = libraryButton.x - newSpriteLabel.width - 6;
+			newSpriteLabel.y = 6;
+		}
+		else {
+			libraryButton.visible = false;
+			paintButton.visible = false;
+			importButton.visible = false;
+			photoButton.visible = false;
+			newSpriteLabel.visible = false;
+			spritesFrame.x = 1;
+		}
 
-		spritesFrame.x = stageAreaWidth + 1;
 		spritesFrame.y = CSS.titleBarH + 1;
 		spritesFrame.allowHorizontalScrollbar = false;
 		spritesFrame.setWidthHeight(w - spritesFrame.x, h - spritesFrame.y);
@@ -180,11 +195,11 @@ public class LibraryPart extends UIPart {
 	public function refresh():void {
 		// Create thumbnails for all sprites. This function is called
 		// after loading project, or adding or deleting a sprite.
-		newSpriteLabel.visible = !app.stageIsContracted;
+		newSpriteLabel.visible = !app.stageIsContracted && !app.isMicroworld;
 		spritesTitle.visible = !app.stageIsContracted;
 		if (app.viewedObj().isStage) showSpriteDetails(false);
 		if (spriteDetails.visible) spriteDetails.refresh();
-		stageThumbnail.setTarget(app.stageObj());
+		if (stageThumbnail) stageThumbnail.setTarget(app.stageObj());
 		spritesPane.clear(false);
 		var sortedSprites:Array = app.stageObj().sprites();
 		sortedSprites.sort(
@@ -243,7 +258,7 @@ public class LibraryPart extends UIPart {
 		}
 		if (updateThumbnails) lastUpdate = getTimer();
 		if (spriteDetails.visible) spriteDetails.step();
-		if (videoButton.visible) updateVideoButton();
+		if (videoButton && videoButton.visible) updateVideoButton();
 	}
 
 	private function addStageArea():void {
@@ -468,7 +483,7 @@ public class LibraryPart extends UIPart {
 
 	private function allThumbnails():Array {
 		// Return a list containing all thumbnails.
-		var result:Array = [stageThumbnail];
+		var result:Array = stageThumbnail ? [stageThumbnail] : [];
 		for (var i:int = 0; i < spritesPane.numChildren; i++) {
 			result.push(spritesPane.getChildAt(i));
 		}

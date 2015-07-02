@@ -86,6 +86,7 @@ public class Scratch extends Sprite {
 	public var jsEnabled:Boolean = false; // true when the SWF can talk to the webpage
 	public var ignoreResize:Boolean = false; // If true, temporarily ignore resize events.
 	public var isExtensionDevMode:Boolean = false; // If true, run in extension development mode (as on ScratchX)
+	public var isMicroworld:Boolean = false;
 
 	// Runtime
 	public var runtime:ScratchRuntime;
@@ -158,6 +159,7 @@ public class Scratch extends Sprite {
 		hostProtocol = URLUtil.getProtocol(loaderInfo.url);
 
 		isExtensionDevMode = (loaderInfo.parameters['extensionDevMode'] == 'true');
+		isMicroworld = (loaderInfo.parameters['microworldMode'] == 'true');
 
 		checkFlashVersion();
 		initServer();
@@ -854,9 +856,11 @@ public class Scratch extends Sprite {
 	}
 
 	protected function updateLayout(w:int, h:int):void {
-		topBarPart.x = 0;
-		topBarPart.y = 0;
-		topBarPart.setWidthHeight(w, 28);
+		if (!isMicroworld) {
+			topBarPart.x = 0;
+			topBarPart.y = 0;
+			topBarPart.setWidthHeight(w, 28);
+		}
 
 		var extraW:int = 2;
 		var extraH:int = stagePart.computeTopBarHeight() + 1;
@@ -869,7 +873,7 @@ public class Scratch extends Sprite {
 				stagePart.setWidthHeight(480 + extraW, 360 + extraH, 1);
 			}
 			stagePart.x = 5;
-			stagePart.y = topBarPart.bottom() + 5;
+			stagePart.y = isMicroworld ? 5 : topBarPart.bottom() + 5;
 			fixLoadProgressLayout();
 		} else {
 			drawBG();
@@ -891,12 +895,17 @@ public class Scratch extends Sprite {
 		libraryPart.setWidthHeight(stagePart.w, h - libraryPart.y);
 
 		tabsPart.x = stagePart.right() + 5;
-		tabsPart.y = topBarPart.bottom() + 5;
-		tabsPart.fixLayout();
+		if (!isMicroworld) {
+			tabsPart.y = topBarPart.bottom() + 5;
+			tabsPart.fixLayout();
+		}
+		else
+			tabsPart.visible = false;
 
 		// the content area shows the part associated with the currently selected tab:
 		var contentY:int = tabsPart.y + 27;
-		w -= tipsWidth();
+		if (!isMicroworld)
+			w -= tipsWidth();
 		updateContentArea(tabsPart.x, contentY, w - tabsPart.x - 6, h - contentY - 5, h);
 	}
 
