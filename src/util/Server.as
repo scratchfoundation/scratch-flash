@@ -28,12 +28,14 @@
 package util {
 import by.blooddy.crypto.serialization.JSON;
 
+import flash.display.BitmapData;
 import flash.display.Loader;
 import flash.events.ErrorEvent;
 import flash.events.Event;
 import flash.events.HTTPStatusEvent;
 import flash.events.IOErrorEvent;
 import flash.events.SecurityErrorEvent;
+import flash.geom.Matrix;
 import flash.net.SharedObject;
 import flash.net.URLLoader;
 import flash.net.URLLoaderDataFormat;
@@ -94,7 +96,7 @@ public class Server implements IServer {
 		// Re-trying here should help project save failures but we'll need to add more code to re-try loading projects
 		if (event is SecurityErrorEvent) {
 			var urlPathStart:int = url.indexOf('/', 10);
-			var policyFileURL:String = url.substr(0, urlPathStart) + '/crossdomain.xml?cb='+Math.random();
+			var policyFileURL:String = url.substr(0, urlPathStart) + '/crossdomain.xml?cb=' + Math.random();
 			Security.loadPolicyFile(policyFileURL);
 			Scratch.app.log('Reloading policy file from : ' + policyFileURL);
 		}
@@ -142,6 +144,7 @@ public class Server implements IServer {
 		}
 
 		var httpStatus:int = 0;
+
 		function errorHandler(event:ErrorEvent):void {
 			removeListeners();
 			onCallServerError(url, data, event);
@@ -231,7 +234,7 @@ public class Server implements IServer {
 		return serverGet(url, whenDone);
 	}
 
-	public function getThumbnail(idAndExt:String, w:int, h:int, whenDone:Function):URLLoader {
+	protected function downloadThumbnail(url:String, w:int, h:int, whenDone:Function):URLLoader {
 		function decodeImage(data:ByteArray):void {
 			if (!data || data.length == 0) return; // no data
 			var decoder:Loader = new Loader();
@@ -244,21 +247,38 @@ public class Server implements IServer {
 					Scratch.app.logException(e);
 				}
 				else {
-					Scratch.app.logMessage('Server caught exception decoding image: ' + idAndExt);
+					Scratch.app.logMessage('Server caught exception decoding image: ' + url);
 				}
 			}
 		}
 
 		function imageError(e:IOErrorEvent):void {
-			Scratch.app.log('ServerOnline failed to decode image: ' + idAndExt);
+			Scratch.app.log('ServerOnline failed to decode image: ' + url);
 		}
 
 		function imageDecoded(e:Event):void {
-			whenDone(e.target.content.bitmapData);
+			whenDone(makeThumbnail(e.target.content.bitmapData));
 		}
 
-		var url:String = getCdnStaticSiteURL() + 'medialibrarythumbnails/' + idAndExt;
 		return serverGet(url, decodeImage);
+	}
+
+	private static function makeThumbnail(bm:BitmapData):BitmapData {
+		const tnWidth:int = 120;
+		const tnHeight:int = 90;
+		var result:BitmapData = new BitmapData(tnWidth, tnHeight, true, 0);
+		if ((bm.width == 0) || (bm.height == 0)) return result;
+		var scale:Number = Math.min(tnWidth / bm.width, tnHeight / bm.height);
+		var m:Matrix = new Matrix();
+		m.scale(scale, scale);
+		m.translate((tnWidth - (scale * bm.width)) / 2, (tnHeight - (scale * bm.height)) / 2);
+		result.draw(bm, m);
+		return result;
+	}
+
+	public function getThumbnail(idAndExt:String, w:int, h:int, whenDone:Function):URLLoader {
+		var url:String = getCdnStaticSiteURL() + 'medialibrarythumbnails/' + idAndExt;
+		return downloadThumbnail(url, w, h, whenDone);
 	}
 
 	// -----------------------------
