@@ -30,6 +30,7 @@
 
 package scratch {
 import by.blooddy.crypto.MD5;
+import flash.media.Sound;
 import flash.utils.*;
 import sound.*;
 import sound.mp3.MP3Loader;
@@ -44,10 +45,13 @@ public class ScratchSound {
 	public var format:String = '';
 	public var rate:int = 44100;
 	public var sampleCount:int;
+	public var sampleDataStart:int;
 	public var bitsPerSample:int; // primarily used for compressed Squeak sounds; not saved
 
 	public var editorData:Object; // cache of data used by sound editor; not saved
+	public var channels:uint = 1;
 	private const WasEdited:int = -10; // special soundID used to indicate sounds that have been edited
+	public var nativeSound:Sound;
 
 	// Undo support; not saved
 	public var undoList:Array = [];
@@ -67,6 +71,8 @@ public class ScratchSound {
 				rate = info.samplesPerSecond;
 				sampleCount = info.sampleCount;
 				bitsPerSample = info.bitsPerSample;
+				channels = info.channels;
+				sampleDataStart = info.sampleDataStart;
 				reduceSizeIfNeeded(info.channels);
 			} catch (e:*) {
 				setSamples(new Vector.<int>(0), 22050);
@@ -147,12 +153,15 @@ Scratch.app.log('Converting MP3 to WAV: ' + soundName);
 			if (soundData) MP3Loader.convertToScratchSound('', soundData, whenDone);
 			else setSamples(new Vector.<int>, 22050);
 		}
+
+		var ssp:ScratchSoundPlayer = sndplayer();
+		ssp.createNative();
 	}
 
 	public function sndplayer():ScratchSoundPlayer {
-		var player:ScratchSoundPlayer
+		var player:ScratchSoundPlayer;
 		if (format == 'squeak') player = new SqueakSoundPlayer(soundData, bitsPerSample, rate);
-		else if ((format == '') || (format == 'adpcm')) player = new ScratchSoundPlayer(soundData);
+		else if (format == '' || format == 'adpcm' || format == 'float') player = new ScratchSoundPlayer(soundData);
 		else player = new ScratchSoundPlayer(WAVFile.empty()); // player on empty sound
 		player.scratchSound = this;
 		return player;
