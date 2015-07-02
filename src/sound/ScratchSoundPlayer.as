@@ -84,7 +84,9 @@ public class ScratchSoundPlayer {
 					if (info.bitsPerSample == 16) getSample = getSample16Uncompressed;
 				}
 			}
-			catch (e:*) {}
+			catch (e:*) {
+				Scratch.app.logException(e);
+			}
 		}
 	}
 
