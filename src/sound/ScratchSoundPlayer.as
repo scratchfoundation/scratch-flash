@@ -140,7 +140,8 @@ public class ScratchSoundPlayer {
 			// Work around for https://bugbase.adobe.com/index.cfm?event=bug&id=3104536
 			if (scratchSound.nativeSound.length == 0) {
 				setTimeout(function():void {
-					soundChannel.dispatchEvent(new Event(Event.SOUND_COMPLETE));
+					if (soundChannel)
+						soundChannel.dispatchEvent(new Event(Event.SOUND_COMPLETE));
 				}, scratchSound.sampleCount * 1000 / scratchSound.rate)
 			}
 		}
