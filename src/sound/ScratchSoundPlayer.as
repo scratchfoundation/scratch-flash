@@ -107,50 +107,17 @@ public class ScratchSoundPlayer {
 		if (i >= 0) activeSounds.splice(i, 1);
 	}
 
-	SCRATCH::allow3d
-	public function createNative():void {
-		if (!!scratchSound.nativeSound) return;
-
-		var flashSnd:Sound = scratchSound.nativeSound = new Sound();
-		var convertedSamples:ByteArray = new ByteArray();
-		convertedSamples.length = endOffset - startOffset;
-		bytePosition = startOffset;
-		var sampleCount:uint = 0;
-		while (bytePosition < endOffset) {
-			var n:Number = interpolatedSample();
-			convertedSamples.writeFloat(n);
-			convertedSamples.writeFloat(n);
-			++sampleCount;
-		}
-
-		convertedSamples.position = 0;
-		flashSnd.loadPCMFromByteArray(convertedSamples, sampleCount);
-	}
-
 	public function startPlaying(doneFunction:Function = null):void {
 		stopIfAlreadyPlaying();
 		activeSounds.push(this);
+		bytePosition = startOffset;
+		nextSample = getSample();
 
-		if (SCRATCH::allow3d)
-		{
-			createNative();
-
-			soundChannel = scratchSound.nativeSound.play();
-		}
-		else {
-			bytePosition = startOffset;
-			nextSample = getSample();
-
-			var flashSnd:Sound = new Sound();
-			flashSnd.addEventListener(SampleDataEvent.SAMPLE_DATA, writeSampleData);
-			soundChannel = flashSnd.play();
-		}
-
+		var flashSnd:Sound = new Sound();
+		flashSnd.addEventListener(SampleDataEvent.SAMPLE_DATA, writeSampleData);
+		soundChannel = flashSnd.play();
 		if (soundChannel) {
-			soundChannel.addEventListener(Event.SOUND_COMPLETE, function(e:Event):void {
-				soundChannel = null;
-				if (doneFunction != null) doneFunction();
-			});
+			if (doneFunction != null) soundChannel.addEventListener(Event.SOUND_COMPLETE, doneFunction);
 		} else {
 			// User has no sound card or too many sounds already playing.
 			stopPlaying();
