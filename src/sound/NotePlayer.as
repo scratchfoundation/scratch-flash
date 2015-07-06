@@ -58,7 +58,7 @@ public class NotePlayer extends ScratchSoundPlayer {
 		stepSize = 0.5; // default, no pitch shift   
 		startOffset = 0;
 		endOffset = soundData.length / 2; // end of sample data
-		getSample = function():int { return 0 } // called once at startup time
+		getSample = function():int { return 0; }; // called once at startup time
 
 		if ((loopStart >= 0) && (loopStart < endOffset)) {
 			isLooped = true;
