@@ -154,11 +154,6 @@ Scratch.app.log('Converting MP3 to WAV: ' + soundName);
 			if (soundData) MP3Loader.convertToScratchSound('', soundData, whenDone);
 			else setSamples(new Vector.<int>, 22050);
 		}
-
-		SCRATCH::allow3d {
-			var ssp:ScratchSoundPlayer = sndplayer();
-			ssp.createNative();
-		}
 	}
 
 	public function sndplayer():ScratchSoundPlayer {
