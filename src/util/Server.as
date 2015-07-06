@@ -45,6 +45,8 @@ import flash.net.URLRequestMethod;
 import flash.system.Security;
 import flash.utils.ByteArray;
 
+import mx.utils.URLUtil;
+
 public class Server implements IServer {
 
 	protected var URLs:Object = {};
@@ -65,9 +67,20 @@ public class Server implements IServer {
 	protected function setDefaultURLs():void {}
 
 	public function overrideURLs(overrides:Object):void {
+		var forceProtocol:String;
+		var swfURL:String = Scratch.app.loaderInfo.url;
+		if (swfURL && URLUtil.isHttpURL(swfURL)) { // "isHttpURL" is true if the protocol is either HTTP or HTTPS
+			forceProtocol = URLUtil.getProtocol(swfURL);
+		}
 		for (var name:String in overrides) {
 			if (overrides.hasOwnProperty(name)) {
-				URLs[name] = overrides[name];
+				var url:String = overrides[name];
+
+				if (forceProtocol && URLUtil.isHttpURL(url)) {
+					url = URLUtil.replaceProtocol(url, forceProtocol);
+				}
+
+				URLs[name] = url;
 			}
 		}
 	}
