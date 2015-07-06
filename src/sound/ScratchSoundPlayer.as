@@ -109,7 +109,7 @@ public class ScratchSoundPlayer {
 
 	SCRATCH::allow3d
 	public function createNative():void {
-		if (!!scratchSound.nativeSound) return;
+		if (!scratchSound || !!scratchSound.nativeSound) return;
 
 		var flashSnd:Sound = scratchSound.nativeSound = new Sound();
 		var convertedSamples:ByteArray = new ByteArray();
@@ -131,13 +131,28 @@ public class ScratchSoundPlayer {
 		stopIfAlreadyPlaying();
 		activeSounds.push(this);
 
-		if (SCRATCH::allow3d)
+		soundChannel = null;
+		var useOldMethod:Boolean = true;
+		SCRATCH::allow3d
 		{
 			createNative();
 
-			soundChannel = scratchSound.nativeSound.play();
+			if (scratchSound && scratchSound.nativeSound) {
+				soundChannel = scratchSound.nativeSound.play();
+
+				// Work around for https://bugbase.adobe.com/index.cfm?event=bug&id=3104536
+				if (scratchSound.nativeSound.length == 0) {
+					setTimeout(function():void {
+						if (soundChannel)
+							soundChannel.dispatchEvent(new Event(Event.SOUND_COMPLETE));
+					}, scratchSound.sampleCount * 1000 / scratchSound.rate)
+				}
+
+				useOldMethod = false;
+			}
 		}
-		else {
+
+		if (useOldMethod) {
 			bytePosition = startOffset;
 			nextSample = getSample();
 
@@ -148,7 +163,10 @@ public class ScratchSoundPlayer {
 
 		if (soundChannel) {
 			soundChannel.addEventListener(Event.SOUND_COMPLETE, function(e:Event):void {
-				soundChannel = null;
+				if (soundChannel) {
+					soundChannel.stop();
+					soundChannel = null;
+				}
 				if (doneFunction != null) doneFunction();
 			});
 		} else {
