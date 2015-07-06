@@ -131,11 +131,18 @@ public class ScratchSoundPlayer {
 		stopIfAlreadyPlaying();
 		activeSounds.push(this);
 
-		if (SCRATCH::allow3d)
-		{
+		soundChannel = null;
+		if (SCRATCH::allow3d) {
 			createNative();
 
 			soundChannel = scratchSound.nativeSound.play();
+
+			// Work around for https://bugbase.adobe.com/index.cfm?event=bug&id=3104536
+			if (scratchSound.nativeSound.length == 0) {
+				setTimeout(function():void {
+					soundChannel.dispatchEvent(new Event(Event.SOUND_COMPLETE));
+				}, scratchSound.sampleCount * 1000 / scratchSound.rate)
+			}
 		}
 		else {
 			bytePosition = startOffset;
@@ -148,6 +155,7 @@ public class ScratchSoundPlayer {
 
 		if (soundChannel) {
 			soundChannel.addEventListener(Event.SOUND_COMPLETE, function(e:Event):void {
+				soundChannel.stop();
 				soundChannel = null;
 				if (doneFunction != null) doneFunction();
 			});
