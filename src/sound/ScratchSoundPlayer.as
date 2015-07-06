@@ -156,8 +156,10 @@ public class ScratchSoundPlayer {
 
 		if (soundChannel) {
 			soundChannel.addEventListener(Event.SOUND_COMPLETE, function(e:Event):void {
-				soundChannel.stop();
-				soundChannel = null;
+				if (soundChannel) {
+					soundChannel.stop();
+					soundChannel = null;
+				}
 				if (doneFunction != null) doneFunction();
 			});
 		} else {
