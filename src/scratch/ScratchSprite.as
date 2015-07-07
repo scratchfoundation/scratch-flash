@@ -707,12 +707,28 @@ public class ScratchSprite extends ScratchObj implements IDraggable {
 	private function handleDragEvent(e:DragEvent):void {
 		if (e.type == DragEvent.DRAG_START) {
 			// Force rendering with PixelBender for a dragged sprite
-			applyFilters(true);
 			preDragScale = scaleX;
-			scaleX = scaleY = scaleX * Scratch.app.stagePane.scaleX * Scratch.app.scaleX;
+			if (Scratch.app.isIn3D) {
+				var r:Number = rotation;
+				rotation = 0;
+				bitmap();
+				var scale:Number = stage.contentsScaleFactor * scaleX * Scratch.app.stagePane.scaleX * Scratch.app.scaleX;
+				var b:Rectangle = getBounds(this);
+				var bm:Bitmap = new Bitmap(Scratch.app.render3D.getRenderedChild(this, b.width * scale, b.height * scale));
+				while (img.numChildren > 0) img.removeChildAt(0);
+				img.addChild(bm);
+				img.x = b.x * scale;
+				img.y = b.y * scale;
+				rotation = r;
+				scaleX = scaleY = 1 / stage.contentsScaleFactor;
+			}
+			else {
+				scaleX = scaleY = scaleX * Scratch.app.stagePane.scaleX * Scratch.app.scaleX;
+			}
 		}
 		else {
 			scaleX = scaleY = preDragScale;
+			updateImage();
 			if (e.type == DragEvent.DRAG_CANCEL) {
 				var oldX:Number = scratchX, oldY:Number = scratchY;
 				Scratch.app.stagePane.handleDrop(this);
