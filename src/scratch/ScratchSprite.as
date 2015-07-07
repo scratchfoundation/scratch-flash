@@ -26,6 +26,7 @@
 package scratch {
 import flash.display.*;
 import flash.events.*;
+import flash.filters.DropShadowFilter;
 import flash.geom.*;
 import flash.geom.ColorTransform;
 import flash.utils.*;
@@ -711,10 +712,9 @@ public class ScratchSprite extends ScratchObj implements IDraggable {
 			if (Scratch.app.isIn3D) {
 				var r:Number = rotation;
 				rotation = 0;
-				bitmap();
 				var scale:Number = stage.contentsScaleFactor * scaleX * Scratch.app.stagePane.scaleX * Scratch.app.scaleX;
 				var b:Rectangle = getBounds(this);
-				var bm:Bitmap = new Bitmap(Scratch.app.render3D.getRenderedChild(this, b.width * scale, b.height * scale));
+				var bm:Bitmap = new Bitmap(Scratch.app.render3D.getRenderedChild(this, b.width * scale, b.height * scale), "auto", true);
 				while (img.numChildren > 0) img.removeChildAt(0);
 				img.addChild(bm);
 				img.x = b.x * scale;

@@ -444,6 +444,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		if (childrenChanged) {// || effectsChanged) {
 			vertexData.position = 0;
 			childrenDrawn = 0;
+			setBlendFactors(true);
 			var skipped:uint = 0;
 			for(i=0; i<numChildren; ++i) {
 				dispObj = scratchStage.getChildAt(i);
@@ -463,7 +464,8 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 
 	private var boundsDict:Dictionary = new Dictionary();
 	private var drawMatrix:Matrix3D = new Matrix3D();
-	private function drawChild(dispObj:DisplayObject, blend:Boolean = true):Boolean {
+
+	private function drawChild(dispObj:DisplayObject):Boolean {
 		const bounds:Rectangle = boundsDict[dispObj];
 		if(!bounds)
 			return false;
@@ -509,8 +511,6 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		var componentIndex:int = calculateEffects(dispObj, bounds, rect, renderOpts, effects);
 
 		setEffectConstants(componentIndex);
-
-		setBlendFactors(blend);
 
 		drawTriangles();
 
@@ -651,7 +651,8 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		var newBlendFactor:String = blend ? Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA : Context3DBlendFactor.ZERO;
 		if (newBlendFactor == currentBlendFactor) return;
 
-		__context.setBlendFactors(Context3DBlendFactor.SOURCE_ALPHA, newBlendFactor);
+		// Since we use pre-multiplied alpha, the source blend factor is always ONE
+		__context.setBlendFactors(Context3DBlendFactor.ONE, newBlendFactor);
 		currentBlendFactor = newBlendFactor;
 	}
 
@@ -1133,17 +1134,19 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 			pScale = 1;
 		}
 
-		dispObj.scaleX = width / Math.floor(bounds.width * dispObj.scaleX * pScale);
-		dispObj.scaleY = height / Math.floor(bounds.height * dispObj.scaleY * pScale);
+		dispObj.scaleX = width / Math.floor(bounds.width * pScale);
+		dispObj.scaleY = height / Math.floor(bounds.height * pScale);
 
 		var oldX:Number = dispObj.x;
 		var oldY:Number = dispObj.y;
 		dispObj.x = -bounds.x * dispObj.scaleX;
 		dispObj.y = -bounds.y * dispObj.scaleY;
 
-		__context.clear(1, 1, 1, 0);
+		__context.clear(0, 0, 0, 0);
 		__context.setScissorRectangle(new Rectangle(0, 0, bmd.width + 1, bmd.height + 1));
-		drawChild(dispObj, false);
+		setBlendFactors(false);
+		drawChild(dispObj);
+//		__context.present();
 		__context.drawToBitmapData(bmd);
 
 		dispObj.x = oldX;
