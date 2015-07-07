@@ -94,64 +94,32 @@ public class ScratchSoundPlayer {
 
 	public function atEnd():Boolean { return soundChannel == null; }
 
-	public function stopPlaying():void {
+	public function stopPlaying(dispatch:Boolean = true):void {
 		if (soundChannel != null) {
 			var sc:SoundChannel = soundChannel;
 			soundChannel = null;
 			sc.stop();
-			sc.dispatchEvent(new Event(Event.SOUND_COMPLETE));
+			if (dispatch)
+				sc.dispatchEvent(new Event(Event.SOUND_COMPLETE));
 		}
 		var i:int = activeSounds.indexOf(this);
 		if (i >= 0) activeSounds.splice(i, 1);
 	}
 
-	public function createNative():void {
-		if (!!scratchSound.nativeSound) return;
-
-		var flashSnd:Sound = scratchSound.nativeSound = new Sound();
-		var convertedSamples:ByteArray = new ByteArray();
-		convertedSamples.length = endOffset - startOffset;
-		bytePosition = startOffset;
-		var sampleCount:uint = 0;
-		while (bytePosition < endOffset) {
-			var n:Number = interpolatedSample();
-			convertedSamples.writeFloat(n);
-			convertedSamples.writeFloat(n);
-			++sampleCount;
-		}
-
-		convertedSamples.position = 0;
-		flashSnd.loadPCMFromByteArray(convertedSamples, sampleCount);
-	}
-
 	public function startPlaying(doneFunction:Function = null):void {
 		stopIfAlreadyPlaying();
 		activeSounds.push(this);
-
-		createNative();
-
-		soundChannel = scratchSound.nativeSound.play();
-		if (soundChannel) {
-			soundChannel.addEventListener(Event.SOUND_COMPLETE, function(e:Event):void {
-				soundChannel = null;
-				if (doneFunction != null) doneFunction();
-			});
-		} else {
-			// User has no sound card or too many sounds already playing.
-			stopPlaying();
-			if (doneFunction != null) doneFunction();
-		}
-
-		return;
 		bytePosition = startOffset;
 		nextSample = getSample();
 
-		return;
 		var flashSnd:Sound = new Sound();
 		flashSnd.addEventListener(SampleDataEvent.SAMPLE_DATA, writeSampleData);
 		soundChannel = flashSnd.play();
 		if (soundChannel) {
-			if (doneFunction != null) soundChannel.addEventListener(Event.SOUND_COMPLETE, doneFunction);
+			soundChannel.addEventListener(Event.SOUND_COMPLETE, function(e:Event):void {
+				stopPlaying(false);
+				if (doneFunction != null) doneFunction();
+			});
 		} else {
 			// User has no sound card or too many sounds already playing.
 			stopPlaying();

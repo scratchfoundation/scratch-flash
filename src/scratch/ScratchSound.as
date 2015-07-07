@@ -52,7 +52,6 @@ public class ScratchSound {
 	public var editorData:Object; // cache of data used by sound editor; not saved
 	public var channels:uint = 1;
 	private const WasEdited:int = -10; // special soundID used to indicate sounds that have been edited
-	public var nativeSound:Sound;
 
 	// Undo support; not saved
 	public var undoList:Array = [];
@@ -142,7 +141,6 @@ public class ScratchSound {
 	public function convertMP3IfNeeded():void {
 		// Support for converting MP3 format sounds in Scratch projects was removed during alpha test.
 		// If this is on old, MP3 formatted sound, convert it to WAV format. Otherwise, do nothing.
-		var self:ScratchSound = this;
 		function whenDone(snd:ScratchSound):void {
 Scratch.app.log('Converting MP3 to WAV: ' + soundName);
 			md5 = null;
@@ -155,9 +153,6 @@ Scratch.app.log('Converting MP3 to WAV: ' + soundName);
 			if (soundData) MP3Loader.convertToScratchSound('', soundData, whenDone);
 			else setSamples(new Vector.<int>, 22050);
 		}
-
-		var ssp:ScratchSoundPlayer = sndplayer();
-		ssp.createNative();
 	}
 
 	public function sndplayer():ScratchSoundPlayer {
