@@ -29,6 +29,8 @@ import flash.geom.*;
 import svgeditor.*;
 import svgeditor.objs.*;
 
+import ui.events.PointerEvent;
+
 public final class PaintBucketTool extends SVGTool
 	{
 		private var highlightedObj:DisplayObject;
@@ -62,22 +64,22 @@ public final class PaintBucketTool extends SVGTool
 			if(editor is SVGEdit) {
 				editor.getContentLayer().removeEventListener(MouseEvent.ROLL_OVER, rollOver);
 				editor.getContentLayer().removeEventListener(MouseEvent.ROLL_OUT, rollOut);
-				editor.getContentLayer().removeEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
+				editor.getContentLayer().removeEventListener(PointerEvent.POINTER_MOVE, mouseMove);
 			}
 			super.stop();
 		}
 
 		private function rollOver(e:MouseEvent):void {
-			editor.getContentLayer().addEventListener(MouseEvent.MOUSE_MOVE, mouseMove, false, 0, true);
+			editor.getContentLayer().addEventListener(PointerEvent.POINTER_MOVE, mouseMove, false, 0, true);
 			checkUnderMouse();
 		}
 
 		private function rollOut(e:MouseEvent):void {
-			editor.getContentLayer().removeEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
+			editor.getContentLayer().removeEventListener(PointerEvent.POINTER_MOVE, mouseMove);
 			checkUnderMouse();
 		}
 
-		private function mouseDown(event:MouseEvent):void {
+		private function mouseDown(event:PointerEvent):void {
 			currentEvent = event;
 
 			// Override the obj

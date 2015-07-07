@@ -24,7 +24,10 @@ package ui {
 	import flash.text.*;
 	import assets.Resources;
 	import blocks.*;
-	import uiwidgets.*;
+
+import ui.events.PointerEvent;
+
+import uiwidgets.*;
 	import util.*;
 	import translation.Translator;
 
@@ -57,7 +60,7 @@ public class ProcedureSpecEditor extends Sprite {
 		addChild(blockShape);
 
 		addChild(moreLabel = makeLabel('Options', 12));
-		moreLabel.addEventListener(MouseEvent.MOUSE_DOWN, toggleButtons);
+		moreLabel.addEventListener(PointerEvent.POINTER_DOWN, toggleButtons);
 
 		addChild(moreButton = new IconButton(toggleButtons, 'reveal'));
 		moreButton.disableMouseover();
@@ -67,12 +70,12 @@ public class ProcedureSpecEditor extends Sprite {
 
 		addChild(deleteButton = new IconButton(deleteItem, Resources.createBmp('removeItem')));
 
-		addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
+		addEventListener(PointerEvent.POINTER_DOWN, mouseDown);
 		addEventListener(Event.CHANGE, textChange);
 		addEventListener(FocusEvent.FOCUS_OUT, focusChange);
 		addEventListener(FocusEvent.FOCUS_IN, focusChange);
-		addEventListener(MouseEvent.CLICK, click);
-		addEventListener(MouseEvent.DOUBLE_CLICK, doubleClick);
+		addEventListener(PointerEvent.TAP, click);
+		addEventListener(PointerEvent.DOUBLE_TAP, doubleClick);
 
 		addSpecElements(originalSpec, inputNames);
 		warpCheckbox.setOn(warpFlag);

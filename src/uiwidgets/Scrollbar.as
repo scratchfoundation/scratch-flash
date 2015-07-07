@@ -25,6 +25,7 @@ import flash.geom.Point;
 
 import ui.ITool;
 import ui.ToolMgr;
+import ui.events.PointerEvent;
 
 public class Scrollbar extends Sprite implements ITool {
 
@@ -135,14 +136,14 @@ public class Scrollbar extends Sprite implements ITool {
 	}
 
 	public function allowDragging(flag:Boolean):void {
-		if (flag) addEventListener(MouseEvent.MOUSE_DOWN, mouseHandler);
-		else removeEventListener(MouseEvent.MOUSE_DOWN, mouseHandler);
+		if (flag) addEventListener(PointerEvent.POINTER_DOWN, mouseHandler);
+		else removeEventListener(PointerEvent.POINTER_DOWN, mouseHandler);
 	}
 
-	public function mouseHandler(e:MouseEvent):Boolean {
+	public function mouseHandler(e:PointerEvent):Boolean {
 		switch (e.type) {
-			case MouseEvent.MOUSE_DOWN:
-				ToolMgr.activateTool(this);
+			case PointerEvent.POINTER_DOWN:
+				ToolMgr.activateTool(this, e);
 				var sliderOrigin:Point = slider.localToGlobal(new Point(0, 0));
 				if (isVertical) {
 					dragOffset = e.stageY - sliderOrigin.y;
@@ -153,7 +154,7 @@ public class Scrollbar extends Sprite implements ITool {
 				}
 				dispatchEvent(new Event(Event.SCROLL));
 
-			case MouseEvent.MOUSE_MOVE:
+			case PointerEvent.POINTER_MOVE:
 				var range:int, frac:Number;
 				var localP:Point = globalToLocal(new Point(e.stageX, e.stageY));
 				if (isVertical) {
@@ -168,7 +169,7 @@ public class Scrollbar extends Sprite implements ITool {
 				if (scrollFunction != null) scrollFunction(positionFraction);
 				break;
 
-			case MouseEvent.MOUSE_UP:
+			case PointerEvent.POINTER_UP:
 				ToolMgr.deactivateTool(this);
 				break;
 		}

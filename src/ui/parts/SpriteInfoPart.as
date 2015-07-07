@@ -34,6 +34,7 @@ import translation.Translator;
 
 import ui.ITool;
 import ui.ToolMgr;
+import ui.events.PointerEvent;
 
 import uiwidgets.*;
 
@@ -133,7 +134,7 @@ public class SpriteInfoPart extends UIPart implements ITool {
 
 		addChild(dirLabel = makeLabel('', readoutLabelFormat));
 		addChild(dirWheel = new Sprite());
-		dirWheel.addEventListener(MouseEvent.MOUSE_DOWN, dirMouseDown);
+		dirWheel.addEventListener(PointerEvent.POINTER_DOWN, dirMouseDown);
 		addChild(dirReadout = makeLabel('-179', readoutFormat));
 
 		addChild(rotationStyleLabel = makeLabel('', readoutLabelFormat));
@@ -396,12 +397,12 @@ public class SpriteInfoPart extends UIPart implements ITool {
 	// Direction Wheel Interaction
 	//------------------------------
 
-	private function dirMouseDown(evt:MouseEvent):void {
-		ToolMgr.activateTool(this);
+	private function dirMouseDown(evt:PointerEvent):void {
+		ToolMgr.activateTool(this, evt);
 		mouseHandler(evt);
 	}
 
-	public function mouseHandler(e:MouseEvent):Boolean {
+	public function mouseHandler(e:PointerEvent):Boolean {
 		var spr:ScratchSprite = app.viewedObj() as ScratchSprite;
 		if (!spr) return false;
 		var p:Point = dirWheel.localToGlobal(new Point(0, 0));
@@ -411,7 +412,7 @@ public class SpriteInfoPart extends UIPart implements ITool {
 		var degrees:Number = 90 + ((180 / Math.PI) * Math.atan2(dy, dx));
 		spr.setDirection(degrees);
 
-		if (e.type == MouseEvent.MOUSE_UP)
+		if (e.type == PointerEvent.POINTER_UP)
 			ToolMgr.deactivateTool(this);
 
 		return true;

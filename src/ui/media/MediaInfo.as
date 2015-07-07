@@ -30,6 +30,7 @@ import by.blooddy.crypto.MD5;
 
 import ui.BaseItem;
 import ui.ItemData;
+import ui.events.PointerEvent;
 import ui.styles.ItemStyle;
 
 import util.JSON;
@@ -122,7 +123,7 @@ public class MediaInfo extends BaseItem {
 		addFrame();
 		unhighlight();
 		addDeleteButton();
-		addEventListener(MouseEvent.CLICK, click);
+		addEventListener(PointerEvent.TAP, click);
 		addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, menu);
 	}
 

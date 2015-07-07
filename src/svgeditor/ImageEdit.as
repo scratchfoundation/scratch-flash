@@ -37,6 +37,8 @@ import svgutils.*;
 
 import translation.Translator;
 
+import ui.events.PointerEvent;
+
 import ui.media.MediaInfo;
 import ui.parts.ImagesPart;
 
@@ -688,7 +690,7 @@ public class ImageEdit extends Sprite {
 		saveContent();
 	}
 
-	public function revertToCreateTool(e:MouseEvent):Boolean {
+	public function revertToCreateTool(e:PointerEvent):Boolean {
 		// If just finished creating and placing a rect or ellipse, return to that tool.
 		if (selectionTools.indexOf(toolMode) != -1 && repeatedTools.indexOf(lastToolMode) != -1) {
 			setToolMode(lastToolMode);

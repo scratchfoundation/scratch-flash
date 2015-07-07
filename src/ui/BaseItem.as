@@ -89,13 +89,16 @@ public class BaseItem extends Sprite implements IDraggable {
 		}
 	}
 
+	private var cachedText:String;
+	private static var emptyStr:String = '';
 	protected function setText(tf:TextField, s:String):void {
-		if (s == null) s = '';
-		if (tf.text == s) return;
+		if (s == null) s = emptyStr;
+		if (cachedText == s) return;
 
 		// Set the text of the given TextField, truncating if necessary.
 		var desiredWidth:int = style.frameWidth - CSS.tinyPadding;
 		tf.text = s;
+		cachedText = s;
 		while ((tf.textWidth > desiredWidth) && (s.length > 0)) {
 			s = s.substring(0, s.length - 1);
 			tf.text = s + '\u2026'; // truncated name with ellipses

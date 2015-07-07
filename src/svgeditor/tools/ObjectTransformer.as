@@ -29,6 +29,8 @@ import flash.utils.*;
 import svgeditor.*;
 import svgeditor.objs.*;
 
+import ui.events.PointerEvent;
+
 public class ObjectTransformer extends SVGEditTool {
 	private var toolsLayer:Sprite;
 	private var contentLayer:Sprite;
@@ -127,7 +129,7 @@ public class ObjectTransformer extends SVGEditTool {
 		alpha = 0.65;
 	}
 
-	override public function mouseHandler(e:MouseEvent):Boolean {
+	override public function mouseHandler(e:PointerEvent):Boolean {
 //		if (event.type != MouseEvent.MOUSE_MOVE)
 //		switch (mouseHandlerFunc) {
 //			case moveHandler:           trace('moveHandler '+event); break;
@@ -158,7 +160,7 @@ public class ObjectTransformer extends SVGEditTool {
 		super.stop();
 	}
 
-	override protected function edit(obj:ISVGEditable, event:MouseEvent):void {
+	override protected function edit(obj:ISVGEditable, event:PointerEvent):void {
 		if(targetObj && targetObj.contains(obj as DisplayObject)) {
 			if(event && (event.shiftKey || event.ctrlKey)) {
 				targetObj.getObjs().splice(targetObj.getObjs().indexOf(obj), 1);
@@ -168,7 +170,7 @@ public class ObjectTransformer extends SVGEditTool {
 					select(null);
 			}
 			else {
-				moveHandler(new MouseEvent(MouseEvent.MOUSE_DOWN));
+				moveHandler(new PointerEvent(PointerEvent.POINTER_DOWN));
 			}
 		}
 		else {
@@ -244,7 +246,7 @@ public class ObjectTransformer extends SVGEditTool {
 	public function select(obj:Selection, enableDrag:Boolean = false):void {
 		if(targetObj == obj && obj) {
 			if(enableDrag) {
-				moveHandler(new MouseEvent(MouseEvent.MOUSE_DOWN));
+				moveHandler(new PointerEvent(PointerEvent.POINTER_DOWN));
 			}
 
 			selectionRect = targetObj.getBounds(this);
@@ -284,7 +286,7 @@ public class ObjectTransformer extends SVGEditTool {
 
 			if(enableDrag) {
 				handleMoveCursor(new MouseEvent(MouseEvent.ROLL_OVER));
-				moveHandler(new MouseEvent(MouseEvent.MOUSE_DOWN), true);
+				moveHandler(new PointerEvent(PointerEvent.POINTER_DOWN), true);
 			}
 
 			toolsLayer.stage.addEventListener(KeyboardEvent.KEY_DOWN, keyPressed, false, 0, true);
@@ -757,7 +759,7 @@ public class ObjectTransformer extends SVGEditTool {
 	}
 
 	private var selectionOrigin:Point;
-	private function selectionBoxHandler(e:MouseEvent):void {
+	private function selectionBoxHandler(e:PointerEvent):void {
 		if(selectionOrigin) {
 			var p:Point = editor.snapToGrid(new Point(toolsLayer.mouseX, toolsLayer.mouseY));
 			var left:Number = Math.min(selectionOrigin.x, p.x);
@@ -768,7 +770,7 @@ public class ObjectTransformer extends SVGEditTool {
 		}
 
 		switch(e.type) {
-			case MouseEvent.MOUSE_DOWN:
+			case PointerEvent.POINTER_DOWN:
 				// The editor will want to return to the rectangle or ellipse tool if the user clicks outside of the selection and the selection is holding a just-drawn rectangle or ellipse.
 				if (editor.revertToCreateTool(e)) return;
 
@@ -778,7 +780,7 @@ public class ObjectTransformer extends SVGEditTool {
 				select(null);
 				break;
 
-			case MouseEvent.MOUSE_MOVE:
+			case PointerEvent.POINTER_MOVE:
 				if (!selectionOrigin) break;;
 				toolsLayer.graphics.clear();
 				if (editor is BitmapEdit) {
@@ -789,7 +791,7 @@ public class ObjectTransformer extends SVGEditTool {
 				}
 				break;
 
-			case MouseEvent.MOUSE_UP:
+			case PointerEvent.POINTER_UP:
 				if (!selectionOrigin) break;;
 				toolsLayer.graphics.clear();
 

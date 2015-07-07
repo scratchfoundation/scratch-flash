@@ -30,6 +30,7 @@ import flash.geom.*;
 
 import ui.ITool;
 import ui.ToolMgr;
+import ui.events.PointerEvent;
 
 public class Slider extends Sprite implements ITool {
 
@@ -119,12 +120,12 @@ public class Slider extends Sprite implements ITool {
 	}
 
 	private function mouseDown(evt:MouseEvent):void {
-		ToolMgr.activateTool(this);
+		ToolMgr.activateTool(this, evt);
 	}
 
-	public function mouseHandler(e:MouseEvent):Boolean {
+	public function mouseHandler(e:PointerEvent):Boolean {
 		switch (e.type) {
-			case MouseEvent.MOUSE_DOWN:
+			case PointerEvent.POINTER_DOWN:
 				var sliderOrigin:Point = knob.localToGlobal(new Point(0, 0));
 				if (isVertical) {
 					dragOffset = e.stageY - sliderOrigin.y;
@@ -134,7 +135,7 @@ public class Slider extends Sprite implements ITool {
 					dragOffset = Math.max(5, Math.min(dragOffset, knob.width - 5));
 				}
 
-			case MouseEvent.MOUSE_MOVE:
+			case PointerEvent.POINTER_MOVE:
 				var range:int;
 				var localP:Point = globalToLocal(new Point(e.stageX, e.stageY));
 				if (isVertical) {
@@ -149,7 +150,7 @@ public class Slider extends Sprite implements ITool {
 				if (scrollFunction != null) scrollFunction(this.value);
 				break;
 
-			case MouseEvent.MOUSE_UP:
+			case PointerEvent.POINTER_UP:
 				dispatchEvent(new Event(Event.COMPLETE));
 				ToolMgr.deactivateTool(this);
 				break;

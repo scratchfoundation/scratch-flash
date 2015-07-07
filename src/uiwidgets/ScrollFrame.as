@@ -42,7 +42,9 @@ import flash.geom.Rectangle;
 import org.gestouch.events.GestureEvent;
 import org.gestouch.gestures.TransformGesture;
 
-public class ScrollFrame extends Sprite {
+import ui.dragdrop.DropTarget;
+
+public class ScrollFrame extends Sprite implements DropTarget {
 
 	public var contents:ScrollFrameContents;
 	public var allowHorizontalScrollbar:Boolean = true;
@@ -66,6 +68,9 @@ public class ScrollFrame extends Sprite {
 	private var yHistory:Array;
 	private var xVelocity:Number = 0;
 	private var yVelocity:Number = 0;
+	private var contentW:Number;
+	private var contentH:Number;
+	private var contentDirty:Boolean;
 
 	private var panGesture:TransformGesture;
 
@@ -83,6 +88,12 @@ public class ScrollFrame extends Sprite {
 		if (dragScrolling) {
 			enableDragScrolling();
 		}
+	}
+
+	public function handleDrop(obj:*):Boolean {
+		if (contents is DropTarget) return (contents as DropTarget).handleDrop(obj);
+
+		return false;
 	}
 
 	private function handleContentInteraction(event:Event):void {
@@ -120,6 +131,13 @@ public class ScrollFrame extends Sprite {
 
 	public function setWidthHeight(w:int, h:int):void {
 		drawShape(Shape(mask).graphics, w, h);
+		if (contents) {
+			graphics.clear();
+			graphics.beginFill(contents.color);
+			graphics.drawRect(0, 0, w, h);
+			graphics.endFill();
+		}
+
 		if (shadowFrame) drawShape(shadowFrame.graphics, w, h);
 		if (contents) contents.updateSize();
 		fixLayout();
@@ -145,12 +163,23 @@ public class ScrollFrame extends Sprite {
 	}
 
 	public function setContents(newContents:Sprite):void {
-		if (contents) this.removeChild(contents);
+		if (contents) {
+			contents.removeEventListener(Event.ADDED, contentChanged);
+			contents.removeEventListener(Event.REMOVED, contentChanged);
+			this.removeChild(contents);
+		}
 		contents = newContents as ScrollFrameContents;
 		contents.x = contents.y = 0;
 		addChildAt(contents, 1);
 		contents.updateSize();
 		updateScrollbars();
+		contentDirty = true;
+		contents.addEventListener(Event.ADDED, contentChanged, false, 0, true);
+		contents.addEventListener(Event.REMOVED, contentChanged, false, 0, true);
+	}
+
+	private function contentChanged(e:Event):void {
+		contentDirty = true;
 	}
 
 	private var scrollWheelHorizontal:Boolean;
@@ -205,8 +234,8 @@ public class ScrollFrame extends Sprite {
 	public function visibleH():int { return mask.height }
 
 	public function updateScrollbars():void {
-		if (hScrollbar) hScrollbar.update(-contents.x / maxScrollH(), visibleW() / contents.width);
-		if (vScrollbar) vScrollbar.update(-contents.y / maxScrollV(), visibleH() / contents.height);
+		if (hScrollbar) hScrollbar.update(-contents.x / maxScrollH(), visibleW() / getContentW());
+		if (vScrollbar) vScrollbar.update(-contents.y / maxScrollV(), visibleH() / getContentH());
 	}
 
 	public function updateScrollbarVisibility():void {
@@ -214,10 +243,10 @@ public class ScrollFrame extends Sprite {
 		// Called by the client after adding/removing content.
 		if (dragScrolling) return;
 		var shouldShow:Boolean, doesShow:Boolean;
-		shouldShow = (visibleW() < contents.width) && allowHorizontalScrollbar;
+		shouldShow = (visibleW() < getContentW()) && allowHorizontalScrollbar;
 		doesShow = hScrollbar != null;
 		if (shouldShow != doesShow) showHScrollbar(shouldShow);
-		shouldShow = visibleH() < contents.height;
+		shouldShow = visibleH() < getContentH();
 		doesShow = vScrollbar != null;
 		if (shouldShow != doesShow) showVScrollbar(shouldShow);
 		updateScrollbars();
@@ -233,12 +262,32 @@ public class ScrollFrame extends Sprite {
 		xVelocity = yVelocity = 0;
 	}
 
+	private function getContentW():Number {
+		if (contentDirty) {
+			contentW = contents.width;
+			contentH = contents.height;
+			contentDirty = false;
+		}
+
+		return contentW;
+	}
+
+	private function getContentH():Number {
+		if (contentDirty) {
+			contentW = contents.width;
+			contentH = contents.height;
+			contentDirty = false;
+		}
+
+		return contentH;
+	}
+
 	public function maxScrollH():int {
-		return Math.max(0, contents.width - visibleW());
+		return Math.max(0, getContentW() - visibleW());
 	}
 
 	public function maxScrollV():int {
-		return Math.max(0, contents.height - visibleH());
+		return Math.max(0, getContentH() - visibleH());
 	}
 
 	public function canScrollLeft():Boolean {return contents.x < 0}
@@ -264,12 +313,26 @@ public class ScrollFrame extends Sprite {
 	public function constrainScroll():void {
 		contents.x = Math.max(-maxScrollH(), Math.min(contents.x, 0));
 		contents.y = Math.max(-maxScrollV(), Math.min(contents.y, 0));
+
+		var h:Number = mask.height;
+		for (var i:int=0; i<contents.numChildren; ++i) {
+			var dObj:DisplayObject = contents.getChildAt(i);
+			if (dObj != mask) {
+				var yy:Number = dObj.y + contents.y;
+				var v:Boolean = (yy < h && yy + dObj.height > 0);
+				if (dObj.visible != v)
+					dObj.visible = v;
+			}
+		}
 	}
 
 	protected function onPanGestureBegan(event:GestureEvent):void {
 		xHistory = [0,0,0];
 		yHistory = [0,0,0];
 		contents.mouseChildren = false;
+		contents.mouseEnabled = false;
+//		contents.cacheAsBitmap = true;
+//		Scratch.app.cacheAsBitmap = true;
 		removeEventListener(Event.ENTER_FRAME, step);
 		onPanGestureChanged(event);
 	}
@@ -289,7 +352,7 @@ public class ScrollFrame extends Sprite {
 		contents.y += offsetY;
 		constrainScroll();
 
-		updateScrollbars();
+		//updateScrollbars();
 	}
 
 	protected function onPanGestureEnded(event:GestureEvent):void {
@@ -308,6 +371,9 @@ public class ScrollFrame extends Sprite {
 		}
 		addEventListener(Event.ENTER_FRAME, step);
 		contents.mouseChildren = true;
+		contents.mouseEnabled = true;
+//		contents.cacheAsBitmap = false;
+//		Scratch.app.cacheAsBitmap = false;
 	}
 
 	public function shutdown():void {}

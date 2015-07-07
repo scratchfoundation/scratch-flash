@@ -257,6 +257,7 @@ public class ScratchCostume {
 
 	private static var shapeDict:Object = {};
 	public function getShape():Shape {
+		if (!baseLayerMD5) prepareToSave();
 		var id:String = baseLayerMD5;
 		if(id && textLayerMD5) id += textLayerMD5;
 		else if(textLayerMD5) id = textLayerMD5;

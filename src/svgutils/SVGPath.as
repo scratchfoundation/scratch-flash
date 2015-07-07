@@ -67,6 +67,24 @@ public dynamic class SVGPath extends Array {
 			this[i] = cmds[i];
 	}
 
+	public function setNested(allCmds:Array):void {
+		var ll:uint = allCmds.length;
+		var i:uint = 0;
+		for(var j:int=0; j < ll; ++j) {
+			var cmds:Array = allCmds[j];
+			i += cmds.length;
+		}
+
+		length = i;
+		i = 0;
+		for(j=0; j < ll; ++j) {
+			var cmds:Array = allCmds[j];
+			var l:uint = cmds.length;
+			for (var k:int = 0; k < l; ++k, ++i)
+				this[i] = cmds[k];
+		}
+	}
+
 	public function setDirty():void {
 		dirty = true;
 	}
@@ -371,7 +389,7 @@ public dynamic class SVGPath extends Array {
 		var r:Number = Math.min(1, v3l / (c1l + c2l));
 		v3.normalize(r * Math.max(Math.min(c1l, v3l), c2l / 4));
 		var c1:Point = here.add(v3);
-		v3.normalize(r * Math.max(Math.min(c2l, v3l), c1l / 4))
+		v3.normalize(r * Math.max(Math.min(c2l, v3l), c1l / 4));
 		var c2:Point = here.subtract(v3);
 
 		return [c1, c2];
@@ -468,33 +486,42 @@ public dynamic class SVGPath extends Array {
 		// Based on Timothee Groleau's Bezier_lib.as - v1.2, 19/05/02, which
 		// uses a simplified version of the midPoint algorithm by Helen Triolo.
 		// calculates the useful base points
-		var pa:Point = Point.interpolate(p1, p0, 3/4);
-		var pb:Point = Point.interpolate(p2, p3, 3/4);
+		var pax:Number = p1.x*0.75+p0.x*0.25;
+		var pay:Number = p1.y*0.75+p0.y*0.25;
+		var pbx:Number = p2.x*0.75+p3.x*0.25;
+		var pby:Number = p2.y*0.75+p3.y*0.25;
 
 		// compute 1/16 of the [p3, p0] segment
 		var dx:Number = (p3.x - p0.x) / 16;
 		var dy:Number = (p3.y - p0.y) / 16;
 
 		// calculates control point 1
-		var pc1:Point = Point.interpolate(p1, p0, 3/8);
+		var pc1x:Number = p1.x*0.375+p0.x*0.625;
+		var pc1y:Number = p1.y*0.375+p0.y*0.625;
 
 		// calculates control point 2
-		var pc2:Point = Point.interpolate(pb, pa, 3/8);
-		pc2.x -= dx;
-		pc2.y -= dy;
+		var pc2x:Number = pbx*0.375+pax*0.625;
+		var pc2y:Number = pby*0.375+pay*0.625;
+		pc2x -= dx;
+		pc2y -= dy;
 
 		// calculates control point 3
-		var pc3:Point = Point.interpolate(pa, pb, 3/8);
-		pc3.x += dx;
-		pc3.y += dy;
+		var pc3x:Number = pax*0.375+pbx*0.625;
+		var pc3y:Number = pay*0.375+pby*0.625;
+		pc3x += dx;
+		pc3y += dy;
 
 		// calculates control point 4
-		var pc4:Point = Point.interpolate(p2, p3, 3/8);
+		var pc4x:Number = p2.x*0.375+p3.x*0.625;
+		var pc4y:Number = p2.y*0.375+p3.y*0.625;
 
 		// calculates the 3 anchor points
-		var pa1:Point = Point.interpolate(pc1, pc2, 1/2);
-		var pa2:Point = Point.interpolate(pa, pb, 1/2);
-		var pa3:Point = Point.interpolate(pc3, pc4, 1/2);
+		var pa1x:Number = 0.5 * (pc1x + pc2x);
+		var pa1y:Number = 0.5 * (pc1y + pc2y);
+		var pa2x:Number = 0.5 * (pax + pbx);
+		var pa2y:Number = 0.5 * (pay + pby);
+		var pa3x:Number = 0.5 * (pc3x + pc4x);
+		var pa3y:Number = 0.5 * (pc3y + pc4y);
 
 		// draw the four quadratic subsegments
 		if(cmds) {
@@ -504,15 +531,15 @@ public dynamic class SVGPath extends Array {
 				GraphicsPathCommand.CURVE_TO,
 				GraphicsPathCommand.CURVE_TO);
 			points.push(
-				pc1.x, pc1.y, pa1.x, pa1.y,
-				pc2.x, pc2.y, pa2.x, pa2.y,
-				pc3.x, pc3.y, pa3.x, pa3.y,
-				pc4.x, pc4.y, p3.x, p3.y);
+				pc1x, pc1y, pa1x, pa1y,
+				pc2x, pc2y, pa2x, pa2y,
+				pc3x, pc3y, pa3x, pa3y,
+				pc4x, pc4y, p3.x, p3.y);
 		} else if(g) {
-			g.curveTo(pc1.x, pc1.y, pa1.x, pa1.y);
-			g.curveTo(pc2.x, pc2.y, pa2.x, pa2.y);
-			g.curveTo(pc3.x, pc3.y, pa3.x, pa3.y);
-			g.curveTo(pc4.x, pc4.y, p3.x, p3.y);
+			g.curveTo(pc1x, pc1y, pa1x, pa1y);
+			g.curveTo(pc2x, pc2y, pa2x, pa2y);
+			g.curveTo(pc3x, pc3y, pa3x, pa3y);
+			g.curveTo(pc4x, pc4y, p3.x, p3.y);
 		}
 	}
 

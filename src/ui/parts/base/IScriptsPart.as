@@ -26,6 +26,7 @@ package ui.parts.base {
 public interface IScriptsPart {
 	function resetCategory():void;
 	function updatePalette():void;
+	function showPalette():void;
 	function updateSpriteWatermark():void;
 	function step():void;
 	function setWidthHeight(w:int, h:int):void;

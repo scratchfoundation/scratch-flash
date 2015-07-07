@@ -70,9 +70,8 @@ public class FilterPack {
 	}
 
 	public function resetAllFilters():void {
-		for (var i:int = 0; i < filterNames.length; i++) {
-			filterDict[filterNames[i]] = 0;
-		}
+		for (var i:int = 0; i < filterNames.length; i++)
+			delete filterDict[filterNames[i]];
 	}
 
 	public function getFilterSetting(filterName:String):Number {
@@ -82,13 +81,16 @@ public class FilterPack {
 	}
 
 	public function setFilter(filterName:String, newValue:Number):Boolean {
-		if (isNaN(newValue)) return false;
+		if (newValue != newValue) return false;
 		if (filterName == "brightness") newValue = Math.max(-100, Math.min(newValue, 100));
 		if (filterName == "color") newValue = newValue % 200;
 		if (filterName == "ghost") newValue = Math.max(0, Math.min(newValue, 100));
 
-		var oldValue:Number = filterDict[filterName];
-		filterDict[filterName] = newValue;
+		var oldValue:Number = filterDict[filterName] || 0;
+		if (!!newValue)
+			filterDict[filterName] = newValue;
+		else
+			delete filterDict[filterName];
 
 		return (newValue != oldValue);
 	}
@@ -97,25 +99,27 @@ public class FilterPack {
 		var result:FilterPack = new FilterPack(target);
 		for (var i:int = 0; i < filterNames.length; i++) {
 			var fName:String = filterNames[i];
-			result.setFilter(fName, filterDict[fName]);
+			if (!!filterDict[fName]) result.setFilter(fName, filterDict[fName]);
 		}
 		return result;
 	}
 
+	private static var emptyArray:Array = [];
+	private var newFilters:Array = [];
 	public function buildFilters(force:Boolean = false):Array {
 		// disable filters not running on x86 because PixelBender is really slow
-		if((Scratch.app.isIn3D || Capabilities.cpuArchitecture != 'x86') && !force) return [];
+		if((Scratch.app.isIn3D || Capabilities.cpuArchitecture != 'x86') && !force) return emptyArray;
 
 		var scale:Number = targetObj.isStage ? 1 : Scratch.app.stagePane.scaleX;
 		var srcWidth:Number = targetObj.width * scale;
 		var srcHeight:Number = targetObj.height * scale;
 		var n:Number;
-		var newFilters:Array = [];
+		newFilters.length = 0;
 
 		if (filterDict["whirl"] != 0) {
 			// range: -infinity..infinity
 			var radians:Number = (Math.PI * filterDict["whirl"]) / 180;
-			var scaleX:Number, scaleY:Number
+			var scaleX:Number, scaleY:Number;
 			if (srcWidth > srcHeight) {
 				scaleX = srcHeight / srcWidth;
 				scaleY = 1;

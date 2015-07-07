@@ -25,6 +25,8 @@ import flash.events.Event;
 import flash.events.MouseEvent;
 import flash.geom.Point;
 
+import ui.events.PointerEvent;
+
 import uiwidgets.CursorTool;
 
 public class PathAnchorPoint extends Sprite
@@ -107,7 +109,7 @@ public class PathAnchorPoint extends Sprite
 	}
 
 	private function makeInteractive():void {
-		addEventListener(MouseEvent.MOUSE_DOWN, eventHandler);
+		addEventListener(PointerEvent.POINTER_DOWN, eventHandler);
 		addEventListener(MouseEvent.MOUSE_OVER, toggleHighlight);
 		addEventListener(MouseEvent.MOUSE_OUT, toggleHighlight);
 	}
@@ -115,17 +117,17 @@ public class PathAnchorPoint extends Sprite
 	private var wasMoved:Boolean = false;
 	private var canDelete:Boolean = false;
 	private var mouseDown:Boolean = false;
-	private function eventHandler(event:MouseEvent):void {
+	private function eventHandler(event:PointerEvent):void {
 		var p:Point;
 		switch(event.type) {
-			case MouseEvent.MOUSE_DOWN:
-				stage.addEventListener(MouseEvent.MOUSE_MOVE, arguments.callee);
-				stage.addEventListener(MouseEvent.MOUSE_UP, arguments.callee);
+			case PointerEvent.POINTER_DOWN:
+				stage.addEventListener(PointerEvent.POINTER_MOVE, arguments.callee);
+				stage.addEventListener(PointerEvent.POINTER_UP, arguments.callee);
 				wasMoved = false;
 				canDelete = !isNaN(event.localX);
 				mouseDown = true;
 				break;
-			case MouseEvent.MOUSE_MOVE:
+			case PointerEvent.POINTER_MOVE:
 				p = new Point(stage.mouseX, stage.mouseY);
 				pathEditTool.movePoint(index, p);
 				p = pathEditTool.globalToLocal(p);
@@ -133,9 +135,9 @@ public class PathAnchorPoint extends Sprite
 				y = p.y;
 				wasMoved = true;
 				break;
-			case MouseEvent.MOUSE_UP:
-				stage.removeEventListener(MouseEvent.MOUSE_MOVE, arguments.callee);
-				stage.removeEventListener(MouseEvent.MOUSE_UP, arguments.callee);
+			case PointerEvent.POINTER_UP:
+				stage.removeEventListener(PointerEvent.POINTER_MOVE, arguments.callee);
+				stage.removeEventListener(PointerEvent.POINTER_UP, arguments.callee);
 
 				// Save the path
 				p = new Point(x, y);

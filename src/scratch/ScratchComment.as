@@ -24,7 +24,10 @@ package scratch {
 	import flash.text.*;
 	import blocks.Block;
 	import translation.*;
-	import uiwidgets.*;
+
+import ui.events.PointerEvent;
+
+import uiwidgets.*;
 
 public class ScratchComment extends Sprite {
 
@@ -59,7 +62,7 @@ public class ScratchComment extends Sprite {
 		contents.mask = clipMask;
 		frame.setWidthHeight(width, 200);
 		expandedSize = new Point(width, 200);
-		addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
+		addEventListener(PointerEvent.POINTER_DOWN, mouseDown);
 		addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, menu);
 		fixLayout();
 		setExpanded(isOpen);

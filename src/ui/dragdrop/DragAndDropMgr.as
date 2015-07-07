@@ -126,9 +126,13 @@ public class DragAndDropMgr {
 		f.distance = 8 * blockScale;
 		f.blurX = f.blurY = 2;
 		f.alpha = 0.4;
-		draggedObj.filters = draggedObj.filters.concat([f]);
+		draggedObj.filters = [];//draggedObj.filters.concat([f]);
+		draggedObj.cacheAsBitmap = true;
 		draggedObj.mouseEnabled = false;
 		draggedObj.mouseChildren = false;
+		Scratch.app.cacheAsBitmap = true;
+		Scratch.app.mouseEnabled = false;
+		Scratch.app.mouseChildren = false;
 	}
 
 	private function stopDrag():void {
@@ -136,10 +140,13 @@ public class DragAndDropMgr {
 		for each (var f:* in draggedObj.filters)
 			if (!(f is DropShadowFilter)) newFilters.push(f);
 
+		draggedObj.cacheAsBitmap = false;
 		draggedObj.filters = newFilters;
-		//draggedObj.stopDrag();
 		draggedObj.mouseEnabled = true;
 		draggedObj.mouseChildren = true;
+		Scratch.app.cacheAsBitmap = false;
+		Scratch.app.mouseEnabled = true;
+		Scratch.app.mouseChildren = true;
 
 		if (originalObj != draggedObj && draggedObj.parent == stage)
 			stage.removeChild(draggedObj);

@@ -24,7 +24,10 @@ package svgeditor {
 	import flash.geom.*;
 	import flash.utils.Dictionary;
 	import assets.Resources;
-	import uiwidgets.*;
+
+import ui.events.PointerEvent;
+
+import uiwidgets.*;
 	import util.Color;
 
 public class ColorPicker extends Sprite {
@@ -102,7 +105,7 @@ public class ColorPicker extends Sprite {
 		addChild(paletteSwitchButton);
 	}
 
-	private function switchPalettes(evt:MouseEvent):void {
+	private function switchPalettes(evt:PointerEvent):void {
 		palette.visible = !palette.visible;
 		hsvColorPicker.visible = !palette.visible;
 		paletteSwitchButton.getChildAt(0).visible = palette.visible;
@@ -132,8 +135,8 @@ public class ColorPicker extends Sprite {
 		addChild(secondaryColorSwatch); // behind primary
 		addChild(primaryColorSwatch);
 
-		primaryColorSwatch.addEventListener(MouseEvent.MOUSE_DOWN, swapColors);
-		secondaryColorSwatch.addEventListener(MouseEvent.MOUSE_DOWN, swapColors);
+		primaryColorSwatch.addEventListener(PointerEvent.POINTER_DOWN, swapColors);
+		secondaryColorSwatch.addEventListener(PointerEvent.POINTER_DOWN, swapColors);
 
 		updateSwatches();
 	}
@@ -213,7 +216,7 @@ public class ColorPicker extends Sprite {
 		}
 	}
 
-	private function setColor(e:MouseEvent):void {
+	private function setColor(e:PointerEvent):void {
 		// Update fill and stroke buttons
 		var color:uint = 0;
 		var alpha:Number = 1.0;
@@ -242,7 +245,7 @@ public class ColorPicker extends Sprite {
 		wheelSelector.y = 30;
 		hsvColorPicker.addChild(wheelSelector);
 
-		hsvColorPicker.addEventListener(MouseEvent.MOUSE_DOWN, setWheelColor);
+		hsvColorPicker.addEventListener(PointerEvent.POINTER_DOWN, setWheelColor);
 		hsvColorPicker.visible = false;
 	}
 
@@ -271,15 +274,15 @@ public class ColorPicker extends Sprite {
 		setColorByHSVPos(new Point(wheelSelector.x, wheelSelector.y), updateColor);
 	}
 
-	private function setWheelColor(evt:MouseEvent):void {
-		if (evt.type == MouseEvent.MOUSE_DOWN) {
-			stage.addEventListener(MouseEvent.MOUSE_MOVE, setWheelColor);
-			stage.addEventListener(MouseEvent.MOUSE_UP, setWheelColor);
-		} else if (evt.type == MouseEvent.MOUSE_UP) {
-			stage.removeEventListener(MouseEvent.MOUSE_MOVE, setWheelColor);
-			stage.removeEventListener(MouseEvent.MOUSE_UP, setWheelColor);
+	private function setWheelColor(evt:PointerEvent):void {
+		if (evt.type == PointerEvent.POINTER_DOWN) {
+			stage.addEventListener(PointerEvent.POINTER_MOVE, setWheelColor);
+			stage.addEventListener(PointerEvent.POINTER_UP, setWheelColor);
+		} else if (evt.type == PointerEvent.POINTER_UP) {
+			stage.removeEventListener(PointerEvent.POINTER_MOVE, setWheelColor);
+			stage.removeEventListener(PointerEvent.POINTER_UP, setWheelColor);
 		}
-		if (evt.type != MouseEvent.MOUSE_UP) {
+		if (evt.type != PointerEvent.POINTER_UP) {
 			setColorByHSVPos(new Point(hsvColorPicker.mouseX,hsvColorPicker.mouseY));
 		}
 	}
@@ -369,7 +372,7 @@ public class ColorPicker extends Sprite {
 			// don't add transparent to the dictionary
 			transparentColor = s;
 		}
-		s.addEventListener(MouseEvent.MOUSE_DOWN, setColor);
+		s.addEventListener(PointerEvent.POINTER_DOWN, setColor);
 		drawColorSelector(s);
 		return s;
 	}

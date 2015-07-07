@@ -101,7 +101,7 @@ public class ExtensionManager {
 				}
 				else {
 					app.externalCall('ScratchExtensions.unregister', null, extName);
-					delete extensionDict[extName];
+					if(!ext.isInternal) delete extensionDict[extName];
 				}
 			}
 		}

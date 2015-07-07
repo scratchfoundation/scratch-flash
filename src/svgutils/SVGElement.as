@@ -169,12 +169,18 @@ public class SVGElement {
 		for each (var k:String in keys) delete attributes[k];
 	}
 
+	static private const numberFinder:RegExp = /(?:\+|-)?\d+(?:\.\d+)?(?:e(?:\+|-)?\d+)?/g;
+	static private function makeNumber(element:*, index:int, arr:Array):Number {
+		return Number(element);
+	}
+
 	public function extractNumericArgs(input:String):Array {
 		// Parse a string containing one more numeric arguments and return an array of Numbers.
-		var result:Array = [];
-		var numStrings:Array = input.match(/(?:\+|-)?\d+(?:\.\d+)?(?:e(?:\+|-)?\d+)?/g);
-		for each (var s:String in numStrings) result.push(Number(s));
-		return result;
+//		var result:Array = [];
+		var numStrings:Array = input.match(numberFinder);
+		return numStrings.map(makeNumber);
+//		for each (var s:String in numStrings) result.push(Number(s));
+//		return result;
 	}
 
 	public function convertToPath():void {

@@ -97,6 +97,8 @@ public class BaseScriptsPart extends UIPart implements IScriptsPart {
 		addChild(zoomWidget = new ZoomWidget(scriptsPane));
 	}
 
+	public function showPalette():void {}
+
 	protected function getPaletteFrame(dragScroll:Boolean):ScrollFrame {
 		return new ScrollFrame(dragScroll);
 	}
@@ -157,7 +159,8 @@ public class BaseScriptsPart extends UIPart implements IScriptsPart {
 				yReadout.text = String(lastY);
 			}
 		}
-		updateExtensionIndicators();
+		if (selector.selectedCategory == Specs.extensionsCategory)
+			updateExtensionIndicators();
 	}
 
 	private function updateExtensionIndicators():void {

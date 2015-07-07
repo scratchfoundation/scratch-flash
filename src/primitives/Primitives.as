@@ -26,11 +26,9 @@
 package primitives {
 	import flash.utils.Dictionary;
 	import blocks.*;
-	import interpreter.*;
 import interpreter.Interpreter;
 
 import scratch.ScratchSprite;
-	import translation.Translator;
 
 public class Primitives {
 
@@ -99,9 +97,13 @@ public class Primitives {
 		var hi:Number = (n1 <= n2) ? n2 : n1;
 		if (low == hi) return low;
 		// if both low and hi are ints, truncate the result to an int
-		if ((int(low) == low) && (int(hi) == hi)) {
+		var ba1:BlockArg = b.args[0] as BlockArg;
+		var ba2:BlockArg = b.args[1] as BlockArg;
+		var int1:Boolean = ba1 ? ba1.numberType == BlockArg.NT_INT : int(n1) == n1;
+		var int2:Boolean = ba2 ? ba2.numberType == BlockArg.NT_INT : int(n2) == n2;
+		if (int1 && int2)
 			return low + int(Math.random() * ((hi + 1) - low));
-		}
+
 		return (Math.random() * (hi - low)) + low;
 	}
 

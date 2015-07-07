@@ -35,7 +35,10 @@ package ui.media {
 	import sound.mp3.MP3SoundPlayer;
 	import svgutils.SVGImporter;
 	import translation.Translator;
-	import uiwidgets.*;
+
+import ui.events.PointerEvent;
+
+import uiwidgets.*;
 	import util.*;
 
 public class MediaLibraryItem extends Sprite {
@@ -87,8 +90,8 @@ public class MediaLibraryItem extends Sprite {
 		addFrame();
 		visible = false; // must call show(true) first
 		unhighlight();
-		addEventListener(MouseEvent.CLICK, click);
-		addEventListener(MouseEvent.DOUBLE_CLICK, doubleClick);
+		addEventListener(PointerEvent.TAP, click);
+		addEventListener(PointerEvent.DOUBLE_TAP, doubleClick);
 	}
 
 	public static function strings():Array { return ['Costumes:', 'Scripts:'] }

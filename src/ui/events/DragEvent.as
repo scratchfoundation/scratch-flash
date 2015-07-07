@@ -17,7 +17,7 @@ public class DragEvent extends PointerEvent {
 	private var _acceptedBy:DropTarget;
 	public function DragEvent(type:String, obj:Sprite) {
 		_draggedObj = obj;
-		super(type, true, true);
+		super(type);
 	}
 
 	public function get draggedObject():Sprite {

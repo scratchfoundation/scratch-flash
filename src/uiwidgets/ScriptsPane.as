@@ -47,8 +47,8 @@ public class ScriptsPane extends ScrollFrameContents implements DropTarget {
 	public var app:Scratch;
 	public var padding:int = 10;
 
-	private var viewedObj:ScratchObj;
-	private var commentLines:Shape;
+	protected var viewedObj:ScratchObj;
+	protected var commentLines:Shape;
 
 	protected var possibleTargets:Array = [];
 	protected var nearestTarget:Array = [];
@@ -60,11 +60,19 @@ public class ScriptsPane extends ScrollFrameContents implements DropTarget {
 		hExtra = vExtra = 40;
 		createTexture();
 		addFeedbackShape();
-		addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, menu);
-		addEventListener(DragEvent.DRAG_OVER, handleDrag, false, 0, true);
-		addEventListener(DragEvent.DRAG_MOVE, handleDrag, false, 0, true);
-		addEventListener(DragEvent.DRAG_OUT, handleDrag, false, 0, true);
-		addEventListener(DragEvent.DRAG_DROP, handleDrag, false, 0, true);
+	}
+
+	private var addedHandlers:Boolean;
+	override public function setWidthHeight(w:Number, h:Number):void {
+		super.setWidthHeight(w, h);
+		if (!addedHandlers && parent) {
+			parent.addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, menu);
+			parent.addEventListener(DragEvent.DRAG_OVER, handleDrag, false, 0, true);
+			parent.addEventListener(DragEvent.DRAG_MOVE, handleDrag, false, 0, true);
+			parent.addEventListener(DragEvent.DRAG_OUT, handleDrag, false, 0, true);
+			parent.addEventListener(DragEvent.DRAG_DROP, handleDrag, false, 0, true);
+			addedHandlers = true;
+		}
 	}
 
 	protected function handleDrag(e:DragEvent):void {
@@ -218,7 +226,7 @@ public class ScriptsPane extends ScrollFrameContents implements DropTarget {
 		} else {
 			hideFeedbackShape();
 		}
-		fixCommentLayout();
+		//fixCommentLayout();
 	}
 
 	public function allStacks():Array {
@@ -359,7 +367,8 @@ public class ScriptsPane extends ScrollFrameContents implements DropTarget {
 	}
 
 	private function hideFeedbackShape():void {
-		feedbackShape.visible = false;
+		if (feedbackShape.visible)
+			feedbackShape.visible = false;
 	}
 
 	private function nearestTargetForBlockIn(b:Block, targets:Array):Array {

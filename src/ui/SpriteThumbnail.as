@@ -46,8 +46,10 @@ public class SpriteThumbnail extends BaseItem {
 	private var lastName:String = '';
 	private var lastSceneCount:int = 0;
 
+	static private var counter:uint;
 	public function SpriteThumbnail(targetObj:ScratchObj, app:Scratch, itemStyle:ItemStyle) {
-		super(itemStyle, new ItemData(targetObj.isStage ? 'stage' : 'sprite', targetObj.objName, targetObj.generateMD5(), targetObj));
+//		super(itemStyle, new ItemData(targetObj.isStage ? 'stage' : 'sprite', targetObj.objName, targetObj.generateMD5(), targetObj));
+		super(itemStyle, new ItemData(targetObj.isStage ? 'stage' : 'sprite', targetObj.objName, ++counter + '', targetObj));
 		this.app = app;
 
 		addFrame();

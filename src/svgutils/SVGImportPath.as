@@ -30,6 +30,8 @@ package svgutils {
 	import flash.geom.Point;
 	import flash.geom.Matrix;
 
+import util.StringAndPos;
+
 public class SVGImportPath {
 
 	// -----------------------------
@@ -135,47 +137,57 @@ public class SVGImportPath {
 	private var lastCX:Number;
 	private var lastCY:Number;
 
+	private static var svgPath:StringAndPos = new StringAndPos('');
+	private static var args:Array = [];
+	private static var cmds:Array = [];
 	private function cmdsForPath(el:SVGElement):SVGPath {
 		// Convert an SVG path to a Flash-friendly version that contains only absolute
 		// move, line, cubic, and quadratic curve commands (M, L, C, Q). The output is
 		// an array of command arrays of the form [<cmd> args...].
-		var cmds:Array = [];
 		firstMove = true;
 		startX = startY = 0;
 		lastX = lastY = 0;
 		lastCX = lastCY = 0;
-		var svgPath:String = el.getAttribute('d');
-		for each(var cmdString:String in svgPath.match(/[A-DF-Za-df-z][^A-Za-df-z]*/g)) {
-			var cmd:String = cmdString.charAt(0);
-			var args:Array = el.extractNumericArgs(cmdString.substr(1));
+		cmds.length = 0;
+		svgPath.str = el.getAttribute('d');
+		svgPath.pos = 0;
+		var cmdEnd:int;
+		//var cmdString:String in svgPath.match(/[A-DF-Za-df-z][^A-Za-df-z]*/g)
+		while ((cmdEnd = svgPath.getNextCommandEnd()) != -1) {
+			var cmd:String = svgPath.str.charAt(svgPath.pos);
+			args.length = 0;
+			var n:Number = svgPath.getNextNumber(cmdEnd);
+			while (n == n) {
+				args.push(n);
+				n = svgPath.getNextNumber(cmdEnd);
+			}
+
 			var argCount:int = pathCmdArgCount[cmd];
 			if (argCount == 0) {
-				cmds.push(simplePathCommands(cmd, args));
+				simplePathCommands(cmd, args, cmds);
 				continue;
 			}
 			if (('m' == cmd.toLowerCase()) && (args.length > 2)) {
 				// Special case: If 'M' or 'm' has more than 2 arguments, the
 				// extra arguments are for an implied 'L' or 'l' line command.
-				cmds.push(simplePathCommands(cmd, args));
+				simplePathCommands(cmd, args, cmds);
 				args = args.slice(2);
 				cmd = ('M' == cmd) ? 'L' : 'l';
 			}
 			if (args.length == argCount) { // common case: no splicing necessary
-				cmds.push(simplePathCommands(cmd, args));
+				simplePathCommands(cmd, args, cmds);
 			}
 			else { // sequence commands of the same kind (with command letter omitted on subsequent commands)
 				var argsPos:int = 0;
 				while (args.length >= argsPos + argCount) {
-					cmds.push(simplePathCommands(cmd, args.slice(argsPos, argsPos + argCount)));
+					simplePathCommands(cmd, args.slice(argsPos, argsPos + argCount), cmds);
 					argsPos += argCount;
 				}
 			}
 		}
 		// Flatten array-of-arrays to just one big array
-		var flattened:Array = [];
-		flattened = flattened.concat.apply(flattened, cmds);
 		var result:SVGPath = new SVGPath();
-		result.set(flattened);
+		result.set(cmds);
 		return result;
 	}
 
@@ -190,9 +202,9 @@ public class SVGImportPath {
 		T: 2, t: 2,
 		V: 1, v: 1,
 		Z: 0, z: 0
-	}
+	};
 
-	private function simplePathCommands(cmd:String, args:Array):Array {
+	private function simplePathCommands(cmd:String, args:Array, results:Array):void {
 		// Return an array of simple path commands for the given SVG command letter
 		// and arguments, converting relative commands to absolute ones.
 		// Each command in resulting array is an array consists of a letter from the
@@ -200,29 +212,28 @@ public class SVGImportPath {
 		// In general, arc cannot be represented by a single bezier curve precisely.
 		// All other commands are packed into arrays to have the same format.
 		switch (cmd) {//return array of commands
-		case 'A': return arcCmds(args, false);
-		case 'a': return arcCmds(args, true);
-		case 'C': return [cubicCurveCmd(args, false)];
-		case 'c': return [cubicCurveCmd(args, true)];
-		case 'H': return [hLineCmd(args[0])];
-		case 'h': return [hLineCmd(lastX + args[0])];
-		case 'L': return [lineCmd(absoluteArgs(args))];
-		case 'l': return [lineCmd(relativeArgs(args))];
-		case 'M': return [moveCmd(absoluteArgs(args))];
-		case 'm': return [moveCmd(relativeArgs(args))];
-		case 'Q': return [quadraticCurveCmd(args, false)];
-		case 'q': return [quadraticCurveCmd(args, true)];
-		case 'S': return [cubicCurveSmoothCmd(args, false)];
-		case 's': return [cubicCurveSmoothCmd(args, true)];
-		case 'T': return [quadraticCurveSmoothCmd(args, false)];
-		case 't': return [quadraticCurveSmoothCmd(args, true)];
-		case 'V': return [vLineCmd(args[0])];
-		case 'v': return [vLineCmd(lastY + args[0])];
+		case 'A': arcCmds(args, false, results); return;
+		case 'a': arcCmds(args, true, results); return;
+		case 'C': results.push(cubicCurveCmd(args, false)); return;
+		case 'c': results.push(cubicCurveCmd(args, true)); return;
+		case 'H': results.push(hLineCmd(args[0])); return;
+		case 'h': results.push(hLineCmd(lastX + args[0])); return;
+		case 'L': results.push(lineCmd(absoluteArgs(args))); return;
+		case 'l': results.push(lineCmd(relativeArgs(args))); return;
+		case 'M': results.push(moveCmd(absoluteArgs(args))); return;
+		case 'm': results.push(moveCmd(relativeArgs(args))); return;
+		case 'Q': results.push(quadraticCurveCmd(args, false)); return;
+		case 'q': results.push(quadraticCurveCmd(args, true)); return;
+		case 'S': results.push(cubicCurveSmoothCmd(args, false)); return;
+		case 's': results.push(cubicCurveSmoothCmd(args, true)); return;
+		case 'T': results.push(quadraticCurveSmoothCmd(args, false)); return;
+		case 't': results.push(quadraticCurveSmoothCmd(args, true)); return;
+		case 'V': results.push(vLineCmd(args[0])); return;
+		case 'v': results.push(vLineCmd(lastY + args[0])); return;
 		case 'Z':
-		case 'z': return [['Z']];
+		case 'z': results.push(['Z']); return;
 		}
 		trace('Unknown path command: ' + cmd); // unknown path command; should not happen
-		return [];
 	}
 
 	private function absoluteArgs(args:Array):Array {
@@ -237,7 +248,7 @@ public class SVGImportPath {
 		return args;
 	}
 
-	private function arcCmds(args:Array, isRelative:Boolean):Array {
+	private function arcCmds(args:Array, isRelative:Boolean, results:Array):void {
 		// Return array of bezier curves, approximating given arc.
 		// Points :
 		// A: arc begin; B: arc end; M: midpoint of AB; C: center of ellipse
@@ -250,7 +261,7 @@ public class SVGImportPath {
 		var b:Point = new Point(lastX, lastY);
 		var ab_length:Number = Point.distance(a, b);
 		if (ab_length == 0) {
-			return [];
+			return;
 		}
 		var rx:Number = (args[0] * args[1] == 0) ? (ab_length / 2) : Math.abs(args[0]);
 		var ry:Number = (args[0] * args[1] == 0) ? (ab_length / 2) : Math.abs(args[1]);
@@ -294,16 +305,16 @@ public class SVGImportPath {
 		const PHI_MAX:Number = Math.PI / 2 * 1.001;//Produce no more than 2 curves for semicircle
 		var steps:int = Math.ceil(Math.abs(phi) / PHI_MAX);
 		var k:Number = 4 / 3 * (1 - Math.cos(phi / 2 / steps)) / Math.sin(phi / 2 / steps);
-		var result:Array = new Array();
+		//var result:Array = new Array();
 		for (var i:int = 0; i < steps; i++) {
 			var alpha:Number = aPhi + phi * (i / steps);
 			var beta:Number = aPhi + phi * ((i+1) / steps);
 			var control1:Point = TForward.transformPoint(new Point(Math.cos(alpha) - k * Math.sin(alpha), Math.sin(alpha) + k * Math.cos(alpha)));
 			var control2:Point = TForward.transformPoint(new Point(Math.cos(beta) + k * Math.sin(beta), Math.sin(beta) - k * Math.cos(beta)));
 			var finish:Point = TForward.transformPoint(new Point(Math.cos(beta), Math.sin(beta)));
-			result.push(['C', control1.x, control1.y, control2.x, control2.y, finish.x, finish.y]);
+			results.push(['C', control1.x, control1.y, control2.x, control2.y, finish.x, finish.y]);
 		}
-		return result;
+		//return result;
 	}
 
 	private function closePath():Array {

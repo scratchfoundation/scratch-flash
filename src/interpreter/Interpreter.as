@@ -578,7 +578,7 @@ public class Interpreter {
 				if ((stack.op == "whenIReceive") && (stack.args[0].argValue.toLowerCase() == msg)) {
 					receivers.push([stack, target]);
 				}
-			};
+			}
 			app.runtime.allStacksAndOwnersDo(findReceivers);
 			// (re)start all receivers
 			for each (pair in receivers) newThreads.push(restartThread(pair[0], pair[1]));

@@ -37,6 +37,9 @@ import interpreter.*;
 import org.gestouch.events.GestureEvent;
 import org.gestouch.gestures.TapGesture;
 import translation.Translator;
+
+import ui.events.PointerEvent;
+
 import util.*;
 import watchers.*;
 
@@ -72,8 +75,7 @@ public class ScratchObj extends Sprite {
 	function ScratchObj() {
 		super();
 
-		var tap:TapGesture = new TapGesture(this);
-		tap.addEventListener(GestureEvent.GESTURE_RECOGNIZED, click);
+		addEventListener(PointerEvent.TAP, click);
 	}
 
 	public function clearCaches():void {
@@ -270,11 +272,11 @@ public class ScratchObj extends Sprite {
 			img.transform.colorTransform = cTrans;
 		}
 		else {
-			updateEffects();
+			updateEffectsFor3D();
 		}
 	}
 
-	protected function updateEffects():void {
+	public function updateEffectsFor3D():void {
 		SCRATCH::allow3d {
 			if((parent && parent is ScratchStage) || this is ScratchStage) {
 				if(parent is ScratchStage)
@@ -595,7 +597,7 @@ public class ScratchObj extends Sprite {
 	public function writeJSON(json:util.JSON):void {
 		var allScripts:Array = [];
 		for each (var b:Block in scripts) {
-			allScripts.push([b.x, b.y, BlockIO.stackToArray(b)]);
+			allScripts.push(b.toArray());
 		}
 		var allComments:Array = [];
 		for each (var c:ScratchComment in scriptComments) {
@@ -653,14 +655,16 @@ public class ScratchObj extends Sprite {
 			// entries are of the form: [x y stack]
 			var entry:Array = scripts[i];
 			var b:Block = BlockIO.arrayToStack(entry[2], isStage);
-			b.x = entry[0];
-			b.y = entry[1];
+			b.x = entry[0] * 2.5;
+			b.y = entry[1] * 2.5;
 			scripts[i] = b;
 		}
 
 		// script comments
 		for (i = 0; i < scriptComments.length; i++) {
 			scriptComments[i] = ScratchComment.fromArray(scriptComments[i]);
+			scriptComments[i].x *= 2.5;
+			scriptComments[i].y *= 2.5;
 		}
 
 		// sounds

@@ -43,9 +43,17 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 		addEventListener(DragEvent.DRAG_START, dragAndDropHandler);
 		addEventListener(DragEvent.DRAG_STOP, dragAndDropHandler);
 		addEventListener(DragEvent.DRAG_CANCEL, dragAndDropHandler);
-		addEventListener(DragEvent.DRAG_OVER, dragAndDropHandler);
-		addEventListener(DragEvent.DRAG_MOVE, dragAndDropHandler);
-		addEventListener(DragEvent.DRAG_OUT, dragAndDropHandler);
+
+		addEventListener(Event.ADDED, handleAdd);
+	}
+
+	private function handleAdd(e:Event):void {
+		if (e.target == this) {
+			removeEventListener(Event.ADDED, handleAdd);
+			parent.addEventListener(DragEvent.DRAG_OVER, dragAndDropHandler);
+			parent.addEventListener(DragEvent.DRAG_MOVE, dragAndDropHandler);
+			parent.addEventListener(DragEvent.DRAG_OUT, dragAndDropHandler);
+		}
 	}
 
 	// Move items out of the way of a dragging item
@@ -77,6 +85,7 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 			case DragEvent.DRAG_MOVE:
 				if (ignoredObj == event.draggedObject) break;
 
+				// TODO: provide a way for another class to control if a dragged item can be dropped?
 				dropPos = getIndexFromPoint(event.draggedObject.localToGlobal(new Point(event.draggedObject.width/2, event.draggedObject.height/2)));
 				arrangeItems(true);
 				break;

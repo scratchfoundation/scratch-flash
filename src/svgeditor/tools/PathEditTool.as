@@ -20,7 +20,6 @@
 package svgeditor.tools
 {
 import flash.display.DisplayObject;
-import flash.display.Sprite;
 import flash.events.Event;
 import flash.events.MouseEvent;
 import flash.geom.Point;
@@ -31,6 +30,8 @@ import svgeditor.objs.SVGShape;
 
 import svgutils.SVGElement;
 import svgutils.SVGPath;
+
+import ui.events.PointerEvent;
 
 public final class PathEditTool extends SVGEditTool
 	{
@@ -66,7 +67,7 @@ public final class PathEditTool extends SVGEditTool
 			edit(obj, currentEvent);
 		}
 
-		override public function mouseDown(event:MouseEvent):void {
+		override public function mouseDown(event:PointerEvent):void {
 			// Ignore clicks on anchor points and let them handle the mouse
 			if (event.target is PathAnchorPoint) return;
 			super.mouseDown(event);
@@ -75,7 +76,7 @@ public final class PathEditTool extends SVGEditTool
 		////////////////////////////////////////
 		// UI Path editing Adding Points
 		///////////////////////////////////////
-		override protected function edit(obj:ISVGEditable, event:MouseEvent):void {
+		override protected function edit(obj:ISVGEditable, event:PointerEvent):void {
 			// Select a new object?  or add a point
 			if(obj != object) {
 				PathEndPointManager.removeEndPoints();
@@ -236,7 +237,7 @@ public final class PathEditTool extends SVGEditTool
 			}
 		}
 
-		public function removePoint(index:uint, event:MouseEvent):void {
+		public function removePoint(index:uint, event:PointerEvent):void {
 			var endPoints:Array = pathElem.path.getSegmentEndPoints(index);
 
 			// Get the control point index
@@ -362,7 +363,7 @@ public final class PathEditTool extends SVGEditTool
 			// Allow the user to drag the new control point
 			if(cp) {
 				cp.dispatchEvent(new MouseEvent(MouseEvent.MOUSE_OVER));
-				cp.dispatchEvent(new MouseEvent(MouseEvent.MOUSE_DOWN));
+				cp.dispatchEvent(new PointerEvent(PointerEvent.POINTER_DOWN));
 			}
 		}
 

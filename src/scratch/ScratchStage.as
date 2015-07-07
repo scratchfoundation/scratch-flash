@@ -45,6 +45,7 @@ import translation.Translator;
 import ui.ITool;
 import ui.dragdrop.DragAndDropMgr;
 import ui.dragdrop.DropTarget;
+import ui.events.PointerEvent;
 import ui.media.MediaInfo;
 
 import uiwidgets.Menu;
@@ -96,7 +97,7 @@ public class ScratchStage extends ScratchObj implements DropTarget, ITool {
 //	public function isSticky():Boolean { return true; }
 	public function shutdown():void {}
 
-	public function mouseHandler(e:MouseEvent):Boolean {
+	public function mouseHandler(e:PointerEvent):Boolean {
 		visible = true;
 		for (var i:int = numChildren - 1; i > 0; --i) {
 			var o:DisplayObject = getChildAt(i) as DisplayObject;
@@ -419,6 +420,7 @@ public class ScratchStage extends ScratchObj implements DropTarget, ITool {
 		var penBM:BitmapData = penLayer.bitmapData;
 		var m:Matrix = new Matrix();
 
+		[inline]
 		function stamp2d():void {
 			var wasVisible:Boolean = s.visible;
 			s.visible = true;  // if this is done after commitPenStrokes, it doesn't work...
@@ -427,9 +429,9 @@ public class ScratchStage extends ScratchObj implements DropTarget, ITool {
 			m.scale(s.scaleX, s.scaleY);
 			m.translate(s.x, s.y);
 			var oldGhost:Number = s.filterPack.getFilterSetting('ghost');
-			s.filterPack.setFilter('ghost', 100 * (1 - stampAlpha));
+			s.filterPack.setFilter('ghost', 0);
 			s.applyFilters();
-			penBM.draw(s, m);
+			penBM.draw(s, m, new ColorTransform(1, 1, 1, stampAlpha));
 			s.filterPack.setFilter('ghost', oldGhost);
 			s.applyFilters();
 			s.visible = wasVisible;
@@ -459,26 +461,23 @@ public class ScratchStage extends ScratchObj implements DropTarget, ITool {
 		}
 	}
 
+	SCRATCH::allow3d
 	public function getBitmapOfSprite(s:ScratchSprite, bounds:Rectangle, for_carry:Boolean = false):BitmapData {
 		var b:Rectangle = s.currentCostume().bitmap ? s.img.getChildAt(0).getBounds(s) : s.getVisibleBounds(s);
 		bounds.width = b.width; bounds.height = b.height; bounds.x = b.x; bounds.y = b.y;
 		if(!Scratch.app.render3D || s.width < 1 || s.height < 1) return null;
 
-		if (SCRATCH::allow3d) {
-			var ghost:Number = s.filterPack.getFilterSetting('ghost');
-			var oldBright:Number = s.filterPack.getFilterSetting('brightness');
-			s.filterPack.setFilter('ghost', 0);
-			s.filterPack.setFilter('brightness', 0);
-			var bmd:BitmapData = Scratch.app.render3D.getRenderedChild(s, b.width * s.scaleX, b.height * s.scaleY, for_carry);
-			s.filterPack.setFilter('ghost', ghost);
-			s.filterPack.setFilter('brightness', oldBright);
+		var ghost:Number = s.filterPack.getFilterSetting('ghost');
+		var oldBright:Number = s.filterPack.getFilterSetting('brightness');
+		s.filterPack.setFilter('ghost', 0);
+		s.filterPack.setFilter('brightness', 0);
+		s.updateEffectsFor3D();
+		var bmd:BitmapData = Scratch.app.render3D.getRenderedChild(s, b.width * s.scaleX, b.height * s.scaleY, for_carry);
+		s.filterPack.setFilter('ghost', ghost);
+		s.filterPack.setFilter('brightness', oldBright);
+		s.updateEffectsFor3D();
 
-			return bmd;
-		}
-		else {
-			// We should never get here due to the test for Scratch.app.render3D above
-			return null;
-		}
+		return bmd;
 	}
 
 	public function setVideoState(newState:String):void {

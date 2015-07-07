@@ -28,6 +28,8 @@ import svgeditor.ImageCanvas;
 import svgeditor.ImageEdit;
 import svgeditor.objs.ISVGEditable;
 
+import ui.events.PointerEvent;
+
 public class SVGCreateTool extends SVGTool
 {
 	protected var newObject:ISVGEditable;
@@ -79,26 +81,26 @@ public class SVGCreateTool extends SVGTool
 		super.cancel();
 	}
 
-	override public function mouseHandler(e:MouseEvent):Boolean {
+	override public function mouseHandler(e:PointerEvent):Boolean {
 		if(!contentLayer) return false;
 		var p:Point = new Point(contentLayer.mouseX, contentLayer.mouseY);
 		p.x = Math.min(ImageCanvas.canvasWidth, Math.max(0, p.x));
 		p.y = Math.min(ImageCanvas.canvasHeight, Math.max(0, p.y));
 		currentEvent = e;
 
-		if(e.type == MouseEvent.MOUSE_DOWN) {
+		if(e.type == PointerEvent.POINTER_DOWN) {
 			//editor.toggleZoomUI(false);
 			mouseDown(p);
 			if(isQuick && !isShuttingDown) {
 				// Add the mouse event handlers
-//					editor.stage.addEventListener(MouseEvent.MOUSE_MOVE, eventHandler, false, 0, true);
-//					editor.stage.addEventListener(MouseEvent.MOUSE_UP, eventHandler, false, 0, true);
+//					editor.stage.addEventListener(PointerEvent.POINTER_MOVE, eventHandler, false, 0, true);
+//					editor.stage.addEventListener(PointerEvent.POINTER_UP, eventHandler, false, 0, true);
 			}
 			lastPos = p;
-		} else if(e.type == MouseEvent.MOUSE_MOVE) {
+		} else if(e.type == PointerEvent.POINTER_MOVE) {
 			mouseMove(p);
 			lastPos = p;
-		} else if(e.type == MouseEvent.MOUSE_UP) {
+		} else if(e.type == PointerEvent.POINTER_UP) {
 			//editor.toggleZoomUI(true);
 			if(!stage) return false;
 

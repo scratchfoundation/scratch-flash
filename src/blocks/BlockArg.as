@@ -46,17 +46,21 @@ import scratch.BlockMenus;
 	import translation.Translator;
 
 import ui.dragdrop.DragAndDropMgr;
+import ui.events.PointerEvent;
 
 import util.Color;
 
 public class BlockArg extends Sprite {
 
 	public static const epsilon:Number = 1 / 4294967296;
+	public static const NT_NOT_NUMBER:uint = 0;
+	public static const NT_FLOAT:uint = 1;
+	public static const NT_INT:uint = 2;
 
 	public var type:String;
 	public var base:BlockShape;
 	public var argValue:* = '';
-	public var isNumber:Boolean;
+	public var numberType:uint = NT_NOT_NUMBER;
 	public var isEditable:Boolean;
 	public var field:TextField;
 	public var menuName:String;
@@ -75,7 +79,7 @@ public class BlockArg extends Sprite {
 		type = argType;
 
 		if (color == -1) { // copy for clone; omit graphics
-			if ((type == 'd') || (type == 'n')) isNumber = true;
+			if ((type == 'd') || (type == 'n')) numberType = NT_FLOAT;
 			return;
 		}
 		if (setType(type, color, menuName)) return;
@@ -93,12 +97,12 @@ public class BlockArg extends Sprite {
 			addChild(menuIcon = makeMenuIcon());
 		}
 
-		if (editable || isNumber || (type == 'm')) { // add a string field
+		if (editable || numberType || (type == 'm')) { // add a string field
 			field = makeTextField();
 			if ((type == 'm') && !editable) field.textColor = 0xFFFFFF;
 			else base.setWidthAndTopHeight(30, Block.argTextFormat.size + 5); // 14 for normal arg font
-			field.text = isNumber ? '10' : '';
-			if (isNumber) field.restrict = '0-9e.\\-'; // restrict to numeric characters
+			field.text = numberType ? '10' : '';
+			if (numberType) field.restrict = '0-9e.\\-'; // restrict to numeric characters
 			if (editable) {
 				base.setColor(0xFFFFFF); // if editable, set color to white
 				isEditable = true;
@@ -135,19 +139,19 @@ public class BlockArg extends Sprite {
 		} else if (type == 'c') {
 			base = makeBlockShape(BlockShape.RectShape, c);
 			this.menuName = 'colorPicker';
-			addEventListener(MouseEvent.MOUSE_DOWN, invokeMenu);
+			addEventListener(PointerEvent.POINTER_DOWN, invokeMenu);
 		} else if (type == 'd') {
 			base = makeBlockShape(BlockShape.NumberShape, c);
-			isNumber = true;
+			numberType = NT_FLOAT;
 			this.menuName = menuName;
-			addEventListener(MouseEvent.MOUSE_DOWN, invokeMenu);
+			addEventListener(PointerEvent.POINTER_DOWN, invokeMenu);
 		} else if (type == 'm') {
 			base = makeBlockShape(BlockShape.RectShape, c);
 			this.menuName = menuName;
-			addEventListener(MouseEvent.MOUSE_DOWN, invokeMenu);
+			addEventListener(PointerEvent.POINTER_DOWN, invokeMenu);
 		} else if (type == 'n') {
 			base = makeBlockShape(BlockShape.NumberShape, c);
-			isNumber = true;
+			numberType = NT_FLOAT;
 			argValue = 0;
 		} else if (type == 's') {
 			base = makeBlockShape(BlockShape.RectShape, c);
@@ -178,12 +182,6 @@ public class BlockArg extends Sprite {
 					// Translate menu value
 					field.text = Translator.map(value);
 				}
-			}
-
-			if (!label && (value is Number) && ((value - epsilon) is int)) {
-				// Append '.0' to numeric values that are exactly epsilon
-				// greater than an integer. See comment in textChanged().
-				field.text = (value - epsilon) + '.0';
 			}
 			textChanged(null);
 			argValue = value; // set argValue after textChanged()
@@ -232,29 +230,24 @@ public class BlockArg extends Sprite {
 
 	private function argTextInsets(type:String = ''):Array {
 		if (type == 'b') return [5, 0];
-		return isNumber ? [3, 0] : [2, -1];
+		return numberType ? [3, 0] : [2, -1];
 	}
 
 	protected var addedTextPadding:uint = 6;
 	protected var minTextWidth:uint = 14;
 	protected function textChanged(evt:*):void {
 		argValue = field.text;
-		if (isNumber) {
+		if (numberType) {
 			// optimization: coerce to a number if possible
 			var n:Number = Number(argValue);
 			if (!isNaN(n)) {
 				argValue = n;
-				if ((field.text.indexOf('.') >= 0) && (argValue is int)) {
-					// if text includes a decimal point, make value a float as a signal to
-					// primitives (e.g. random) to use real numbers rather than integers.
-					// Note: Flash does not appear to distinguish between a floating point
-					// value with no fractional part and an int of that value. We mark
-					// arguments like 1.0 by adding a tiny epsilon to force them to be a
-					// floating point number. Certain primitives, such as random, use
-					// this to decide whether to work in integers or real numbers.
-					argValue += epsilon;
+
+				// For number arguments that are integers AND do NOT contain a decimal point, mark them as an INTEGER (used by pick random)
+				numberType = (field.text.indexOf('.') == -1 && n is int) ? NT_INT : NT_FLOAT;
 				}
-			}
+			else
+				numberType = NT_FLOAT;
 		}
 		// fix layout:
 		var padding:int = (type == 'n') ? 3 : 0;
