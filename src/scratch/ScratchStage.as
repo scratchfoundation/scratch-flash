@@ -559,13 +559,10 @@ public class ScratchStage extends ScratchObj {
 		commitPenStrokes(); // force any pen strokes to be rendered so they can be sensed
 
 		var bm1:BitmapData;
-		var mask:uint = 0xF0F8F8F0;
+		var mask:uint = 0x00F8F8F0;
 		if(Scratch.app.isIn3D) {
-			var b:Rectangle;
 			SCRATCH::allow3d {
-				b = s.currentCostume().bitmap ? s.img.getChildAt(0).getBounds(s) : s.getVisibleBounds(s);
 				bm1 = Scratch.app.render3D.getOtherRenderedChildren(s, 1);
-				//mask = 0x80F8F8F0;
 			}
 		}
 		else {

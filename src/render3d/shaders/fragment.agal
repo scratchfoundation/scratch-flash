@@ -119,7 +119,7 @@ ft0.xyzw *= Tex_wh
 ft0.xy += Tex_u0v0
 
 // Get the texture pixel using ft0.xy as the coordinates
-ft1 = tex<2d,clamp,linear,nomip>(ft0, fs0)
+ft1 = tex<2d>(ft0, fs0)
 
 /*** ft1 == (r, g, b, a) ***/
 // Now de-multiply the color values that Flash pre-multiplied
