@@ -1263,7 +1263,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 			return;
 		}
 
-		setRenderView();
+		onStageResize();
 		//__context.addEventListener(Event.ACTIVATE, setupContext3D);
 		//__context.addEventListener(Event.DEACTIVATE, onContextLoss);
 
