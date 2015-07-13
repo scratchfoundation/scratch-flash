@@ -466,13 +466,21 @@ public class ScratchStage extends ScratchObj {
 			video.attachCamera(camera);
 			videoImage = new Bitmap(new BitmapData(video.width, video.height, false));
 			videoImage.alpha = videoAlpha;
+			SCRATCH::allow3d {
+				updateSpriteEffects(videoImage, {'ghost': 100 * (1 - videoAlpha)});
+			}
 			addChildAt(videoImage, getChildIndex(penLayer) + 1);
 		}
 	}
 
 	public function setVideoTransparency(transparency:Number):void {
 		videoAlpha = 1 - Math.max(0, Math.min(transparency / 100, 1));
-		if (videoImage) videoImage.alpha = videoAlpha;
+		if (videoImage) {
+			videoImage.alpha = videoAlpha;
+			SCRATCH::allow3d {
+				updateSpriteEffects(videoImage, {'ghost': transparency});
+			}
+		}
 	}
 
 	public function isVideoOn():Boolean { return videoImage != null }
@@ -546,11 +554,6 @@ public class ScratchStage extends ScratchObj {
 	SCRATCH::allow3d
 	public function updateSpriteEffects(spr:DisplayObject, effects:Object):void {
 		if(Scratch.app.isIn3D) {
-			if (videoImage && videoImage.alpha < 1) {
-				if (!effects) effects = {};
-				if (!effects.ghost) effects.ghost = BlockArg.epsilon;
-			}
-
 			Scratch.app.render3D.updateFilters(spr, effects);
 		}
 	}

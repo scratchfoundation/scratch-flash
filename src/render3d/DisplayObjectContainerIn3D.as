@@ -818,7 +818,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 				scale = 1 / mosaic;
 			}
 		}
-		else if (dispObj is Bitmap) { // Remove else to allow graphics effects on video layer
+		if (dispObj is Bitmap) {
 			isNew = !bitmapsByID[id];
 			bitmapsByID[id] = (dispObj as Bitmap).bitmapData;
 			if (unrenderedChildren[dispObj] && textureIndexByID.hasOwnProperty(id)) {
