@@ -16,7 +16,7 @@
         </dependencies>
         <compiler-options>
           <map>
-            <entry key="compiler.define" value="SCRATCH::allow3d&#9;true" />
+            <entry key="compiler.define" value="SCRATCH::allow3d&#9;true&#10;SCRATCH::revision&#9;'dev'" />
           </map>
         </compiler-options>
         <packaging-air-desktop />
@@ -38,7 +38,7 @@
         <compiler-options>
           <map>
             <entry key="compiler.debug.swf" value="false" />
-            <entry key="compiler.define" value="SCRATCH::allow3d&#9;true" />
+            <entry key="compiler.define" value="SCRATCH::allow3d&#9;true&#10;SCRATCH::revision&#9;'dev'" />
           </map>
         </compiler-options>
         <packaging-air-desktop />
