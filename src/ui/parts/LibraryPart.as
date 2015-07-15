@@ -420,7 +420,7 @@ public class LibraryPart extends UIPart {
 		addBackdrop(ScratchCostume.emptyBitmapCostume(Translator.map('backdrop1'), true));
 	}
 
-	private function addBackdrop(costumeOrList:*):void {
+	protected function addBackdrop(costumeOrList:*):void {
 		var c:ScratchCostume = costumeOrList as ScratchCostume;
 		if (c) {
 			if (!c.baseLayerData) c.prepareToSave();
