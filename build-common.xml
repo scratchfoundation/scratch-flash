@@ -13,8 +13,9 @@
         <attribute name="outputproperty"/>
         <sequential>
             <local name="git.present"/>
+            <local name="git.revision"/>
             <available file="@{repository}/.git" property="git.present"/>
-            <exec executable="git" outputproperty="git.revision" failifexecutionfails="false">
+            <exec executable="git" dir="@{repository}" outputproperty="git.revision" failifexecutionfails="false">
                 <arg line="describe --dirty --tags --always"/>
             </exec>
             <condition property="@{outputproperty}" value="${git.revision}" else="unknown">
