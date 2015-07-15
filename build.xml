@@ -13,7 +13,7 @@
 	<taskdef resource="flexTasks.tasks" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar" />
 
 	<!-- General tasks -->
-	<target name="all" depends="clean,compile-10.2,compile-11.4"/>
+	<target name="all" depends="clean,compile-10.2,compile-11.6"/>
 
 	<target name="clean">
 		<delete dir="${DEPLOY_DIR}" />
@@ -39,10 +39,10 @@
 		</mxmlc>
 	</target>
 
-	<!-- Build for Flash Player 11.4 -->
-	<target name="compile-11.4" depends="info">
+	<!-- Build for Flash Player 11.6 -->
+	<target name="compile-11.6" depends="info">
 		<mxmlc file="${SRC_DIR}/Scratch.as" output="${DEPLOY_DIR}/Scratch.swf"
-		                target-player="11.4" swf-version="17" debug="false">
+		                target-player="11.6" swf-version="19" debug="false">
 			<source-path path-element="${SRC_DIR}" />
 			<library-path file="${LIBS_DIR}/as3corelib.swc" />
 			<library-path file="${LIBS_DIR}/blooddy_crypto.swc" />
