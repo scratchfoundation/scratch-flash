@@ -89,8 +89,9 @@ public class ScriptsPane extends ScrollFrameContents {
 		if (viewedObj != null) {
 			var blockList:Array = viewedObj.allBlocks();
 			for each (var b:Block in viewedObj.scripts) {
-				b.cacheAsBitmap = true;
-				addChild(b);
+				var stack:BlockStack = new BlockStack(b);
+				stack.cacheAsBitmap = true;
+				addChild(stack);
 			}
 			for each (var c:ScratchComment in viewedObj.scriptComments) {
 				c.updateBlockRef(blockList);

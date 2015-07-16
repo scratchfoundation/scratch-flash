@@ -82,6 +82,7 @@ public class Block extends Sprite {
 	public var response:* = null;
 	public var requestLoader:URLLoader = null;
 
+	public var prevBlock:Block;
 	public var nextBlock:Block;
 	public var subStack1:Block;
 	public var subStack2:Block;
@@ -432,7 +433,7 @@ public class Block extends Sprite {
 		var b:Block = this;
 		while (b.isReporter) {
 			b.fixArgLayout();
-			if (b.parent is Block) b = Block(b.parent)
+			if (b.parent is Block) b = Block(b.parent);
 			else return;
 		}
 		if (b is Block) b.fixArgLayout();
@@ -508,7 +509,7 @@ public class Block extends Sprite {
 			}
 			if (b.nextBlock != null) {
 				b.nextBlock.x = 0;
-				b.nextBlock.y = b.base.nextBlockY();
+				b.nextBlock.y = b.y + b.base.nextBlockY();
 			}
 			b = b.nextBlock;
 		}
@@ -636,9 +637,10 @@ public class Block extends Sprite {
 	public function insertBlock(b:Block):void {
 		var oldNext:Block = nextBlock;
 
-		if (oldNext != null) removeChild(oldNext);
+		if (oldNext != null) parent.removeChild(oldNext);
 
-		addChild(b);
+		if (parent) parent.addChild(b);
+		b.prevBlock = this;
 		nextBlock = b;
 		if (oldNext != null) b.appendBlock(oldNext);
 
@@ -869,9 +871,9 @@ public class Block extends Sprite {
 
 	/* Dragging */
 
-	public function objToGrab(evt:MouseEvent):Block {
+	public function objToGrab(evt:MouseEvent):* {
 		if (isEmbeddedParameter() || isInPalette()) return duplicate(false, Scratch.app.viewedObj() is ScratchStage);
-		return this;
+		return (parent is BlockStack ? parent : this);
 	}
 
 	/* Events */
