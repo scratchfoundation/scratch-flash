@@ -396,19 +396,21 @@ public class Block extends Sprite {
 			if (b.base.canHaveSubstack1()) {
 				var substackH:int = BlockShape.EmptySubstackH;
 				if (b.subStack1) {
-					b.subStack1.fixStackLayout();
 					b.subStack1.x = b.x + BlockShape.SubstackInset;
 					b.subStack1.y = b.y + b.base.substack1y();
-					substackH = b.subStack1.getRect(b).height;
+					b.subStack1.fixStackLayout();
+					var sb1:Block = b.subStack1.bottomBlock();
+					substackH = sb1.y + sb1.height - b.subStack1.y;
 					if (b.subStack1.bottomBlock().isTerminal) substackH += BlockShape.NotchDepth;
 				}
 				b.base.setSubstack1Height(substackH);
 				substackH = BlockShape.EmptySubstackH;
 				if (b.subStack2) {
-					b.subStack2.fixStackLayout();
 					b.subStack2.x = b.x + BlockShape.SubstackInset;
 					b.subStack2.y = b.y + b.base.substack2y();
-					substackH = b.subStack2.getRect(b).height;
+					b.subStack2.fixStackLayout();
+					var sb2:Block = b.subStack2.bottomBlock();
+					substackH = sb2.y + sb2.height - b.subStack2.y;
 					if (b.subStack2.bottomBlock().isTerminal) substackH += BlockShape.NotchDepth;
 				}
 				b.base.setSubstack2Height(substackH);
@@ -547,7 +549,7 @@ public class Block extends Sprite {
 
 		if (oldNext != null) parent.removeChild(oldNext);
 
-		if (parent) parent.addChild(b);
+		parent.addChild(b);
 		b.prevBlock = this;
 		nextBlock = b;
 		if (oldNext != null) b.appendBlock(oldNext);
@@ -559,6 +561,7 @@ public class Block extends Sprite {
 		b.x = this.x;
 		b.y = this.y - b.height + BlockShape.NotchDepth;
 		parent.addChild(b);
+		(parent as BlockStack).firstBlock = b;
 		b.bottomBlock().insertBlock(this);
 	}
 
@@ -566,9 +569,10 @@ public class Block extends Sprite {
 		b.x = this.x - BlockShape.SubstackInset;
 		b.y = this.y - b.base.substack1y(); //  + BlockShape.NotchDepth;
 		parent.addChild(b);
-		parent.removeChild(this);
-		b.addChild(this);
+		if (parent is BlockStack)
+			(parent as BlockStack).firstBlock = b;
 		b.subStack1 = this;
+		this.prevBlock = b;
 		b.fixStackLayout();
 	}
 
@@ -578,6 +582,7 @@ public class Block extends Sprite {
 
 		parent.addChild(b);
 		subStack1 = b;
+		b.prevBlock = this;
 		if (old != null) b.appendBlock(old);
 		topBlock().fixStackLayout();
 	}
@@ -588,6 +593,7 @@ public class Block extends Sprite {
 
 		addChild(b);
 		subStack2 = b;
+		b.prevBlock = this;
 		if (old != null) b.appendBlock(old);
 		topBlock().fixStackLayout();
 	}
@@ -638,13 +644,13 @@ public class Block extends Sprite {
 	}
 
 	public function topBlock():Block {
-		var result:DisplayObject = this;
-		while (result.parent is Block) result = result.parent;
-		return Block(result);
+		var result:Block = this;
+		while (result.parent is Block)
+			result = result.parent as Block;
 
-//		var result:Block = this;
-//		while (result.prevBlock != null) result = result.prevBlock;
-//		return result;
+		if (result.parent is BlockStack)
+			result = (result.parent as BlockStack).firstBlock;
+		return result;
 	}
 
 	public function bottomBlock():Block {
@@ -786,6 +792,7 @@ public class Block extends Sprite {
 
 	public function objToGrab(evt:MouseEvent):* {
 		if (isEmbeddedParameter() || isInPalette()) return new BlockStack(duplicate(false, Scratch.app.viewedObj() is ScratchStage));
+		// TODO: Implement grabbing blocks from within a stack and support canceling the drag (reverting to original position, parent, etc)
 		return (parent is BlockStack ? parent : this);
 	}
 

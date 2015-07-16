@@ -5,6 +5,7 @@ package blocks {
 import flash.display.DisplayObject;
 import flash.display.DisplayObjectContainer;
 import flash.display.Sprite;
+import flash.events.Event;
 import flash.filters.GlowFilter;
 import flash.geom.Point;
 
@@ -32,6 +33,13 @@ public class BlockStack extends Sprite {
 			addChild(nextBlock);
 			nextBlock = nextBlock.nextBlock;
 		}
+
+		addEventListener(Event.REMOVED, handleRemove);
+	}
+
+	private function handleRemove(e:Event):void {
+		if (e.target == firstBlock)
+			firstBlock = null;
 	}
 
 	public function allBlocksDo(f:Function):void {

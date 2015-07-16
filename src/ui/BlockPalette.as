@@ -25,7 +25,9 @@
 // creates a copy of that block when it is dragged out of the palette.
 
 package ui {
-	import flash.geom.*;
+import blocks.BlockStack;
+
+import flash.geom.*;
 	import blocks.Block;
 	import interpreter.Interpreter;
 	import uiwidgets.*;
@@ -60,9 +62,9 @@ public class BlockPalette extends ScrollFrameContents {
 			c.deleteComment();
 			return true;
 		}
-		var b:Block = obj as Block;
-		if (b) {
-			return b.deleteStack();
+		var bs:BlockStack = obj as BlockStack;
+		if (bs) {
+			return bs.firstBlock.deleteStack();
 		}
 		return false;
 	}

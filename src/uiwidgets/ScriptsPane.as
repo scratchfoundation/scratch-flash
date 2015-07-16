@@ -244,7 +244,9 @@ public class ScriptsPane extends ScrollFrameContents {
 			}
 		}
 		if (b.op == Specs.PROCEDURE_DEF) app.updatePalette();
-		app.runtime.blockDropped(bs);
+		app.runtime.blockDropped(b);
+		if (b.parent != bs)
+			removeChild(bs);
 	}
 
 	public function findTargetsFor(b:Block):void {
@@ -345,7 +347,7 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 		var threshold:int = b.isReporter ? 15 : 30;
 		var i:int, minDist:int = 100000;
 		var nearest:Array;
-		var bTopLeft:Point = new Point(b.x, b.y);
+		var bTopLeft:Point = b.parent is BlockStack ? new Point(b.parent.x, b.parent.y) : new Point(b.x, b.y);
 		var bBottomLeft:Point = new Point(b.x, b.y + b.height - 3);
 
 		for (i = 0; i < targets.length; i++) {
