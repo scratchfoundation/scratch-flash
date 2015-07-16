@@ -1,22 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="Scratch for latest Flash Player" default="compile">
+<project name="Scratch for latest Flash Player" default="all">
 	<!-- load LOCAL configuration properties file -->
 	<property file="local.properties" />
 
 	<!-- load previously defined configuration properties file -->
 	<property file="build.properties" />
 
+	<!-- include our custom macros -->
+	<include file="build-common.xml" />
+
 	<!-- points to our flexTasks.jar we copied to the libs folder to distribute with the project -->
 	<taskdef resource="flexTasks.tasks" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar" />
 
-	<!-- delete and create the DEPLOY dir again -->
-	<target name="init">
+	<!-- General tasks -->
+	<target name="all" depends="clean,compile-10.2,compile-11.6"/>
+
+	<target name="clean">
 		<delete dir="${DEPLOY_DIR}" />
-		<mkdir dir="${DEPLOY_DIR}" />
+	</target>
+
+	<target name="info">
+		<git-commit-id outputproperty="scratchFlashCommitID"/>
+		<echo message="scratchFlashCommitID = ${scratchFlashCommitID}"/>
 	</target>
 
 	<!-- Build for Flash Player 10.2 -->
-	<target name="test_10.2" depends="init">
+	<target name="compile-10.2" depends="info">
 		<mxmlc file="${SRC_DIR}/Scratch.as" output="${DEPLOY_DIR}/ScratchFor10.2.swf"
 		                target-player="10.2" swf-version="11" debug="false">
 			<source-path path-element="${SRC_DIR}" />
@@ -26,13 +35,14 @@
 			<static-link-runtime-shared-libraries>true</static-link-runtime-shared-libraries>
 			<default-size width="800" height="600" />
 			<define name="SCRATCH::allow3d" value="false" />
+			<define name="SCRATCH::revision" value="'${scratchFlashCommitID}'"/>
 		</mxmlc>
 	</target>
 
-	<!-- Build and output Scratch.swf-->
-	<target name="compile" depends="test_10.2,init">
+	<!-- Build for Flash Player 11.6 -->
+	<target name="compile-11.6" depends="info">
 		<mxmlc file="${SRC_DIR}/Scratch.as" output="${DEPLOY_DIR}/Scratch.swf"
-		                target-player="11.4" swf-version="17" debug="false">
+		                target-player="11.6" swf-version="19" debug="false">
 			<source-path path-element="${SRC_DIR}" />
 			<library-path file="${LIBS_DIR}/as3corelib.swc" />
 			<library-path file="${LIBS_DIR}/blooddy_crypto.swc" />
@@ -40,6 +50,7 @@
 			<static-link-runtime-shared-libraries>true</static-link-runtime-shared-libraries>
 			<default-size width="800" height="600" />
 			<define name="SCRATCH::allow3d" value="true" />
+			<define name="SCRATCH::revision" value="'${scratchFlashCommitID}'"/>
 		</mxmlc>
 	</target>
 </project>
