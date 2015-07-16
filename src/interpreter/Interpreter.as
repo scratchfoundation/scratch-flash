@@ -125,7 +125,7 @@ public class Interpreter {
 		}
 		threads = newThreads;
 		if (wasRunning) {
-			if (app.editMode) b.hideRunFeedback();
+			if (app.editMode) (b.parent as BlockStack).hideRunFeedback();
 			clearWarpBlock();
 		} else {
 			var topBlock:Block = b;
@@ -143,7 +143,7 @@ public class Interpreter {
 				};
 				b.args[0] = reporter;
 			}
-			if (app.editMode) topBlock.showRunFeedback();
+			if (app.editMode) (topBlock.parent as BlockStack).showRunFeedback();
 			var t:Thread = new Thread(b, targetObj, startupDelay);
 			if (topBlock.isReporter) bubbleThread = t;
 			t.topBlock = topBlock;
@@ -154,7 +154,7 @@ public class Interpreter {
 
 	public function showAllRunFeedback():void {
 		for each (var t:Thread in threads) {
-			t.topBlock.showRunFeedback();
+			(t.topBlock.parent as BlockStack).showRunFeedback();
 		}
 	}
 
@@ -197,7 +197,7 @@ public class Interpreter {
 		}
 		if (!wasRunning) {
 			threads.push(newThread);
-			if (app.editMode) b.showRunFeedback();
+			if (app.editMode && b.parent is BlockStack) (b.parent as BlockStack).showRunFeedback();
 			app.threadStarted();
 		}
 		return newThread;
@@ -233,7 +233,7 @@ public class Interpreter {
 					if (t.block != null) newThreads.push(t);
 					else if (app.editMode) {
 						if (t == bubbleThread) bubbleThread = null;
-						t.topBlock.hideRunFeedback();
+						(t.topBlock.parent as BlockStack).hideRunFeedback();
 					}
 				}
 				threads = newThreads;

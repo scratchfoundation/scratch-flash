@@ -163,8 +163,8 @@ public class ScriptsPane extends ScrollFrameContents implements DropTarget {
 		fixCommentLayout();
 	}
 
-	public function prepareToDrag(b:Block):void {
-		findTargetsFor(b);
+	public function prepareToDrag(b:BlockStack):void {
+		findTargetsFor(b.firstBlock);
 		nearestTarget = null;
 		b.scaleX = b.scaleY = scaleX * app.scaleX;
 		addFeedbackShape();
@@ -238,12 +238,13 @@ public class ScriptsPane extends ScrollFrameContents implements DropTarget {
 		return result;
 	}
 
-	private function blockDropped(b:Block):void {
+	private function blockDropped(bs:BlockStack):void {
+		var b:Block = bs.firstBlock;
 		if (nearestTarget == null) {
-			b.cacheAsBitmap = true;
+			bs.cacheAsBitmap = true;
 		} else {
-			if(app.editMode) b.hideRunFeedback();
-			b.cacheAsBitmap = false;
+			if(app.editMode) bs.hideRunFeedback();
+			bs.cacheAsBitmap = false;
 			if (b.isReporter) {
 				Block(nearestTarget[1].parent).replaceArgWithBlock(nearestTarget[1], b, this);
 			} else {
@@ -268,8 +269,7 @@ public class ScriptsPane extends ScrollFrameContents implements DropTarget {
 			}
 		}
 		if (b.op == Specs.PROCEDURE_DEF) app.updatePalette();
-		app.runtime.blockDropped(b);
-		draggingDone();
+		app.runtime.blockDropped(bs);
 	}
 
 	protected function findTargetsFor(b:Block):void {
@@ -278,9 +278,9 @@ public class ScriptsPane extends ScrollFrameContents implements DropTarget {
 		var bCanWrap:Boolean = b.base.canHaveSubstack1() && !b.subStack1; // empty C or E block
 		var p:Point;
 		for (var i:int = 0; i < numChildren; i++) {
-			var child:DisplayObject = getChildAt(i);
-			if (child is Block) {
-				var target:Block = Block(child);
+			var child:BlockStack = getChildAt(i) as BlockStack;
+			if (child) {
+				var target:Block = child.firstBlock;
 				if (b.isReporter) {
 					if (reporterAllowedInStack(b, target)) findReporterTargetsIn(target);
 				} else {
@@ -423,15 +423,15 @@ public class ScriptsPane extends ScrollFrameContents implements DropTarget {
 			return true;
 		}
 
-		var b:Block = obj as Block;
+		var bs:BlockStack = obj as BlockStack;
 		var c:ScratchComment = obj as ScratchComment;
-		if (!b && !c) return false;
+		if (!bs && !c) return false;
 
 		obj.x = Math.max(5, localP.x);
 		obj.y = Math.max(5, localP.y);
 		obj.scaleX = obj.scaleY = 1;
 		addChild(obj);
-		if (b) blockDropped(b);
+		if (bs) blockDropped(bs);
 		if (c) {
 			c.blockRef = blockAtPoint(localP); // link to the block under comment top-left corner, or unlink if none
 		}
