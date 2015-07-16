@@ -137,10 +137,10 @@ public class GestureHandler {
 			scrollTarget.contents.y = Math.min(0, Math.max(-scrollTarget.maxScrollV(), scrollTarget.contents.y + scrollYVelocity));
 			scrollTarget.constrainScroll();
 			scrollTarget.updateScrollbars();
-			var b:Block = carriedObj as Block;
-			if (b) {
-				app.scriptsPane.findTargetsFor(b);
-				app.scriptsPane.updateFeedbackFor(b);
+			var bs:BlockStack = carriedObj as BlockStack;
+			if (bs) {
+				app.scriptsPane.findTargetsFor(bs.firstBlock);
+				app.scriptsPane.updateFeedbackFor(bs.firstBlock);
 			}
 		}
 	}
@@ -238,8 +238,8 @@ public class GestureHandler {
 			if (mouseTarget != null) handleDrag(evt);
 			return;
 		}
-		if ((gesture == "drag") && (carriedObj is Block)) {
-			app.scriptsPane.updateFeedbackFor(Block(carriedObj));
+		if ((gesture == "drag") && (carriedObj is BlockStack)) {
+			app.scriptsPane.updateFeedbackFor((carriedObj as BlockStack).firstBlock);
 		}
 		if ((gesture == "drag") && (carriedObj is ScratchSprite)) {
 			var stageP:Point = app.stagePane.globalToLocal(carriedObj.localToGlobal(new Point(0, 0)));
@@ -407,8 +407,8 @@ public class GestureHandler {
 		}
 		grab(mouseTarget, evt);
 		gesture = 'drag';
-		if (carriedObj is Block) {
-			app.scriptsPane.updateFeedbackFor(Block(carriedObj));
+		if (carriedObj is BlockStack) {
+			app.scriptsPane.updateFeedbackFor((carriedObj as BlockStack).firstBlock);
 		}
 	}
 
@@ -473,12 +473,19 @@ public class GestureHandler {
 		originalPosition = new Point(obj.x, obj.y);
 		originalScale = obj.scaleX;
 
-		if (obj is Block) {
-			var b:Block = Block(obj);
-			b.saveOriginalState();
+		if (obj is BlockStack) {
+			var bs:BlockStack = obj as BlockStack;
+			var b:Block = (obj as BlockStack).firstBlock;
+			bs.saveOriginalState();
+//			if (b.parent is Block) Block(b.parent).removeBlock(b);
+			if (bs.parent != null) bs.parent.removeChild(bs);
+			app.scriptsPane.prepareToDrag(bs);
+		} else if (obj is Block) {
+			var b:Block = obj as Block;
+			//b.saveOriginalState();
 			if (b.parent is Block) Block(b.parent).removeBlock(b);
 			if (b.parent != null) b.parent.removeChild(b);
-			app.scriptsPane.prepareToDrag(b);
+			//app.scriptsPane.prepareToDrag(b);
 		} else if (obj is ScratchComment) {
 			var c:ScratchComment = ScratchComment(obj);
 			if (c.parent != null) c.parent.removeChild(c);
@@ -543,7 +550,7 @@ public class GestureHandler {
 
 		if (!dropHandled(carriedObj, evt)) {
 			if (carriedObj is Block) {
-				Block(carriedObj).restoreOriginalState();
+				//Block(carriedObj).restoreOriginalState();
 			} else if (originalParent) { // put carriedObj back where it came from
 				carriedObj.x = originalPosition.x;
 				carriedObj.y = originalPosition.y;

@@ -97,15 +97,6 @@ public class Block extends Sprite {
 	private var indentTop:int = 2, indentBottom:int = 3;
 	private var indentLeft:int = 4, indentRight:int = 3;
 
-	private static var ROLE_NONE:int = 0;
-	private static var ROLE_ABSOLUTE:int = 1;
-	private static var ROLE_EMBEDDED:int = 2;
-	private static var ROLE_NEXT:int = 3;
-	private static var ROLE_SUBSTACK1:int = 4;
-	private static var ROLE_SUBSTACK2:int = 5;
-
-	private var originalParent:DisplayObjectContainer, originalRole:int, originalIndex:int, originalPosition:Point;
-
 	public function Block(spec:String, type:String = " ", color:int = 0xD00000, op:* = 0, defaultArgs:Array = null) {
 		this.spec = Translator.map(spec);
 		this.type = type;
@@ -314,89 +305,6 @@ public class Block extends Sprite {
 		if (nextBlock != null) nextBlock.allBlocksDo(f);
 	}
 
-	public function showRunFeedback():void {
-		if (filters && filters.length > 0) {
-			for each (var f:* in filters) {
-				if (f is GlowFilter) return;
-			}
-		}
-		filters = runFeedbackFilters().concat(filters || []);
-	}
-
-	public function hideRunFeedback():void {
-		if (filters && filters.length > 0) {
-			var newFilters:Array = [];
-			for each (var f:* in filters) {
-				if (!(f is GlowFilter)) newFilters.push(f);
-			}
-			filters = newFilters;
-		}
-	}
-
-	private function runFeedbackFilters():Array {
-		// filters for showing that a stack is running
-		var f:GlowFilter = new GlowFilter(0xfeffa0);
-		f.strength = 2;
-		f.blurX = f.blurY = 12;
-		f.quality = 3;
-		return [f];
-	}
-
-	public function saveOriginalState():void {
-		originalParent = parent;
-		if (parent) {
-			var b:Block = parent as Block;
-			if (b == null) {
-				originalRole = ROLE_ABSOLUTE;
-			} else if (isReporter) {
-				originalRole = ROLE_EMBEDDED;
-				originalIndex = b.args.indexOf(this);
-			} else if (b.nextBlock == this) {
-				originalRole = ROLE_NEXT;
-			} else if (b.subStack1 == this) {
-				originalRole = ROLE_SUBSTACK1;
-			} else if (b.subStack2 == this) {
-				originalRole = ROLE_SUBSTACK2;
-			}
-			originalPosition = localToGlobal(new Point(0, 0));
-		} else {
-			originalRole = ROLE_NONE;
-			originalPosition = null;
-		}
-	}
-
-	public function restoreOriginalState():void {
-		var b:Block = originalParent as Block;
-		scaleX = scaleY = 1;
-		switch (originalRole) {
-		case ROLE_NONE:
-			if (parent) parent.removeChild(this);
-			break;
-		case ROLE_ABSOLUTE:
-			originalParent.addChild(this);
-			var p:Point = originalParent.globalToLocal(originalPosition);
-			x = p.x;
-			y = p.y;
-			break;
-		case ROLE_EMBEDDED:
-			b.replaceArgWithBlock(b.args[originalIndex], this, Scratch.app.scriptsPane);
-			break;
-		case ROLE_NEXT:
-			b.insertBlock(this);
-			break;
-		case ROLE_SUBSTACK1:
-			b.insertBlockSub1(this);
-			break;
-		case ROLE_SUBSTACK2:
-			b.insertBlockSub2(this);
-			break;
-		}
-	}
-
-	public function originalPositionIn(p:DisplayObject):Point {
-		return originalPosition && p.globalToLocal(originalPosition);
-	}
-
 	private function setDefaultArgs(defaults:Array):void {
 		collectArgs();
 		for (var i:int = 0; i < Math.min(args.length, defaults.length); i++) {
@@ -489,8 +397,8 @@ public class Block extends Sprite {
 				var substackH:int = BlockShape.EmptySubstackH;
 				if (b.subStack1) {
 					b.subStack1.fixStackLayout();
-					b.subStack1.x = BlockShape.SubstackInset;
-					b.subStack1.y = b.base.substack1y();
+					b.subStack1.x = b.x + BlockShape.SubstackInset;
+					b.subStack1.y = b.y + b.base.substack1y();
 					substackH = b.subStack1.getRect(b).height;
 					if (b.subStack1.bottomBlock().isTerminal) substackH += BlockShape.NotchDepth;
 				}
@@ -498,8 +406,8 @@ public class Block extends Sprite {
 				substackH = BlockShape.EmptySubstackH;
 				if (b.subStack2) {
 					b.subStack2.fixStackLayout();
-					b.subStack2.x = BlockShape.SubstackInset;
-					b.subStack2.y = b.base.substack2y();
+					b.subStack2.x = b.x + BlockShape.SubstackInset;
+					b.subStack2.y = b.y + b.base.substack2y();
 					substackH = b.subStack2.getRect(b).height;
 					if (b.subStack2.bottomBlock().isTerminal) substackH += BlockShape.NotchDepth;
 				}
@@ -508,7 +416,7 @@ public class Block extends Sprite {
 				b.fixElseLabel();
 			}
 			if (b.nextBlock != null) {
-				b.nextBlock.x = 0;
+				b.nextBlock.x = b.x;
 				b.nextBlock.y = b.y + b.base.nextBlockY();
 			}
 			b = b.nextBlock;
@@ -668,7 +576,7 @@ public class Block extends Sprite {
 		var old:Block = subStack1;
 		if (old != null) old.parent.removeChild(old);
 
-		addChild(b);
+		parent.addChild(b);
 		subStack1 = b;
 		if (old != null) b.appendBlock(old);
 		topBlock().fixStackLayout();
@@ -710,8 +618,9 @@ public class Block extends Sprite {
 			insertBlockSub1(b);
 		} else {
 			var bottom:Block = bottomBlock();
-			bottom.addChild(b);
+			parent.addChild(b);
 			bottom.nextBlock = b;
+			b.prevBlock = bottom;
 		}
 	}
 
@@ -732,11 +641,15 @@ public class Block extends Sprite {
 		var result:DisplayObject = this;
 		while (result.parent is Block) result = result.parent;
 		return Block(result);
+
+//		var result:Block = this;
+//		while (result.prevBlock != null) result = result.prevBlock;
+//		return result;
 	}
 
 	public function bottomBlock():Block {
 		var result:Block = this;
-		while (result.nextBlock!= null) result = result.nextBlock;
+		while (result.nextBlock != null) result = result.nextBlock;
 		return result;
 	}
 
@@ -872,7 +785,7 @@ public class Block extends Sprite {
 	/* Dragging */
 
 	public function objToGrab(evt:MouseEvent):* {
-		if (isEmbeddedParameter() || isInPalette()) return duplicate(false, Scratch.app.viewedObj() is ScratchStage);
+		if (isEmbeddedParameter() || isInPalette()) return new BlockStack(duplicate(false, Scratch.app.viewedObj() is ScratchStage));
 		return (parent is BlockStack ? parent : this);
 	}
 

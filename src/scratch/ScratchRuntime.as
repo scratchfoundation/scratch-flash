@@ -21,6 +21,8 @@
 // John Maloney, September 2010
 
 package scratch {
+import blocks.BlockStack;
+
 import flash.display.*;
 import flash.events.*;
 import flash.geom.Rectangle;
@@ -335,7 +337,7 @@ public class ScratchRuntime {
 		triggeredHats = activeHats;
 	}
 
-	public function blockDropped(stack:Block):void {
+	public function blockDropped(stack:BlockStack):void {
 		// Turn on video the first time a video sensor reporter or hat block is added.
 		stack.allBlocksDo(function(b:Block):void {
 			var op:String = b.op;
@@ -346,7 +348,7 @@ public class ScratchRuntime {
 
 			SCRATCH::allow3d {
 				// Should we go 3D?
-				if(isGraphicEffectBlock(b))
+				if(!app.isIn3D && isGraphicEffectBlock(b))
 					app.go3D();
 			}
 		});
@@ -738,10 +740,8 @@ public class ScratchRuntime {
 
 	public function clearRunFeedback():void {
 		if(app.editMode) {
-			for each (var stack:Block in allStacks()) {
-				stack.allBlocksDo(function(b:Block):void {
-					b.hideRunFeedback();
-				});
+			for each (var stack:BlockStack in allStacks()) {
+				stack.hideRunFeedback();
 			}
 		}
 		app.updatePalette();
@@ -883,7 +883,7 @@ public class ScratchRuntime {
 		// return an array containing all stacks in all objects
 		var result:Array = [];
 		allStacksAndOwnersDo(
-				function (stack:Block, target:ScratchObj):void { result.push(stack) });
+				function (stack:BlockStack, target:ScratchObj):void { result.push(stack) });
 		return result;
 	}
 
