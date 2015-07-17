@@ -42,6 +42,10 @@ public class BlockStack extends Sprite {
 			firstBlock = null;
 	}
 
+	public function objToGrab(e:Event):* {
+		return this;
+	}
+
 	public function allBlocksDo(f:Function):void {
 		firstBlock.allBlocksDo(f);
 	}

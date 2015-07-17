@@ -391,7 +391,9 @@ public class Block extends Sprite {
 	}
 
 	public function fixStackLayout():void {
+		trace('fixStackLayout:');
 		var b:Block = this;
+		trace('    '+b.op+' @ ('+b.x+', '+b.y+')');
 		while (b != null) {
 			if (b.base.canHaveSubstack1()) {
 				var substackH:int = BlockShape.EmptySubstackH;
@@ -420,6 +422,7 @@ public class Block extends Sprite {
 			if (b.nextBlock != null) {
 				b.nextBlock.x = b.x;
 				b.nextBlock.y = b.y + b.base.nextBlockY();
+				trace('    '+b.nextBlock.op+' @ ('+b.nextBlock.x+', '+b.nextBlock.y+')');
 			}
 			b = b.nextBlock;
 		}
@@ -549,7 +552,7 @@ public class Block extends Sprite {
 
 		if (oldNext != null) parent.removeChild(oldNext);
 
-		parent.addChild(b);
+		if (parent) parent.addChild(b);
 		b.prevBlock = this;
 		nextBlock = b;
 		if (oldNext != null) b.appendBlock(oldNext);
@@ -732,7 +735,7 @@ public class Block extends Sprite {
 	public function duplicateStack(deltaX:Number, deltaY:Number):void {
 		if (isProcDef() || op == 'proc_declaration') return; // don't duplicate procedure definition
 		var forStage:Boolean = Scratch.app.viewedObj() && Scratch.app.viewedObj().isStage;
-		var newStack:Block = BlockIO.stringToStack(BlockIO.stackToString(this), forStage);
+		var newStack:BlockStack = new BlockStack(BlockIO.stringToStack(BlockIO.stackToString(this), forStage));
 		var p:Point = localToGlobal(new Point(0, 0));
 		newStack.x = p.x + deltaX;
 		newStack.y = p.y + deltaY;

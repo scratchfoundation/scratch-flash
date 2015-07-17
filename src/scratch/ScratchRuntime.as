@@ -740,8 +740,8 @@ public class ScratchRuntime {
 
 	public function clearRunFeedback():void {
 		if(app.editMode) {
-			for each (var stack:BlockStack in allStacks()) {
-				stack.hideRunFeedback();
+			for each (var stack:Block in allStacks()) {
+				(stack.parent as BlockStack).hideRunFeedback();
 			}
 		}
 		app.updatePalette();
@@ -883,7 +883,7 @@ public class ScratchRuntime {
 		// return an array containing all stacks in all objects
 		var result:Array = [];
 		allStacksAndOwnersDo(
-				function (stack:BlockStack, target:ScratchObj):void { result.push(stack) });
+				function (stack:Block, target:ScratchObj):void { result.push(stack) });
 		return result;
 	}
 

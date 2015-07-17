@@ -111,7 +111,7 @@ public class ScriptsPane extends ScrollFrameContents {
 		viewedObj.scriptComments.splice(0); // remove all
 		for (var i:int = 0; i < numChildren; i++) {
 			var o:* = getChildAt(i);
-			if (o is Block) viewedObj.scripts.push(o);
+			if (o is BlockStack) viewedObj.scripts.push(o.firstBlock);
 			if (o is ScratchComment) viewedObj.scriptComments.push(o);
 		}
 		var blockList:Array = viewedObj.allBlocks();
