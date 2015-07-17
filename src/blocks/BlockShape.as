@@ -178,6 +178,40 @@ public class BlockShape extends Shape {
 		return [f];
 	}
 
+	public function showHighlightFilters():void {
+		if (filters && filters.length > 0) {
+			for each (var f:* in filters) {
+				if (f is GlowFilter) return;
+			}
+		}
+		filters = highlightFilters().concat(filters || []);
+	}
+
+	public function hideHighlightFilters():void {
+		if (filters && filters.length > 0) {
+			var newFilters:Array = [];
+			for each (var f:* in filters) {
+				if (!(f is GlowFilter)) newFilters.push(f);
+			}
+			filters = newFilters;
+		}
+	}
+
+	private function highlightFilters():Array {
+		// use inner and outer - looks a bit better, than just either one, I think...?
+		var f:GlowFilter = new GlowFilter(0xaeff00);
+		f.strength = 3;
+		f.blurX = f.blurY = 4;
+		f.quality = 3;
+		f.inner = true;
+		var g:GlowFilter = new GlowFilter(0xaeff00);
+		g.strength = 3;
+		g.blurX = g.blurY = 4;
+		g.quality = 3;
+		g.inner = false;
+		return [f,g];
+	}
+
 	private function setShape(shape:int):void {
 		this.shape = shape;
 		switch(shape) {

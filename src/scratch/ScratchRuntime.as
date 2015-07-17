@@ -380,6 +380,7 @@ public class ScratchRuntime {
 			installProjectFromFile(fileName, data);
 		}
 		stopAll();
+		app.highlightSprites([]); // ensure highlight list is empty
 		var filter1:FileFilter = new FileFilter('Scratch Project', '*.sb;*.sb2');
 		Scratch.loadSingleFile(fileLoadHandler, filter1)
 	}
@@ -396,6 +397,7 @@ public class ScratchRuntime {
 	public function installProjectFromData(data:ByteArray, saveForRevert:Boolean = true):void {
 		var newProject:ScratchStage;
 		stopAll();
+		app.highlightSprites([]); // ensure highlight list is empty
 		data.position = 0;
 		if (data.length < 8 || data.readUTFBytes(8) != 'ScratchV') {
 			data.position = 0;
@@ -436,7 +438,10 @@ public class ScratchRuntime {
 	}
 
 	protected function installProject(project:ScratchStage):void {
-		if (app.stagePane != null) stopAll();
+		if (app.stagePane != null) {
+			stopAll();
+			app.highlightSprites([]); // ensure highlight list is empty
+		}
 		if (app.scriptsPane) app.scriptsPane.viewScriptsFor(null);
 
 		SCRATCH::allow3d { if(app.isIn3D) app.render3D.setStage(project, project.penLayer); }
@@ -740,49 +745,81 @@ public class ScratchRuntime {
 		app.updatePalette();
 	}
 
-	public function allSendersOfBroadcast(msg:String):Array {
-		// Return an array of all Scratch objects that broadcast the given message.
-		var result:Array = [];
+	public function showBlockHighlights(blocklist:Array,clearOld:Boolean=true):void {
+		if (clearOld) clearBlockHighlights();
+		for each( var b:Block in blocklist) b.showBlockHighlight();
+	}
+
+	public function clearBlockHighlights():void {
 		for each (var o:ScratchObj in app.stagePane.allObjects()) {
-			if (sendsBroadcast(o, msg)) result.push(o);
+			if (!o.isClone) {
+				for each (var stack:Block in o.scripts) {
+					stack.allBlocksDo(function (b:Block):void {
+						b.hideBlockHighlight();
+					});
+				}
+			}
 		}
-		return result;
+	}
+
+	public function allSendersOfBroadcast(msg:String):Array {
+		// Return an array of all Scratch objects that broadcast the given message,.
+		// and an array of blocks that broadcast it.
+		var sprites:Array = [];
+		var blocklist:Array = [];
+		for each (var o:ScratchObj in app.stagePane.allObjects()) {
+			if (!o.isClone) {
+				var blks:Array = allBroadcastersInObject(o, msg);
+				if (blks.length>0) {
+					sprites.push(o);
+					for each(var b:Block in blks) blocklist.push(b);
+				}
+			}
+		}
+		return [sprites,blocklist];
 	}
 
 	public function allReceiversOfBroadcast(msg:String):Array {
-		// Return an array of all Scratch objects that receive the given message.
-		var result:Array = [];
+		// Return an array of all Scratch objects that receive the given message,
+		// and an array of blocks that receive it.
+		var sprites:Array = [];
+		var blocklist:Array = [];
 		for each (var o:ScratchObj in app.stagePane.allObjects()) {
-			if (receivesBroadcast(o, msg)) result.push(o);
+			if (!o.isClone) {
+				var blks:Array = allReceiversInObject(o, msg);
+				if (blks.length>0) {
+					sprites.push(o);
+					for each(var b:Block in blks) blocklist.push(b);
+				}
+			}
+		}
+		return [sprites,blocklist];
+	}
+
+	private function allBroadcastersInObject(obj:ScratchObj, msg:String):Array {
+		var result:Array = [];
+		msg = msg.toLowerCase();
+		for each (var stack:Block in obj.scripts) {
+			stack.allBlocksDo(function (b:Block):void {
+				if ((b.op == 'broadcast:') || (b.op == 'doBroadcastAndWait')) {
+					if (b.args[0] is BlockArg && b.args[0].argValue.toLowerCase() == msg) result.push(b);
+				}
+			});
 		}
 		return result;
 	}
 
-	private function sendsBroadcast(obj:ScratchObj, msg:String):Boolean {
-		for each (var stack:Block in obj.scripts) {
-			var found:Boolean;
-			stack.allBlocksDo(function (b:Block):void {
-				if ((b.op == 'broadcast:') || (b.op == 'doBroadcastAndWait')) {
-					if (b.args[0].argValue == msg) found = true;
-				}
-			});
-			if (found) return true;
-		}
-		return false;
-	}
-
-	private function receivesBroadcast(obj:ScratchObj, msg:String):Boolean {
+	private function allReceiversInObject(obj:ScratchObj, msg:String):Array {
+		var result:Array = [];
 		msg = msg.toLowerCase();
 		for each (var stack:Block in obj.scripts) {
-			var found:Boolean;
 			stack.allBlocksDo(function (b:Block):void {
 				if (b.op == 'whenIReceive') {
-					if (b.args[0].argValue.toLowerCase() == msg) found = true;
+					if (b.args[0] is BlockArg && b.args[0].argValue.toLowerCase() == msg) result.push(b);
 				}
 			});
-			if (found) return true;
 		}
-		return false;
+		return result;
 	}
 
 	public function allUsesOfBackdrop(backdropName:String):Array {
@@ -823,15 +860,15 @@ public class ScratchRuntime {
 		return result;
 	}
 
-	public function allUsesOfVariable(varName:String, owner:ScratchObj):Array {
+	public function allUsesOfVariable(varName:String, owner:ScratchObj, beyondStage:Boolean=true):Array {
 		var variableBlocks:Array = [Specs.SET_VAR, Specs.CHANGE_VAR, "showVariable:", "hideVariable:"];
 		var result:Array = [];
-		var stacks:Array = owner.isStage ? allStacks() : owner.scripts;
+		var stacks:Array = (owner.isStage && beyondStage) ? allStacks() : owner.scripts;
 		for each (var stack:Block in stacks) {
 			// for each block in stack
 			stack.allBlocksDo(function (b:Block):void {
 				if (b.op == Specs.GET_VAR && b.spec == varName) result.push(b);
-				if (variableBlocks.indexOf(b.op) != -1 && b.args[0].argValue == varName) result.push(b);
+				if (variableBlocks.indexOf(b.op) != -1 && b.args[0] is BlockArg && b.args[0].argValue == varName) result.push(b);
 			});
 		}
 		return result;

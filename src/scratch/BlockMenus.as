@@ -527,12 +527,21 @@ public class BlockMenus implements DragClient {
 		showMenu(m);
 	}
 
+	// This is generic - it's used by all 'clear highlights' items in all menus
+	private function clearHighlights():void {
+		app.runtime.clearBlockHighlights();
+		app.highlightSprites([]);
+	}
+
 	// ***** Procedure menu (for procedure definition hats and call blocks) *****
 
 	private function procMenu(evt:MouseEvent):void {
 		var m:Menu = new Menu(null, 'proc');
 		addGenericBlockItems(m);
 		m.addItem('edit', editProcSpec);
+		m.addLine();
+		m.addItem('highlight callers', showCalls);
+		m.addItem('clear highlights', clearHighlights);
 		showMenu(m);
 	}
 
@@ -578,6 +587,23 @@ public class BlockMenus implements DragClient {
 		app.updatePalette();
 	}
 
+	private function showCalls():void {
+		var o:ScratchObj = app.viewedObj();
+		if (!o) return; // can this ever happen?
+		if (block.op == Specs.CALL) {
+			var def:Block = o.lookupProcedure(block.spec);
+			if (!def) return;
+			block = def;
+		}
+		var blks:Array = app.runtime.allCallsOf(block.spec, o);
+		if (blks!=[]) {
+			app.highlightSprites([o]);
+			app.runtime.showBlockHighlights(blks);
+		} else {
+			clearHighlights();
+		}
+	}
+
 	// ***** Variable and List menus *****
 
 	private function listMenu(evt:MouseEvent):void {
@@ -609,8 +635,16 @@ public class BlockMenus implements DragClient {
 			m.addItem('rename variable', renameVar);
 			m.addItem('delete variable', deleteVarOrList);
 			addGenericBlockItems(m);
+			m.addItem('highlight variable', highlightVar);
+			m.addItem('clear highlights', clearHighlights);
+			m.addLine();
 		} else {
-			if (isGetter) addGenericBlockItems(m);
+			if (isGetter) {
+				addGenericBlockItems(m);
+				m.addItem('highlight variable', highlightVar);
+				m.addItem('clear highlights', clearHighlights);
+				m.addLine();
+			}
 			var myName:String = blockVarOrListName();
 			var vName:String;
 			for each (vName in app.stageObj().varNames()) {
@@ -687,6 +721,36 @@ public class BlockMenus implements DragClient {
 			block.fixExpressionLayout();
 		}
 		Scratch.app.setSaveNeeded();
+	}
+
+	private function highlightVar():void {
+		var myName:String = blockVarOrListName();
+		var vo:ScratchObj = app.viewedObj();
+		if (!vo) return;
+		var sprites:Array = [];
+		var blocklist:Array = [];
+		if (vo.isStage || !vo.ownsVar(myName)) {
+			var b:Block;
+			var blks:Array = [];
+			for each (var o:ScratchObj in app.stagePane.allObjects()) {
+				if (!o.isClone) {
+					blks = app.runtime.allUsesOfVariable(myName,o,false);
+					if (blks.length>0) {
+						sprites.push(o);
+						for each (b in blks) blocklist.push(b);
+					}
+				}
+			}
+		} else {
+			sprites = [vo];
+			blocklist = app.runtime.allUsesOfVariable(myName,vo);
+		}
+		if (blocklist.length>0) {
+			app.highlightSprites(sprites);
+			app.runtime.showBlockHighlights(blocklist);
+		} else {
+			clearHighlights();
+		}
 	}
 
 	// ***** Color picker support *****
@@ -773,18 +837,29 @@ public class BlockMenus implements DragClient {
 		function showBroadcasts(selection:*):void {
 			if (selection is Function) { selection(); return; }
 			var msg:String = block.args[0].argValue;
-			var sprites:Array = [];
-			if (selection == 'show senders') sprites = app.runtime.allSendersOfBroadcast(msg);
-			if (selection == 'show receivers') sprites = app.runtime.allReceiversOfBroadcast(msg);
-			if (selection == 'clear senders/receivers') sprites = [];
+			var result:Array = [];
+			if (selection == 'highlight senders') {
+				result = app.runtime.allSendersOfBroadcast(msg);
+			} else if (selection == 'highlight receivers') {
+				result = app.runtime.allReceiversOfBroadcast(msg);
+			} else if (selection == 'clear highlights') {
+				result = [[],[]];
+			}
+			var sprites:Array = result[0];
+			var blocklist:Array = result[1];
 			app.highlightSprites(sprites);
+			if (!blocklist) {
+				app.runtime.clearBlockHighlights();
+			} else {
+				app.runtime.showBlockHighlights(blocklist);
+			}
 		}
 		var m:Menu = new Menu(showBroadcasts, 'broadcastInfo');
 		addGenericBlockItems(m);
 		if (!isInPalette(block)) {
-			m.addItem('show senders');
-			m.addItem('show receivers');
-			m.addItem('clear senders/receivers');
+			m.addItem('highlight senders');
+			m.addItem('highlight receivers');
+			m.addItem('clear highlights');
 		}
 		showMenu(m);
 	}

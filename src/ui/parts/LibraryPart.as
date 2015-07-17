@@ -64,6 +64,7 @@ public class LibraryPart extends UIPart {
 
 	private var videoLabel:TextField;
 	private var videoButton:IconButton;
+	private var highlightedList:Array=[];
 
 	public function LibraryPart(app:Scratch) {
 		this.app = app;
@@ -175,6 +176,7 @@ public class LibraryPart extends UIPart {
 		for each (var tn:SpriteThumbnail in allThumbnails()) {
 			tn.showHighlight(highlightList.indexOf(tn.targetObj) >= 0);
 		}
+		highlightedList = highlightList;  // keep track of list for refresh later on
 	}
 
 	public function refresh():void {
@@ -208,6 +210,7 @@ public class LibraryPart extends UIPart {
 			}
 		}
 		spritesPane.updateSize();
+		highlight(highlightedList);  // need to redo the highlights for some reason
 		scrollToSelectedSprite();
 		step();
 	}
