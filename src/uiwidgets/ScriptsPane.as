@@ -78,6 +78,8 @@ public class ScriptsPane extends ScrollFrameContents {
 	}
 
 	public function viewScriptsFor(obj:ScratchObj):void {
+		if (obj == viewedObj) return;
+
 		// View the blocks for the given object.
 		saveScripts(false);
 		while (numChildren > 0) {
@@ -89,7 +91,10 @@ public class ScriptsPane extends ScrollFrameContents {
 		if (viewedObj != null) {
 			var blockList:Array = viewedObj.allBlocks();
 			for each (var b:Block in viewedObj.scripts) {
-				var stack:BlockStack = new BlockStack(b);
+				var stack:BlockStack = b.parent as BlockStack;
+				if (!stack)
+					stack =  new BlockStack(b);
+				trace('stack @ '+stack.x+','+stack.y);
 				stack.cacheAsBitmap = true;
 				addChild(stack);
 			}

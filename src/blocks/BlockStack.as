@@ -25,16 +25,37 @@ public class BlockStack extends Sprite {
 		x = b.x;
 		y = b.y;
 		b.x = b.y = 0;
-		addChild(b);
-
-		firstBlock = b;
-		var nextBlock:Block = b.nextBlock;
-		while (nextBlock) {
-			addChild(nextBlock);
-			nextBlock = nextBlock.nextBlock;
+		if (b.prevBlock) {
+			b.prevBlock.nextBlock = null;
+			b.prevBlock = null;
 		}
+		firstBlock = b;
+		addBlocks(firstBlock);
 
 		addEventListener(Event.REMOVED, handleRemove);
+	}
+
+	public function setFirstBlock(b:Block):void {
+		if (firstBlock)
+			while (numChildren) removeChildAt(0);
+
+		firstBlock = b;
+		if (b.parent == this && (b.x || b.y)) {
+			x += b.x;
+			y += b.y;
+			b.x = 0;
+			b.y = 0;
+		}
+		addBlocks(b);
+	}
+
+	private function addBlocks(b:Block):void {
+		while (b) {
+			addChild(b);
+			addBlocks(b.subStack1);
+			addBlocks(b.subStack2);
+			b = b.nextBlock;
+		}
 	}
 
 	private function handleRemove(e:Event):void {

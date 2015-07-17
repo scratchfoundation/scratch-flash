@@ -550,7 +550,7 @@ public class Block extends Sprite {
 	public function insertBlock(b:Block):void {
 		var oldNext:Block = nextBlock;
 
-		if (oldNext != null) parent.removeChild(oldNext);
+		if (oldNext != null && oldNext.parent == parent) parent.removeChild(oldNext);
 
 		if (parent) parent.addChild(b);
 		b.prevBlock = this;
@@ -564,7 +564,7 @@ public class Block extends Sprite {
 		b.x = this.x;
 		b.y = this.y - b.height + BlockShape.NotchDepth;
 		parent.addChild(b);
-		(parent as BlockStack).firstBlock = b;
+		(parent as BlockStack).setFirstBlock(b);
 		b.bottomBlock().insertBlock(this);
 	}
 
@@ -573,7 +573,7 @@ public class Block extends Sprite {
 		b.y = this.y - b.base.substack1y(); //  + BlockShape.NotchDepth;
 		parent.addChild(b);
 		if (parent is BlockStack)
-			(parent as BlockStack).firstBlock = b;
+			(parent as BlockStack).setFirstBlock(b);
 		b.subStack1 = this;
 		this.prevBlock = b;
 		b.fixStackLayout();
@@ -796,7 +796,8 @@ public class Block extends Sprite {
 	public function objToGrab(evt:MouseEvent):* {
 		if (isEmbeddedParameter() || isInPalette()) return new BlockStack(duplicate(false, Scratch.app.viewedObj() is ScratchStage));
 		// TODO: Implement grabbing blocks from within a stack and support canceling the drag (reverting to original position, parent, etc)
-		return (parent is BlockStack ? parent : this);
+		 if (parent is BlockStack && (parent as BlockStack).firstBlock == this) return parent;
+		return this;
 	}
 
 	/* Events */

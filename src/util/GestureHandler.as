@@ -473,19 +473,17 @@ public class GestureHandler {
 		originalPosition = new Point(obj.x, obj.y);
 		originalScale = obj.scaleX;
 
+		if (obj is Block) {
+			obj = new BlockStack(obj);
+			originalParent.addChild(obj);
+		}
+
 		if (obj is BlockStack) {
 			var bs:BlockStack = obj as BlockStack;
 			var b:Block = (obj as BlockStack).firstBlock;
 			bs.saveOriginalState();
-//			if (b.parent is Block) Block(b.parent).removeBlock(b);
 			if (bs.parent != null) bs.parent.removeChild(bs);
 			app.scriptsPane.prepareToDrag(bs);
-		} else if (obj is Block) {
-			var b:Block = obj as Block;
-			//b.saveOriginalState();
-			if (b.parent is Block) Block(b.parent).removeBlock(b);
-			if (b.parent != null) b.parent.removeChild(b);
-			//app.scriptsPane.prepareToDrag(b);
 		} else if (obj is ScratchComment) {
 			var c:ScratchComment = ScratchComment(obj);
 			if (c.parent != null) c.parent.removeChild(c);
