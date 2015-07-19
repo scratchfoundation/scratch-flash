@@ -473,8 +473,8 @@ public class GestureHandler {
 		originalPosition = new Point(obj.x, obj.y);
 		originalScale = obj.scaleX;
 
-		if (obj is Block) {
-			var b:Block = obj as Block;
+		var b:Block = obj as Block;
+		if (b) {
 			obj = new BlockStack(b);
 			b.fixStackLayout();
 			originalParent.addChild(obj);
@@ -482,7 +482,6 @@ public class GestureHandler {
 
 		if (obj is BlockStack) {
 			var bs:BlockStack = obj as BlockStack;
-			var b:Block = (obj as BlockStack).firstBlock;
 			bs.saveOriginalState();
 			if (bs.parent != null) bs.parent.removeChild(bs);
 			app.scriptsPane.prepareToDrag(bs);
