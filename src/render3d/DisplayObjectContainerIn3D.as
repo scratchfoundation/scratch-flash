@@ -26,6 +26,8 @@ package render3d {
 
 import flash.display.Sprite;
 
+import util.DebugUtils;
+
 public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 	import com.adobe.utils.*;
 
@@ -853,7 +855,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 					if ('clearCachedBitmap' in dispObj)
 						(dispObj as Object).clearCachedBitmap();
 
-					trace('Re-rendering part of large sprite! ' + Dbg.printObj(dispObj));
+					trace('Re-rendering part of large sprite! ' + DebugUtils.getObjAddr(dispObj));
 				}
 				else {
 					scratchStage.visible = false;
@@ -1463,24 +1465,4 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		return uiContainer;
 	}
 }}
-}
-
-import flash.utils.getQualifiedClassName;
-
-internal final class Dbg {
-	public static function printObj(obj:*):String {
-		var memoryHash:String;
-
-		try {
-			FakeClass(obj);
-		}
-		catch (e:Error) {
-			memoryHash = String(e).replace(/.*([@|\$].*?) to .*$/gi, '$1');
-		}
-
-		return getQualifiedClassName(obj) + memoryHash;
-	}
-}
-
-internal final class FakeClass {
 }

@@ -474,7 +474,9 @@ public class GestureHandler {
 		originalScale = obj.scaleX;
 
 		if (obj is Block) {
-			obj = new BlockStack(obj);
+			var b:Block = obj as Block;
+			obj = new BlockStack(b);
+			b.fixStackLayout();
 			originalParent.addChild(obj);
 		}
 

@@ -391,9 +391,9 @@ public class Block extends Sprite {
 	}
 
 	public function fixStackLayout():void {
-//		trace('fixStackLayout:');
+		trace('fixStackLayout:');
 		var b:Block = this;
-//		trace('    '+b.op+' @ ('+b.x+', '+b.y+')');
+		trace('    '+b.op+' @ ('+b.x+', '+b.y+')');
 		while (b != null) {
 			if (b.base.canHaveSubstack1()) {
 				var substackH:int = BlockShape.EmptySubstackH;
@@ -422,7 +422,7 @@ public class Block extends Sprite {
 			if (b.nextBlock != null) {
 				b.nextBlock.x = b.x;
 				b.nextBlock.y = b.y + b.base.nextBlockY();
-//				trace('    '+b.nextBlock.op+' @ ('+b.nextBlock.x+', '+b.nextBlock.y+')');
+				trace('    '+b.nextBlock.op+' @ ('+b.nextBlock.x+', '+b.nextBlock.y+') ['+DebugUtils.getObjAddr(b.nextBlock)+']');
 			}
 			b = b.nextBlock;
 		}
@@ -464,9 +464,9 @@ public class Block extends Sprite {
 				}
 			}
 		}
-		if (nextBlock != null) dup.addChild(dup.nextBlock = nextBlock.duplicate(forClone, forStage));
-		if (subStack1 != null) dup.addChild(dup.subStack1 = subStack1.duplicate(forClone, forStage));
-		if (subStack2 != null) dup.addChild(dup.subStack2 = subStack2.duplicate(forClone, forStage));
+		if (nextBlock != null) dup.nextBlock = nextBlock.duplicate(forClone, forStage);
+		if (subStack1 != null) dup.subStack1 = subStack1.duplicate(forClone, forStage);
+		if (subStack2 != null) dup.subStack2 = subStack2.duplicate(forClone, forStage);
 		if (!forClone) {
 			dup.x = x;
 			dup.y = y;
@@ -557,6 +557,8 @@ public class Block extends Sprite {
 		nextBlock = b;
 		if (oldNext != null) b.appendBlock(oldNext);
 
+		if (parent is BlockStack)
+			(parent as BlockStack).setFirstBlock(topBlock());
 		topBlock().fixStackLayout();
 	}
 
@@ -587,6 +589,8 @@ public class Block extends Sprite {
 		subStack1 = b;
 		b.prevBlock = this;
 		if (old != null) b.appendBlock(old);
+		if (parent is BlockStack)
+			(parent as BlockStack).setFirstBlock(topBlock());
 		topBlock().fixStackLayout();
 	}
 
@@ -598,6 +602,8 @@ public class Block extends Sprite {
 		subStack2 = b;
 		b.prevBlock = this;
 		if (old != null) b.appendBlock(old);
+		if (parent is BlockStack)
+			(parent as BlockStack).setFirstBlock(topBlock());
 		topBlock().fixStackLayout();
 	}
 

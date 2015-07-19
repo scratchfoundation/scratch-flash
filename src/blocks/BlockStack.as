@@ -22,15 +22,19 @@ public class BlockStack extends Sprite {
 	private var originalParent:DisplayObjectContainer, originalRole:int, originalIndex:int, originalPosition:Point;
 
 	public function BlockStack(b:Block) {
-		x = b.x;
-		y = b.y;
-		b.x = b.y = 0;
-		if (b.prevBlock) {
-			b.prevBlock.nextBlock = null;
+		var pb:Block = b.prevBlock;
+		if (pb) {
+			if (pb.nextBlock == b)
+				pb.nextBlock = null;
+			if (pb.subStack1 == b)
+				pb.subStack1 = null;
+			if (pb.subStack2 == b)
+				pb.subStack2 = null;
 			b.prevBlock = null;
 		}
-		firstBlock = b;
-		addBlocks(firstBlock);
+		addChild(b);
+		setFirstBlock(b);
+		if (pb) pb.topBlock().fixStackLayout();
 
 		addEventListener(Event.REMOVED, handleRemove);
 	}

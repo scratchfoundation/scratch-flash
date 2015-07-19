@@ -19,9 +19,9 @@
 
 package util {
 
-import flash.utils.getQualifiedClassName;
 import flash.display.DisplayObjectContainer;
 import flash.display.DisplayObject;
+import flash.utils.getQualifiedClassName;
 
 public class DebugUtils {
 
@@ -42,4 +42,19 @@ public class DebugUtils {
 		}
 	}
 
+	public static function getObjAddr(obj:*):String {
+		var memoryHash:String;
+
+		try {
+			FakeClass(obj);
+		}
+		catch (e:Error) {
+			memoryHash = String(e).replace(/.*([@|\$].*?) to .*$/gi, '$1');
+		}
+
+		return getQualifiedClassName(obj) + memoryHash;
+	}
 }}
+
+internal final class FakeClass {
+}
