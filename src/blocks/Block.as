@@ -391,9 +391,9 @@ public class Block extends Sprite {
 	}
 
 	public function fixStackLayout():void {
-		trace('fixStackLayout:');
+//		trace('fixStackLayout:');
 		var b:Block = this;
-		trace('    '+b.op+' @ ('+b.x+', '+b.y+')');
+//		trace('    '+b.op+' @ ('+b.x+', '+b.y+')');
 		while (b != null) {
 			if (b.base.canHaveSubstack1()) {
 				var substackH:int = BlockShape.EmptySubstackH;
@@ -422,7 +422,7 @@ public class Block extends Sprite {
 			if (b.nextBlock != null) {
 				b.nextBlock.x = b.x;
 				b.nextBlock.y = b.y + b.base.nextBlockY();
-				trace('    '+b.nextBlock.op+' @ ('+b.nextBlock.x+', '+b.nextBlock.y+') ['+DebugUtils.getObjAddr(b.nextBlock)+']');
+//				trace('    '+b.nextBlock.op+' @ ('+b.nextBlock.x+', '+b.nextBlock.y+') ['+DebugUtils.getObjAddr(b.nextBlock)+']');
 			}
 			b = b.nextBlock;
 		}
