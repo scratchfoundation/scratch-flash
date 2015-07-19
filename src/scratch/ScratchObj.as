@@ -558,15 +558,14 @@ public class ScratchObj extends Sprite {
 	/* Translation */
 
 	public function updateScriptsAfterTranslation():void {
-//		return;
 		// Update the scripts of this object after switching languages.
 		var newScripts:Array = [];
 		for each (var b:Block in scripts) {
 			var newBlock:Block = BlockIO.arrayToStack(BlockIO.stackToArray(b), isStage);
+			newBlock.x = b.x;
+			newBlock.y = b.y;
 			newScripts.push(newBlock);
-			trace('b @ '+b.x+','+b.y);
 			if (b.parent is BlockStack) { // stack in the scripts pane; replace it
-				trace('b.parent @ '+b.parent.x+','+b.parent.y);
 				(b.parent as BlockStack).setFirstBlock(newBlock);
 			}
 		}

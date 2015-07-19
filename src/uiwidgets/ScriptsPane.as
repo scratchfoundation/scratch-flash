@@ -94,7 +94,6 @@ public class ScriptsPane extends ScrollFrameContents {
 				var stack:BlockStack = b.parent as BlockStack;
 				if (!stack)
 					stack =  new BlockStack(b);
-				trace('stack @ '+stack.x+','+stack.y);
 				stack.cacheAsBitmap = true;
 				addChild(stack);
 			}

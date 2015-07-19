@@ -391,9 +391,9 @@ public class Block extends Sprite {
 	}
 
 	public function fixStackLayout():void {
-		trace('fixStackLayout:');
+//		trace('fixStackLayout:');
 		var b:Block = this;
-		trace('    '+b.op+' @ ('+b.x+', '+b.y+')');
+//		trace('    '+b.op+' @ ('+b.x+', '+b.y+')');
 		while (b != null) {
 			if (b.base.canHaveSubstack1()) {
 				var substackH:int = BlockShape.EmptySubstackH;
@@ -422,7 +422,7 @@ public class Block extends Sprite {
 			if (b.nextBlock != null) {
 				b.nextBlock.x = b.x;
 				b.nextBlock.y = b.y + b.base.nextBlockY();
-				trace('    '+b.nextBlock.op+' @ ('+b.nextBlock.x+', '+b.nextBlock.y+')');
+//				trace('    '+b.nextBlock.op+' @ ('+b.nextBlock.x+', '+b.nextBlock.y+')');
 			}
 			b = b.nextBlock;
 		}
@@ -583,7 +583,7 @@ public class Block extends Sprite {
 		var old:Block = subStack1;
 		if (old != null) old.parent.removeChild(old);
 
-		parent.addChild(b);
+		if (parent) parent.addChild(b);
 		subStack1 = b;
 		b.prevBlock = this;
 		if (old != null) b.appendBlock(old);
@@ -592,9 +592,9 @@ public class Block extends Sprite {
 
 	public function insertBlockSub2(b:Block):void {
 		var old:Block = subStack2;
-		if (old != null) removeChild(old);
+		if (old != null) old.parent.removeChild(old);
 
-		addChild(b);
+		if (parent) addChild(b);
 		subStack2 = b;
 		b.prevBlock = this;
 		if (old != null) b.appendBlock(old);

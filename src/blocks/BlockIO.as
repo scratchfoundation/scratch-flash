@@ -55,7 +55,12 @@ public class BlockIO {
 		var topBlock:Block, lastBlock:Block;
 		for each (var cmd:Array in cmdList) {
 			var b:Block = null;
-			try { b = arrayToBlock(cmd, '', forStage) } catch (e:*) { b = new Block('undefined') }
+//			try {
+				b = arrayToBlock(cmd, '', forStage);
+//			}
+//			catch (e:*) {
+//				b = new Block('undefined');
+//			}
 			if (topBlock == null) topBlock = b;
 			if (lastBlock != null) lastBlock.insertBlock(b);
 			lastBlock = b;
