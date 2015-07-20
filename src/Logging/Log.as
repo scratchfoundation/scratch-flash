@@ -54,14 +54,15 @@ public class Log {
 	}
 
 	// Generate a JSON-compatible object representing the contents of the log.
-	public function toJSON():Object {
+	public function toJSON(severityLimit:String = LogLevel.DEBUG):Object {
+		var maxSeverity:int = LogLevel.LEVEL.indexOf(severityLimit);
 		var baseIndex:uint = fixedBuffer ? nextIndex : 0;
 		var count:uint = logBuffer.length;
 		var jsonArray:Array = [];
 		for (var index:uint = 0; index < count; ++index) {
 			var entry:LogEntry = logBuffer[(baseIndex + index) % count];
 			// If we're in fixedBuffer mode and nextIndex hasn't yet wrapped then there will be null entries
-			if (entry) {
+			if (entry && (entry.severity <= maxSeverity)) {
 				jsonArray.push(entry.toJSON());
 			}
 		}

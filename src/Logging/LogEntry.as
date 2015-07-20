@@ -21,10 +21,10 @@ package Logging {
 import flash.utils.getTimer;
 
 public class LogEntry {
-	public var severity:String;
+	public var timeStamp:Number;
+	public var severity:int;
 	public var messageKey:String;
 	public var extraData:Object;
-	public var timeStamp:Number;
 
 	public function LogEntry(severity:String, messageKey:String, extraData:Object = null) {
 		setAll(severity, messageKey, extraData);
@@ -32,13 +32,10 @@ public class LogEntry {
 
 	// Set all fields of this event
 	public function setAll(severity:String, messageKey:String, extraData:Object = null):void {
-		if (LogLevel.LEVEL.indexOf(severity) < 0) {
-			Scratch.app.logMessage("LogEntry got invalid severity", {severity: severity, messageKey: messageKey});
-		}
-		this.severity = severity;
+		this.timeStamp = getCurrentTime();
+		this.severity = LogLevel.LEVEL.indexOf(severity);
 		this.messageKey = messageKey;
 		this.extraData = extraData;
-		this.timeStamp = getCurrentTime();
 	}
 
 	private static const tempDate:Date = new Date();
@@ -46,12 +43,11 @@ public class LogEntry {
 	public function toJSON():Object {
 		tempDate.time = timeStamp;
 		var dateString:String = tempDate.toString();
+		var jsonObject:Object = {timeStamp: dateString, severity: LogLevel.LEVEL[severity], message: messageKey};
 		if (extraData) {
-			return {timeStamp: dateString, message: messageKey, extraData: extraData};
+			jsonObject.extraData = extraData;
 		}
-		else {
-			return {timeStamp: dateString, message: messageKey};
-		}
+		return jsonObject;
 	}
 
 	private static const timerOffset:Number = new Date().time - getTimer();
