@@ -26,7 +26,7 @@ public class Log {
 	private var nextIndex:uint;
 
 	// If messageCount is 0, keep all logged messages. Otherwise throw out old messages once `messageCount` is reached.
-	public function Log(messageCount:uint = 100) {
+	public function Log(messageCount:uint) {
 		fixedBuffer = (messageCount > 0);
 		if (fixedBuffer) {
 			logBuffer.length = messageCount;
@@ -53,8 +53,8 @@ public class Log {
 		return entry;
 	}
 
-	// Generate a JSON-compatible object representing the contents of the log.
-	public function toJSON(severityLimit:String = LogLevel.DEBUG):Object {
+	// Generate a JSON-compatible object representing the contents of the log in a human- and machine-readable way.
+	public function report(severityLimit:String = LogLevel.DEBUG):Object {
 		var maxSeverity:int = LogLevel.LEVEL.indexOf(severityLimit);
 		var baseIndex:uint = fixedBuffer ? nextIndex : 0;
 		var count:uint = logBuffer.length;
@@ -63,7 +63,10 @@ public class Log {
 			var entry:LogEntry = logBuffer[(baseIndex + index) % count];
 			// If we're in fixedBuffer mode and nextIndex hasn't yet wrapped then there will be null entries
 			if (entry && (entry.severity <= maxSeverity)) {
-				jsonArray.push(entry.toJSON());
+				jsonArray.push(entry.toString());
+				if (entry.extraData) {
+					jsonArray.push(entry.extraData);
+				}
 			}
 		}
 		return jsonArray;

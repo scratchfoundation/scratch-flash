@@ -39,15 +39,14 @@ public class LogEntry {
 	}
 
 	private static const tempDate:Date = new Date();
-
-	public function toJSON():Object {
+	private function makeTimeStampString():String {
 		tempDate.time = timeStamp;
-		var dateString:String = tempDate.toString();
-		var jsonObject:Object = {timeStamp: dateString, severity: LogLevel.LEVEL[severity], message: messageKey};
-		if (extraData) {
-			jsonObject.extraData = extraData;
-		}
-		return jsonObject;
+		return tempDate.toLocaleTimeString();
+	}
+
+	// Generate a string representing this event. Does not include extraData.
+	public function toString():String {
+		return [makeTimeStampString(), LogLevel.LEVEL[severity], messageKey].join(' | ');
 	}
 
 	private static const timerOffset:Number = new Date().time - getTimer();
