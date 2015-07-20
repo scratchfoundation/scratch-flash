@@ -702,6 +702,7 @@ public class Block extends Sprite {
 			text.embedFonts = true;
 		}
 		text.mouseEnabled = false;
+		text.cacheAsBitmap = true;
 		return text;
 	}
 
