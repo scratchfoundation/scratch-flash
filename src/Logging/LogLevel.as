@@ -19,34 +19,14 @@
 
 package Logging {
 
-// See IETF RFC 5424
 public class LogLevel {
-	// Emergency: system is unusable
-	static public const EMERG:String = "emergency";
-
-	// Alert: action must be taken immediately
-	static public const ALERT:String = "alert";
-
-	// Critical: critical conditions
-	static public const CRIT:String = "critical";
-
-	// Error: error conditions
-	static public const ERR:String = "error";
-
-	// Warning: warning conditions
-	static public const WARNING:String = "warning";
-
-	// Notice: normal but significant condition
-	static public const NOTICE:String = "notice";
-
-	// Informational: informational messages
-	static public const INFO:String = "informational";
-
-	// Debug: debug-level messages
-	static public const DEBUG:String = "debugging";
+	static public const ERROR:String = "err";
+	static public const WARNING:String = "wrn";
+	static public const INFO:String = "inf";
+	static public const DEBUG:String = "dbg";
 
 	static public const LEVEL:Array = [
-		EMERG, ALERT, CRIT, ERR, WARNING, NOTICE, INFO, DEBUG
+		ERROR, WARNING, INFO, DEBUG
 	];
 }
 }
