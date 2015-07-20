@@ -540,7 +540,7 @@ public class BlockMenus implements DragClient {
 		addGenericBlockItems(m);
 		m.addItem('edit', editProcSpec);
 		m.addLine();
-		m.addItem('highlight callers', showCalls);
+		m.addItem('highlight callers', highlightCallers);
 		m.addItem('clear highlights', clearHighlights);
 		showMenu(m);
 	}
@@ -587,7 +587,7 @@ public class BlockMenus implements DragClient {
 		app.updatePalette();
 	}
 
-	private function showCalls():void {
+	private function highlightCallers():void {
 		var o:ScratchObj = app.viewedObj();
 		if (!o) return; // can this ever happen?
 		if (block.op == Specs.CALL) {
@@ -730,14 +730,12 @@ public class BlockMenus implements DragClient {
 		var sprites:Array = [];
 		var blocklist:Array = [];
 		if (vo.isStage || !vo.ownsVar(myName)) {
-			var b:Block;
-			var blks:Array = [];
 			for each (var o:ScratchObj in app.stagePane.allObjects()) {
 				if (!o.isClone) {
-					blks = app.runtime.allUsesOfVariable(myName,o,false);
+					var blks:Array = app.runtime.allUsesOfVariable(myName,o,false);
 					if (blks.length>0) {
 						sprites.push(o);
-						for each (b in blks) blocklist.push(b);
+						for each (var b:Block in blks) blocklist.push(b);
 					}
 				}
 			}
@@ -845,13 +843,11 @@ public class BlockMenus implements DragClient {
 			} else if (selection == 'clear highlights') {
 				result = [[],[]];
 			}
-			var sprites:Array = result[0];
-			var blocklist:Array = result[1];
-			app.highlightSprites(sprites);
-			if (!blocklist) {
+			app.highlightSprites(result[0]);
+			if (!result[1]) {
 				app.runtime.clearBlockHighlights();
 			} else {
-				app.runtime.showBlockHighlights(blocklist);
+				app.runtime.showBlockHighlights(result[1]);
 			}
 		}
 		var m:Menu = new Menu(showBroadcasts, 'broadcastInfo');
