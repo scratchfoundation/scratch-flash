@@ -381,16 +381,6 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 
 	public function handleDrop(obj:*):Boolean {
 		var localP:Point = globalToLocal(new Point(obj.x, obj.y));
-
-		var info:MediaInfo = obj as MediaInfo;
-		if (info) {
-			if (!info.scripts) return false;
-			localP.x += info.thumbnailX();
-			localP.y += info.thumbnailY();
-			addStacksFromBackpack(info, localP);
-			return true;
-		}
-
 		var b:Block = obj as Block;
 		var c:ScratchComment = obj as ScratchComment;
 		if (!b && !c) return false;
@@ -399,33 +389,16 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 		obj.y = Math.max(5, localP.y);
 		obj.scaleX = obj.scaleY = 1;
 		addChild(obj);
-		if (b) blockDropped(b);
-		if (c) {
+
+		if (b)
+			blockDropped(b);
+		else if (c)
 			c.blockRef = blockAtPoint(localP); // link to the block under comment top-left corner, or unlink if none
-		}
+
 		saveScripts();
 		updateSize();
 		if (c) fixCommentLayout();
 		return true;
-	}
-
-	private function addStacksFromBackpack(info:MediaInfo, dropP:Point):void {
-		if (!info.scripts) return;
-		var forStage:Boolean = app.viewedObj() && app.viewedObj().isStage;
-		for each (var a:Array in info.scripts) {
-			if (a.length < 1) continue;
-			var blockOrComment:* =
-				(a[0] is Array) ?
-					BlockIO.arrayToStack(a, forStage) :
-					ScratchComment.fromArray(a);
-			blockOrComment.x = dropP.x;
-			blockOrComment.y = dropP.y;
-			addChild(blockOrComment);
-			if (blockOrComment is Block) blockDropped(blockOrComment);
-		}
-		saveScripts();
-		updateSize();
-		fixCommentLayout();
 	}
 
 	private function blockAtPoint(p:Point):Block {
