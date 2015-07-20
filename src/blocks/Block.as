@@ -464,9 +464,18 @@ public class Block extends Sprite {
 				}
 			}
 		}
-		if (nextBlock != null) dup.nextBlock = nextBlock.duplicate(forClone, forStage);
-		if (subStack1 != null) dup.subStack1 = subStack1.duplicate(forClone, forStage);
-		if (subStack2 != null) dup.subStack2 = subStack2.duplicate(forClone, forStage);
+		if (nextBlock != null) {
+			dup.nextBlock = nextBlock.duplicate(forClone, forStage);
+			dup.nextBlock.prevBlock = dup;
+		}
+		if (subStack1 != null) {
+			dup.subStack1 = subStack1.duplicate(forClone, forStage);
+			dup.subStack1.prevBlock = dup;
+		}
+		if (subStack2 != null) {
+			dup.subStack2 = subStack2.duplicate(forClone, forStage);
+			dup.subStack2.prevBlock = dup;
+		}
 		if (!forClone) {
 			dup.x = x;
 			dup.y = y;
@@ -803,7 +812,7 @@ public class Block extends Sprite {
 	public function objToGrab(evt:MouseEvent):* {
 		if (isEmbeddedParameter() || isInPalette()) return new BlockStack(duplicate(false, Scratch.app.viewedObj() is ScratchStage));
 		// TODO: Implement grabbing blocks from within a stack and support canceling the drag (reverting to original position, parent, etc)
-		 if (parent is BlockStack && (parent as BlockStack).firstBlock == this) return parent;
+		if (parent is BlockStack && (parent as BlockStack).firstBlock == this) return parent;
 		return this;
 	}
 
