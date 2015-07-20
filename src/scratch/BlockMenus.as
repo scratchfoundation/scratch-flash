@@ -596,7 +596,7 @@ public class BlockMenus implements DragClient {
 			block = def;
 		}
 		var blks:Array = app.runtime.allCallsOf(block.spec, o);
-		if (blks!=[]) {
+		if (blks.length>0) {
 			app.highlightSprites([o]);
 			app.runtime.showBlockHighlights(blks);
 		} else {
