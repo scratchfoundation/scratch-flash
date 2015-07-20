@@ -534,7 +534,7 @@ public class Block extends Sprite {
 	}
 
 	public function removeBlock(b:Block):void {
-		if (b.parent == this) removeChild(b);
+		if (b.parent is BlockStack) b.parent.removeChild(b);
 		if (b == nextBlock) {
 			nextBlock = null;
 		}
@@ -558,10 +558,9 @@ public class Block extends Sprite {
 
 	public function insertBlock(b:Block):void {
 		var oldNext:Block = nextBlock;
+		if (oldNext != null && oldNext.parent == parent)
+			parent.removeChild(oldNext);
 
-		if (oldNext != null && oldNext.parent == parent) parent.removeChild(oldNext);
-
-		if (parent) parent.addChild(b);
 		b.prevBlock = this;
 		nextBlock = b;
 		if (oldNext != null) b.appendBlock(oldNext);
@@ -573,8 +572,7 @@ public class Block extends Sprite {
 
 	public function insertBlockAbove(b:Block):void {
 		b.x = this.x;
-		b.y = this.y - b.height + BlockShape.NotchDepth;
-		parent.addChild(b);
+		b.y = this.y - b.parent.height + BlockShape.NotchDepth;
 		(parent as BlockStack).setFirstBlock(b);
 		b.bottomBlock().insertBlock(this);
 	}
@@ -582,19 +580,24 @@ public class Block extends Sprite {
 	public function insertBlockAround(b:Block):void {
 		b.x = this.x - BlockShape.SubstackInset;
 		b.y = this.y - b.base.substack1y(); //  + BlockShape.NotchDepth;
-		parent.addChild(b);
-		if (parent is BlockStack)
-			(parent as BlockStack).setFirstBlock(b);
 		b.subStack1 = this;
-		this.prevBlock = b;
-		b.fixStackLayout();
+		if (prevBlock) {
+			prevBlock.nextBlock = b;
+			b.prevBlock = prevBlock;
+		}
+		else if (parent is BlockStack)
+			(parent as BlockStack).firstBlock = b;
+
+		prevBlock = b;
+		if (parent is BlockStack)
+			(parent as BlockStack).setFirstBlock(topBlock());
+		topBlock().fixStackLayout();
 	}
 
 	public function insertBlockSub1(b:Block):void {
 		var old:Block = subStack1;
 		if (old != null) old.parent.removeChild(old);
 
-		if (parent) parent.addChild(b);
 		subStack1 = b;
 		b.prevBlock = this;
 		if (old != null) b.appendBlock(old);
@@ -607,7 +610,6 @@ public class Block extends Sprite {
 		var old:Block = subStack2;
 		if (old != null) old.parent.removeChild(old);
 
-		if (parent) addChild(b);
 		subStack2 = b;
 		b.prevBlock = this;
 		if (old != null) b.appendBlock(old);

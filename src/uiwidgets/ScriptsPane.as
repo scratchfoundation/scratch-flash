@@ -167,6 +167,8 @@ public class ScriptsPane extends ScrollFrameContents {
 				if (o) {
 					h = o.height;
 					if (!o.bottomBlock().isTerminal) h -= BlockShape.NotchDepth;
+					while (o = o.nextBlock)
+						h += o.height;
 				}
 			}
 			b.previewSubstack1Height(h);
@@ -183,7 +185,12 @@ public class ScriptsPane extends ScrollFrameContents {
 				if (t is BlockArg) feedbackShape.copyFeedbackShapeFrom(t, true);
 			} else {
 				var insertionType:int = nearestTarget[2];
-				var wrapH:int = (insertionType == INSERT_WRAP) ? t.getRect(t).height : 0;
+				var wrapH:int = 0;
+				if (insertionType == INSERT_WRAP) {
+					wrapH = t.height;
+					while (t = t.nextBlock)
+						wrapH += t.height;
+				}
 				var isInsertion:Boolean = (insertionType != INSERT_ABOVE) && (insertionType != INSERT_WRAP);
 				feedbackShape.copyFeedbackShapeFrom(b, false, isInsertion, wrapH);
 			}
@@ -269,7 +276,7 @@ public class ScriptsPane extends ScrollFrameContents {
 						if (!bEndWithTerminal && !target.isHat) {
 							// b is a stack ending with a non-terminal command block and target
 							// is not a hat so the bottom block of b can connect to top of target
-							p = target.localToGlobal(new Point(0, -(b.height - BlockShape.NotchDepth)));
+							p = target.localToGlobal(new Point(0, -(b.parent.height - BlockShape.NotchDepth)));
 							possibleTargets.push([p, target, INSERT_ABOVE]);
 						}
 						if (bCanWrap && !target.isHat) {
@@ -352,7 +359,7 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 		var i:int, minDist:int = 100000;
 		var nearest:Array;
 		var bTopLeft:Point = b.parent is BlockStack ? new Point(b.parent.x, b.parent.y) : new Point(b.x, b.y);
-		var bBottomLeft:Point = new Point(b.x, b.y + b.height - 3);
+		var bBottomLeft:Point = new Point(b.x, b.y + b.parent.height - 3);
 
 		for (i = 0; i < targets.length; i++) {
 			var item:Array = targets[i];

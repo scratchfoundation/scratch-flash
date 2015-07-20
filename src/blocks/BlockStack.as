@@ -34,7 +34,8 @@ public class BlockStack extends Sprite {
 		}
 		addChild(b);
 		setFirstBlock(b);
-		if (pb) pb.topBlock().fixStackLayout();
+		if (pb)
+			pb.topBlock().fixStackLayout();
 
 		addEventListener(Event.REMOVED, handleRemove);
 	}
