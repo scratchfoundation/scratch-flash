@@ -595,6 +595,8 @@ public class BlockMenus implements DragClient {
 	 *   - all variable blocks (but getter has custom highlight menu items)
 	 *   - all list blocks (but getter has custom highlight menu items)
 	 *   - maths operator block "[function v] of ( )" (must have same function)
+	 *   - stop block (must have same "all"/"other scripts in sprite"/"this script")
+	 *   - "attribute of sprite/stage" (must have same attribute - what about sprite??)
 	 *   - play sound & play sound until done (only match if also the same sound)
 	 *   - switch costume/backdrop (must have same costume/backdrop)
 	 *   - set & change effect (must have same effect)
@@ -615,7 +617,7 @@ public class BlockMenus implements DragClient {
 			"showVariable:","hideVariable:","computeFunction:of:","whenSceneStarts",
 			"createCloneOf","whenSensorGreaterThan","playsound:","doPlaySoundAndWait",
 			"changeGraphicEffect:by:","setGraphicEffect:to:","lookLike:","startScene",
-			"startSceneAndWait"]
+			"startSceneAndWait","stopScripts"]
 		// These only match if second arg also matches (i.e. list name)
 		const barg1Arr:Array = ["append:toList:","deleteLine:ofList:",
 			"setLine:ofList:to:","getLine:ofList:"];
