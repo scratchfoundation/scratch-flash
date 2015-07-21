@@ -643,9 +643,29 @@ public class BlockMenus implements DragClient {
 		addGenericBlockItems(m);
 		m.addItem('edit', editProcSpec);
 		m.addLine();
+		if (block.op == Specs.CALL) m.addItem('highlight define', highlightProcDef);
 		m.addItem('highlight callers', highlightCallers);
 		m.addItem('clear highlights', clearHighlights);
 		showMenu(m);
+	}
+
+	private function highlightProcDef():void {
+		if(!app.editMode) return;
+		if (block.op != Specs.CALL) return;
+		var def:Block = app.viewedObj().lookupProcedure(block.spec);
+		if (!def || !app.viewedObj()) {  // should never happen...?
+			clearHighlights();
+			return;
+		}
+		showHighlights([app.viewedObj()],[def]);
+		var pane:ScriptsPane = def.parent as ScriptsPane;
+		if (!pane) return;
+		if (pane.parent is ScrollFrame) {
+			pane.x = 5 - def.x*pane.scaleX;
+			pane.y = 5 - def.y*pane.scaleX;
+			(pane.parent as ScrollFrame).constrainScroll();
+			(pane.parent as ScrollFrame).updateScrollbars();
+		}
 	}
 
 	private function editProcSpec():void {
