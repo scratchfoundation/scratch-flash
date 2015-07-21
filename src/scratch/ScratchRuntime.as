@@ -938,8 +938,10 @@ public class ScratchRuntime {
 		}
 		var w:DisplayObject = isList ? watcherForList(targetObj, varName) : watcherForVar(targetObj, varName);
 		if (w is ListWatcher) ListWatcher(w).prepareToShow();
-		if (w != null) showOnStage(w);
-		app.updatePalette(false);
+		if (w != null && (!w.visible || !w.parent)) {
+			showOnStage(w);
+			app.updatePalette(false);
+		}
 	}
 
 	private function showOnStage(w:DisplayObject):void {
@@ -982,8 +984,10 @@ public class ScratchRuntime {
 
 	public function hideVarOrListFor(varName:String, isList:Boolean, targetObj:ScratchObj):void {
 		var w:DisplayObject = isList ? watcherForList(targetObj, varName) : watcherForVar(targetObj, varName);
-		if (w != null) w.visible = false;
-		app.updatePalette(false);
+		if (w != null && w.visible) {
+			w.visible = false;
+			app.updatePalette(false);
+		}
 	}
 
 	public function watcherShowing(data:Object):Boolean {
