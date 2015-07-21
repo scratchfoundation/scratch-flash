@@ -492,6 +492,7 @@ public class Scratch extends Sprite {
 		render3D.setStage(stagePane, stagePane.penLayer);
 		stagePart.addChildAt(stagePane, i);
 		isIn3D = true;
+		stagePane.setSkipNoChange(); // TLF: catch cases when GF not clicked?
 	}
 
 	SCRATCH::allow3d
@@ -514,6 +515,7 @@ public class Scratch extends Sprite {
 		stagePane.clearCachedBitmap();
 		stagePane.updateCostume();
 		stagePane.applyFilters();
+		stagePane.setSkipNoChange(); // TLF: catch cases when GF not clicked?
 	}
 
 	private var debugRect:Shape;
