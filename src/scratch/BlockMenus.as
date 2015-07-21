@@ -510,7 +510,7 @@ public class BlockMenus implements DragClient {
 		m.addItem('help', block.showHelp);
 		m.addLine();
 		if (highlightItems) {
-			m.addItem('highlight this block',genericHighlightSameBlocks);
+			m.addItem('highlight this block',genericHighlightSameBlocks); // "highlight same blocks", "highlight all like this"...?
 			m.addItem('clear highlights',clearHighlights);
 			m.addLine();
 		}
