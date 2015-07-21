@@ -492,11 +492,11 @@ public class BlockMenus implements DragClient {
 	private function genericBlockMenu(evt:MouseEvent):void {
 		if (!block || block.isEmbeddedParameter()) return;
 		var m:Menu = new Menu(null, 'genericBlock');
-		addGenericBlockItems(m);
+		addGenericBlockItems(m,true);
 		showMenu(m);
 	}
 
-	private function addGenericBlockItems(m:Menu):void {
+	private function addGenericBlockItems(m:Menu,highlightItems:Boolean=false):void {
 		if (!block) return;
 		m.addLine();
 		if (!isInPalette(block)) {
@@ -509,6 +509,11 @@ public class BlockMenus implements DragClient {
 		}
 		m.addItem('help', block.showHelp);
 		m.addLine();
+		if (highlightItems) {
+			m.addItem('highlight this block',genericHighlightSameBlocks);
+			m.addItem('clear highlights',clearHighlights);
+			m.addLine();
+		}
 	}
 
 	private function duplicateStack():void {
@@ -522,15 +527,111 @@ public class BlockMenus implements DragClient {
 		}
 		if (!block) return;
 		var m:Menu = new Menu(opMenu, 'changeOp');
-		addGenericBlockItems(m);
+		addGenericBlockItems(m,true);
 		if (!isInPalette(block)) for each (var op:String in opList) m.addItem(op);
 		showMenu(m);
 	}
 
-	// This is generic - it's used by all 'clear highlights' items in all menus
 	private function clearHighlights():void {
 		app.runtime.clearBlockHighlights();
 		app.highlightSprites([]);
+	}
+
+	private function showHighlights(sprites:Array,blocklist:Array):void {
+		if (blocklist.length>0 && sprites.length>0) {
+			app.runtime.showBlockHighlights(blocklist);
+			app.highlightSprites(sprites);
+		} else {
+			app.runtime.clearBlockHighlights();
+			app.highlightSprites([]);
+		}
+	}
+
+	private function highlightSameSpec(matchName:String):void {
+		var vo:ScratchObj = app.viewedObj();
+		if (!vo) return;
+		var blocklist:Array = [];
+		for each (var stack:Block in vo.scripts) {
+			// for each block in stack
+			stack.allBlocksDo(function (b:Block):void {
+				if (b.spec == matchName) blocklist.push(b);
+			});
+		}
+		showHighlights([vo],blocklist);
+	}
+
+	private function highlightSameBlocks(matchOp:String,bargnum:int,bargval:String): void {
+		var sprites:Array = [];
+		var blocklist:Array = [];
+		for each (var o:ScratchObj in app.stagePane.allObjects()) {
+			if (!o.isClone) {
+				var blks:Array = [];
+				for each (var stack:Block in o.scripts) {
+					// for each block in stack
+					stack.allBlocksDo(function (b:Block):void {
+						if (b.op == matchOp) {
+							if (bargnum<0 || (b.args[bargnum] is BlockArg && b.args[bargnum].argValue is String && b.args[bargnum].argValue==bargval)) {
+								blks.push(b);
+							}
+						}
+					});
+				}
+				if (blks.length>0) {
+					sprites.push(o);
+					blocklist = blks.concat(blocklist);
+				}
+			}
+		}
+		showHighlights(sprites,blocklist);
+	}
+
+
+	/* The way below works is that certain blocks will only show a match if a certain
+	 * one of their args is also the same. For example, "set var to _" will only match
+	 * other "set" blocks that have the same var.
+	 * Not sure if all of these are really how we want, but they are there to show
+	 * the general idea and possibilities...
+	 * Such blocks are as follows...
+	 *   - all variable blocks (but getter has custom highlight menu items)
+	 *   - all list blocks (but getter has custom highlight menu items)
+	 *   - maths operator block "[function v] of ( )" (must have same function)
+	 *   - play sound & play sound until done (only match if also the same sound)
+	 *   - switch costume/backdrop (must have same costume/backdrop)
+	 *   - set & change effect (must have same effect)
+	 *   - when backdrop switches event (must have same backdrop)
+	 *   - create clone block (must have same sprite)
+	 *   - touching something (must have same sprite or edge or mouse-pointer)
+	 *   - distance to sprite (must have same sprite)
+	 *   - when timer/volume greater than events (must be same sensor)
+	 * It's also perhaps not so great having these spec strings mentioned in here?
+	 * - could declare these arrays static in Specs.as, perhaps...?
+	 */
+	private function genericHighlightSameBlocks(): void {
+		// These only match within the viewed object, and if spec matches
+		const specArr:Array = [Specs.GET_PARAM,"whenCloned","deleteClone"];
+		// These only match if first arg also matches
+		const barg0Arr:Array = [Specs.SET_VAR,Specs.CHANGE_VAR,"touching:","distanceTo:",
+			"getAttribute:of:","lineCountOfList:","list:contains:","showList:","hideList:",
+			"showVariable:","hideVariable:","computeFunction:of:","whenSceneStarts",
+			"createCloneOf","whenSensorGreaterThan","playsound:","doPlaySoundAndWait",
+			"changeGraphicEffect:by:","setGraphicEffect:to:","lookLike:","startScene",
+			"startSceneAndWait"]
+		// These only match if second arg also matches (i.e. list name)
+		const barg1Arr:Array = ["append:toList:","deleteLine:ofList:",
+			"setLine:ofList:to:","getLine:ofList:"];
+		// These only match if third arg (i.e. the list name) also matches
+		const barg2Arr:Array = ["insert:at:ofList:"];
+		if (specArr.indexOf(block.op)>-1) {
+			highlightSameSpec( block.spec );
+		} else if (barg0Arr.indexOf(block.op)>-1 && block.args[0] is BlockArg) {
+			highlightSameBlocks( block.op, 0, block.args[0].argValue as String);
+		} else if (barg1Arr.indexOf(block.op)>-1 && block.args[1] is BlockArg) {
+			highlightSameBlocks( block.op, 1, block.args[1].argValue as String);
+		} else if (barg2Arr.indexOf(block.op)>-1 && block.args[2] is BlockArg) {
+			highlightSameBlocks( block.op, 2, block.args[2].argValue as String);
+		} else {
+			highlightSameBlocks( block.op, -1, null);
+		}
 	}
 
 	// ***** Procedure menu (for procedure definition hats and call blocks) *****
@@ -596,12 +697,7 @@ public class BlockMenus implements DragClient {
 			block = def;
 		}
 		var blks:Array = app.runtime.allCallsOf(block.spec, o);
-		if (blks.length>0) {
-			app.highlightSprites([o]);
-			app.runtime.showBlockHighlights(blks);
-		} else {
-			clearHighlights();
-		}
+		showHighlights([o],blks);
 	}
 
 	// ***** Variable and List menus *****
@@ -612,17 +708,22 @@ public class BlockMenus implements DragClient {
 		if (isGetter) {
 			if (isInPalette(block)) m.addItem('delete list', deleteVarOrList); // list reporter in palette
 			addGenericBlockItems(m);
+			m.addLine();
+			m.addItem('highlight list', highlightList);
+			m.addItem('clear highlights', clearHighlights);
 			m.addLine()
 		}
-		var myName:String = isGetter ? blockVarOrListName() : null;
-		var listName:String;
-		for each (listName in app.stageObj().listNames()) {
-			if (listName != myName) m.addItem(listName);
-		}
-		if (!app.viewedObj().isStage) {
-			m.addLine();
-			for each (listName in app.viewedObj().listNames()) {
+		if (!(isInPalette(block) && isGetter)) {
+			var myName:String = isGetter ? blockVarOrListName() : null;
+			var listName:String;
+			for each (listName in app.stageObj().listNames()) {
 				if (listName != myName) m.addItem(listName);
+			}
+			if (!app.viewedObj().isStage) {
+				m.addLine();
+				for each (listName in app.viewedObj().listNames()) {
+					if (listName != myName) m.addItem(listName);
+				}
 			}
 		}
 		showMenu(m);
@@ -723,6 +824,29 @@ public class BlockMenus implements DragClient {
 		Scratch.app.setSaveNeeded();
 	}
 
+	private function highlightList():void {
+		var myName:String = blockVarOrListName();
+		var vo:ScratchObj = app.viewedObj();
+		if (!vo) return;
+		var sprites:Array = [];
+		var blocklist:Array = [];
+		if (vo.isStage || !vo.ownsVar(myName)) {
+			for each (var o:ScratchObj in app.stagePane.allObjects()) {
+				if (!o.isClone) {
+					var blks:Array = app.runtime.allUsesOfList(myName,o,false);
+					if (blks.length>0) {
+						sprites.push(o);
+						blocklist = blks.concat(blocklist);
+					}
+				}
+			}
+		} else {
+			sprites = [vo];
+			blocklist = app.runtime.allUsesOfList(myName,vo);
+		}
+		showHighlights(sprites,blocklist);
+	}
+
 	private function highlightVar():void {
 		var myName:String = blockVarOrListName();
 		var vo:ScratchObj = app.viewedObj();
@@ -735,7 +859,7 @@ public class BlockMenus implements DragClient {
 					var blks:Array = app.runtime.allUsesOfVariable(myName,o,false);
 					if (blks.length>0) {
 						sprites.push(o);
-						for each (var b:Block in blks) blocklist.push(b);
+						blocklist = blks.concat(blocklist);
 					}
 				}
 			}
@@ -743,12 +867,7 @@ public class BlockMenus implements DragClient {
 			sprites = [vo];
 			blocklist = app.runtime.allUsesOfVariable(myName,vo);
 		}
-		if (blocklist.length>0) {
-			app.highlightSprites(sprites);
-			app.runtime.showBlockHighlights(blocklist);
-		} else {
-			clearHighlights();
-		}
+		showHighlights(sprites,blocklist);
 	}
 
 	// ***** Color picker support *****
@@ -843,12 +962,7 @@ public class BlockMenus implements DragClient {
 			} else if (selection == 'clear highlights') {
 				result = [[],[]];
 			}
-			app.highlightSprites(result[0]);
-			if (!result[1]) {
-				app.runtime.clearBlockHighlights();
-			} else {
-				app.runtime.showBlockHighlights(result[1]);
-			}
+			showHighlights(result[0],result[1]);
 		}
 		var m:Menu = new Menu(showBroadcasts, 'broadcastInfo');
 		addGenericBlockItems(m);

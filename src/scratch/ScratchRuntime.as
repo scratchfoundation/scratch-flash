@@ -861,7 +861,7 @@ public class ScratchRuntime {
 	}
 
 	public function allUsesOfVariable(varName:String, owner:ScratchObj, beyondStage:Boolean=true):Array {
-		var variableBlocks:Array = [Specs.SET_VAR, Specs.CHANGE_VAR, "showVariable:", "hideVariable:"];
+		const variableBlocks:Array = [Specs.SET_VAR, Specs.CHANGE_VAR, "showVariable:", "hideVariable:"];
 		var result:Array = [];
 		var stacks:Array = (owner.isStage && beyondStage) ? allStacks() : owner.scripts;
 		for each (var stack:Block in stacks) {
@@ -869,6 +869,24 @@ public class ScratchRuntime {
 			stack.allBlocksDo(function (b:Block):void {
 				if (b.op == Specs.GET_VAR && b.spec == varName) result.push(b);
 				if (variableBlocks.indexOf(b.op) != -1 && b.args[0] is BlockArg && b.args[0].argValue == varName) result.push(b);
+			});
+		}
+		return result;
+	}
+
+	public function allUsesOfList(listName:String, owner:ScratchObj, beyondStage:Boolean=true):Array {
+		const listBlocksArg0:Array = ["lineCountOfList:","list:contains:","showList:","hideList:"];
+		const listBlocksArg1:Array = ["append:toList:","deleteLine:ofList:","setLine:ofList:to:","getLine:ofList:"];
+		const listBlocksArg2:Array = ["insert:at:ofList:"];
+		var result:Array = [];
+		var stacks:Array = (owner.isStage && beyondStage) ? allStacks() : owner.scripts;
+		for each (var stack:Block in stacks) {
+			// for each block in stack
+			stack.allBlocksDo(function (b:Block):void {
+				if (b.op == Specs.GET_LIST && b.spec == listName) result.push(b);
+				if (listBlocksArg0.indexOf(b.op) != -1 && b.args[0] is BlockArg && b.args[0].argValue == listName) result.push(b);
+				if (listBlocksArg1.indexOf(b.op) != -1 && b.args[1] is BlockArg && b.args[1].argValue == listName) result.push(b);
+				if (listBlocksArg2.indexOf(b.op) != -1 && b.args[2] is BlockArg && b.args[2].argValue == listName) result.push(b);
 			});
 		}
 		return result;
