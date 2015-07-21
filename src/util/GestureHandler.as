@@ -334,6 +334,15 @@ public class GestureHandler {
 		hideBubble();
 	}
 
+	public function escKeyDown():void {
+		if (carriedObj != null && carriedObj is Block) {
+			carriedObj.stopDrag();
+			removeDropShadowFrom(carriedObj);
+			Block(carriedObj).restoreOriginalState();
+			carriedObj = null;
+		}
+	}
+
 	private function findMouseTarget(evt:MouseEvent, target:*):DisplayObject {
 		// Find the mouse target for the given event. Return null if no target found.
 
