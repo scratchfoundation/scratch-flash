@@ -295,7 +295,7 @@ public class BlockMenus implements DragClient {
 
 	private function keyMenu(evt:MouseEvent):void {
 		var ch:int;
-		var namedKeys:Array = ['any', Menu.line, 'up arrow', 'down arrow', 'right arrow', 'left arrow', 'space'];
+		var namedKeys:Array = ['space', 'up arrow', 'down arrow', 'right arrow', 'left arrow', 'any'];
 		var m:Menu = new Menu(setBlockArg, 'key');
 		for each (var s:String in namedKeys) m.addItem(s);
 		for (ch = 97; ch < 123; ch++) m.addItem(String.fromCharCode(ch)); // a-z
