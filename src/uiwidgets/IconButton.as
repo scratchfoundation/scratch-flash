@@ -33,6 +33,8 @@ package uiwidgets {
 	import flash.text.*;
 	import assets.Resources;
 
+import ui.events.PointerEvent;
+
 public class IconButton extends Sprite {
 
 	public var clickFunction:Function;
@@ -52,9 +54,9 @@ public class IconButton extends Sprite {
 		this.isRadioButton = isRadioButton;
 		useDefaultImages();
 		setImage(onImageOrName, offImageObj);
-		addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
-		addEventListener(MouseEvent.MOUSE_OVER, mouseOver);
-		addEventListener(MouseEvent.MOUSE_OUT, mouseOut);
+		addEventListener(PointerEvent.POINTER_DOWN, mouseDown);
+		addEventListener(PointerEvent.POINTER_OVER, mouseOver);
+		addEventListener(PointerEvent.POINTER_OUT, mouseOut);
 		mouseChildren = false;
 	}
 
@@ -63,13 +65,13 @@ public class IconButton extends Sprite {
 	}
 
 	public function actOnMouseUp():void {
-		removeEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
-		addEventListener(MouseEvent.MOUSE_UP, mouseDown);
+		removeEventListener(PointerEvent.POINTER_DOWN, mouseDown);
+		addEventListener(PointerEvent.POINTER_UP, mouseDown);
 	}
 
 	public function disableMouseover():void {
-		removeEventListener(MouseEvent.MOUSE_OVER, mouseOver);
-		removeEventListener(MouseEvent.MOUSE_OUT, mouseOut);
+		removeEventListener(PointerEvent.POINTER_OVER, mouseOver);
+		removeEventListener(PointerEvent.POINTER_OUT, mouseOut);
 	}
 
 	public function setImage(onImageObjOrName:*, offImageObj:DisplayObject = null):void {

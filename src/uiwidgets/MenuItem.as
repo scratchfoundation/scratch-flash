@@ -28,7 +28,10 @@ package uiwidgets {
 	import flash.text.*;
 	import scratch.BlockMenus;
 	import translation.Translator;
-	import util.Color;
+
+import ui.events.PointerEvent;
+
+import util.Color;
 
 public class MenuItem extends Sprite {
 
@@ -47,15 +50,16 @@ public class MenuItem extends Sprite {
 	public function MenuItem(menu:Menu, labelText:*, selection:*, enabled:Boolean) {
 		this.menu = menu;
 		this.selection = (selection == null) ? labelText : selection;
+		mouseChildren = false;
 		addChild(base = new Shape());
 		if (labelText === Menu.line) return;
 		addCheckmark();
 		addLabel(String(labelText), enabled);
 		setBaseColor(menu.color);
 		if (enabled) {
-			addEventListener(MouseEvent.MOUSE_OVER, mouseOver);
-			addEventListener(MouseEvent.MOUSE_OUT, mouseOut);
-			addEventListener(MouseEvent.MOUSE_UP, mouseUp);
+			addEventListener(PointerEvent.POINTER_OVER, mouseOver);
+			addEventListener(PointerEvent.POINTER_OUT, mouseOut);
+			addEventListener(PointerEvent.POINTER_UP, mouseUp);
 		}
 	}
 
@@ -153,8 +157,8 @@ public class MenuItem extends Sprite {
 		return Color.fromHSV(hsv[0], hsv[1], brightness);
 	}
 
-	protected function mouseOver(evt:MouseEvent):void { setHighlight(true) }
-	protected function mouseOut(evt:MouseEvent):void { setHighlight(false) }
-	protected function mouseUp(evt:MouseEvent):void { menu.selected(selection) }
+	protected function mouseOver(evt:MouseEvent):void { setHighlight(true); }
+	protected function mouseOut(evt:MouseEvent):void { setHighlight(false); }
+	protected function mouseUp(evt:MouseEvent):void { menu.selected(selection); }
 
 }}

@@ -14,6 +14,8 @@ public class PointerEvent extends MouseEvent {
 	static public const TAP:String = 'tap';
 	static public const DOUBLE_TAP:String = 'doubleTap';
 
+	static public const POINTER_OVER:String = 'pointerOver';
+	static public const POINTER_OUT:String = 'pointerOut';
 	static public const POINTER_DOWN:String = 'pointerDown';
 	static public const POINTER_MOVE:String = 'pointerMove';
 	static public const POINTER_UP:String = 'pointerUp';
@@ -22,6 +24,8 @@ public class PointerEvent extends MouseEvent {
 	public var pointerType:String;
 
 	static private const touchToPointer:Object = {
+		'touchOver': 'pointerOver',
+		'touchOut': 'pointerOut',
 		'touchBegin': 'pointerDown',
 		'touchMove': 'pointerMove',
 		'touchEnd': 'pointerUp'
@@ -54,13 +58,15 @@ public class PointerEvent extends MouseEvent {
 		if (e.type == 'pointerDown')
 			activePointers[e.pointerID] = true;
 
-		var target:DisplayObject = capturedPointers[e.pointerID];
+		var target:DisplayObject = (e.type == 'pointerOver' || e.type == 'pointerOut') ? event.target : capturedPointers[e.pointerID];
 
 		if (!target) {
 			var objs:Array = stage.getObjectsUnderPoint(pt);
 			if (objs.length) {
 				var dObj:DisplayObject = objs[objs.length - 1];
-				while ((!(dObj is InteractiveObject) || !(dObj as InteractiveObject).mouseEnabled || !(dObj as InteractiveObject).hasEventListener(e.type)) && dObj != Scratch.app)
+				var intObj:InteractiveObject;
+//				while ((!(intObj = dObj as InteractiveObject) || !intObj.mouseEnabled || !intObj.hasEventListener(e.type)) && dObj != Scratch.app)
+				while ((!(intObj = dObj as InteractiveObject) || !intObj.mouseEnabled) && dObj != Scratch.app)
 					dObj = dObj.parent;
 				target = dObj;
 			}
@@ -71,7 +77,7 @@ public class PointerEvent extends MouseEvent {
 			e.localX = pt.x;
 			e.localY = pt.y;
 			target.dispatchEvent(e);
-			//event.stopImmediatePropagation();
+//			event.stopImmediatePropagation();
 		}
 
 		if (e.type == 'pointerUp') {
@@ -82,9 +88,13 @@ public class PointerEvent extends MouseEvent {
 
 	static public function init(s:Stage):void {
 		stage = s;
+		stage.addEventListener(MouseEvent.MOUSE_OVER, convertEvent, true, 0, true);
+		stage.addEventListener(MouseEvent.MOUSE_OUT, convertEvent, true, 0, true);
 		stage.addEventListener(MouseEvent.MOUSE_DOWN, convertEvent, true, 0, true);
 		stage.addEventListener(MouseEvent.MOUSE_MOVE, convertEvent, true, 0, true);
 		stage.addEventListener(MouseEvent.MOUSE_UP, convertEvent, true, Number.MAX_VALUE, true);
+		stage.addEventListener(TouchEvent.TOUCH_OVER, convertEvent, true, 0, true);
+		stage.addEventListener(TouchEvent.TOUCH_OUT, convertEvent, true, 0, true);
 		stage.addEventListener(TouchEvent.TOUCH_BEGIN, convertEvent, true, 0, true);
 		stage.addEventListener(TouchEvent.TOUCH_MOVE, convertEvent, true, 0, true);
 		stage.addEventListener(TouchEvent.TOUCH_END, convertEvent, true, Number.MAX_VALUE, true);

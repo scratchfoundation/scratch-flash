@@ -261,10 +261,10 @@ public class ScratchObj extends Sprite {
 	}
 
 	static private var cTrans:ColorTransform = new ColorTransform();
-	public function applyFilters(forDragging:Boolean = false):void {
-		img.filters = filterPack.buildFilters(forDragging);
+	public function applyFilters():void {
+		img.filters = filterPack.buildFilters();
 		clearCachedBitmap();
-		if(!Scratch.app.isIn3D || forDragging) {
+		if(!Scratch.app.isIn3D) {
 			var n:Number = Math.max(0, Math.min(filterPack.getFilterSetting('ghost'), 100));
 			cTrans.alphaMultiplier = 1.0 - (n / 100.0);
 			n = 255 * Math.max(-100, Math.min(filterPack.getFilterSetting('brightness'), 100)) / 100;

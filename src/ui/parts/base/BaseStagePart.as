@@ -52,7 +52,7 @@ public class BaseStagePart extends UIPart {
 		addStageSizeButton();
 	}
 
-	private function findMouseTargetOnStage(globalX:int, globalY:int):DisplayObject {
+	public function findMouseTargetOnStage(globalX:int, globalY:int):DisplayObject {
 		// Find the front-most, visible stage element at the given point.
 		// Take sprite shape into account so you can click or grab a sprite
 		// through a hole in another sprite that is in front of it.

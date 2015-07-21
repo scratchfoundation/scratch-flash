@@ -472,6 +472,8 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 
 		const bmID:String = spriteBitmaps[dispObj];
 		const renderOpts:Object = spriteRenderOpts[dispObj];
+		var dw:Number = bounds.width * dispObj.scaleX;
+
 //		var boundsX:Number = bounds.left, boundsY:Number = bounds.top;
 //		var childRender:ChildRender = bitmapsByID[bmID] as ChildRender;
 //		if(childRender && childRender.isPartial()) {
@@ -500,11 +502,12 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		// Setup the texture data
 		const texIndex:int = textureIndexByID[bmID];
 		const texture:ScratchTextureBitmap = textures[texIndex];
-		setTexture(texture);
+		const rect:Rectangle = texture.getRect(bmID);
+		var useNearest:Boolean = pixelateAll || (renderOpts && dispObj.rotation % 90 == 0 && (closeTo(dw, rect.width) || renderOpts.bitmap != null));
+
+		setTexture(texture, useNearest);
 
 		setMatrix(dispObj, bounds);
-
-		const rect:Rectangle = texture.getRect(bmID);
 
 		setFC5(rect, renderOpts, texture);
 
@@ -518,11 +521,19 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 	}
 
 	private var currentTexture:ScratchTextureBitmap = null;
-	private function setTexture(texture:ScratchTextureBitmap):void {
-		if (texture == currentTexture) return;
+	private var currentTextureFilter:String = null;
 
+	private function setTexture(texture:ScratchTextureBitmap, useNearest:Boolean):void {
+		if (texture != currentTexture) {
 		__context.setTextureAt(0, texture.getTexture(__context));
 		currentTexture = texture;
+	}
+
+		var desiredTextureFilter:String = useNearest ? Context3DTextureFilter.NEAREST : Context3DTextureFilter.LINEAR;
+		if (currentTextureFilter != desiredTextureFilter) {
+			__context.setSamplerStateAt(0, Context3DWrapMode.CLAMP, desiredTextureFilter, Context3DMipFilter.MIPNONE);
+			currentTextureFilter = desiredTextureFilter;
+		}
 	}
 
 	private var matrixScratchpad:Vector.<Number> = new Vector.<Number>(16, true);
@@ -584,10 +595,9 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 			var effectValue:Number;
 
 			if (!!(effectValue = effects[FX_PIXELATE])) {
-				var forcePixelate:Boolean = pixelateAll || (renderOpts && dispObj.rotation % 90 == 0 && (closeTo(dw, rect.width) || renderOpts.bitmap!=null));
 				var pixelate:Number = (Math.abs(effectValue * scale) / 10) + 1;
-				var pixelX:Number = (pixelate > 1 || forcePixelate ? pixelate / rect.width : -1);
-				var pixelY:Number = (pixelate > 1 || forcePixelate ? pixelate / rect.height : -1);
+				var pixelX:Number = (pixelate > 1 ? pixelate / rect.width : -1);
+				var pixelY:Number = (pixelate > 1 ? pixelate / rect.height : -1);
 				if(pixelate > 1) {
 					pixelX *= rect.width / srcWidth;
 					pixelY *= rect.height / srcHeight;
@@ -1127,7 +1137,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		var bounds:Rectangle = boundsDict[dispObj];
 		var pScale:Number = appScale * scratchStage.stage.contentsScaleFactor;
 
-		var changeBackBuffer:Boolean = isIOS || (bmd.width > scissorRect.width || bmd.height > scissorRect.height);
+		var changeBackBuffer:Boolean = true;//isIOS || (bmd.width > scissorRect.width || bmd.height > scissorRect.height);
 		if(changeBackBuffer) {
 			projMatrix = createOrthographicProjectionMatrix(bmd.width, bmd.height, 0, 0);
 			__context.configureBackBuffer(bmd.width, bmd.height, 0, false);
@@ -1146,7 +1156,6 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		__context.setScissorRectangle(new Rectangle(0, 0, bmd.width + 1, bmd.height + 1));
 		setBlendFactors(false);
 		drawChild(dispObj);
-//		__context.present();
 		__context.drawToBitmapData(bmd);
 
 		dispObj.x = oldX;

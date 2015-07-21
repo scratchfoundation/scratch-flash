@@ -94,7 +94,6 @@ public class ScratchStage extends ScratchObj implements DropTarget, ITool {
 		addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, menu);
 	}
 
-//	public function isSticky():Boolean { return true; }
 	public function shutdown():void {}
 
 	public function mouseHandler(e:PointerEvent):Boolean {

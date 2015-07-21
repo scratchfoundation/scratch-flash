@@ -499,8 +499,10 @@ public class MediaLibrary extends Sprite {
 			if (item) {
 				var itemBounds:Rectangle = item.getBounds(resultsPane);
 				var shouldShow:Boolean = visibleBounds.intersects(itemBounds);
-				pendingShowHideOperations[item] = shouldShow;
-				queueIsEmpty = false;
+//				if (item.visible != shouldShow) {
+					pendingShowHideOperations[item] = shouldShow;
+					queueIsEmpty = false;
+//				}
 			}
 		}
 		if (queueWasEmpty && !queueIsEmpty) {

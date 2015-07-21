@@ -37,6 +37,7 @@ import flash.geom.Rectangle;
 import scratch.BlockMenus;
 
 import ui.Utility;
+import ui.events.PointerEvent;
 
 import util.Drawing;
 
@@ -73,7 +74,7 @@ public class NewMenu extends Sprite {
 		if (!action) throw Error('Action function not found!');
 
 		var mi:NewMenuItem = new NewMenuItem(this, elems);
-		mi.addEventListener(MouseEvent.MOUSE_UP, action, false, 0, true);
+		mi.addEventListener(PointerEvent.POINTER_UP, action, false, 0, true);
 		addChild(mi);
 	}
 
@@ -104,7 +105,7 @@ public class NewMenu extends Sprite {
 
 		drawBackground(r);
 
-		stage.addEventListener(MouseEvent.MOUSE_DOWN, hide, false, 0, true);
+		stage.addEventListener(PointerEvent.POINTER_DOWN, hide, false, 0, true);
 	}
 
 	public function hide(e:Event = null):void {
@@ -112,7 +113,7 @@ public class NewMenu extends Sprite {
 			var me:MouseEvent = e as MouseEvent;
 			if (hitTestPoint(me.stageX, me.stageY, true)) return;
 		}
-		stage.removeEventListener(MouseEvent.MOUSE_DOWN, hide);
+		stage.removeEventListener(PointerEvent.POINTER_DOWN, hide);
 		stage.removeChild(this);
 	}
 

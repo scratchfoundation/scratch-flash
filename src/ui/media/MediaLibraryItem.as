@@ -118,7 +118,7 @@ public class MediaLibraryItem extends Sprite {
 
 	private var visualReady:Boolean = false;
 	public function show(shouldShow:Boolean, whenDone:Function = null):void {
-		if (visible == shouldShow) {
+		if (visible == shouldShow && (visualReady || !shouldShow)) {
 			if (whenDone) whenDone();
 			return;
 		}
@@ -199,6 +199,7 @@ public class MediaLibraryItem extends Sprite {
 		if (cachedBM) { setThumbnailBM(cachedBM); if (done) done(); return; }
 
 		// if not in the thumbnail cache, fetch/compute it
+		trace('loading '+md5);
 		if (fileType(md5) == 'svg') loaders.push(Scratch.app.server.getAsset(md5, gotSVGData));
 		else loaders.push(Scratch.app.server.getThumbnail(md5, thumbnailWidth, thumbnailHeight, setThumbnail));
 	}
@@ -373,7 +374,7 @@ public class MediaLibraryItem extends Sprite {
 		}
 	}
 
-	private function stopPlayingSound(ignore:*):void {
+	private function stopPlayingSound(ignore:* = null):void {
 		if (sndPlayer) sndPlayer.stopPlaying();
 		sndPlayer = null;
 		playButton.turnOff();

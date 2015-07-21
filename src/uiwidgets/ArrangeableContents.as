@@ -22,6 +22,7 @@ import ui.styles.ItemStyle;
 public class ArrangeableContents extends ScrollFrameContents implements DropTarget {
 	public static const ORDER_CHANGE:String = 'orderChange';
 	public static const CONTENT_CHANGE:String = 'contentChange';
+	public static const CONTENT_ANIMATE:String = 'contentAnimate';
 	private static const leftBehindAlpha:Number = 0.6;
 	public static const defaultStyle:ContainerStyle = new ContainerStyle();
 
@@ -262,11 +263,27 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 		return items;
 	}
 
+	public function isAnimating():Boolean {
+		for (var i:int = 0; i < numChildren; i++) {
+			var item:BaseItem = getChildAt(i) as BaseItem;
+			if (!item) continue;
+
+			var tweens:Array = TweenLite.masterList[item];
+			if (tweens && tweens.length && tweens[0].active) return true;
+			break;
+		}
+		return false;
+	}
+
+	private var animating:Boolean;
 	public function arrangeItems(animate:Boolean = false):void {
 		if (contentChanged) {
 			dispatchEvent(new Event(orderChanged ? ORDER_CHANGE : CONTENT_CHANGE));
 			contentChanged = false;
 			orderChanged = false;
+		}
+		else if (animate) {
+			dispatchEvent(new Event(CONTENT_ANIMATE));
 		}
 
 		if (numChildren > 0) {

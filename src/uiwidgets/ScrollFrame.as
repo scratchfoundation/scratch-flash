@@ -348,8 +348,8 @@ public class ScrollFrame extends Sprite implements DropTarget {
 		xHistory.shift();
 		yHistory.shift();
 
-		contents.x += offsetX;
-		contents.y += offsetY;
+		contents.x = contents.x + offsetX;
+		contents.y = contents.y + offsetY;
 		constrainScroll();
 
 		//updateScrollbars();
@@ -384,8 +384,8 @@ public class ScrollFrame extends Sprite implements DropTarget {
 		yVelocity = decayFactor * yVelocity;
 		if (Math.abs(xVelocity) < stopThreshold) xVelocity = 0;
 		if (Math.abs(yVelocity) < stopThreshold) yVelocity = 0;
-		if (allowHorizontalScrollbar) contents.x += xVelocity;
-		contents.y += yVelocity;
+		if (allowHorizontalScrollbar) contents.x = contents.x + xVelocity;
+		contents.y = contents.y + yVelocity;
 
 		contents.x = Math.max(-maxScrollH(), Math.min(contents.x, 0));
 		contents.y = Math.max(-maxScrollV(), Math.min(contents.y, 0));

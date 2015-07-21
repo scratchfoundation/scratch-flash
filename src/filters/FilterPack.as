@@ -106,9 +106,9 @@ public class FilterPack {
 
 	private static var emptyArray:Array = [];
 	private var newFilters:Array = [];
-	public function buildFilters(force:Boolean = false):Array {
+	public function buildFilters():Array {
 		// disable filters not running on x86 because PixelBender is really slow
-		if((Scratch.app.isIn3D || Capabilities.cpuArchitecture != 'x86') && !force) return emptyArray;
+		if(Scratch.app.isIn3D || Capabilities.cpuArchitecture != 'x86') return emptyArray;
 
 		var scale:Number = targetObj.isStage ? 1 : Scratch.app.stagePane.scaleX;
 		var srcWidth:Number = targetObj.width * scale;
