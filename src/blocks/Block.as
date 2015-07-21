@@ -213,6 +213,24 @@ public class Block extends Sprite {
 		fixArgLayout();
 	}
 
+	public function get broadcastMsg():String {
+		for each (var arg:BlockArg in args) {
+			if (arg.menuName == "broadcast") {
+				return arg.argValue;
+			}
+		}
+
+		return null;
+	}
+
+	public function set broadcastMsg(listName:String):void {
+		for each (var arg:BlockArg in args) {
+			if (arg.menuName == "broadcast") {
+				arg.setArgValue(listName);
+			}
+		}
+	}
+
 	public function normalizedArgs():Array {
 		return rightToLeft ? args.concat().reverse() : args;
 	}
