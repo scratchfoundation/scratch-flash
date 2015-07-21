@@ -534,7 +534,7 @@ public class BlockMenus implements DragClient {
 		addGenericBlockItems(m);
 		m.addItem('edit', editProcSpec);
 		if (block.op==Specs.CALL) {
-			m.addItem('see the define script', jumpToProcDef);
+			m.addItem('define', jumpToProcDef);
 		}
 		showMenu(m);
 	}
