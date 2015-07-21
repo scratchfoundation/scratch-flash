@@ -569,19 +569,18 @@ public class Interpreter {
 	// Broadcast and scene starting
 
 	public function broadcast(msg:String, waitFlag:Boolean):void {
-		var pair:Array;
 		if (activeThread.firstTime) {
-			var receivers:Array = [];
 			var newThreads:Array = [];
 			msg = msg.toLowerCase();
-			var findReceivers:Function = function (stack:Block, target:ScratchObj):void {
-				if ((stack.op == "whenIReceive") && (stack.args[0].argValue.toLowerCase() == msg)) {
-					receivers.push([stack, target]);
+			var findReceivers:Function = function (target:ScratchObj):void {
+				var receivers:Array = target.collectReceiverHats("rcv_"+msg);
+				if (receivers) {
+					for each (var s:Block in receivers) { // (re)start all receivers
+						newThreads.push(restartThread(s,target));
+					}
 				}
 			}
-			app.runtime.allStacksAndOwnersDo(findReceivers);
-			// (re)start all receivers
-			for each (pair in receivers) newThreads.push(restartThread(pair[0], pair[1]));
+			app.runtime.allOwnersDo(findReceivers);
 			if (!waitFlag) return;
 			activeThread.tmpObj = newThreads;
 			activeThread.firstTime = false;
@@ -599,18 +598,18 @@ public class Interpreter {
 	public function startScene(sceneName:String, waitFlag:Boolean):void {
 		var pair:Array;
 		if (activeThread.firstTime) {
-			function findSceneHats(stack:Block, target:ScratchObj):void {
-				if ((stack.op == "whenSceneStarts") && (stack.args[0].argValue == sceneName)) {
-					receivers.push([stack, target]);
-				}
-			}
-			var receivers:Array = [];
 			app.stagePane.showCostumeNamed(sceneName);
 			redraw();
-			app.runtime.allStacksAndOwnersDo(findSceneHats);
-			// (re)start all receivers
 			var newThreads:Array = [];
-			for each (pair in receivers) newThreads.push(restartThread(pair[0], pair[1]));
+			var findReceivers:Function = function (target:ScratchObj):void {
+				var receivers:Array = target.collectReceiverHats("scn_"+sceneName);
+				if (receivers) {
+					for each (var s:Block in receivers) { // (re)start all receivers
+						newThreads.push(restartThread(s,target));
+					}
+				}
+			}
+			app.runtime.allOwnersDo(findReceivers);
 			if (!waitFlag) return;
 			activeThread.tmpObj = newThreads;
 			activeThread.firstTime = false;

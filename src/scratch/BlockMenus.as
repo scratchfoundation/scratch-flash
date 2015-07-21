@@ -200,6 +200,8 @@ public class BlockMenus implements DragClient {
 	private function setBlockArg(selection:*):void {
 		if (blockArg != null) blockArg.setArgValue(selection);
 		Scratch.app.setSaveNeeded();
+		// rebuild receiver caches need rebuild if this was a receiver/backdrop-switched hat block
+		if (block.op=='whenSceneStarts' || block.op=='whenIReceive') app.runtime.clearAllReceiverCaches();
 		SCRATCH::allow3d { Scratch.app.runtime.checkForGraphicEffects(); }
 	}
 

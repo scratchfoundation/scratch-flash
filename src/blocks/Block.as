@@ -559,6 +559,7 @@ public class Block extends Sprite {
 			dup.fixExpressionLayout();
 			dup.fixStackLayout();
 		}
+		Scratch.app.runtime.clearAllHatCaches();
 		return dup;
 	}
 
@@ -816,6 +817,7 @@ public class Block extends Sprite {
 		newStack.x = p.x + deltaX;
 		newStack.y = p.y + deltaY;
 		Scratch.app.gh.grabOnMouseUp(newStack);
+		Scratch.app.runtime.clearAllHatCaches();
 	}
 
 	public function deleteStack():Boolean {
@@ -842,6 +844,7 @@ public class Block extends Sprite {
 		app.runtime.recordForUndelete(this, x, y, 0, app.viewedObj());
 		app.scriptsPane.saveScripts();
 		SCRATCH::allow3d { app.runtime.checkForGraphicEffects(); }
+		app.runtime.clearAllHatCaches();
 		app.updatePalette();
 		return true;
 	}

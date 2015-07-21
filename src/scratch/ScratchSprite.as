@@ -127,9 +127,18 @@ public class ScratchSprite extends ScratchObj {
 			// Clones share scripts and sounds with the original sprite.
 			scripts = spr.scripts;
 			sounds = spr.sounds;
+			// want to know which is the original sprite
+			if (spr.isClone) origSprite = spr.origSprite;
+			else origSprite = spr;
+			// will use caches from original sprite, since clone shares scripts
+			receiverCache = null;
+			edgeTriggeredCache = null;
+			keyPressedCache = null;
+			whenClickedCache = null;
 		} else {
 			for (i = 0; i < spr.scripts.length; i++) scripts.push(spr.scripts[i].duplicate(forClone));
 			sounds = spr.sounds.concat();
+			origSprite = null;  // should be already, right...?
 		}
 
 		// To support vector costumes, every sprite must have its own costume copies, even clones.
