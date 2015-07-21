@@ -534,22 +534,21 @@ public class BlockMenus implements DragClient {
 		addGenericBlockItems(m);
 		m.addItem('edit', editProcSpec);
 		if (block.op==Specs.CALL) {
-			/// TLF: alternative text? -maybe "show definition"...?
-			m.addItem('go to definition', gotoProcSpec);
+			m.addItem('see the define script', jumpToProcDef);
 		}
 		showMenu(m);
 	}
 
-	private function gotoProcSpec():void {
+	private function jumpToProcDef():void {
 		if(!app.editMode) return;
 		if (block.op != Specs.CALL) return;
 		var def:Block = app.viewedObj().lookupProcedure(block.spec);
 		if (!def) return;
 		var pane:ScriptsPane = def.parent as ScriptsPane;
-        if (!pane) return;
+		if (!pane) return;
 		if (pane.parent is ScrollFrame) {
-		   pane.x = 5-def.x*pane.scaleX;
-		   pane.y = 5-def.y*pane.scaleX;
+		   pane.x = 5 - def.x*pane.scaleX;
+		   pane.y = 5 - def.y*pane.scaleX;
 		   (pane.parent as ScrollFrame).constrainScroll();
 		   (pane.parent as ScrollFrame).updateScrollbars();
 		}
