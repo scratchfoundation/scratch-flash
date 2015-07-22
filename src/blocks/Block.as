@@ -816,7 +816,7 @@ public class Block extends Sprite {
 	}
 
 	public function addComment():void {
-		var scriptsPane:ScriptsPane = topBlock().parent as ScriptsPane;
+		var scriptsPane:ScriptsPane = topBlock().parent.parent as ScriptsPane;
 		if (scriptsPane) scriptsPane.addComment(this);
 	}
 

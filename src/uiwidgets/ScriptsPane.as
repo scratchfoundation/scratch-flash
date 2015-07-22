@@ -219,7 +219,7 @@ public class ScriptsPane extends ScrollFrameContents {
 		var result:Array = [];
 		for (var i:int = 0; i < numChildren; i++) {
 			var child:DisplayObject = getChildAt(i);
-			if (child is Block) result.push(child);
+			if (child is BlockStack) result.push((child as BlockStack).firstBlock);
 		}
 		return result;
 	}
@@ -508,7 +508,7 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 
 		// update comment position
 		var blockP:Point = globalToLocal(c.blockRef.localToGlobal(new Point(0, 0)));
-		var top:Block = c.blockRef.topBlock();
+		var top:BlockStack = c.blockRef.topBlock().parent as BlockStack;
 		var topP:Point = globalToLocal(top.localToGlobal(new Point(0, 0)));
 		c.x = c.isExpanded() ?
 			topP.x + top.width + 15 :
