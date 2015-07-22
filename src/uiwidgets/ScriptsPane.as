@@ -532,15 +532,15 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 		//	3. Compute the column widths
 		//	4. Move stacks into place
 
-		var stacks:Array = stacksSortedByX();
-		var columns:Array = assignStacksToColumns(stacks);
-		var columnWidths:Array = computeColumnWidths(columns);
+		var stacks:Vector.<BlockStack> = stacksSortedByX();
+		var columns:Vector.<Vector.<BlockStack>> = assignStacksToColumns(stacks);
+		var columnWidths:Vector.<Number> = computeColumnWidths(columns);
 
 		var nextX:int = padding;
 		for (var i:int = 0; i < columns.length; i++) {
-			var col:Array = columns[i];
+			var col:Vector.<BlockStack> = columns[i];
 			var nextY:int = padding;
-			for each (var b:Block in col) {
+			for each (var b:BlockStack in col) {
 				b.x = nextX;
 				b.y = nextY;
 				nextY += b.height + padding;
@@ -550,51 +550,51 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 		saveScripts();
 	}
 
-	private function stacksSortedByX():Array {
+	private function stacksSortedByX():Vector.<BlockStack> {
 		// Get all stacks and sorted by x.
-		var stacks:Array = [];
+		var stacks:Vector.<BlockStack> = new Vector.<BlockStack>();
 		for (var i:int = 0; i < numChildren; i++) {
 			var o:* = getChildAt(i);
-			if (o is Block) stacks.push(o);
+			if (o is BlockStack) stacks.push(o);
 		}
-		stacks.sort(function (b1:Block, b2:Block):int {return b1.x - b2.x }); // sort by increasing x
+		stacks.sort(function (b1:BlockStack, b2:BlockStack):int {return b1.x - b2.x }); // sort by increasing x
 		return stacks;
 	}
 
-	private function assignStacksToColumns(stacks:Array):Array {
+	private function assignStacksToColumns(stacks:Vector.<BlockStack>):Vector.<Vector.<BlockStack>> {
 		// Assign stacks to columns. Assume stacks is sorted by increasing x.
 		// A stack is placed in the first column where it does not overlap vertically with
 		// another stack in that column. New columns are created as needed.
-		var columns:Array = [];
-		for each (var b:Block in stacks) {
+		var columns:Vector.<Vector.<BlockStack>> = new Vector.<Vector.<BlockStack>>;
+		for each (var b:BlockStack in stacks) {
 			var assigned:Boolean = false;
-			for each (var c:Array in columns) {
+			for each (var c:Vector.<BlockStack> in columns) {
 				if (fitsInColumn(b, c)) {
 					assigned = true;
 					c.push(b);
 					break;
 				}
 			}
-			if (!assigned) columns.push([b]); // create a new column for this stack
+			if (!assigned) columns.push(Vector.<BlockStack>([b])); // create a new column for this stack
 		}
 		return columns;
 	}
 
-	private function fitsInColumn(b:Block, c:Array):Boolean {
+	private function fitsInColumn(b:BlockStack, c:Vector.<BlockStack>):Boolean {
 		var bTop:int = b.y;
 		var bBottom:int = bTop + b.height;
-		for each (var other:Block in c) {
+		for each (var other:BlockStack in c) {
 			if (!((other.y > bBottom) || ((other.y + other.height) < bTop))) return false;
 		}
 		return true;
 	}
 
-	private function computeColumnWidths(columns:Array):Array {
-		var widths:Array = [];
-		for each (var c:Array in columns) {
-			c.sort(function (b1:Block, b2:Block):int {return b1.y - b2.y }); // sort by increasing y
+	private function computeColumnWidths(columns:Vector.<Vector.<BlockStack>>):Vector.<Number> {
+		var widths:Vector.<Number> = new Vector.<Number>;
+		for each (var c:Vector.<BlockStack> in columns) {
+			c.sort(function (b1:BlockStack, b2:BlockStack):int {return b1.y - b2.y }); // sort by increasing y
 			var w:int = 0;
-			for each (var b:Block in c) w = Math.max(w, b.width);
+			for each (var b:BlockStack in c) w = Math.max(w, b.width);
 			widths.push(w);
 		}
 		return widths;
