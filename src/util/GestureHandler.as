@@ -475,6 +475,8 @@ public class GestureHandler {
 
 		var b:Block = obj as Block;
 		if (b) {
+			if (b.parent is Block)
+				(b.parent as Block).removeBlock(b);
 			obj = new BlockStack(b);
 			b.fixStackLayout();
 			originalParent.addChild(obj);

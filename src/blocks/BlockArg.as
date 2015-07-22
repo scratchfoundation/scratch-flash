@@ -244,5 +244,4 @@ public class BlockArg extends Sprite {
 			evt.stopImmediatePropagation();
 		}
 	}
-
 }}
