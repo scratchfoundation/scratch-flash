@@ -9,6 +9,8 @@ import flash.events.Event;
 import flash.filters.GlowFilter;
 import flash.geom.Point;
 
+import uiwidgets.ScriptsPane;
+
 public class BlockStack extends Sprite {
 	public var firstBlock:Block;
 
@@ -22,14 +24,10 @@ public class BlockStack extends Sprite {
 	private var originalParent:DisplayObjectContainer, originalRole:int, originalIndex:int, originalPosition:Point;
 
 	public function BlockStack(b:Block) {
-		var pb:Block = b.prevBlock;
+		var pb:Block = b.prevBlock || b.parent as Block;
 		if (pb) {
-			if (pb.nextBlock == b)
-				pb.nextBlock = null;
-			if (pb.subStack1 == b)
-				pb.subStack1 = null;
-			if (pb.subStack2 == b)
-				pb.subStack2 = null;
+			saveOriginalState(b);
+			pb.removeBlock(b);
 			b.prevBlock = null;
 		}
 		addChild(b);
@@ -104,24 +102,34 @@ public class BlockStack extends Sprite {
 		return [f];
 	}
 
-	public function saveOriginalState():void {
-		originalParent = parent;
-		if (parent) {
-			var b:Block = parent as Block;
-			if (b == null) {
-				originalRole = ROLE_ABSOLUTE;
-			} else if (firstBlock.isReporter) {
+	public function saveOriginalState(b:Block = null):void {
+		if (b) {
+			originalParent = b.parent as Block || b.prevBlock || parent;
+			var p:Block = b.parent as Block;
+			var pb:Block = b.prevBlock as Block;
+			if (p && b.isReporter) {
 				originalRole = ROLE_EMBEDDED;
-				originalIndex = b.args.indexOf(this);
-			} else if (b.nextBlock == firstBlock) {
-				originalRole = ROLE_NEXT;
-			} else if (b.subStack1 == firstBlock) {
-				originalRole = ROLE_SUBSTACK1;
-			} else if (b.subStack2 == firstBlock) {
-				originalRole = ROLE_SUBSTACK2;
+				originalIndex = p.args.indexOf(b);
 			}
+			else if (pb) {
+				if (pb.nextBlock == b) {
+					originalRole = ROLE_NEXT;
+				}
+				else if (pb.subStack1 == b) {
+					originalRole = ROLE_SUBSTACK1;
+				}
+				else if (pb.subStack2 == b) {
+					originalRole = ROLE_SUBSTACK2;
+				}
+			}
+			originalPosition = b.localToGlobal(new Point(0, 0));
+		}
+		else if (parent is ScriptsPane) {
+			originalRole = ROLE_ABSOLUTE;
 			originalPosition = localToGlobal(new Point(0, 0));
-		} else {
+			originalParent = parent;
+		}
+		else {
 			originalRole = ROLE_NONE;
 			originalPosition = null;
 		}

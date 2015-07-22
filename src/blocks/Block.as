@@ -537,6 +537,10 @@ public class Block extends Sprite {
 		if (b.parent is BlockStack) b.parent.removeChild(b);
 		else if (b.parent == this) removeChild(b);
 		if (b == nextBlock) {
+			var rb:Block = b;
+			if (parent)
+				while (rb = rb.nextBlock)
+					parent.removeChild(rb);
 			nextBlock = null;
 		}
 		if (b == subStack1) subStack1 = null;
@@ -776,7 +780,13 @@ public class Block extends Sprite {
 		}
 		// TODO: Remove any waiting reporter data in the Scratch.app.extensionManager
 		if (parent is Block) Block(parent).removeBlock(this);
-		else if (parent) parent.removeChild(this);
+		else if (prevBlock) prevBlock.removeBlock(this);
+		else if (parent) {
+			var bs:BlockStack = parent as BlockStack;
+			parent.removeChild(this);
+			if (bs && !bs.firstBlock && bs.parent)
+				bs.parent.removeChild(bs);
+		}
 		this.cacheAsBitmap = false;
 		// set position for undelete
 		x = top.x;
