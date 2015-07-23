@@ -547,7 +547,11 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 			var loader:Loader = new Loader();
 			loader.contentLoaderInfo.addEventListener(Event.COMPLETE, imageDecoded);
 			loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, function(e:Event):void { decodeError(); });
-			loader.loadBytes(data);
+			try {
+				loader.loadBytes(data);
+			} catch(e:*) {
+				decodeError();
+			}
 		} else if (fExt == '.gif') {
 			try {
 				importGIF(fName, data);
