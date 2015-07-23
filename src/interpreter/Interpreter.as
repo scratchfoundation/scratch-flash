@@ -154,7 +154,8 @@ public class Interpreter {
 
 	public function showAllRunFeedback():void {
 		for each (var t:Thread in threads) {
-			(t.topBlock.parent as BlockStack).showRunFeedback();
+			if (t.topBlock.parent is BlockStack)
+				(t.topBlock.parent as BlockStack).showRunFeedback();
 		}
 	}
 

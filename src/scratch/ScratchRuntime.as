@@ -741,7 +741,8 @@ public class ScratchRuntime {
 	public function clearRunFeedback():void {
 		if(app.editMode) {
 			for each (var stack:Block in allStacks()) {
-				(stack.parent as BlockStack).hideRunFeedback();
+				if (stack.parent is BlockStack)
+					(stack.parent as BlockStack).hideRunFeedback();
 			}
 		}
 		app.updatePalette();
