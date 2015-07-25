@@ -141,6 +141,12 @@ public class Resources {
 	[Embed(source='UI/misc/removeItem.png')] private static const removeItem:Class;
 	[Embed(source='UI/misc/speakerOff.png')] private static const speakerOff:Class;
 	[Embed(source='UI/misc/speakerOn.png')] private static const speakerOn:Class;
+	[Embed(source='UI/misc/prevOff.png')] private static const prevOff:Class;
+	[Embed(source='UI/misc/prevOn.png')] private static const prevOn:Class;
+	[Embed(source='UI/misc/nextOff.png')] private static const nextOff:Class;
+	[Embed(source='UI/misc/nextOn.png')] private static const nextOn:Class;
+	[Embed(source='UI/misc/clearOff.png')] private static const clearOff:Class;
+	[Embed(source='UI/misc/clearOn.png')] private static const clearOn:Class;
 
 	// New Backdrop Buttons
 	[Embed(source='UI/newbackdrop/cameraSmallOff.png')] private static const cameraSmallOff:Class;

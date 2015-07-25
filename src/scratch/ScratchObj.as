@@ -64,6 +64,9 @@ public class ScratchObj extends Sprite {
 	public var instrument:int = 0;
 	public var filterPack:FilterPack;
 	public var isClone:Boolean;
+	// to remember last position in scripts pane
+	public var scriptsPosX:Number=0;
+	public var scriptsPosY:Number=0;
 
 	public var img:Sprite; // holds a bitmap or svg object, after applying image filters, scale, and rotation
 	private var lastCostume:ScratchCostume;

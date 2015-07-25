@@ -494,6 +494,11 @@ public class Scratch extends Sprite {
 	public function selectSprite(obj:ScratchObj):void {
 		if (isShowing(imagesPart)) imagesPart.editor.shutdown();
 		if (isShowing(soundsPart)) soundsPart.editor.shutdown();
+		if (viewedObj()) {
+			// use last known position for this object
+			viewedObj().scriptsPosX = scriptsPane.x;
+			viewedObj().scriptsPosY = scriptsPane.y;
+		}
 		viewedObject = obj;
 		libraryPart.refresh();
 		tabsPart.refresh();

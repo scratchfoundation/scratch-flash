@@ -118,7 +118,7 @@ public class SpriteThumbnail extends Sprite {
 	}
 
 	private function addHighlightFrame():void {
-		const highlightColor:int = 0xE0E000;
+		const highlightColor:int = 0xD0F000;
 		highlightFrame = new Shape();
 		var g:Graphics = highlightFrame.graphics;
 		var h:int = targetObj.isStage ? stageFrameH : frameH;

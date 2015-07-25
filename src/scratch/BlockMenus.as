@@ -490,7 +490,7 @@ public class BlockMenus implements DragClient {
 	// ***** Generic block menu *****
 
 	private function genericBlockMenu(evt:MouseEvent):void {
-		if (!block || block.isEmbeddedParameter()) return;
+		if (!block) return;
 		var m:Menu = new Menu(null, 'genericBlock');
 		addGenericBlockItems(m,true);
 		showMenu(m);
@@ -498,22 +498,38 @@ public class BlockMenus implements DragClient {
 
 	private function addGenericBlockItems(m:Menu,highlightItems:Boolean=false):void {
 		if (!block) return;
-		m.addLine();
-		if (!isInPalette(block)) {
-			if (!block.isProcDef()) {
-				m.addItem('duplicate', duplicateStack);
+		if (!block.isEmbeddedParameter()) {  // these only have highlight items
+			m.addLine();
+			if (!isInPalette(block)) {
+				if (!block.isProcDef()) {
+					m.addItem('duplicate', duplicateStack);
+				}
+				m.addItem('delete', block.deleteStack);
+				m.addLine();
+				m.addItem('add comment', block.addComment);
 			}
-			m.addItem('delete', block.deleteStack);
+			m.addItem('help', block.showHelp);
 			m.addLine();
-			m.addItem('add comment', block.addComment);
 		}
-		m.addItem('help', block.showHelp);
-		m.addLine();
-		if (highlightItems) {
-			m.addItem('highlight this block',genericHighlightSameBlocks); // "highlight same blocks", "highlight all like this"...?
+		if (highlightItems) addCommonHighlightItems(m,true);
+	}
+
+	private function addCommonHighlightItems(m:Menu,first:Boolean=false):void {
+		if (block.hasHighlight()) {  // still want prev/next items...?
+			if (first) m.addLine();
 			m.addItem('clear highlights',clearHighlights);
-			m.addLine();
+			if (!first) m.addLine();
+			m.addItem('previous highlight',prevHighlight);
+			m.addItem('next highlight',nextHighlight);
+		} else {
+			if (first) {
+				m.addLine();
+				if (block.op==Specs.GET_PARAM) m.addItem('highlight parameter',genericHighlightSameBlocks);
+				else m.addItem('highlight matching blocks',genericHighlightSameBlocks); // "highlight same blocks", "highlight all like this", just "highlight"...?
+			}
+			m.addItem('clear highlights',clearHighlights);
 		}
+		m.addLine();
 	}
 
 	private function duplicateStack():void {
@@ -533,28 +549,36 @@ public class BlockMenus implements DragClient {
 	}
 
 	private function clearHighlights():void {
-		app.runtime.clearBlockHighlights();
+		app.scriptsPane.clearBlockHighlights();
 		app.highlightSprites([]);
 	}
 
 	private function showHighlights(sprites:Array,blocklist:Array):void {
 		if (blocklist.length>0 && sprites.length>0) {
-			app.runtime.showBlockHighlights(blocklist);
+			app.scriptsPane.showBlockHighlights(blocklist,block);
 			app.highlightSprites(sprites);
 		} else {
-			app.runtime.clearBlockHighlights();
+			app.scriptsPane.clearBlockHighlights();
 			app.highlightSprites([]);
 		}
 	}
 
-	private function highlightSameSpec(matchName:String):void {
+	private function prevHighlight():void {
+		app.scriptsPane.prevHighlightBlock(block);
+	}
+
+	private function nextHighlight():void {
+		app.scriptsPane.nextHighlightBlock(block);
+	}
+
+	private function highlightSameSpec(matchOp:String,matchName:String):void {
 		var vo:ScratchObj = app.viewedObj();
 		if (!vo) return;
 		var blocklist:Array = [];
 		for each (var stack:Block in vo.scripts) {
 			// for each block in stack
 			stack.allBlocksDo(function (b:Block):void {
-				if (b.spec == matchName) blocklist.push(b);
+				if (b.op == matchOp && b.spec == matchName) blocklist.push(b);
 			});
 		}
 		showHighlights([vo],blocklist);
@@ -624,7 +648,7 @@ public class BlockMenus implements DragClient {
 		// These only match if third arg (i.e. the list name) also matches
 		const barg2Arr:Array = ["insert:at:ofList:"];
 		if (specArr.indexOf(block.op)>-1) {
-			highlightSameSpec( block.spec );
+			highlightSameSpec( block.op, block.spec );
 		} else if (barg0Arr.indexOf(block.op)>-1 && block.args[0] is BlockArg) {
 			highlightSameBlocks( block.op, 0, block.args[0].argValue as String);
 		} else if (barg1Arr.indexOf(block.op)>-1 && block.args[1] is BlockArg) {
@@ -644,8 +668,10 @@ public class BlockMenus implements DragClient {
 		m.addItem('edit', editProcSpec);
 		m.addLine();
 		if (block.op == Specs.CALL) m.addItem('highlight define', highlightProcDef);
-		m.addItem('highlight callers', highlightCallers);
-		m.addItem('clear highlights', clearHighlights);
+		if (!block.hasHighlight() || block.op == Specs.PROCEDURE_DEF) {
+			m.addItem('highlight callers', highlightCallers);
+		}
+		addCommonHighlightItems(m);
 		showMenu(m);
 	}
 
@@ -658,14 +684,8 @@ public class BlockMenus implements DragClient {
 			return;
 		}
 		showHighlights([app.viewedObj()],[def]);
-		var pane:ScriptsPane = def.parent as ScriptsPane;
-		if (!pane) return;
-		if (pane.parent is ScrollFrame) {
-			pane.x = 5 - def.x*pane.scaleX;
-			pane.y = 5 - def.y*pane.scaleX;
-			(pane.parent as ScrollFrame).constrainScroll();
-			(pane.parent as ScrollFrame).updateScrollbars();
-		}
+		app.scriptsPane.jumpToBlock(def);
+		app.runtime.startBlinkingHighlight(def);
 	}
 
 	private function editProcSpec():void {
@@ -716,9 +736,10 @@ public class BlockMenus implements DragClient {
 		if (block.op == Specs.CALL) {
 			var def:Block = o.lookupProcedure(block.spec);
 			if (!def) return;
-			block = def;
+		} else {
+			def = block;
 		}
-		var blks:Array = app.runtime.allCallsOf(block.spec, o);
+		var blks:Array = app.runtime.allCallsOf(def.spec, o);
 		showHighlights([o],blks);
 	}
 
@@ -732,8 +753,7 @@ public class BlockMenus implements DragClient {
 			addGenericBlockItems(m);
 			m.addLine();
 			m.addItem('highlight list', highlightList);
-			m.addItem('clear highlights', clearHighlights);
-			m.addLine()
+			addCommonHighlightItems(m);
 		}
 		if (!(isInPalette(block) && isGetter)) {
 			var myName:String = isGetter ? blockVarOrListName() : null;
@@ -757,16 +777,19 @@ public class BlockMenus implements DragClient {
 		if (isGetter && isInPalette(block)) { // var reporter in palette
 			m.addItem('rename variable', renameVar);
 			m.addItem('delete variable', deleteVarOrList);
-			addGenericBlockItems(m);
-			m.addItem('highlight variable', highlightVar);
-			m.addItem('clear highlights', clearHighlights);
 			m.addLine();
+			m.addItem('highlight variable', highlightVar);
+			addCommonHighlightItems(m);
+			addGenericBlockItems(m);
 		} else {
 			if (isGetter) {
 				addGenericBlockItems(m);
-				m.addItem('highlight variable', highlightVar);
-				m.addItem('clear highlights', clearHighlights);
-				m.addLine();
+				if (!block.hasHighlight()) {
+					m.addItem('highlight variable', highlightVar);
+					addCommonHighlightItems(m);
+				} else {
+					addCommonHighlightItems(m,true);
+				}
 			}
 			var myName:String = blockVarOrListName();
 			var vName:String;
@@ -991,7 +1014,7 @@ public class BlockMenus implements DragClient {
 		if (!isInPalette(block)) {
 			m.addItem('highlight senders');
 			m.addItem('highlight receivers');
-			m.addItem('clear highlights');
+			addCommonHighlightItems(m);
 		}
 		showMenu(m);
 	}

@@ -197,16 +197,35 @@ public class BlockShape extends Shape {
 		}
 	}
 
-	private function highlightFilters():Array {
+	public function hasHighlightFilters():Boolean {
+		if (filters && filters.length > 0) {
+			for each (var f:* in filters) {
+				if (f is GlowFilter) return true;
+			}
+		}
+		return false;
+	}
+
+	public function dimHighlightFilters(dim:Boolean):void {
+		if (filters && filters.length > 0) {
+			var newFilters:Array = [];
+			for each (var f:* in filters) {
+				if (!(f is GlowFilter)) newFilters.push(f);
+			}
+			filters = highlightFilters(dim).concat(newFilters);
+		}
+	}
+
+	private function highlightFilters(dim:Boolean=false):Array {
 		// use inner and outer - looks a bit better, than just either one, I think...?
 		var f:GlowFilter = new GlowFilter(0xaeff00);
-		f.strength = 3;
+		f.strength = dim ? 1 : 3;
 		f.blurX = f.blurY = 4;
 		f.quality = 3;
 		f.inner = true;
 		var g:GlowFilter = new GlowFilter(0xaeff00);
-		g.strength = 3;
-		g.blurX = g.blurY = 4;
+		g.strength = dim ? 1 : 3;
+		g.blurX = g.blurY = 2;
 		g.quality = 3;
 		g.inner = false;
 		return [f,g];

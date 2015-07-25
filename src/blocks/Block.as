@@ -274,6 +274,15 @@ public class Block extends Sprite {
 		return false;
 	}
 
+	public function getOwnerObj():ScratchObj {
+		var b:Block = this;
+		while (b.parent is Block) b = b.parent as Block;
+		for each (var o:ScratchObj in Scratch.app.stagePane.allObjects()) {
+			if (!o.isClone && o.scripts.indexOf(b)>-1) return o;
+		}
+		return null;
+	}
+
 	public function setTerminal(flag:Boolean):void {
 		// Used to change the "stop" block shape.
 		removeChild(base);
@@ -347,6 +356,18 @@ public class Block extends Sprite {
 
 	public function hideBlockHighlight():void {
 		base.hideHighlightFilters()
+	}
+
+	public function hasHighlight():Boolean {
+		return base.hasHighlightFilters()
+	}
+
+	public function fullBlockHighlight():void {
+		base.dimHighlightFilters(false)
+	}
+
+	public function dimBlockHighlight():void {
+		base.dimHighlightFilters(true)
 	}
 
 	public function saveOriginalState():void {

@@ -38,6 +38,7 @@ public class ScriptsPart extends UIPart {
 	protected var paletteFrame:ScrollFrame;
 	protected var scriptsFrame:ScrollFrame;
 	private var zoomWidget:ZoomWidget;
+	private var highlightWidget:HighlightWidget;
 
 	private const readoutLabelFormat:TextFormat = new TextFormat(CSS.font, 12, CSS.textColor, true);
 	private const readoutFormat:TextFormat = new TextFormat(CSS.font, 12, CSS.textColor);
@@ -69,6 +70,7 @@ public class ScriptsPart extends UIPart {
 		app.scriptsPane = addScriptsPane();
 
 		addChild(zoomWidget = new ZoomWidget(app.scriptsPane));
+		highlightWidget = null;  // not visible until there are highlights
 	}
 
 	protected function addScriptsPane():ScriptsPane {
@@ -136,6 +138,22 @@ public class ScriptsPart extends UIPart {
 		redraw();
 	}
 
+	public function showHighlightWidget():void {
+		if (!highlightWidget) {
+			addChild(highlightWidget = new HighlightWidget(app));
+			fixlayout();
+			redraw();
+		}
+	}
+
+	public function hideHighlightWidget():void {
+		if (highlightWidget) {
+			highlightWidget.hiding();
+			removeChild(highlightWidget);
+			highlightWidget = null;
+		}
+	}
+
 	private function fixlayout():void {
 		selector.x = 1;
 		selector.y = 5;
@@ -151,6 +169,14 @@ public class ScriptsPart extends UIPart {
 		xyDisplay.y = spriteWatermark.y + 43;
 		zoomWidget.x = w - zoomWidget.width - 15;
 		zoomWidget.y = h - zoomWidget.height - 15;
+		if (highlightWidget) {
+			highlightWidget.x = zoomWidget.x - highlightWidget.width - 15;
+			highlightWidget.y = h - highlightWidget.height - 15;
+			if (highlightWidget.x<scriptsFrame.x+5) {
+				highlightWidget.x = w - highlightWidget.width - 15;
+				highlightWidget.y = zoomWidget.y - highlightWidget.height - 15;
+			}
+		}
 	}
 
 	private function redraw():void {

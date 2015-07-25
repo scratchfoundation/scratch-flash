@@ -32,6 +32,7 @@ package uiwidgets {
 	import scratch.*;
 	import flash.geom.Rectangle;
 	import ui.media.MediaInfo;
+	import ui.parts.ScriptsPart;
 
 public class ScriptsPane extends ScrollFrameContents {
 
@@ -78,6 +79,7 @@ public class ScriptsPane extends ScrollFrameContents {
 	}
 
 	public function viewScriptsFor(obj:ScratchObj):void {
+		if (viewedObj==obj) return;  // already viewing this
 		// View the blocks for the given object.
 		saveScripts(false);
 		while (numChildren > 0) {
@@ -99,7 +101,13 @@ public class ScriptsPane extends ScrollFrameContents {
 		}
 		fixCommentLayout();
 		updateSize();
-		x = y = 0; // reset scroll offset
+		if (viewedObj) { // use last known position
+			x = viewedObj.scriptsPosX;
+			y = viewedObj.scriptsPosY;
+			checkHighlightState(); // may want to show/hide highlight widget
+		} else {
+			x = y = 0; // reset scroll offset
+		}
 		(parent as ScrollFrame).updateScrollbars();
 	}
 
@@ -583,6 +591,150 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 			widths.push(w);
 		}
 		return widths;
+	}
+
+	public function jumpToBlock(b:Block,ifNotVisible:Boolean=true):void {
+		var sf:ScrollFrame = this.parent as ScrollFrame;
+		if (!b || !sf) return;
+		var stack:Block = b;
+		var boffx:Number = b.x;
+		var boffy:Number = b.y;
+		while (stack.parent is Block) {
+			stack = stack.parent as Block;
+			boffx += stack.x;
+			boffy += stack.y;
+		}
+		if (stack.parent as ScriptsPane != this) return;
+		var soffx:Number = stack.x*scaleX + x - 5;
+		var soffy:Number = stack.y*scaleY + y - 5;
+		boffx = boffx*scaleX + x - 5;
+		boffy = boffy*scaleY + y - 5;
+		var vw:Number = Math.max(50,sf.visibleW() - 100);
+		var vh:Number = Math.max(50,sf.visibleH() - 50);
+		// want to move so stack is visible, unless that means block is off bottom/right
+		var bx:Number = (boffx-soffx<0.5*vw) ? soffx : boffx-0.5*vw;
+		var by:Number = (boffy-soffy<0.7*vh) ? soffy : boffy-0.7*vh;
+		// a lot of below is trying to be too clever, and doesn't really work well sometimes...
+		/*if (ifNotVisible && boffx>-vw*0.7 && boffy>-vh*0.7) {
+			// but reduce amount of movement if it's not so far off bottom right
+			if (boffx<vw*1.5 && boffy<vh*1.5) {
+				vw = Math.min((vw*1.5-boffx),(vh*1.5-boffy),500)*0.003 + 1;
+				if (boffx>0) bx = bx/vw; // always move right if off left
+				if (boffy>0) by = by/vw; // always move up if off top
+			}
+		}*/
+		if (bx!=0 || by!=0) {
+			x -= bx;
+			y -= by;
+			sf.constrainScroll();
+			sf.updateScrollbars();
+		}
+	}
+
+	// -----------------------------
+	// Block highlighting
+	//------------------------------
+
+	private static var highlightBlocks:Array = [];
+	private static var highlightBlock:Block = null;
+
+	private function firstHighlightBlockInObj(o:ScratchObj):Block {
+		for each (var b:Block in highlightBlocks) {
+			if (b.getOwnerObj()==o) return b;
+		}
+		return null;
+	}
+
+	private function newHighlightState(doJump:Boolean=true):void {
+		var sp:ScriptsPart = this.parent.parent as ScriptsPart;
+		if (!sp) return;  // never happens?
+		if (!highlightBlock) {
+			sp.hideHighlightWidget();
+		} else {
+			if (doJump) {
+				jumpToBlock(highlightBlock);
+				app.runtime.startBlinkingHighlight(highlightBlock);
+			}
+			sp.showHighlightWidget();
+		}
+	}
+
+	private function checkHighlightState(doJump:Boolean=true):void {
+		if (!highlightBlock || highlightBlock.getOwnerObj()!=app.viewedObj()) {
+			highlightBlock = firstHighlightBlockInObj(app.viewedObj());
+		}
+		newHighlightState(doJump);
+	}
+
+	public function showBlockHighlights(blocklist:Array,curBlk:Block=null,clearOld:Boolean=true):void {
+		if (clearOld) clearBlockHighlights(false);
+		if (blocklist.length>0) {
+			for each( var b:Block in blocklist) b.showBlockHighlight();
+		}
+		highlightBlocks = blocklist.concat(highlightBlocks);
+		if (curBlk && curBlk.getOwnerObj()==app.viewedObj() && highlightBlocks.indexOf(curBlk)>-1) {
+			highlightBlock = curBlk;
+			newHighlightState(false);  // scriptspane doesn't need to jump to block
+		} else {
+			highlightBlock = firstHighlightBlockInObj(app.viewedObj());
+			newHighlightState();
+		}
+	}
+
+	public function clearBlockHighlights(setState:Boolean=true):void {
+		app.runtime.clearBlinkingHighlight();
+		for each (var o:ScratchObj in app.stagePane.allObjects()) {
+			if (!o.isClone) {
+				for each (var stack:Block in o.scripts) {
+					stack.allBlocksDo(function (b:Block):void {
+						b.hideBlockHighlight();
+					});
+				}
+			}
+		}
+		highlightBlocks = [];
+		highlightBlock = null;
+		if (setState) newHighlightState();
+	}
+
+	public function prevHighlightBlock(curBlk:Block):void {
+		if (highlightBlocks.length<1) return;
+		if (!curBlk) curBlk = highlightBlock;
+		if (!curBlk || curBlk.getOwnerObj()!=app.viewedObj()) {
+			highlightBlock = firstHighlightBlockInObj(app.viewedObj());
+		} else {
+			var pos:int = highlightBlocks.indexOf(curBlk);
+			if (pos<0) return;
+			var o:ScratchObj = curBlk.getOwnerObj();
+			if (!o) return;
+			pos--;
+			if (pos<0) pos += highlightBlocks.length;
+			while (highlightBlocks[pos].getOwnerObj()!=o) {
+				pos--;
+				if (pos<0) pos += highlightBlocks.length;
+			}
+			highlightBlock = highlightBlocks[pos];
+		}
+		newHighlightState()
+	}
+
+	public function nextHighlightBlock(curBlk:Block):void {
+		if (highlightBlocks.length<1) return;
+		if (!curBlk) curBlk = highlightBlock;
+		if (!curBlk || curBlk.getOwnerObj()!=app.viewedObj()) {
+			highlightBlock = firstHighlightBlockInObj(app.viewedObj());
+		} else {
+			var pos:int = highlightBlocks.indexOf(curBlk);
+			if (pos<0) return;
+			var o:ScratchObj = curBlk.getOwnerObj();
+			if (!o) return;
+			pos = (pos+1) % highlightBlocks.length;
+			while (highlightBlocks[pos].getOwnerObj()!=o) {
+				pos = (pos+1) % highlightBlocks.length;
+			}
+			highlightBlock = highlightBlocks[pos];
+		}
+		newHighlightState()
 	}
 
 }}

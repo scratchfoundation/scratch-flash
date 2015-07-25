@@ -54,6 +54,8 @@ public class ScratchRuntime {
 
 	private var microphone:Microphone;
 	private var timerBase:uint;
+	private var blinkBlock:Block=null;
+	private var blinkTime:int=0;
 
 	protected var projectToInstall:ScratchStage;
 	protected var saveAfterInstall:Boolean;
@@ -85,10 +87,45 @@ public class ScratchRuntime {
 		// Step the stage, sprites, and watchers
 		app.stagePane.step(this);
 
+		// Do highlighted block blinking
+		if (blinkBlock) doBlinkHighlight();
+
 		// run scripts and commit any pen strokes
 		processEdgeTriggeredHats();
 		interp.stepThreads();
 		app.stagePane.commitPenStrokes();
+	}
+
+	public function clearBlinkingHighlight():void {
+		blinkBlock = null;
+		blinkTime = 0;
+	}
+
+	public function startBlinkingHighlight(b:Block):void {
+		if (!b) return;
+		blinkTime = interp.currentMSecs;
+		if (blinkBlock) blinkBlock.fullBlockHighlight(); // shouldn't happen?
+		b.dimBlockHighlight(); // start off without highlight
+		blinkBlock = b;
+	}
+
+	private function doBlinkHighlight():void {
+		if (!blinkBlock || blinkTime==0) return;
+		var diffTime:int = interp.currentMSecs - Math.abs(blinkTime);
+		if (diffTime>1400) {
+			blinkBlock.fullBlockHighlight(); // end up highlighted
+			clearBlinkingHighlight();
+			return;
+		}
+		if (blinkTime>0) {
+			if (diffTime % 400 > 199) {
+				blinkBlock.fullBlockHighlight();
+				blinkTime = -blinkTime;
+			}
+		} else if (diffTime % 400 < 200) {
+			blinkBlock.dimBlockHighlight();
+			blinkTime = -blinkTime;
+		}
 	}
 
 //-------- recording test ---------
@@ -743,23 +780,6 @@ public class ScratchRuntime {
 			}
 		}
 		app.updatePalette();
-	}
-
-	public function showBlockHighlights(blocklist:Array,clearOld:Boolean=true):void {
-		if (clearOld) clearBlockHighlights();
-		for each( var b:Block in blocklist) b.showBlockHighlight();
-	}
-
-	public function clearBlockHighlights():void {
-		for each (var o:ScratchObj in app.stagePane.allObjects()) {
-			if (!o.isClone) {
-				for each (var stack:Block in o.scripts) {
-					stack.allBlocksDo(function (b:Block):void {
-						b.hideBlockHighlight();
-					});
-				}
-			}
-		}
 	}
 
 	public function allSendersOfBroadcast(msg:String):Array {
