@@ -1,0 +1,54 @@
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath group: 'org.gradlefx', name: 'gradlefx', version: '1.2.0'
+    }
+}
+
+repositories {
+    ivy {
+        name 'Apache Flex'
+        artifactPattern 'http://archive.apache.org/dist/flex/[revision]/binaries/[module]-[revision]-bin.[ext]'
+    }
+    ivy {
+        name 'Player Globals'
+        artifactPattern 'http://fpdownload.macromedia.com/get/flashplayer/installers/archive/[module]/[module][revision].[ext]'
+    }
+}
+
+apply plugin: org.gradlefx.plugins.GradleFxPlugin
+
+def variant = hasProperty('variant') ? variant : 'New'
+println "Variant is: $variant"
+def config = new ConfigSlurper(variant).parse(file('config.groovy').toURL())
+
+type = 'mobile'
+version = '1.0-SNAPSHOT'
+frameworkLinkage = 'none'
+playerVersion = config.get('playerVersion')
+
+dependencies {
+    flexSDK group: 'org.apache', name: 'apache-flex-sdk', version:'4.10.0', ext: 'zip'
+    external group: 'macromedia.com', name: 'playerglobal', version: playerVersion.replace('.','_'), ext: 'swc'
+    merged files('libs/as3corelib.swc', 'libs/blooddy_crypto.swc')
+}
+
+sdkAutoInstall {
+    showPrompts = false
+}
+
+def scratchFlashCommitID = "'dev'"
+additionalCompilerOptions = [
+        "-library-path+=libs/framework.swc", // in the SDK's frameworks directory
+        "-target-player=${playerVersion}",
+        "-default-size=800,600",
+        "-define+=SCRATCH::revision,${scratchFlashCommitID}",
+]
+additionalCompilerOptions += config.get('additionalCompilerOptions')
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.5'
+}
