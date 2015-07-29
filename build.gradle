@@ -1,5 +1,4 @@
-
-def configFile = file('config.groovy')
+ext.commonDir = '.'
 apply from: 'scratch.gradle'
 
 srcDirs = ['src']

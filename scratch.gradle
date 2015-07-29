@@ -1,4 +1,3 @@
-
 buildscript {
     repositories {
         mavenCentral()
@@ -21,9 +20,10 @@ repositories {
 
 apply plugin: org.gradlefx.plugins.GradleFxPlugin
 
+def commonDir = ext.commonDir
 def variant = hasProperty('variant') ? variant : 'New'
 println "Variant is: $variant"
-def config = new ConfigSlurper(variant).parse(file('config.groovy').toURL())
+def config = new ConfigSlurper(variant).parse(file("${commonDir}/config.groovy").toURL())
 
 type = 'mobile'
 version = '1.0-SNAPSHOT'
@@ -31,9 +31,12 @@ frameworkLinkage = 'none'
 playerVersion = config.get('playerVersion')
 
 dependencies {
-    flexSDK group: 'org.apache', name: 'apache-flex-sdk', version:'4.10.0', ext: 'zip'
-    external group: 'macromedia.com', name: 'playerglobal', version: playerVersion.replace('.','_'), ext: 'swc'
-    merged files('libs/as3corelib.swc', 'libs/blooddy_crypto.swc')
+    flexSDK group: 'org.apache', name: 'apache-flex-sdk', version: '4.10.0', ext: 'zip'
+    external group: 'macromedia.com', name: 'playerglobal', version: playerVersion.replace('.', '_'), ext: 'swc'
+    merged files(
+            "${commonDir}/libs/as3corelib.swc",
+            "${commonDir}/libs/blooddy_crypto.swc",
+    )
 }
 
 sdkAutoInstall {
@@ -43,6 +46,7 @@ sdkAutoInstall {
 def scratchFlashCommitID = "'dev'"
 additionalCompilerOptions = [
         "-library-path+=libs/framework.swc", // in the SDK's frameworks directory
+        "-library-path+=libs/osmf.swc", // in the SDK's frameworks directory
         "-target-player=${playerVersion}",
         "-default-size=800,600",
         "-define+=SCRATCH::revision,${scratchFlashCommitID}",
