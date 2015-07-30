@@ -28,6 +28,8 @@ def config = new ConfigSlurper(variant).parse(file("${commonDir}/config.groovy")
 type = 'mobile'
 version = '1.0-SNAPSHOT'
 frameworkLinkage = 'none'
+buildDir = "${buildDir}/${variant}" // GradleFX does an out-of-date check on the whole build dir
+output = config.get('output')
 playerVersion = config.get('playerVersion')
 
 dependencies {
