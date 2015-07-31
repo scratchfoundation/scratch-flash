@@ -2,9 +2,10 @@ language: groovy
 cache:
   directories:
   - $HOME/.gradle/caches/
+  - $HOME/.gradle/wrapper/dists/
 script:
-  - ./gradlew check -Pvariant=New
-  - ./gradlew check -Pvariant=Old
+  - ./gradlew check -Ptarget=11.6
+  - ./gradlew check -Ptarget=10.2
 notifications:
   slack:
     secure: TFnMix3WLFecQLMgmSIsUrnZUV7s5U7mJlzkfLrGU02u0uztjLcJr9qekg65I0wFtqGuMGAOfPAZo4hf0l5djzJTSUobLdlTpEunIEWd53IUZlljKCJQsVT8hfJtbjpIXMraLRLyTzDkXcRO3v2xthU30vsSI75sxQYufBx5/sU=

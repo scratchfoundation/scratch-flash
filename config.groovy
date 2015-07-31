@@ -1,5 +1,5 @@
 environments {
-    New {
+    '11.6' {
         output = 'Scratch'
         playerVersion = '11.6'
         additionalCompilerOptions = [
@@ -7,7 +7,7 @@ environments {
                 "-define+=SCRATCH::allow3d,true",
         ]
     }
-    Old {
+    '10.2' {
         output = 'ScratchFor10.2'
         playerVersion = '10.2'
         additionalCompilerOptions = [
