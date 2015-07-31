@@ -581,6 +581,7 @@ public class BlockMenus implements DragClient {
 				if (b.op == matchOp && b.spec == matchName) blocklist.push(b);
 			});
 		}
+        blocklist = app.scriptsPane.orderBlocks(blocklist);
 		showHighlights([vo],blocklist);
 	}
 
@@ -602,6 +603,7 @@ public class BlockMenus implements DragClient {
 				}
 				if (blks.length>0) {
 					sprites.push(o);
+                    blks = app.scriptsPane.orderBlocks(blks);
 					blocklist = blks.concat(blocklist);
 				}
 			}
@@ -740,6 +742,7 @@ public class BlockMenus implements DragClient {
 			def = block;
 		}
 		var blks:Array = app.runtime.allCallsOf(def.spec, o);
+        blks = app.scriptsPane.orderBlocks(blks);
 		showHighlights([o],blks);
 	}
 
@@ -881,6 +884,7 @@ public class BlockMenus implements DragClient {
 					var blks:Array = app.runtime.allUsesOfList(myName,o,false);
 					if (blks.length>0) {
 						sprites.push(o);
+                        blks = app.scriptsPane.orderBlocks(blks);
 						blocklist = blks.concat(blocklist);
 					}
 				}
@@ -888,6 +892,7 @@ public class BlockMenus implements DragClient {
 		} else {
 			sprites = [vo];
 			blocklist = app.runtime.allUsesOfList(myName,vo);
+            blocklist = app.scriptsPane.orderBlocks(blocklist);
 		}
 		showHighlights(sprites,blocklist);
 	}
@@ -904,12 +909,14 @@ public class BlockMenus implements DragClient {
 					var blks:Array = app.runtime.allUsesOfVariable(myName,o,false);
 					if (blks.length>0) {
 						sprites.push(o);
+                        blks = app.scriptsPane.orderBlocks(blks);
 						blocklist = blks.concat(blocklist);
 					}
 				}
 			}
 		} else {
 			sprites = [vo];
+            blocklist = app.scriptsPane.orderBlocks(blocklist);
 			blocklist = app.runtime.allUsesOfVariable(myName,vo);
 		}
 		showHighlights(sprites,blocklist);

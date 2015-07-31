@@ -593,7 +593,111 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 		return widths;
 	}
 
-	public function jumpToBlock(b:Block,ifNotVisible:Boolean=true):void {
+    /* stack ordering for highlighting */
+    // bit messy at the mo - gotta be a better way...
+
+    private function leftmostBlockObjPos(blkobjs:Array):int {
+        var result:Object=blkobjs[0];
+        var pos:int = 0;
+        var leftPos:int = 0;
+        // find index of block with minimum X position
+        for each (var obj:Object in blkobjs) {
+            if (obj.x<result.x) {
+                result = obj;
+                leftPos = pos;
+            }
+            pos++;
+        }
+        return leftPos;
+    }
+
+    private function stackYOrderedBlockObjs(blkobjs:Array):Array {
+        // not exactly the most elegant sorting algorithm ever written... :/
+        var result:Array=[];
+        if (blkobjs.length>0) {
+            var maxObj:Object = blkobjs[0];
+            var minObj:Object = maxObj;
+            // find min & max Y positions for parent stacks of the blocks
+            for each (var blkobj:Object in blkobjs) {
+                if (blkobj.stack.y>maxObj.stack.y) maxObj = blkobj;
+                else if (blkobj.stack.y<minObj.stack.y) minObj = blkobj;
+            }
+            // add all blocks with same minimum Y for their stack
+            for each (blkobj in blkobjs) {
+                if (blkobj.stack.y==minObj.stack.y) result.push(blkobj.block);
+            }
+            // keep doing above until all blocks included
+            while (result.length<blkobjs.length) {
+                // this limit to prevents taking blocks that have already been included
+                var topObj:Object = maxObj;
+                for each (blkobj in blkobjs) {
+                    if (blkobj.stack.y<topObj.stack.y && blkobj.stack.y>minObj.stack.y) topObj = blkobj;
+                }
+                minObj = topObj;
+                for each (blkobj in blkobjs) {
+                    if (blkobj.stack.y==minObj.stack.y) result.push(blkobj.block);
+                }
+            }
+            
+        }
+        return result;
+    }
+
+    public function orderBlocks(blocks:Array):Array {
+        var result:Array = [];
+        var remaining:Array = [];
+        for each (var blk:Block in blocks) {
+            // this is a 'block object' which contains info about a highlighted
+            // block in a form we can use for the sorting in terms of stacks
+            var obj:Object = {};
+            obj.x = blk.x;    // will contain x pos of block in scripts pane
+            obj.y = blk.y;    // will contain y pos of block in scripts pane
+            obj.block = blk;  // reference to current block
+            while (blk.parent is Block) {
+                blk = blk.parent as Block;
+                obj.x += blk.x;
+                obj.y += blk.y;
+            }
+            obj.stack = blk;  // reference to top-of-stack block
+            remaining.push(obj);
+        }
+        while (remaining.length>0) {
+            var objsToAdd:Array = [];
+            var leftPos:int = leftmostBlockObjPos(remaining);
+            var pos:int = 0;
+            var leftObj:Object = remaining[leftPos];
+            var cutoff:Number = leftObj.x+Math.min(400,leftObj.block.base.width)+100; // fairly arbitrary cutoff...
+            var sameStack:Block = remaining[pos].stack;
+            // go back to first block in same stack
+            while (leftPos>0 && remaining[leftPos-1].stack==sameStack) leftPos--;
+            // go through blocks in same stack, looking for rightmost cutoff
+            while (leftPos<remaining.length && remaining[leftPos].stack==sameStack) {
+                leftObj = remaining[leftPos];
+                cutoff = Math.max(cutoff,leftObj.x+Math.min(400,leftObj.block.base.width)+100);
+                leftPos++;
+            }
+            while (pos<remaining.length) {
+                if (remaining[pos].x<cutoff) {
+                    // go back to first block in same stack
+                    sameStack = remaining[pos].stack;
+                    while (pos>0 && remaining[pos-1].stack==sameStack) pos--;
+                    // add more blocks in the same stack
+                    while (pos<remaining.length && remaining[pos].stack==sameStack) {
+                        objsToAdd.push(remaining[pos]);
+                        remaining.splice(pos,1);
+                    }
+                } else {
+                    pos++;
+                }
+            }
+            result = result.concat(stackYOrderedBlockObjs(objsToAdd));
+        }
+        return result;
+    }
+
+	/* jumping to a block in scripts pane */
+
+    public function jumpToBlock(b:Block):void {
 		var sf:ScrollFrame = this.parent as ScrollFrame;
 		if (!b || !sf) return;
 		var stack:Block = b;
@@ -605,24 +709,29 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 			boffy += stack.y;
 		}
 		if (stack.parent as ScriptsPane != this) return;
-		var soffx:Number = stack.x*scaleX + x - 5;
-		var soffy:Number = stack.y*scaleY + y - 5;
+        var vw:Number = Math.max(40,sf.visibleW()-25);
+		var vh:Number = Math.max(70,sf.visibleH()-35);
+		// take into account if block is wider/longer than (half of) viewport
+        var bw:Number = Math.min(b.base.width*scaleX,vw*0.5);
+        var bh:Number = Math.min(b.base.height*scaleY,vh*0.5);
+        // offset for block itself
 		boffx = boffx*scaleX + x - 5;
 		boffy = boffy*scaleY + y - 5;
-		var vw:Number = Math.max(50,sf.visibleW() - 100);
-		var vh:Number = Math.max(50,sf.visibleH() - 50);
-		// want to move so stack is visible, unless that means block is off bottom/right
-		var bx:Number = (boffx-soffx<0.5*vw) ? soffx : boffx-0.5*vw;
-		var by:Number = (boffy-soffy<0.7*vh) ? soffy : boffy-0.7*vh;
-		// a lot of below is trying to be too clever, and doesn't really work well sometimes...
-		/*if (ifNotVisible && boffx>-vw*0.7 && boffy>-vh*0.7) {
-			// but reduce amount of movement if it's not so far off bottom right
-			if (boffx<vw*1.5 && boffy<vh*1.5) {
-				vw = Math.min((vw*1.5-boffx),(vh*1.5-boffy),500)*0.003 + 1;
-				if (boffx>0) bx = bx/vw; // always move right if off left
-				if (boffy>0) by = by/vw; // always move up if off top
-			}
-		}*/
+        // offset for start of stack containing block
+        var soffx:Number = stack.x*scaleX + x - 6; // why does it need one extra?
+		var soffy:Number = stack.y*scaleY + y - 5;
+		// want to move so start of stack is visible, unless that means block is off bottom/right
+		var bx:Number = (boffx-soffx<0.65*vw) ? soffx : boffx-0.65*vw;
+		var by:Number = (boffy-soffy<0.75*vh) ? soffy : boffy-0.75*vh;
+        vw -= bw;
+        vh -= bh;
+        if (boffx>-250 && boffy>-200 && boffx<vw+250 && boffy<vh+200) {
+            // don't move view at all if block is already within script pane...
+            if (boffx>0 && boffy>0 && boffx<vw && boffy<vh ) return;
+            // ...but if it's not far outside view then move just enough to see it
+            bx = boffx>vw ? boffx-vw+5 : boffx<0 ? boffx-5 : 0;
+            by = boffy>vh ? boffy-vh+5 : boffy<0 ? boffy-5 : 0;
+        }
 		if (bx!=0 || by!=0) {
 			x -= bx;
 			y -= by;
@@ -631,9 +740,7 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 		}
 	}
 
-	// -----------------------------
-	// Block highlighting
-	//------------------------------
+	/* Block highlighting */
 
 	private static var highlightBlocks:Array = [];
 	private static var highlightBlock:Block = null;

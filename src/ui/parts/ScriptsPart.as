@@ -70,7 +70,7 @@ public class ScriptsPart extends UIPart {
 		app.scriptsPane = addScriptsPane();
 
 		addChild(zoomWidget = new ZoomWidget(app.scriptsPane));
-		highlightWidget = null;  // not visible until there are highlights
+		highlightWidget = null;  // not visible until there are highlights - better way to do this...?
 	}
 
 	protected function addScriptsPane():ScriptsPane {
