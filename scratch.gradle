@@ -20,6 +20,11 @@ repositories {
 
 apply plugin: org.gradlefx.plugins.GradleFxPlugin
 
+ext.getCommitID = { repository ->
+    def gitProc = "git describe --dirty --tags --always".execute(null, file(repository))
+    return gitProc.text.trim() ?: 'unknown'
+}
+
 def commonDir = ext.commonDir
 def target = hasProperty('target') ? target : '11.6'
 println "Target is: $target"
@@ -31,6 +36,9 @@ frameworkLinkage = 'none'
 buildDir = "${buildDir}/${target}" // GradleFX does an out-of-date check on the whole build dir
 output = config.get('output')
 playerVersion = config.get('playerVersion')
+
+def scratchFlashCommitID = getCommitID(commonDir)
+println "Commit ID for scratch-flash is: ${scratchFlashCommitID}"
 
 dependencies {
     flexSDK group: 'org.apache', name: 'apache-flex-sdk', version: '4.10.0', ext: 'zip'
@@ -45,13 +53,12 @@ sdkAutoInstall {
     showPrompts = false
 }
 
-def scratchFlashCommitID = "'dev'"
 additionalCompilerOptions = [
         "-library-path+=libs/framework.swc", // in the SDK's frameworks directory
         "-library-path+=libs/osmf.swc", // in the SDK's frameworks directory
         "-target-player=${playerVersion}",
         "-default-size=800,600",
-        "-define+=SCRATCH::revision,${scratchFlashCommitID}",
+        "-define+=SCRATCH::revision,'${scratchFlashCommitID}'",
         "-advanced-telemetry",
 ]
 additionalCompilerOptions += config.get('additionalCompilerOptions')
