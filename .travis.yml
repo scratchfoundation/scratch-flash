@@ -3,6 +3,9 @@ cache:
   directories:
   - $HOME/.gradle/caches/
   - $HOME/.gradle/wrapper/dists/
+install:
+  - ./gradlew build -Ptarget=11.6
+  - ./gradlew build -Ptarget=10.2
 script:
   - ./gradlew check -Ptarget=11.6
   - ./gradlew check -Ptarget=10.2
