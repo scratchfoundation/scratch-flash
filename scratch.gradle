@@ -52,6 +52,7 @@ additionalCompilerOptions = [
         "-target-player=${playerVersion}",
         "-default-size=800,600",
         "-define+=SCRATCH::revision,${scratchFlashCommitID}",
+        "-advanced-telemetry",
 ]
 additionalCompilerOptions += config.get('additionalCompilerOptions')
 
