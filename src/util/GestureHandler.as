@@ -158,7 +158,7 @@ public class GestureHandler {
 		Menu.removeMenusFrom(stage);
 		var menuTarget:* = findTargetFor('menu', app, x, y);
 		if (!menuTarget) return;
-		try { var menu:Menu = menuTarget.menu(new MouseEvent('right click')) } catch (e:Error) {}
+		try { var menu:Menu = menuTarget.menu(new MouseEvent('right click')); } catch (e:Error) {}
 		if (menu) menu.showOnStage(stage, x, y);
 		if (!isChrome) Menu.removeMenusFrom(stage); // hack: clear menuJustCreated because there's no rightMouseUp
 	}
