@@ -18,6 +18,8 @@
  */
 
 package ui {
+import blocks.BlockStack;
+
 import flash.display.*;
 import flash.events.*;
 import flash.filters.GlowFilter;
@@ -237,10 +239,10 @@ public class SpriteThumbnail extends BaseItem {
 				return true;
 			}
 		}
-		if (obj is Block) {
+		if (obj is BlockStack) {
 			// copy a block/stack to this sprite
 			if (data.obj == app.viewedObj()) return false; // dropped on my own thumbnail; do nothing
-			var copy:Block = Block(obj).duplicate(false, data.type == 'stage');
+			var copy:Block = Block(obj.firstBlock).duplicate(false, data.obj.isStage);
 			copy.x = app.scriptsPane.padding;
 			copy.y = app.scriptsPane.padding;
 			data.obj.scripts.push(copy);

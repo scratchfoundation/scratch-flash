@@ -143,7 +143,7 @@ public class Interpreter {
 				};
 				b.args[0] = reporter;
 			}
-			if (app.editMode) (topBlock.parent as BlockStack).showRunFeedback();
+			if (app.editMode && topBlock.parent is BlockStack) (topBlock.parent as BlockStack).showRunFeedback();
 			var t:Thread = new Thread(b, targetObj, startupDelay);
 			if (topBlock.isReporter) bubbleThread = t;
 			t.topBlock = topBlock;
@@ -233,7 +233,8 @@ public class Interpreter {
 					if (t.block != null) newThreads.push(t);
 					else if (app.editMode) {
 						if (t == bubbleThread) bubbleThread = null;
-						(t.topBlock.parent as BlockStack).hideRunFeedback();
+						if (t.topBlock.parent is BlockStack)
+							(t.topBlock.parent as BlockStack).hideRunFeedback();
 					}
 				}
 				threads = newThreads;

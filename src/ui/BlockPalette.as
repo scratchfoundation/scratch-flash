@@ -26,6 +26,8 @@
 
 package ui {
 import blocks.Block;
+import blocks.BlockStack;
+
 import interpreter.Interpreter;
 
 import ui.dragdrop.DropTarget;
@@ -62,9 +64,9 @@ public class BlockPalette extends ScrollFrameContents implements DropTarget {
 			c.deleteComment();
 			return true;
 		}
-		var b:Block = obj as Block;
-		if (b) {
-			return b.deleteStack();
+		var bs:BlockStack = obj as BlockStack;
+		if (bs) {
+			return bs.firstBlock.deleteStack();
 		}
 		return false;
 	}

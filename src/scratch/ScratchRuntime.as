@@ -338,7 +338,7 @@ public class ScratchRuntime {
 		triggeredHats = activeHats;
 	}
 
-	public function blockDropped(stack:BlockStack):void {
+	public function blockDropped(stack:Block):void {
 		// Turn on video the first time a video sensor reporter or hat block is added.
 		stack.allBlocksDo(function(b:Block):void {
 			var op:String = b.op;

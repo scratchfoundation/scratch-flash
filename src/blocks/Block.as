@@ -316,14 +316,9 @@ public class Block extends Sprite implements IDraggable {
 		if (parent is BlockPalette || e.target != this) return;
 
 		if (e.type == DragEvent.DRAG_START) {
-			//saveOriginalState();
-			if (parent is Block) Block(parent).removeBlock(this);
+			if (prevBlock) prevBlock.removeBlock(this);
 			base.redraw(true);
-
-			//if (parent != null) parent.removeChild(this);
 		}
-//		else
-//			restoreOriginalState();
 	}
 
 	private function setDefaultArgs(defaults:Array):void {
@@ -416,19 +411,21 @@ public class Block extends Sprite implements IDraggable {
 			if (b.base.canHaveSubstack1()) {
 				var substackH:int = BlockShape.EmptySubstackH;
 				if (b.subStack1) {
-					b.subStack1.fixStackLayout();
 					b.subStack1.x = b.x + BlockShape.SubstackInset;
 					b.subStack1.y = b.y + b.base.substack1y();
-					substackH = b.subStack1.getRect(b).height;
+					b.subStack1.fixStackLayout();
+					var sb1:Block = b.subStack1.bottomBlock();
+					substackH = sb1.y + sb1.height - b.subStack1.y;
 					if (b.subStack1.bottomBlock().isTerminal) substackH += BlockShape.NotchDepth;
 				}
 				b.base.setSubstack1Height(substackH);
 				substackH = BlockShape.EmptySubstackH;
 				if (b.subStack2) {
-					b.subStack2.fixStackLayout();
 					b.subStack2.x = b.x + BlockShape.SubstackInset;
 					b.subStack2.y = b.y + b.base.substack2y();
-					substackH = b.subStack2.getRect(b).height;
+					b.subStack2.fixStackLayout();
+					var sb2:Block = b.subStack2.bottomBlock();
+					substackH = sb2.y + sb2.height - b.subStack2.y;
 					if (b.subStack2.bottomBlock().isTerminal) substackH += BlockShape.NotchDepth;
 				}
 				b.base.setSubstack2Height(substackH);
@@ -479,9 +476,18 @@ public class Block extends Sprite implements IDraggable {
 				}
 			}
 		}
-		if (nextBlock != null) dup.addChild(dup.nextBlock = nextBlock.duplicate(forClone, forStage));
-		if (subStack1 != null) dup.addChild(dup.subStack1 = subStack1.duplicate(forClone, forStage));
-		if (subStack2 != null) dup.addChild(dup.subStack2 = subStack2.duplicate(forClone, forStage));
+		if (nextBlock != null) {
+			dup.nextBlock = nextBlock.duplicate(forClone, forStage);
+			dup.nextBlock.prevBlock = dup;
+		}
+		if (subStack1 != null) {
+			dup.subStack1 = subStack1.duplicate(forClone, forStage);
+			dup.subStack1.prevBlock = dup;
+		}
+		if (subStack2 != null) {
+			dup.subStack2 = subStack2.duplicate(forClone, forStage);
+			dup.subStack2.prevBlock = dup;
+		}
 		if (!forClone) {
 			dup.x = x;
 			dup.y = y;
@@ -544,10 +550,9 @@ public class Block extends Sprite implements IDraggable {
 	}
 
 	public function removeBlock(b:Block):void {
-		if (b.parent == this) removeChild(b);
-		if (b == nextBlock) {
-			nextBlock = null;
-		}
+		if (b.parent is BlockStack) (b.parent as BlockStack).removeBlocks(b);
+		else if (b.parent == this) removeChild(b);
+		if (b == nextBlock) nextBlock = null;
 		if (b == subStack1) subStack1 = null;
 		if (b == subStack2) subStack2 = null;
 		if (b.isReporter) {
@@ -568,50 +573,63 @@ public class Block extends Sprite implements IDraggable {
 
 	public function insertBlock(b:Block):void {
 		var oldNext:Block = nextBlock;
+		if (oldNext != null && oldNext.parent == parent)
+			parent.removeChild(oldNext);
 
-		if (oldNext != null) removeChild(oldNext);
-
-		addChild(b);
+		b.prevBlock = this;
 		nextBlock = b;
 		if (oldNext != null) b.appendBlock(oldNext);
 
+		if (parent is BlockStack)
+			(parent as BlockStack).setFirstBlock(topBlock());
 		topBlock().fixStackLayout();
 	}
 
 	public function insertBlockAbove(b:Block):void {
 		b.x = this.x;
-		b.y = this.y - b.height + BlockShape.NotchDepth;
-		parent.addChild(b);
+		b.y = this.y - b.parent.height + BlockShape.NotchDepth;
+		(parent as BlockStack).setFirstBlock(b);
 		b.bottomBlock().insertBlock(this);
 	}
 
 	public function insertBlockAround(b:Block):void {
 		b.x = this.x - BlockShape.SubstackInset;
 		b.y = this.y - b.base.substack1y(); //  + BlockShape.NotchDepth;
-		parent.addChild(b);
-		parent.removeChild(this);
-		b.addChild(this);
 		b.subStack1 = this;
-		b.fixStackLayout();
+		if (prevBlock) {
+			prevBlock.nextBlock = b;
+			b.prevBlock = prevBlock;
+		}
+		else if (parent is BlockStack)
+			(parent as BlockStack).firstBlock = b;
+
+		prevBlock = b;
+		if (parent is BlockStack)
+			(parent as BlockStack).setFirstBlock(topBlock());
+		topBlock().fixStackLayout();
 	}
 
 	public function insertBlockSub1(b:Block):void {
 		var old:Block = subStack1;
 		if (old != null) old.parent.removeChild(old);
 
-		parent.addChild(b);
 		subStack1 = b;
+		b.prevBlock = this;
 		if (old != null) b.appendBlock(old);
+		if (parent is BlockStack)
+			(parent as BlockStack).setFirstBlock(topBlock());
 		topBlock().fixStackLayout();
 	}
 
 	public function insertBlockSub2(b:Block):void {
 		var old:Block = subStack2;
-		if (old != null) removeChild(old);
+		if (old != null) old.parent.removeChild(old);
 
-		addChild(b);
 		subStack2 = b;
+		b.prevBlock = this;
 		if (old != null) b.appendBlock(old);
+		if (parent is BlockStack)
+			(parent as BlockStack).setFirstBlock(topBlock());
 		topBlock().fixStackLayout();
 	}
 
@@ -665,13 +683,13 @@ public class Block extends Sprite implements IDraggable {
 	}
 
 	public function topBlock():Block {
-		var result:DisplayObject = this;
-		while (result.parent is Block) result = result.parent;
-		return Block(result);
+		var result:Block = this;
+		while (result.parent is Block)
+			result = result.parent as Block;
 
-//		var result:Block = this;
-//		while (result.prevBlock != null) result = result.prevBlock;
-//		return result;
+		if (result.parent is BlockStack)
+			result = (result.parent as BlockStack).firstBlock;
+		return result;
 	}
 
 	public function bottomBlock():Block {
@@ -817,9 +835,9 @@ public class Block extends Sprite implements IDraggable {
 
 	/* Dragging */
 
-	public function objToGrab(evt:MouseEvent):* {
+	public function getSpriteToDrag():Sprite {
 		if (isEmbeddedParameter() || isInPalette()) return new BlockStack(duplicate(false, Scratch.app.viewedObj() is ScratchStage));
-		return (parent is BlockStack ? parent : this);
+		return (parent is BlockStack ? parent as Sprite : this);
 	}
 
 	/* Events */

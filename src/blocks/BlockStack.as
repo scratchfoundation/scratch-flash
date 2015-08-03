@@ -5,6 +5,7 @@ package blocks {
 import flash.display.DisplayObject;
 import flash.display.DisplayObjectContainer;
 import flash.display.Sprite;
+import flash.events.Event;
 import flash.filters.GlowFilter;
 import flash.geom.Point;
 
@@ -21,17 +22,63 @@ public class BlockStack extends Sprite {
 	private var originalParent:DisplayObjectContainer, originalRole:int, originalIndex:int, originalPosition:Point;
 
 	public function BlockStack(b:Block) {
-		x = b.x;
-		y = b.y;
-		b.x = b.y = 0;
+		var pb:Block = b.prevBlock;
+		if (pb) {
+			if (pb.nextBlock == b)
+				pb.nextBlock = null;
+			if (pb.subStack1 == b)
+				pb.subStack1 = null;
+			if (pb.subStack2 == b)
+				pb.subStack2 = null;
+			b.prevBlock = null;
+		}
 		addChild(b);
+		setFirstBlock(b);
+		if (pb)
+			pb.topBlock().fixStackLayout();
+
+		addEventListener(Event.REMOVED, handleRemove);
+	}
+
+	public function setFirstBlock(b:Block):void {
+		if (firstBlock)
+			while (numChildren) removeChildAt(0);
 
 		firstBlock = b;
-		var nextBlock:Block = b.nextBlock;
-		while (nextBlock) {
-			addChild(nextBlock);
-			nextBlock = nextBlock.nextBlock;
+		if (b.parent == this && (b.x || b.y)) {
+			x += b.x;
+			y += b.y;
+			b.x = 0;
+			b.y = 0;
 		}
+		addBlocks(b);
+	}
+
+	private function addBlocks(b:Block):void {
+		while (b) {
+			addChild(b);
+			addBlocks(b.subStack1);
+			addBlocks(b.subStack2);
+			b = b.nextBlock;
+		}
+	}
+
+	public function removeBlocks(b:Block):void {
+		while (b) {
+			if (b.parent == this) removeChild(b);
+			removeBlocks(b.subStack1);
+			removeBlocks(b.subStack2);
+			b = b.nextBlock;
+		}
+	}
+
+	private function handleRemove(e:Event):void {
+		if (e.target == firstBlock)
+			firstBlock = null;
+	}
+
+	public function objToGrab(e:Event):* {
+		return this;
 	}
 
 	public function allBlocksDo(f:Function):void {

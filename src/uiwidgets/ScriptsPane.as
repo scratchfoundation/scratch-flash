@@ -76,9 +76,10 @@ public class ScriptsPane extends ScrollFrameContents implements DropTarget {
 	}
 
 	protected function handleDrag(e:DragEvent):void {
-		if (!(e.draggedObject is Block) && !(e.draggedObject is ScratchComment)) return;
+		if (!(e.draggedObject is BlockStack) && !(e.draggedObject is ScratchComment)) return;
 
-		var b:Block = e.draggedObject as Block;
+		var bs:BlockStack = e.draggedObject as BlockStack;
+		var b:Block = bs ? bs.firstBlock : null;
 		var c:ScratchComment = e.draggedObject as ScratchComment;
 		switch (e.type) {
 			case DragEvent.DRAG_OVER:
@@ -120,6 +121,8 @@ public class ScriptsPane extends ScrollFrameContents implements DropTarget {
 	}
 
 	public function viewScriptsFor(obj:ScratchObj):void {
+		if (obj == viewedObj) return;
+
 		// View the blocks for the given object.
 		saveScripts(false);
 		while (numChildren > 0) {
@@ -131,8 +134,11 @@ public class ScriptsPane extends ScrollFrameContents implements DropTarget {
 		if (viewedObj != null) {
 			var blockList:Array = viewedObj.allBlocks();
 			for each (var b:Block in viewedObj.scripts) {
-				b.cacheAsBitmap = true;
-				addChild(b);
+				var stack:BlockStack = b.parent as BlockStack;
+				if (!stack)
+					stack =  new BlockStack(b);
+				stack.cacheAsBitmap = true;
+				addChild(stack);
 			}
 			for each (var c:ScratchComment in viewedObj.scriptComments) {
 				c.updateBlockRef(blockList);
@@ -152,7 +158,7 @@ public class ScriptsPane extends ScrollFrameContents implements DropTarget {
 		viewedObj.scriptComments.splice(0); // remove all
 		for (var i:int = 0; i < numChildren; i++) {
 			var o:* = getChildAt(i);
-			if (o is Block) viewedObj.scripts.push(o);
+			if (o is BlockStack) viewedObj.scripts.push(o.firstBlock);
 			if (o is ScratchComment) viewedObj.scriptComments.push(o);
 		}
 		var blockList:Array = viewedObj.allBlocks();
@@ -181,11 +187,12 @@ public class ScriptsPane extends ScrollFrameContents implements DropTarget {
 	}
 
 	public function updateFeedbackFor(b:Block):void {
-		nearestTarget = nearestTargetForBlockIn(b, possibleTargets);
-		if (b.base.canHaveSubstack1() && !b.subStack1) {
-			var o:Block = null;
-			if (nearestTarget) {
-				t = nearestTarget[1];
+
+		function updateHeight(): void {
+			var h:int = BlockShape.EmptySubstackH;
+			if (nearestTarget != null) {
+				var t:* = nearestTarget[1];
+				var o:Block = null;
 				switch (nearestTarget[2]) {
 					case INSERT_NORMAL:
 						o = t.nextBlock;
@@ -200,17 +207,19 @@ public class ScriptsPane extends ScrollFrameContents implements DropTarget {
 						o = t.subStack2;
 						break;
 				}
-			}
-			var h:int = BlockShape.EmptySubstackH;
-			if (o) {
-				h = o.height;
-				if (!o.bottomBlock().isTerminal) h -= BlockShape.NotchDepth;
+				if (o) {
+					h = o.height;
+					if (!o.bottomBlock().isTerminal) h -= BlockShape.NotchDepth;
+					while (o = o.nextBlock)
+						h += o.height;
+				}
 			}
 			b.previewSubstack1Height(h);
 		}
-		if (nearestTarget != null) {
-			var localP:Point = globalToLocal(nearestTarget[0]);
+
+		function updateFeedbackShape() : void {
 			var t:* = nearestTarget[1];
+			var localP:Point = globalToLocal(nearestTarget[0]);
 			feedbackShape.x = localP.x;
 			feedbackShape.y = localP.y;
 			feedbackShape.visible = true;
@@ -219,15 +228,36 @@ public class ScriptsPane extends ScrollFrameContents implements DropTarget {
 				if (t is BlockArg) feedbackShape.copyFeedbackShapeFrom(t, true);
 			} else {
 				var insertionType:int = nearestTarget[2];
-				var wrapH:int = (insertionType == INSERT_WRAP) ? t.getRect(t).height : 0;
+				var wrapH:int = 0;
+				if (insertionType == INSERT_WRAP) {
+					wrapH = t.height;
+					while (t = t.nextBlock)
+						wrapH += t.height;
+				}
 				var isInsertion:Boolean = (insertionType != INSERT_ABOVE) && (insertionType != INSERT_WRAP);
 				feedbackShape.copyFeedbackShapeFrom(b, false, isInsertion, wrapH);
 			}
-		} else {
+		}
+
+		if (mouseX + x >= 0) {
+			nearestTarget = nearestTargetForBlockIn(b, possibleTargets);
+			if (nearestTarget != null) {
+				updateFeedbackShape();
+			} else {
+				hideFeedbackShape();
+			}
+			if (b.base.canHaveSubstack1() && !b.subStack1) {
+				updateHeight();
+			}
+		}
+		else {
+			nearestTarget = null;
 			hideFeedbackShape();
 		}
+
 		//fixCommentLayout();
 	}
+
 
 	public function allStacks():Array {
 		var result:Array = [];
@@ -269,7 +299,10 @@ public class ScriptsPane extends ScrollFrameContents implements DropTarget {
 			}
 		}
 		if (b.op == Specs.PROCEDURE_DEF) app.updatePalette();
-		app.runtime.blockDropped(bs);
+		draggingDone();
+		app.runtime.blockDropped(b);
+		if (b.parent != bs)
+			removeChild(bs);
 	}
 
 	protected function findTargetsFor(b:Block):void {
@@ -375,8 +408,9 @@ public class ScriptsPane extends ScrollFrameContents implements DropTarget {
 		var threshold:int = (b.isReporter ? 15 : 30) * app.scaleY;
 		var i:int, minDist:int = 100000;
 		var nearest:Array;
-		var bTopLeft:Point = new Point(b.x, b.y);
-		var bBottomLeft:Point = new Point(b.x, b.y + b.height - 3);
+		var bs:BlockStack = b.parent as BlockStack;
+		var bTopLeft:Point = new Point(bs.x, bs.y);
+		var bBottomLeft:Point = new Point(bs.x, bs.y + bs.height - 3);
 
 		for (i = 0; i < targets.length; i++) {
 			var item:Array = targets[i];
