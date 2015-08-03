@@ -61,6 +61,15 @@ public class BlockStack extends Sprite {
 		}
 	}
 
+	public function removeBlocks(b:Block):void {
+		while (b) {
+			if (b.parent == this) removeChild(b);
+			removeBlocks(b.subStack1);
+			removeBlocks(b.subStack2);
+			b = b.nextBlock;
+		}
+	}
+
 	private function handleRemove(e:Event):void {
 		if (e.target == firstBlock)
 			firstBlock = null;
