@@ -149,9 +149,11 @@ public class PaletteBuilder {
 
 	protected function addExtensionButtons():void {
 		addAddExtensionButton();
-		var extensionDevManager:ExtensionDevManager = Scratch.app.extensionManager as ExtensionDevManager;
-		if (extensionDevManager) {
-			addItem(extensionDevManager.makeLoadExperimentalExtensionButton());
+		if (Scratch.app.isExtensionDevMode) {
+			var extensionDevManager:ExtensionDevManager = Scratch.app.extensionManager as ExtensionDevManager;
+			if (extensionDevManager) {
+				addItem(extensionDevManager.makeLoadExperimentalExtensionButton());
+			}
 		}
 	}
 
