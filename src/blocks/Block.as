@@ -536,13 +536,7 @@ public class Block extends Sprite {
 	public function removeBlock(b:Block):void {
 		if (b.parent is BlockStack) (b.parent as BlockStack).removeBlocks(b);
 		else if (b.parent == this) removeChild(b);
-		if (b == nextBlock) {
-			var rb:Block = b;
-			if (parent)
-				while (rb = rb.nextBlock)
-					parent.removeChild(rb);
-			nextBlock = null;
-		}
+		if (b == nextBlock) nextBlock = null;
 		if (b == subStack1) subStack1 = null;
 		if (b == subStack2) subStack2 = null;
 		if (b.isReporter) {
