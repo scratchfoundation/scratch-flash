@@ -191,11 +191,13 @@ public class ScratchRuntime {
 		if (30 == ch) keyName = 'up arrow';
 		if (31 == ch) keyName = 'down arrow';
 		if (32 == ch) keyName = 'space';
-		var startMatchingKeyHats:Function = function (stack:Block, target:ScratchObj):void {
-			var k:String = stack.args[0].argValue;
-			if (stack.op == 'whenKeyPressed' && (k == 'any' || k == keyName)) {
-				// only start the stack if it is not already running
-				if (!interp.isRunning(stack, target)) interp.toggleThread(stack, target);
+		function startMatchingKeyHats(stack:Block, target:ScratchObj):void {
+			if (stack.op == 'whenKeyPressed') {
+				var k:String = stack.args[0].argValue;
+				if (k == 'any' || k == keyName) {
+					// only start the stack if it is not already running
+					if (!interp.isRunning(stack, target)) interp.toggleThread(stack, target);
+				}
 			}
 		}
 		allStacksAndOwnersDo(startMatchingKeyHats);
