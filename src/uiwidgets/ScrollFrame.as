@@ -90,7 +90,7 @@ public class ScrollFrame extends Sprite implements DropTarget {
 		}
 	}
 
-	public function handleDrop(obj:*):Boolean {
+	public function handleDrop(obj:Object):Boolean {
 		if (contents is DropTarget) return (contents as DropTarget).handleDrop(obj);
 
 		return false;

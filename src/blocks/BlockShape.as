@@ -109,7 +109,7 @@ public class BlockShape extends Shape {
 				setShape(CmdShape);
 				topH = 6;
 			} else {
-				if (!canHaveSubstack1() && !b.isHat) topH = b.height; // normal command block (not hat, C, or E)
+				if (!canHaveSubstack1() && !b.isHat) topH = b.parent.height; // normal command block (not hat, C, or E)
 				if (targetHeight) substack1H = targetHeight - NotchDepth; // wrapping a C or E block
 			}
 		}

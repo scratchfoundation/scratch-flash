@@ -25,15 +25,17 @@
 // decides what to do when the block is dropped.
 
 package uiwidgets {
+import blocks.*;
+
 import flash.display.*;
 import flash.events.MouseEvent;
 import flash.geom.Point;
-import blocks.*;
-import scratch.*;
 import flash.geom.Rectangle;
 
-import ui.events.DragEvent;
+import scratch.*;
+
 import ui.dragdrop.DropTarget;
+import ui.events.DragEvent;
 import ui.media.MediaInfo;
 
 public class ScriptsPane extends ScrollFrameContents implements DropTarget {
@@ -57,6 +59,7 @@ public class ScriptsPane extends ScrollFrameContents implements DropTarget {
 	public function ScriptsPane(app:Scratch) {
 		this.app = app;
 		addChild(commentLines = new Shape());
+		commentLines.visible = false;
 		hExtra = vExtra = 40;
 		createTexture();
 		addFeedbackShape();
@@ -127,7 +130,7 @@ public class ScriptsPane extends ScrollFrameContents implements DropTarget {
 		saveScripts(false);
 		while (numChildren > 0) {
 			var child:DisplayObject = removeChildAt(0);
-			child.cacheAsBitmap = false;
+//			child.cacheAsBitmap = false;
 		}
 		addChild(commentLines);
 		viewedObj = obj;
@@ -137,7 +140,7 @@ public class ScriptsPane extends ScrollFrameContents implements DropTarget {
 				var stack:BlockStack = b.parent as BlockStack;
 				if (!stack)
 					stack =  new BlockStack(b);
-				stack.cacheAsBitmap = true;
+//				child.cacheAsBitmap = true;
 				addChild(stack);
 			}
 			for each (var c:ScratchComment in viewedObj.scriptComments) {
@@ -182,7 +185,7 @@ public class ScriptsPane extends ScrollFrameContents implements DropTarget {
 
 	public function draggingDone():void {
 		hideFeedbackShape();
-		possibleTargets = [];
+		possibleTargets.length = 0;
 		nearestTarget = null;
 	}
 
@@ -222,7 +225,7 @@ public class ScriptsPane extends ScrollFrameContents implements DropTarget {
 			var localP:Point = globalToLocal(nearestTarget[0]);
 			feedbackShape.x = localP.x;
 			feedbackShape.y = localP.y;
-			feedbackShape.visible = true;
+			feedbackShape.alpha = 1;
 			if (b.isReporter) {
 				if (t is Block) feedbackShape.copyFeedbackShapeFrom(t, true);
 				if (t is BlockArg) feedbackShape.copyFeedbackShapeFrom(t, true);
@@ -239,7 +242,8 @@ public class ScriptsPane extends ScrollFrameContents implements DropTarget {
 			}
 		}
 
-		if (mouseX + x >= 0) {
+		// TODO: Fix pointer determination
+//		if (mouseX + x >= 0) {
 			nearestTarget = nearestTargetForBlockIn(b, possibleTargets);
 			if (nearestTarget != null) {
 				updateFeedbackShape();
@@ -249,11 +253,11 @@ public class ScriptsPane extends ScrollFrameContents implements DropTarget {
 			if (b.base.canHaveSubstack1() && !b.subStack1) {
 				updateHeight();
 			}
-		}
-		else {
-			nearestTarget = null;
-			hideFeedbackShape();
-		}
+//		}
+//		else {
+//			nearestTarget = null;
+//			hideFeedbackShape();
+//		}
 
 		//fixCommentLayout();
 	}
@@ -270,11 +274,8 @@ public class ScriptsPane extends ScrollFrameContents implements DropTarget {
 
 	private function blockDropped(bs:BlockStack):void {
 		var b:Block = bs.firstBlock;
-		if (nearestTarget == null) {
-			bs.cacheAsBitmap = true;
-		} else {
+		if (nearestTarget) {
 			if(app.editMode) bs.hideRunFeedback();
-			bs.cacheAsBitmap = false;
 			if (b.isReporter) {
 				Block(nearestTarget[1].parent).replaceArgWithBlock(nearestTarget[1], b, this);
 			} else {
@@ -306,7 +307,7 @@ public class ScriptsPane extends ScrollFrameContents implements DropTarget {
 	}
 
 	protected function findTargetsFor(b:Block):void {
-		possibleTargets = [];
+		possibleTargets.length = 0;
 		var bEndWithTerminal:Boolean = b.bottomBlock().isTerminal;
 		var bCanWrap:Boolean = b.base.canHaveSubstack1() && !b.subStack1; // empty C or E block
 		var p:Point;
@@ -321,7 +322,7 @@ public class ScriptsPane extends ScrollFrameContents implements DropTarget {
 						if (!bEndWithTerminal && !target.isHat) {
 							// b is a stack ending with a non-terminal command block and target
 							// is not a hat so the bottom block of b can connect to top of target
-							p = target.localToGlobal(new Point(0, -(b.height - BlockShape.NotchDepth)));
+							p = target.localToGlobal(new Point(0, -(b.parent.height - BlockShape.NotchDepth)));
 							possibleTargets.push([p, target, INSERT_ABOVE]);
 						}
 						if (bCanWrap && !target.isHat) {
@@ -400,8 +401,8 @@ public class ScriptsPane extends ScrollFrameContents implements DropTarget {
 	}
 
 	private function hideFeedbackShape():void {
-		if (feedbackShape.visible)
-			feedbackShape.visible = false;
+		if (feedbackShape)
+			feedbackShape.alpha = 0;
 	}
 
 	private function nearestTargetForBlockIn(b:Block, targets:Array):Array {
@@ -445,7 +446,7 @@ public class ScriptsPane extends ScrollFrameContents implements DropTarget {
 
 	/* Dropping */
 
-	public function handleDrop(obj:*):Boolean {
+	public function handleDrop(obj:Object):Boolean {
 		var localP:Point = globalToLocal(new Point(obj.x, obj.y));
 
 		var info:MediaInfo = obj as MediaInfo;
@@ -464,7 +465,7 @@ public class ScriptsPane extends ScrollFrameContents implements DropTarget {
 		obj.x = Math.max(5, localP.x);
 		obj.y = Math.max(5, localP.y);
 		obj.scaleX = obj.scaleY = 1;
-		addChild(obj);
+		addChild(obj as DisplayObject);
 		if (bs) blockDropped(bs);
 		if (c) {
 			c.blockRef = blockAtPoint(localP); // link to the block under comment top-left corner, or unlink if none

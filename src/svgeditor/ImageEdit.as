@@ -125,7 +125,7 @@ public class ImageEdit extends Sprite {
 	public function getToolsLayer():Sprite { return toolsLayer }
 	public function getWorkArea():ImageCanvas { return workArea }
 
-	public function handleDrop(obj:*):Boolean {
+	public function handleDrop(obj:Object):Boolean {
 		function insertCostume(c:ScratchCostume):void { addCostume(c, dropPoint) }
 		function insertSprite(spr:ScratchSprite):void { addCostume(spr.currentCostume(), dropPoint) }
 		var dropPoint:Point;

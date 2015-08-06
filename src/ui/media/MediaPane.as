@@ -18,15 +18,18 @@
  */
 
 package ui.media {
-	import flash.display.Sprite;
-	import flash.geom.Point;
-	import flash.text.TextField;
-	import assets.Resources;
-	import scratch.*;
+import assets.Resources;
+
+import flash.display.Sprite;
+import flash.geom.Point;
+import flash.text.TextField;
+
+import scratch.*;
 
 import ui.dragdrop.DropTarget;
 import ui.parts.SoundsPart;
-	import uiwidgets.*;
+
+import uiwidgets.*;
 
 public class MediaPane extends ScrollFrameContents implements DropTarget{
 
@@ -148,7 +151,7 @@ public class MediaPane extends ScrollFrameContents implements DropTarget{
 	// Dropping
 	//------------------------------
 
-	public function handleDrop(obj:*):Boolean {
+	public function handleDrop(obj:Object):Boolean {
 		var item:MediaInfo = obj as MediaInfo;
 		if (item && item.owner == app.viewedObj()) {
 			changeMediaOrder(item);

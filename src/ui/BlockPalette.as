@@ -30,11 +30,12 @@ import blocks.BlockStack;
 
 import interpreter.Interpreter;
 
+import scratch.ScratchComment;
+import scratch.ScratchObj;
+
 import ui.dragdrop.DropTarget;
 
 import uiwidgets.*;
-import scratch.ScratchObj;
-import scratch.ScratchComment;
 
 public class BlockPalette extends ScrollFrameContents implements DropTarget {
 
@@ -56,7 +57,7 @@ public class BlockPalette extends ScrollFrameContents implements DropTarget {
 		if (scrollToOrigin) x = y = 0;
 	}
 
-	public function handleDrop(obj:*):Boolean {
+	public function handleDrop(obj:Object):Boolean {
 		// Delete blocks and stacks dropped onto the palette.
 		var c:ScratchComment = obj as ScratchComment;
 		if (c) {

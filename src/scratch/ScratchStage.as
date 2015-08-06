@@ -764,14 +764,14 @@ public class ScratchStage extends ScratchObj implements DropTarget, ITool {
 
 	/* Dropping */
 
-	public function handleDrop(obj:*):Boolean {
+	public function handleDrop(obj:Object):Boolean {
 		var app:Scratch = root as Scratch;
 		if ((obj is ScratchSprite) || (obj is Watcher) || (obj is ListWatcher)) {
 			var p:Point = globalToLocal(new Point(obj.x, obj.y));
 			obj.x = p.x;
 			obj.y = p.y;
 			if (obj.parent) obj.parent.removeChild(obj); // force redisplay
-			addChild(obj);
+			addChild(obj as DisplayObject);
 			if (obj is ScratchSprite) {
 				var spr:ScratchSprite = obj as ScratchSprite;
 				spr.setScratchXY(p.x - 240, 180 - p.y);

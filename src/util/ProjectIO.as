@@ -425,7 +425,7 @@ public class ProjectIO {
 		return list;
 	}
 
-	private function installAssets(objList:Array, assetDict:Object):void {
+	protected function installAssets(objList:Array, assetDict:Object):void {
 		var data:ByteArray;
 		for each (var obj:ScratchObj in objList) {
 			for each (var c:ScratchCostume in obj.costumes) {

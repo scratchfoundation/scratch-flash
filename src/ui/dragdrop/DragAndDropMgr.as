@@ -120,6 +120,7 @@ public class DragAndDropMgr {
 		return objs;
 	}
 
+	var oldCAB:Boolean;
 	private function startDrag():void {
 		var f:DropShadowFilter = new DropShadowFilter();
 		var blockScale:Number = (app.scriptsPane) ? app.scriptsPane.scaleX : 1;
@@ -127,6 +128,7 @@ public class DragAndDropMgr {
 		f.blurX = f.blurY = 2;
 		f.alpha = 0.4;
 		draggedObj.filters = [];//draggedObj.filters.concat([f]);
+		oldCAB = draggedObj.cacheAsBitmap;
 		draggedObj.cacheAsBitmap = true;
 		draggedObj.mouseEnabled = false;
 		draggedObj.mouseChildren = false;
@@ -140,7 +142,7 @@ public class DragAndDropMgr {
 		for each (var f:* in draggedObj.filters)
 			if (!(f is DropShadowFilter)) newFilters.push(f);
 
-		draggedObj.cacheAsBitmap = false;
+		draggedObj.cacheAsBitmap = oldCAB;
 		draggedObj.filters = newFilters;
 		draggedObj.mouseEnabled = true;
 		draggedObj.mouseChildren = true;

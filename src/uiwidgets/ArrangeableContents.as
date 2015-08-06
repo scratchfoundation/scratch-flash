@@ -4,6 +4,7 @@
 package uiwidgets {
 import com.greensock.TweenLite;
 import com.greensock.easing.Linear;
+
 import flash.display.DisplayObject;
 import flash.display.Sprite;
 import flash.events.Event;
@@ -113,7 +114,7 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 
 	// Used for re-arranging items
 	// Override for custom dropping actions
-	public function handleDrop(obj:*):Boolean {
+	public function handleDrop(obj:Object):Boolean {
 		// Accept the drop if we're re-arranging items OR we already have that item as identified by MD5
 		var mi:BaseItem = obj as BaseItem;
 		if(mi && (mi.parent == this || !!(mi = findMatchingItem(mi)))) {
@@ -126,7 +127,7 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 		}
 
 		// TODO: is this correct?
-		return true;
+		return false;
 	}
 
 	private function findMatchingItem(obj:BaseItem):BaseItem {

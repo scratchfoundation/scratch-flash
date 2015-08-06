@@ -125,7 +125,7 @@ public class Interpreter {
 		}
 		threads = newThreads;
 		if (wasRunning) {
-			if (app.editMode) (b.parent as BlockStack).hideRunFeedback();
+			if (app.editMode && b.parent is BlockStack) (b.parent as BlockStack).hideRunFeedback();
 			clearWarpBlock();
 		} else {
 			var topBlock:Block = b;
@@ -154,7 +154,8 @@ public class Interpreter {
 
 	public function showAllRunFeedback():void {
 		for each (var t:Thread in threads) {
-			(t.topBlock.parent as BlockStack).showRunFeedback();
+			if (t.topBlock.parent is BlockStack)
+				(t.topBlock.parent as BlockStack).showRunFeedback();
 		}
 	}
 

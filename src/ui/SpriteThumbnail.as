@@ -18,17 +18,21 @@
  */
 
 package ui {
+import assets.Resources;
+
+import blocks.Block;
 import blocks.BlockStack;
 
 import flash.display.*;
 import flash.events.*;
 import flash.filters.GlowFilter;
 import flash.text.*;
-import assets.Resources;
-import blocks.Block;
+
 import scratch.*;
+
 import translation.Translator;
 
+import ui.dragdrop.DropTarget;
 import ui.events.PointerEvent;
 import ui.media.MediaInfo;
 import ui.parts.LibraryPart;
@@ -36,7 +40,7 @@ import ui.styles.ItemStyle;
 
 import uiwidgets.*;
 
-public class SpriteThumbnail extends BaseItem {
+public class SpriteThumbnail extends BaseItem implements DropTarget {
 	protected var app:Scratch;
 	private var sceneInfo:TextField;
 	protected var selectedFrame:DisplayObject;
@@ -224,7 +228,7 @@ public class SpriteThumbnail extends BaseItem {
 		return super.getSpriteToDrag();
 	}
 
-	public function handleDrop(obj:*):Boolean {
+	public function handleDrop(obj:Object):Boolean {
 		function addCostume(c:ScratchCostume):void { app.addCostume(c, data.obj); }
 		function addSound(snd:ScratchSound):void { app.addSound(snd, data.obj); }
 		var item:MediaInfo = obj as MediaInfo;

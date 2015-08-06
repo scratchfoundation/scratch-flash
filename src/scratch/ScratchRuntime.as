@@ -403,7 +403,9 @@ public class ScratchRuntime {
 		data.position = 0;
 		if (data.length < 8 || data.readUTFBytes(8) != 'ScratchV') {
 			data.position = 0;
+			trace('begin decode - '+getTimer());
 			newProject = new ProjectIO(app).decodeProjectFromZipFile(data);
+			trace('done decode - '+getTimer());
 			if (!newProject) {
 				projectLoadFailed();
 				return;
@@ -425,7 +427,9 @@ public class ScratchRuntime {
 		}
 		if (saveForRevert) app.saveForRevert(data, false);
 		app.extensionManager.clearImportedExtensions();
+		trace('begin images - '+getTimer());
 		decodeImagesAndInstall(newProject);
+		trace('done images - '+getTimer());
 	}
 
 	public function projectLoadFailed(ignore:* = null):void {
@@ -734,8 +738,9 @@ public class ScratchRuntime {
 
 	public function clearRunFeedback():void {
 		if(app.editMode) {
-			for each (var stack:BlockStack in allStacks()) {
-				stack.hideRunFeedback();
+			for each (var stack:Block in allStacks()) {
+				if (stack.parent is BlockStack)
+					(stack.parent as BlockStack).hideRunFeedback();
 			}
 		}
 		app.updatePalette();
@@ -877,7 +882,7 @@ public class ScratchRuntime {
 		// return an array containing all stacks in all objects
 		var result:Array = [];
 		allStacksAndOwnersDo(
-				function (stack:BlockStack, target:ScratchObj):void { result.push(stack) });
+				function (stack:Block, target:ScratchObj):void { result.push(stack) });
 		return result;
 	}
 

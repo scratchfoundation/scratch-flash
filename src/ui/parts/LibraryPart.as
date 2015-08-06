@@ -27,17 +27,20 @@ import flash.display.*;
 import flash.events.Event;
 import flash.text.*;
 import flash.utils.*;
+
 import scratch.*;
+
 import translation.Translator;
 
 import ui.BaseItem;
 import ui.ItemData;
+import ui.SpriteThumbnail;
 import ui.dragdrop.DropTarget;
 import ui.media.*;
-import ui.SpriteThumbnail;
 import ui.parts.base.ILibraryPart;
 import ui.styles.ContainerStyle;
 import ui.styles.ItemStyle;
+
 import uiwidgets.*;
 
 public class LibraryPart extends UIPart implements ILibraryPart, DropTarget {
@@ -459,7 +462,7 @@ public class LibraryPart extends UIPart implements ILibraryPart, DropTarget {
 	// Dropping
 	//------------------------------
 
-	public function handleDrop(obj:*):Boolean {
+	public function handleDrop(obj:Object):Boolean {
 		return false;
 	}
 

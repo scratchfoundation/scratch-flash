@@ -319,6 +319,9 @@ public class Block extends Sprite implements IDraggable {
 			if (prevBlock) prevBlock.removeBlock(this);
 			base.redraw(true);
 		}
+		else if (parent is BlockStack) {
+			(parent as BlockStack).restoreOriginalState();
+		}
 	}
 
 	private function setDefaultArgs(defaults:Array):void {
@@ -775,9 +778,10 @@ public class Block extends Sprite implements IDraggable {
 	public function duplicateStack(deltaX:Number, deltaY:Number):void {
 		if (isProcDef() || op == 'proc_declaration') return; // don't duplicate procedure definition
 		var forStage:Boolean = Scratch.app.viewedObj() && Scratch.app.viewedObj().isStage;
-		var newStack:Block = BlockIO.stringToStack(Scratch.app.blockIO.stackToString(this), forStage);
-		newStack.x = x + deltaX;
-		newStack.y = y + deltaY;
+		var newStack:BlockStack = new BlockStack(BlockIO.stringToStack(BlockIO.stackToString(this), forStage));
+		var p:Point = localToGlobal(new Point(0, 0));
+		newStack.x = p.x + deltaX;
+		newStack.y = p.y + deltaY;
 		parent.addChild(newStack);
 
 		// TODO: fix
@@ -808,7 +812,7 @@ public class Block extends Sprite implements IDraggable {
 		app.runtime.recordForUndelete(this, x, y, 0, app.viewedObj());
 		app.scriptsPane.saveScripts();
 		SCRATCH::allow3d { app.runtime.checkForGraphicEffects(); }
-		app.updatePalette();
+//		app.updatePalette();
 		return true;
 	}
 
@@ -817,7 +821,7 @@ public class Block extends Sprite implements IDraggable {
 		allBlocksDo(function (b:Block):void {
 			allBlocks.push(b);
 		});
-		var result:Array = []
+		var result:Array = [];
 		if (!scriptsPane) return result;
 		for (var i:int = 0; i < scriptsPane.numChildren; i++) {
 			var c:ScratchComment = scriptsPane.getChildAt(i) as ScratchComment;
@@ -836,8 +840,24 @@ public class Block extends Sprite implements IDraggable {
 	/* Dragging */
 
 	public function getSpriteToDrag():Sprite {
-		if (isEmbeddedParameter() || isInPalette()) return new BlockStack(duplicate(false, Scratch.app.viewedObj() is ScratchStage));
-		return (parent is BlockStack ? parent as Sprite : this);
+		var spr:Sprite;
+		if (isEmbeddedParameter() || isInPalette())
+			return new BlockStack(duplicate(false, Scratch.app.viewedObj() is ScratchStage));
+		else if (!(parent is BlockStack) || (parent as BlockStack).firstBlock != this) {
+			var p:DisplayObjectContainer = parent;
+			spr = new BlockStack(this);
+			p.addChild(spr);
+
+			fixStackLayout();
+		}
+
+		var bs:BlockStack = spr as BlockStack;
+		if (!bs) {
+			bs = parent as BlockStack;
+			bs.saveOriginalState();
+		}
+
+		return bs;
 	}
 
 	/* Events */

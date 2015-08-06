@@ -41,7 +41,7 @@ public class BlockIO {
 		return new Block(spec, type, color, op, defaultArgs);
 	}
 
-	public function stackToString(b:Block):String {
+	public static function stackToString(b:Block):String {
 		return util.JSON.stringify(stackToArray(b));
 	}
 

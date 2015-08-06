@@ -163,10 +163,12 @@ public class ScratchCostume {
 	}
 
 	public static function emptyBitmapCostume(costumeName:String, forBackdrop:Boolean):ScratchCostume {
+		var result:ScratchCostume = new ScratchCostume(costumeName, null);
 		var bm:BitmapData = forBackdrop ?
-			new BitmapData(480, 360, true, 0xFFFFFFFF) :
-			new BitmapData(1, 1, true, 0);
-		var result:ScratchCostume = new ScratchCostume(costumeName, bm);
+				new BitmapData(480, 360, true, 0xFFFFFFFF) :
+				new BitmapData(1, 1, true, 0);
+		result.setBitmapData(bm, result.rotationCenterX, result.rotationCenterY);
+		result.baseLayerID = -1;
 		return result;
 	}
 

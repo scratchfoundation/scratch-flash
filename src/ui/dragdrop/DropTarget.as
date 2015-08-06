@@ -5,5 +5,6 @@ package ui.dragdrop {
 import flash.events.IEventDispatcher;
 
 public interface DropTarget extends IEventDispatcher{
-	function handleDrop(obj:*):Boolean;
+	function handleDrop(obj:Object):Boolean;
+	//function isCompatible(obj:Object):Boolean;
 }}
