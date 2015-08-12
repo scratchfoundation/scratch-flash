@@ -25,7 +25,7 @@ import flash.geom.Rectangle;
 
 public class ChildRender extends BitmapData {
 	private const allowPartial:Boolean = false;
-	private const maxSize:uint = 1022;
+	private const maxSize:uint = 2046; //1022;
 	private const halfSize:uint = maxSize >> 1;
 	private var orig_width:Number;
 	private var orig_height:Number;
@@ -43,7 +43,7 @@ public class ChildRender extends BitmapData {
 
 		reset(dispObj, penLayer);
 
-		super(Math.ceil(Math.min(w, maxSize)), Math.ceil(Math.min(h, maxSize)), true, 0);
+		super(Math.ceil(Math.min(w * scale, maxSize)), Math.ceil(Math.min(h * scale, maxSize)), true, 0);
 	}
 
 	public function reset(dispObj:DisplayObject, penLayer:DisplayObject):void {
