@@ -24,6 +24,7 @@ package render3d {
  *   @author Shane M. Clements, shane.m.clements@gmail.com
  */
 import flash.display.Sprite;
+
 public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 
 	import com.adobe.utils.*;
@@ -85,7 +86,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 	private var testBMs:Array;
 	private var textureIndexByID:Object;
 	private static var texSizeMax:int = 2048;
-	private static var texSize:int = 1024;
+	private static var texSize:int = 2048;
 	private var penPacked:Boolean;
 
 	/** Triangle index data */
@@ -421,10 +422,10 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		checkBuffers();
 
 		if(childrenChanged) {
-			if(debugTexture) {
-				uiContainer.graphics.clear();
-				uiContainer.graphics.lineStyle(2, 0xFFCCCC);
-			}
+//			if(debugTexture) {
+//				uiContainer.graphics.clear();
+//				uiContainer.graphics.lineStyle(2, 0xFFCCCC);
+//			}
 			for(i=0; i<numChildren; ++i) {
 				dispObj = scratchStage.getChildAt(i);
 				if(dispObj.visible)
@@ -477,6 +478,8 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 //		var boundsX:Number = bounds.left, boundsY:Number = bounds.top;
 //		var childRender:ChildRender = bitmapsByID[bmID] as ChildRender;
 //		if(childRender && childRender.isPartial()) {
+//			trace(bounds);
+//		}
 //			boundsX += childRender.inner_x * bounds.width;
 //			boundsY += childRender.inner_y * bounds.height;
 //			w *= childRender.inner_w;
@@ -803,7 +806,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 				return (isNew || unrenderedChildren[dispObj]);
 			}
 			else if (effects && FX_MOSAIC in effects) {
-				s = renderOpts.isStage ? 1 : appScale;
+				s = renderOpts.isStage ? 1 : appScale; // Is this right? (scale and dw already use appScale)
 				srcWidth = dw * s;
 				srcHeight =  dh * s;
 				mosaic = Math.round((Math.abs(effects[FX_MOSAIC]) + 10) / 10);
@@ -867,6 +870,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		var width2:Number = Math.max(1, width);
 		var height2:Number = Math.max(1, height);
 		var updateTexture:Boolean = !!bmd;
+
 		if(!bmd) bmd = new ChildRender(width2, height2, dispObj, stagePenLayer, bounds);
 		else bmd.fillRect(bmd.rect, 0x00000000);
 
@@ -890,8 +894,10 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		var oldVis:Boolean = dispObj.visible;
 		dispObj.visible = false;
 		dispObj.visible = true;
-//if('objName' in dispObj)
-//trace(Dbg.printObj(dispObj)+' ('+(dispObj as Object).objName+' - '+id+') rendered @ '+bmd.width+'x'+bmd.height+'  --  '+bounds+' -- '+(dispObj as Object).getVisibleBounds(dispObj));
+		var ss:Number = dispObj.scaleX * scale * Math.min(maxScale, appScale * scratchStage.stage.contentsScaleFactor);
+//if(!('objName' in dispObj))
+//	trace(Dbg.printObj(dispObj)+' ('+id+') rendered @ '+bmd.width+'x'+bmd.height+'  --  '+bounds.width*ss+'x'+bounds.height*ss);
+//	trace(Dbg.printObj(dispObj)+' ('+(dispObj as Object).objName+' - '+id+') rendered @ '+bmd.width+'x'+bmd.height+'  --  '+bounds+' -- '+(dispObj as Object).getVisibleBounds(dispObj));
 		bmd.drawWithQuality(dispObj, drawMatrix, null, null, null, false, StageQuality.BEST);
 
 		dispObj.visible = oldVis;
@@ -1010,11 +1016,13 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 					var offset:Number = 0;
 					for(i=0; i<textures.length; ++i) {
 						newTex = textures[i];
-						if(i >= testBMs.length)
+						if(i >= testBMs.length) {
 							testBMs.push(new Bitmap(newTex));
+//							testBMs[testBMs.length - 1].filters = [new DropShadowFilter()];
+						}
 						var testBM:Bitmap = testBMs[i];
-						testBM.scaleX = testBM.scaleY = 0.5;
-						testBM.x = 380 + offset;
+						testBM.scaleX = testBM.scaleY = 0.25;
+						testBM.x = 300 + offset;//Utility.cmToPixels(4) + offset;
 
 						var scale:Number = testBM.scaleX;
 						var X:Number = testBM.x * scratchStage.root.scaleX;
