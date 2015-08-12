@@ -76,18 +76,18 @@ public class ScrollFrame extends Sprite implements DropTarget {
 
 	public function ScrollFrame(dragScrolling:Boolean = false, scrollbarStyle:int = 0) {
 		this.scrollbarStyle = scrollbarStyle || Scrollbar.STYLE_DEFAULT;
-		this.dragScrolling = dragScrolling;
 		if (dragScrolling) scrollbarThickness = Scrollbar.STYLE_DEFAULT ? 3 : 5;
 		mask = new Shape();
 		addChild(mask);
 		if (useFrame) addShadowFrame(); // adds a shadow to top and left
 		setWidthHeight(100, 100);
+		vScrollbar = new Scrollbar(scrollbarThickness, 50, setVScroll, scrollbarStyle);
+		vScrollbar.alpha = idleAlpha;
+		addChild(vScrollbar);
 		setContents(new ScrollFrameContents());
 		addEventListener(ScrollFrameContents.INTERACTION_BEGAN, handleContentInteraction);
 		enableScrollWheel('vertical');
-		if (dragScrolling) {
-			enableDragScrolling();
-		}
+		if (dragScrolling) enableDragScrolling();
 	}
 
 	public function handleDrop(obj:Object):Boolean {
@@ -110,6 +110,7 @@ public class ScrollFrame extends Sprite implements DropTarget {
 	}
 
 	public function enableDragScrolling(dragGesture:TransformGesture = null):void {
+		dragScrolling = true;
 		if (dragGesture) {
 			panGesture = dragGesture;
 			panGesture.target = this;
@@ -195,39 +196,37 @@ public class ScrollFrame extends Sprite implements DropTarget {
 	}
 
 	private function handleScrollWheel(evt:MouseEvent):void {
-		var delta:int = 10 * evt.delta;
+		var delta:int = 2 * evt.delta;
 		if (scrollWheelHorizontal) {
-			contents.x = Math.min(0, Math.max(contents.x + delta, -maxScrollH()));
+			xVelocity = delta;
+//			contents.x = Math.min(0, Math.max(contents.x + delta, -maxScrollH()));
 		} else {
-			contents.y = Math.min(0, Math.max(contents.y + delta, -maxScrollV()));
+			yVelocity = delta;
+//			contents.y = Math.min(0, Math.max(contents.y + delta, -maxScrollV()));
 		}
-		updateScrollbars();
+
+		if (!hasEventListener(Event.ENTER_FRAME)) addEventListener(Event.ENTER_FRAME, step);
+		updateScrollbarVisibility();
 	}
 
+	private const idleAlpha:Number = 0.3;
 	public function showHScrollbar(show:Boolean):void {
-		if (hScrollbar) {
-			removeChild(hScrollbar);
-			hScrollbar = null;
-		}
-		if (show) {
+		if (show && !hScrollbar) {
 			hScrollbar = new Scrollbar(50, scrollbarThickness, setHScroll, scrollbarStyle);
 			addChild(hScrollbar);
+			addChildAt(contents, 1);
 		}
-		addChildAt(contents, 1);
-		fixLayout();
+		if (hScrollbar) {
+			hScrollbar.alpha = show ? 1 : idleAlpha;
+			fixLayout();
+		}
 	}
 
 	public function showVScrollbar(show:Boolean):void {
 		if (vScrollbar) {
-			removeChild(vScrollbar);
-			vScrollbar = null;
+			vScrollbar.alpha = show ? 1 : idleAlpha
+			fixLayout();
 		}
-		if (show) {
-			vScrollbar = new Scrollbar(scrollbarThickness, 50, setVScroll, scrollbarStyle);
-			addChild(vScrollbar);
-		}
-		addChildAt(contents, 1);
-		fixLayout();
 	}
 
 	public function visibleW():int { return mask.width }
@@ -241,13 +240,13 @@ public class ScrollFrame extends Sprite implements DropTarget {
 	public function updateScrollbarVisibility():void {
 		// Update scrollbar visibility when not in dragScrolling mode.
 		// Called by the client after adding/removing content.
-		if (dragScrolling) return;
+		//if (dragScrolling) return;
 		var shouldShow:Boolean, doesShow:Boolean;
-		shouldShow = (visibleW() < getContentW()) && allowHorizontalScrollbar;
-		doesShow = hScrollbar != null;
+		shouldShow = (visibleW() < getContentW()) && allowHorizontalScrollbar && (!dragScrolling || xVelocity);
+		doesShow = hScrollbar && hScrollbar.alpha == 1;
 		if (shouldShow != doesShow) showHScrollbar(shouldShow);
-		shouldShow = visibleH() < getContentH();
-		doesShow = vScrollbar != null;
+		shouldShow = visibleH() < getContentH() && (!dragScrolling || yVelocity);
+		doesShow = vScrollbar && vScrollbar.alpha == 1;
 		if (shouldShow != doesShow) showVScrollbar(shouldShow);
 		updateScrollbars();
 	}
@@ -340,19 +339,19 @@ public class ScrollFrame extends Sprite implements DropTarget {
 	protected function onPanGestureChanged(event:GestureEvent):void {
 		var panGesture:TransformGesture = event.target as TransformGesture;
 
-		var offsetX:Number = allowHorizontalScrollbar ? panGesture.offsetX : 0;
-		var offsetY:Number = panGesture.offsetY;
+		xVelocity = allowHorizontalScrollbar ? panGesture.offsetX : 0;
+		yVelocity = panGesture.offsetY;
 
 		xHistory.push(panGesture.offsetX);
 		yHistory.push(panGesture.offsetY);
 		xHistory.shift();
 		yHistory.shift();
 
-		contents.x = contents.x + offsetX;
-		contents.y = contents.y + offsetY;
+		contents.x = contents.x + xVelocity;
+		contents.y = contents.y + yVelocity;
 		constrainScroll();
 
-		//updateScrollbars();
+		updateScrollbarVisibility();
 	}
 
 	protected function onPanGestureEnded(event:GestureEvent):void {
