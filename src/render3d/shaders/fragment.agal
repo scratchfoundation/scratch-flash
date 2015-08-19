@@ -119,7 +119,7 @@ ft0.xyzw *= Tex_wh
 ft0.xy += Tex_u0v0
 
 // Get the texture pixel using ft0.xy as the coordinates
-ft1 = tex<2d,clamp,linear,nomip>(ft0, fs0)
+ft1 = tex<2d>(ft0, fs0)
 
 /*** ft1 == (r, g, b, a) ***/
 // Now de-multiply the color values that Flash pre-multiplied
@@ -153,6 +153,10 @@ ft2.w = ft2.z - ft2.w //span = v - span;
 //					else if (b == v) h = 240.0 + (60.0 * ((r - g) / span));
 //					s = span / v;
 //				}
+ft3.y = ft2.z == 0 //int v_eq_zero = (v == 0);
+ft3.w = 0.001 * ft3.y //tiny = 0.000001 * v_eq_zero;				tiny	= ft3.w
+ft2.z += ft3.w //v = v + tiny;					Avoid division by zero, v != 0
+
 ft3.x = ft2.w == 0 //int span_eq_zero = (span == 0);		span_eq_zero= ft3.x
 ft2.y = ft2.w != 0 //int span_not_zero = (span != 0.0); span_not_zero	= ft2.y
 ft3.x = ft1.x == ft2.z //int r_eq_v = (dst.r == v);				r_eq_v	= ft3.x
@@ -189,12 +193,45 @@ ft2.x = ft4.y		 //float h = h_r_eq_v;							h	= ft2.x
 ft2.x += ft4.z //h = h + h_g_eq_v;
 ft2.x += ft4.w //h = h + h_b_eq_v;
 
-ft3.y = ft2.z == 0 //int v_eq_zero = (v == 0);
-ft3.w = 0.001 * ft3.y //tiny = 0.000001 * v_eq_zero;				tiny	= ft3.w
-ft2.z += ft3.w //v = v + tiny;					Avoid division by zero, v != 0
-
 ft3.z = ft2.w / ft2.z //float s_span_not_zero = span / v; s_span_not_zero= ft3.z
 ft2.y *= ft3.z //float s = s_span_not_zero * span_not_zero;	s	= ft2.y
+
+//				if (hueShift != 0.0 && v < 0.11) { v = 0.11; s = 1.0; }
+/*** ft3 is now free ***/  // Check this section for accuracy / mistakes
+#if ENABLE_color
+ft3.y = 1
+#else // ENABLE_color
+ft3.y = 0
+#endif // ENABLE_color
+ft3.z = ft2.z < 0.11 //int v_lt_0_11 = (v < 0.11);			v_lt_0_11	= ft3.z
+ft3.z *= ft3.y //v_lt_0_11 = v_lt_0_11 * hs_not_zero;
+ft3.w = ft3.z == 0 //int !v_lt_0_11						!v_lt_0_11	= ft3.w
+
+ft2.z *= ft3.w //v  = v * !v_lt_0_11
+ft3.x = 0.11 * ft3.z //float vv = 0.11 * v_lt_0_11;					vv	= ft3.x
+ft2.z += ft3.x //v = v + vv;
+
+ft2.y *= ft3.w //s  = s * !v_lt_0_11
+ft2.y += ft3.z //s = s + v_lt_0_11;
+
+//				if (hueShift != 0.0 && s < 0.09) s = 0.09;
+ft3.w = ft2.y < 0.09 //int s_lt_0_09 = (s < 0.09);			s_lt_0_09	= ft3.w
+ft3.w *= ft3.y //s_lt_0_09 = s_lt_0_09 * hs_not_zero;
+ft3.z = ft3.w == 0 //int !s_lt_0_09						!s_lt_0_09	= ft3.z
+
+ft2.y *= ft3.z //s  = s * !s_lt_0_09
+ft3.x = 0.09 * ft3.w //float ss = 0.09 * s_lt_0_09;					ss	= ft3.x
+ft2.y += ft3.x //s = s + ss;
+
+//				if (hueShift != 0.0 && (v == 0.11 || s == 0.09)) h = 0.0;
+ft4.x = ft2.z == 0.11 //int v_eq_0_11 = (v == 0.11);			v_eq_0_11	= ft4.x
+ft4.y = ft2.y == 0.09 //int s_eq_0_09 = (s == 0.09);			s_eq_0_09	= ft4.y
+ft4.z = ft4.x + ft4.y //int v_eq_0_11_or_s_eq_0_09 = v_eq_0_11 + s_eq_0_09;	v_eq_0_11_or_s_eq_0_09 = ft4.z
+ft4.z *= ft3.y //v_eq_0_11_or_s_eq_0_09 = v_eq_0_11_or_s_eq_0_09 * hs_not_zero;
+
+// Multiply h by !v_eq_0_11_or_s_eq_0_09. if v_eq_0_11_or_s_eq_0_09 is true, then h=0, otherwise it's untouched.
+ft4.z = ft4.z == 0 //v_eq_0_11_or_s_eq_0_09 = !v_eq_0_11_or_s_eq_0_09
+ft2.x *= ft4.z //h = h * (!v_eq_0_11_or_s_eq_0_09);
 
 //				h = mod(h + hueShift, 360.0);
 #if ENABLE_color
@@ -288,7 +325,7 @@ ft1.w *= FX_ghost
 #endif // ENABLE_ghost
 
 /*** Flash-style pre-multiplied alpha **/
-//ft1.xyz *= ft1.www
+ft1.xyz *= ft1.www
 
 /*** Output color ***/
 oc = ft1
