@@ -38,6 +38,8 @@ import org.gestouch.events.GestureEvent;
 import org.gestouch.gestures.TapGesture;
 import translation.Translator;
 
+import ui.ScreenDetector;
+
 import ui.events.PointerEvent;
 
 import util.*;
@@ -72,6 +74,7 @@ public class ScratchObj extends Sprite {
 	public var procCache:Object = {};
 	public var varCache:Object = {};
 
+	static private var posScale:Number = ScreenDetector.pixelsPerCM / 30;
 	function ScratchObj() {
 		super();
 
@@ -597,9 +600,9 @@ public class ScratchObj extends Sprite {
 		var allScripts:Array = [];
 		for each (var b:Block in scripts) {
 			if (b.parent is BlockStack)
-				allScripts.push([b.parent.x, b.parent.y, BlockIO.stackToArray(b)]);
+				allScripts.push([b.parent.x / posScale, b.parent.y / posScale, BlockIO.stackToArray(b)]);
 			else
-				allScripts.push([b.x, b.y, BlockIO.stackToArray(b)]);
+				allScripts.push([b.x / posScale, b.y / posScale, BlockIO.stackToArray(b)]);
 		}
 		var allComments:Array = [];
 		for each (var c:ScratchComment in scriptComments) {
@@ -657,8 +660,8 @@ public class ScratchObj extends Sprite {
 			// entries are of the form: [x y stack]
 			var entry:Array = scripts[i];
 			var b:Block = BlockIO.arrayToStack(entry[2], isStage);
-			b.x = entry[0] * 2.5;
-			b.y = entry[1] * 2.5;
+			b.x = entry[0] * posScale;
+			b.y = entry[1] * posScale;
 			scripts[i] = b;
 		}
 
