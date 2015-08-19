@@ -129,8 +129,9 @@ public class ScratchStage extends ScratchObj implements DropTarget, ITool {
 		var app:Scratch = Scratch.app;
 		if (app) {
 			var draggedObjs:Array = DragAndDropMgr.getDraggedObjs();
-			for each (spr in draggedObjs)
-				if ((spr.objName == spriteName) && !spr.isClone) return spr;
+			for each (var o:DisplayObject in draggedObjs)
+				if (!!(spr = o as ScratchSprite) && (spr.objName == spriteName) && !spr.isClone)
+					return spr;
 		}
 
 		return null;
@@ -197,8 +198,14 @@ public class ScratchStage extends ScratchObj implements DropTarget, ITool {
 	public function baseW():Number { return bg.width }
 	public function baseH():Number { return bg.height }
 
-	public function scratchMouseX():int { return Math.max(-240, Math.min(mouseX - (STAGEW / 2), 240)) }
-	public function scratchMouseY():int { return -Math.max(-180, Math.min(mouseY - (STAGEH / 2), 180)) }
+	public function scratchMouseX():int {
+		var pt:Point = globalToLocal(PointerEvent.lastPt);
+		return Math.max(-240, Math.min(pt.x - (STAGEW / 2), 240));
+	}
+	public function scratchMouseY():int {
+		var pt:Point = globalToLocal(PointerEvent.lastPt);
+		return -Math.max(-180, Math.min(pt.y - (STAGEH / 2), 180));
+	}
 
 	override public function allObjects():Array {
 		// Return an array of all sprites in this project plus the stage.
