@@ -151,7 +151,7 @@ public class MediaPane extends ScrollFrameContents implements DropTarget{
 	// Dropping
 	//------------------------------
 
-	public function handleDrop(obj:Object):Boolean {
+	override public function handleDrop(obj:Object):Boolean {
 		var item:MediaInfo = obj as MediaInfo;
 		if (item && item.owner == app.viewedObj()) {
 			changeMediaOrder(item);

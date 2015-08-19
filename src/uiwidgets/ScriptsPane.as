@@ -28,17 +28,18 @@ package uiwidgets {
 import blocks.*;
 
 import flash.display.*;
+import flash.events.Event;
 import flash.events.MouseEvent;
 import flash.geom.Point;
 import flash.geom.Rectangle;
 
 import scratch.*;
 
-import ui.dragdrop.DropTarget;
+import ui.ScreenDetector;
 import ui.events.DragEvent;
 import ui.media.MediaInfo;
 
-public class ScriptsPane extends ScrollFrameContents implements DropTarget {
+public class ScriptsPane extends ScrollFrameContents {
 
 	protected const INSERT_NORMAL:int = 0;
 	protected const INSERT_ABOVE:int = 1;
@@ -62,23 +63,17 @@ public class ScriptsPane extends ScrollFrameContents implements DropTarget {
 		commentLines.visible = false;
 		hExtra = vExtra = 40;
 		createTexture();
-		addFeedbackShape();
+		addEventListener(Event.ADDED_TO_STAGE, handleAdded, false, 0, true);
 	}
 
-	private var addedHandlers:Boolean;
-	override public function setWidthHeight(w:Number, h:Number):void {
-		super.setWidthHeight(w, h);
-		if (!addedHandlers && parent) {
+	private function handleAdded(e:Event):void {
+		if (e.target == this)
 			parent.addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, menu);
-			parent.addEventListener(DragEvent.DRAG_OVER, handleDrag, false, 0, true);
-			parent.addEventListener(DragEvent.DRAG_MOVE, handleDrag, false, 0, true);
-			parent.addEventListener(DragEvent.DRAG_OUT, handleDrag, false, 0, true);
-			parent.addEventListener(DragEvent.DRAG_DROP, handleDrag, false, 0, true);
-			addedHandlers = true;
-		}
 	}
 
-	protected function handleDrag(e:DragEvent):void {
+
+
+	override public function handleDragEvent(e:DragEvent):void {
 		if (!(e.draggedObject is BlockStack) && !(e.draggedObject is ScratchComment)) return;
 
 		var bs:BlockStack = e.draggedObject as BlockStack;
@@ -225,7 +220,7 @@ public class ScriptsPane extends ScrollFrameContents implements DropTarget {
 			var localP:Point = globalToLocal(nearestTarget[0]);
 			feedbackShape.x = localP.x;
 			feedbackShape.y = localP.y;
-			feedbackShape.alpha = 1;
+			feedbackShape.visible = true;
 			if (b.isReporter) {
 				if (t is Block) feedbackShape.copyFeedbackShapeFrom(t, true);
 				if (t is BlockArg) feedbackShape.copyFeedbackShapeFrom(t, true);
@@ -393,20 +388,21 @@ public class ScriptsPane extends ScrollFrameContents implements DropTarget {
 		if (feedbackShape == null) initFeedbackShape();
 		feedbackShape.setWidthAndTopHeight(10, 10);
 		hideFeedbackShape();
-		addChild(feedbackShape);
+		parent.addChild(feedbackShape);
 	}
 
 	protected function initFeedbackShape():void {
 		feedbackShape = new BlockShape();
 	}
 
-	private function hideFeedbackShape():void {
-		if (feedbackShape)
-			feedbackShape.alpha = 0;
+	protected function hideFeedbackShape():void {
+		if (feedbackShape && feedbackShape.visible)
+			feedbackShape.visible = false;
 	}
 
-	private function nearestTargetForBlockIn(b:Block, targets:Array):Array {
-		var threshold:int = (b.isReporter ? 15 : 30) * app.scaleY;
+	protected static var reporterThreshold:uint = ScreenDetector.pixelsPerCM
+	protected function nearestTargetForBlockIn(b:Block, targets:Array):Array {
+		var threshold:int = (b.isReporter ? ScreenDetector.pixelsPerCM/2 : ScreenDetector.pixelsPerCM);// * app.scaleY;
 		var i:int, minDist:int = 100000;
 		var nearest:Array;
 		var bs:BlockStack = b.parent as BlockStack;
@@ -422,6 +418,7 @@ public class ScriptsPane extends ScrollFrameContents implements DropTarget {
 				nearest = item;
 			}
 		}
+
 		return (minDist < threshold) ? nearest : null;
 	}
 
@@ -446,7 +443,7 @@ public class ScriptsPane extends ScrollFrameContents implements DropTarget {
 
 	/* Dropping */
 
-	public function handleDrop(obj:Object):Boolean {
+	override public function handleDrop(obj:Object):Boolean {
 		var localP:Point = globalToLocal(new Point(obj.x, obj.y));
 
 		var info:MediaInfo = obj as MediaInfo;
@@ -510,7 +507,6 @@ public class ScriptsPane extends ScrollFrameContents implements DropTarget {
 	}
 
 	/* Menu */
-
 	public function menu(evt:MouseEvent):Menu {
 		var x:Number = mouseX;
 		var y:Number = mouseY;

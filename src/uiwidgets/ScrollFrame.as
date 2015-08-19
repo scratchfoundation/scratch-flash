@@ -42,7 +42,10 @@ import flash.geom.Rectangle;
 import org.gestouch.events.GestureEvent;
 import org.gestouch.gestures.TransformGesture;
 
+import ui.ScreenDetector;
+
 import ui.dragdrop.DropTarget;
+import ui.events.DragEvent;
 
 public class ScrollFrame extends Sprite implements DropTarget {
 
@@ -91,9 +94,7 @@ public class ScrollFrame extends Sprite implements DropTarget {
 	}
 
 	public function handleDrop(obj:Object):Boolean {
-		if (contents is DropTarget) return (contents as DropTarget).handleDrop(obj);
-
-		return false;
+		return contents.handleDrop(obj);
 	}
 
 	private function handleContentInteraction(event:Event):void {
@@ -167,6 +168,14 @@ public class ScrollFrame extends Sprite implements DropTarget {
 		if (contents) {
 			contents.removeEventListener(Event.ADDED, contentChanged);
 			contents.removeEventListener(Event.REMOVED, contentChanged);
+			removeEventListener(DragEvent.DRAG_OVER, contents.handleDragEvent);
+			removeEventListener(DragEvent.DRAG_MOVE, contents.handleDragEvent);
+			removeEventListener(DragEvent.DRAG_OUT, contents.handleDragEvent);
+			removeEventListener(DragEvent.DRAG_DROP, contents.handleDragEvent);
+			removeEventListener(DragEvent.DRAG_START, contents.handleDragEvent);
+			removeEventListener(DragEvent.DRAG_STOP, contents.handleDragEvent);
+			removeEventListener(DragEvent.DRAG_CANCEL, contents.handleDragEvent);
+			removeEventListener(DragEvent.DRAG_DROP, contents.handleDragEvent);
 			this.removeChild(contents);
 		}
 		contents = newContents as ScrollFrameContents;
@@ -177,6 +186,14 @@ public class ScrollFrame extends Sprite implements DropTarget {
 		contentDirty = true;
 		contents.addEventListener(Event.ADDED, contentChanged, false, 0, true);
 		contents.addEventListener(Event.REMOVED, contentChanged, false, 0, true);
+		addEventListener(DragEvent.DRAG_OVER, contents.handleDragEvent, false, 0, true);
+		addEventListener(DragEvent.DRAG_MOVE, contents.handleDragEvent, false, 0, true);
+		addEventListener(DragEvent.DRAG_OUT, contents.handleDragEvent, false, 0, true);
+		addEventListener(DragEvent.DRAG_DROP, contents.handleDragEvent, false, 0, true);
+		addEventListener(DragEvent.DRAG_START, contents.handleDragEvent, false, 0, true);
+		addEventListener(DragEvent.DRAG_STOP, contents.handleDragEvent, false, 0, true);
+		addEventListener(DragEvent.DRAG_CANCEL, contents.handleDragEvent, false, 0, true);
+		addEventListener(DragEvent.DRAG_DROP, contents.handleDragEvent, false, 0, true);
 	}
 
 	private function contentChanged(e:Event):void {
@@ -263,8 +280,9 @@ public class ScrollFrame extends Sprite implements DropTarget {
 
 	private function getContentW():Number {
 		if (contentDirty) {
-			contentW = contents.width;
-			contentH = contents.height;
+			var rect:Rectangle = contents.getBounds(this);
+			contentW = rect.right + ScreenDetector.pixelsPerCM;
+			contentH = rect.bottom + ScreenDetector.pixelsPerCM;
 			contentDirty = false;
 		}
 
@@ -273,8 +291,9 @@ public class ScrollFrame extends Sprite implements DropTarget {
 
 	private function getContentH():Number {
 		if (contentDirty) {
-			contentW = contents.width;
-			contentH = contents.height;
+			var rect:Rectangle = contents.getBounds(this);
+			contentW = rect.right;
+			contentH = rect.bottom;
 			contentDirty = false;
 		}
 

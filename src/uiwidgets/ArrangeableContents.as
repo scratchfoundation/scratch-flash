@@ -20,7 +20,7 @@ import ui.events.DragEvent;
 import ui.styles.ContainerStyle;
 import ui.styles.ItemStyle;
 
-public class ArrangeableContents extends ScrollFrameContents implements DropTarget {
+public class ArrangeableContents extends ScrollFrameContents {
 	public static const ORDER_CHANGE:String = 'orderChange';
 	public static const CONTENT_CHANGE:String = 'contentChange';
 	public static const CONTENT_ANIMATE:String = 'contentAnimate';
@@ -40,28 +40,12 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 		itemStyle = iStyle;
 		if (cStyle) style = cStyle;
 		setWidthHeight(w, h);
-
-		addEventListener(DragEvent.DRAG_DROP, dragAndDropHandler);
-		addEventListener(DragEvent.DRAG_START, dragAndDropHandler);
-		addEventListener(DragEvent.DRAG_STOP, dragAndDropHandler);
-		addEventListener(DragEvent.DRAG_CANCEL, dragAndDropHandler);
-
-		addEventListener(Event.ADDED, handleAdd);
-	}
-
-	private function handleAdd(e:Event):void {
-		if (e.target == this) {
-			removeEventListener(Event.ADDED, handleAdd);
-			parent.addEventListener(DragEvent.DRAG_OVER, dragAndDropHandler);
-			parent.addEventListener(DragEvent.DRAG_MOVE, dragAndDropHandler);
-			parent.addEventListener(DragEvent.DRAG_OUT, dragAndDropHandler);
-		}
 	}
 
 	// Move items out of the way of a dragging item
 	private var dropPos:int = -1;
 	private var ignoredObj:*;
-	private function dragAndDropHandler(event:DragEvent):void {
+	override public function handleDragEvent(event:DragEvent):void {
 		var mi:BaseItem;
 		var dup:BaseItem;
 		switch(event.type) {
@@ -114,7 +98,7 @@ public class ArrangeableContents extends ScrollFrameContents implements DropTarg
 
 	// Used for re-arranging items
 	// Override for custom dropping actions
-	public function handleDrop(obj:Object):Boolean {
+	override public function handleDrop(obj:Object):Boolean {
 		// Accept the drop if we're re-arranging items OR we already have that item as identified by MD5
 		var mi:BaseItem = obj as BaseItem;
 		if(mi && (mi.parent == this || !!(mi = findMatchingItem(mi)))) {

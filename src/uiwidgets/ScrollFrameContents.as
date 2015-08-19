@@ -32,6 +32,8 @@ package uiwidgets {
 import flash.display.*;
 import flash.events.Event;
 
+import ui.events.DragEvent;
+
 public class ScrollFrameContents extends Sprite {
 
 	public static const SCROLL_X:String = 'scrollX';
@@ -62,8 +64,13 @@ public class ScrollFrameContents extends Sprite {
 		}
 	}
 
+	public function handleDragEvent(e:DragEvent):void {}
 	protected function contentInteraction(target:DisplayObject):void {
 		target.dispatchEvent(interactionBeganEvent);
+	}
+
+	public function handleDrop(obj:Object):Boolean {
+		return false;
 	}
 
 	public function clear(scrollToOrigin:Boolean = true):void {
