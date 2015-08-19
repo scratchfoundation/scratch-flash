@@ -43,7 +43,7 @@ public class DebugUtils {
 	}
 
 	private static function defaultData(dObj:DisplayObject):String {
-		return dObj.width+'x'+dObj.height+' @ '+dObj.x+','+dObj.y;
+		return dObj.width+'x'+dObj.height+' @ '+dObj.x+','+dObj.y+(dObj.visible?' (v)':' (h)');
 	}
 
 	public static function getAncestry(dObj:DisplayObject, stop:DisplayObject = null, getData:Function = null):String {
