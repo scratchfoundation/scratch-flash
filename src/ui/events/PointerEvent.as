@@ -37,20 +37,20 @@ public class PointerEvent extends MouseEvent {
 		pointerType = touchID == -1 ? 'mouse' : 'touch';
 	}
 
-	static private var pt:Point = new Point;
+	static public var lastPt:Point = new Point;
 	static private function convertEvent(event:*):void {
 		var mEvt:MouseEvent = event as MouseEvent;
 		var tEvt:TouchEvent = event as TouchEvent;
 		var e:PointerEvent;
 		if (mEvt && mEvt.type.indexOf('mouse') == 0) {
 			e = new PointerEvent('pointer'+mEvt.type.substr(5), mEvt.localX, mEvt.localY);
-			pt.x = mEvt.stageX;
-			pt.y = mEvt.stageY;
+			lastPt.x = mEvt.stageX;
+			lastPt.y = mEvt.stageY;
 		}
 		else if(tEvt && touchToPointer.hasOwnProperty(tEvt.type)) {
 			e = new PointerEvent(touchToPointer[tEvt.type], tEvt.localX, tEvt.localY, tEvt.touchPointID);
-			pt.x = tEvt.stageX;
-			pt.y = tEvt.stageY;
+			lastPt.x = tEvt.stageX;
+			lastPt.y = tEvt.stageY;
 		}
 		else
 			throw Error('Cannot convert event to PointerEvent!');
@@ -59,13 +59,11 @@ public class PointerEvent extends MouseEvent {
 			activePointers[e.pointerID] = true;
 
 		var target:DisplayObject = (e.type == 'pointerOver' || e.type == 'pointerOut') ? event.target : capturedPointers[e.pointerID];
-
 		if (!target) {
-			var objs:Array = stage.getObjectsUnderPoint(pt);
+			var objs:Array = stage.getObjectsUnderPoint(lastPt);
 			if (objs.length) {
 				var dObj:DisplayObject = objs[objs.length - 1];
 				var intObj:InteractiveObject;
-//				while ((!(intObj = dObj as InteractiveObject) || !intObj.mouseEnabled || !intObj.hasEventListener(e.type)) && dObj != Scratch.app)
 				while ((!(intObj = dObj as InteractiveObject) || !intObj.mouseEnabled) && dObj != Scratch.app)
 					dObj = dObj.parent;
 				target = dObj;
@@ -73,7 +71,7 @@ public class PointerEvent extends MouseEvent {
 		}
 
 		if (target) {
-			pt = target.globalToLocal(pt);
+			var pt:Point = target.globalToLocal(lastPt);
 			e.localX = pt.x;
 			e.localY = pt.y;
 			target.dispatchEvent(e);
