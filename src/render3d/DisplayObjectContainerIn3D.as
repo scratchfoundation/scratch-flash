@@ -86,8 +86,9 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 	private var textures:Array;
 	private var testBMs:Array;
 	private var textureIndexByID:Object;
-	private static var texSizeMax:int = 4096;
+	private static var texSizeMax:int = 2048;
 	private static var texSize:int = 1024;
+	private static var maxTextures:uint = 15;
 	private var penPacked:Boolean;
 
 	/** Triangle index data */
@@ -940,8 +941,6 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 			debugTexture = !debugTexture;
 		}
 	}
-
-	private var maxTextures:uint = 5;
 
 	private function packTextureBitmaps():void {
 		var penID:String = spriteBitmaps[stagePenLayer];
