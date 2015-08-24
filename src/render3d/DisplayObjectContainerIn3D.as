@@ -87,6 +87,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 	private var textureIndexByID:Object;
 	private static var texSizeMax:int = 2048;
 	private static var texSize:int = 1024;
+	private static var maxTextures:uint = 15;
 	private var penPacked:Boolean;
 
 	/** Triangle index data */
@@ -894,7 +895,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		var oldVis:Boolean = dispObj.visible;
 		dispObj.visible = false;
 		dispObj.visible = true;
-		var ss:Number = dispObj.scaleX * scale * Math.min(maxScale, appScale * scratchStage.stage.contentsScaleFactor);
+		//var ss:Number = dispObj.scaleX * scale * Math.min(maxScale, appScale * scratchStage.stage.contentsScaleFactor);
 //if(!('objName' in dispObj))
 //	trace(Dbg.printObj(dispObj)+' ('+id+') rendered @ '+bmd.width+'x'+bmd.height+'  --  '+bounds.width*ss+'x'+bounds.height*ss);
 //	trace(Dbg.printObj(dispObj)+' ('+(dispObj as Object).objName+' - '+id+') rendered @ '+bmd.width+'x'+bmd.height+'  --  '+bounds+' -- '+(dispObj as Object).getVisibleBounds(dispObj));
@@ -939,7 +940,6 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		}
 	}
 
-	private var maxTextures:uint = 6;
 	private function packTextureBitmaps():void {
 		var penID:String = spriteBitmaps[stagePenLayer];
 		if(textures.length < 1)
@@ -1148,7 +1148,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		var changeBackBuffer:Boolean = true;//isIOS || (bmd.width > scissorRect.width || bmd.height > scissorRect.height);
 		if(changeBackBuffer) {
 			projMatrix = createOrthographicProjectionMatrix(bmd.width, bmd.height, 0, 0);
-			__context.configureBackBuffer(bmd.width, bmd.height, 0, false);
+			__context.configureBackBuffer(Math.max(32, bmd.width), Math.max(32, bmd.height), 0, false);
 			pScale = 1;
 		}
 
@@ -1267,7 +1267,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		//__context.addEventListener(Event.DEACTIVATE, onContextLoss);
 
 		__context.setDepthTest(false, Context3DCompareMode.ALWAYS);
-		__context.enableErrorChecking = true;
+		__context.enableErrorChecking = false;
 
 		tlPoint = scratchStage.localToGlobal(originPt);
 	}
