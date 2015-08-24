@@ -24,6 +24,7 @@ package render3d {
  *   @author Shane M. Clements, shane.m.clements@gmail.com
  */
 import flash.display.Sprite;
+import flash.display3D.textures.Texture;
 
 public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 
@@ -85,7 +86,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 	private var textures:Array;
 	private var testBMs:Array;
 	private var textureIndexByID:Object;
-	private static var texSizeMax:int = 2048;
+	private static var texSizeMax:int = -1;
 	private static var texSize:int = 1024;
 	private static var maxTextures:uint = 15;
 	private var penPacked:Boolean;
@@ -1077,6 +1078,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		}
 
 		if(!indexBuffer) checkBuffers();
+		__context.setScissorRectangle(new Rectangle(0, 0, bmd.width, bmd.height));
 		__context.configureBackBuffer(bmd.width, bmd.height, 0, false);
 		draw();
 		__context.drawToBitmapData(bmd);
@@ -1359,7 +1361,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 			scratchStage.visible = false;
 
 		__context = (e.currentTarget as Stage3D).context3D;
-		if(__context.driverInfo.toLowerCase().indexOf('software') > -1) {
+		if (__context.driverInfo.toLowerCase().indexOf('software') > -1) {
 			if(!callbackCalled) {
 				callbackCalled = true;
 				statusCallback(false);
@@ -1367,6 +1369,19 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 			setStage(null, null);
 
 			return;
+		}
+
+		// Detect the largest texture we can create
+		else if (texSizeMax < 0) {
+			texSizeMax = 1024;
+			try {
+				while (texSizeMax < 4096) {
+					__context.createTexture(texSizeMax * 2, texSizeMax * 2, Context3DTextureFormat.BGRA, true).dispose();
+					texSizeMax = texSizeMax * 2;
+				}
+			} catch (e:*) {}
+			texSize = texSizeMax;
+			trace('Maximum texture size = '+texSizeMax);
 		}
 
 		setupContext3D();
