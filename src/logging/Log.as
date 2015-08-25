@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package Logging {
+package logging {
 public class Log {
 
 	public const logBuffer:Vector.<LogEntry> = new <LogEntry>[];
