@@ -20,6 +20,8 @@
 package logging {
 import flash.system.Capabilities;
 
+import util.JSON;
+
 public class Log {
 
 	public const logBuffer:Vector.<LogEntry> = new <LogEntry>[];
@@ -63,6 +65,9 @@ public class Log {
 		}
 		if (Scratch.app.jsEnabled) {
 			Scratch.app.externalCall('console.log', null, getEntryString());
+		}
+		if (LogLevel.TRACK == severity && Scratch.app.jsEnabled) {
+			Scratch.app.externalCall('JStrackEvent', null, messageKey, extraData ? util.JSON.stringify(extraData) : null);
 		}
 		return entry;
 	}

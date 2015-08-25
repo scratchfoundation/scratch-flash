@@ -20,13 +20,23 @@
 package logging {
 
 public class LogLevel {
+	// Use this for problems that should be in our control
 	static public const ERROR:String = "err";
+
+	// Use this for unexpected conditions and problems outside our control (network, user data, etc.)
 	static public const WARNING:String = "wrn";
+
+	// These events will be communicated to JS so they can be handled by web UI, sent to GA, etc.
+	static public const TRACK:String = "trk";
+
+	// Use this to report status information
 	static public const INFO:String = "inf";
+
+	// Use this to report information useful for debugging
 	static public const DEBUG:String = "dbg";
 
 	static public const LEVEL:Array = [
-		ERROR, WARNING, INFO, DEBUG
+		ERROR, WARNING, TRACK, INFO, DEBUG
 	];
 }
 }
