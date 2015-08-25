@@ -18,6 +18,8 @@
  */
 
 package logging {
+import flash.system.Capabilities;
+
 public class Log {
 
 	public const logBuffer:Vector.<LogEntry> = new <LogEntry>[];
@@ -49,6 +51,18 @@ public class Log {
 		++nextIndex;
 		if (fixedBuffer) {
 			nextIndex %= logBuffer.length;
+		}
+
+		var entryString:String;
+		function getEntryString():String {
+			return entryString || (entryString = entry.toString());
+		}
+
+		if (Capabilities.isDebugger) {
+			trace(getEntryString());
+		}
+		if (Scratch.app.jsEnabled) {
+			Scratch.app.externalCall('console.log', null, getEntryString());
 		}
 		return entry;
 	}
