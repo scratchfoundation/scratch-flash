@@ -389,7 +389,7 @@ public class MediaLibraryItem extends Sprite {
 			}
 		}
 		if (sndPlayer) {
-			sndPlayer.startPlaying(stopPlayingSound);
+			sndPlayer.startPlayingNative(stopPlayingSound);
 			playButton.turnOn();
 		} else {
 			downloadAndPlay();

@@ -168,7 +168,7 @@ public class Piano extends Sprite {
 		notePlayer = SoundBank.getNotePlayer(instrument, n);
 		if (!notePlayer) return;
 		notePlayer.setNoteAndDuration(n, 3);
-		notePlayer.startPlaying();
+		notePlayer.startPlayingNative();
 	}
 
 	public function showOnStage(s:Stage, x:Number = NaN, y:Number = NaN):void {

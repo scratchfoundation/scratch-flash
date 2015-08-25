@@ -52,6 +52,7 @@ public class ScratchSound {
 	public var editorData:Object; // cache of data used by sound editor; not saved
 	public var channels:uint = 1;
 	private const WasEdited:int = -10; // special soundID used to indicate sounds that have been edited
+	public var nativeSound:Sound;
 
 	// Undo support; not saved
 	public var undoList:Array = [];
@@ -97,9 +98,9 @@ public class ScratchSound {
 			var newRate:int = (rate > 32000) ? rate / 2 : rate;
 			var oldSamples:Vector.<int> = WAVFile.extractSamples(soundData);
 			var newSamples:Vector.<int> =
-				(channels == 2) ?
-					stereoToMono(oldSamples, (newRate < rate)) :
-					downsample(oldSamples);
+					(channels == 2) ?
+							stereoToMono(oldSamples, (newRate < rate)) :
+							downsample(oldSamples);
 			setSamples(newSamples, newRate, true);
 			soundID = 0;
 		} else if ((soundData.length > compressionThreshold) && ('' == format)) {
@@ -141,8 +142,9 @@ public class ScratchSound {
 	public function convertMP3IfNeeded():void {
 		// Support for converting MP3 format sounds in Scratch projects was removed during alpha test.
 		// If this is on old, MP3 formatted sound, convert it to WAV format. Otherwise, do nothing.
+		var self:ScratchSound = this;
 		function whenDone(snd:ScratchSound):void {
-Scratch.app.log('Converting MP3 to WAV: ' + soundName);
+			Scratch.app.log('Converting MP3 to WAV: ' + soundName);
 			md5 = null;
 			soundData = snd.soundData;
 			format = snd.format;
@@ -153,6 +155,9 @@ Scratch.app.log('Converting MP3 to WAV: ' + soundName);
 			if (soundData) MP3Loader.convertToScratchSound('', soundData, whenDone);
 			else setSamples(new Vector.<int>, 22050);
 		}
+
+		var ssp:ScratchSoundPlayer = sndplayer();
+		ssp.createNative();
 	}
 
 	public function sndplayer():ScratchSoundPlayer {
@@ -190,7 +195,7 @@ Scratch.app.log('Converting MP3 to WAV: ' + soundName);
 		if (format == 'squeak') { // convert Squeak ADPCM to WAV ADPCM
 			var uncompressedData:ByteArray = new SqueakSoundDecoder(bitsPerSample).decode(soundData);
 			if (uncompressedData.length == 0) uncompressedData.writeShort(0); // a WAV file must have at least one sample
-Scratch.app.log('Converting squeak sound to WAV ADPCM; sampleCount old: ' + sampleCount + ' new: ' + (uncompressedData.length / 2));
+			Scratch.app.log('Converting squeak sound to WAV ADPCM; sampleCount old: ' + sampleCount + ' new: ' + (uncompressedData.length / 2));
 			sampleCount = uncompressedData.length / 2;
 			soundData = WAVFile.encode(uncompressedData, sampleCount, rate, true);
 			format = 'adpcm';

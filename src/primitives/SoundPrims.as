@@ -119,7 +119,7 @@ public class SoundPrims {
 	private function playSound(s:ScratchSound, client:ScratchObj):ScratchSoundPlayer {
 		var player:ScratchSoundPlayer = s.sndplayer();
 		player.client = client;
-		player.startPlaying();
+		player.startPlayingNative();
 		return player;
 	}
 
@@ -128,7 +128,7 @@ public class SoundPrims {
 		if (player == null) return null;
 		player.client = client;
 		player.setDuration(secs);
-		player.startPlaying();
+		player.startPlayingNative();
 		return player;
 	}
 
@@ -137,7 +137,7 @@ public class SoundPrims {
 		if (player == null) return null;
 		player.client = client;
 		player.setNoteAndDuration(midiKey, secs);
-		player.startPlaying();
+		player.startPlayingNative();
 		return player;
 	}
 

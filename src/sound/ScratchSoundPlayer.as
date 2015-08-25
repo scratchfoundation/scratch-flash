@@ -30,7 +30,6 @@ import flash.events.*;
 import flash.media.*;
 import flash.utils.*;
 import flash.utils.ByteArray;
-
 import scratch.ScratchSound;
 
 public class ScratchSoundPlayer {
@@ -127,7 +126,45 @@ public class ScratchSoundPlayer {
 		}
 	}
 
-	protected function stopIfAlreadyPlaying():void {
+	public function createNative():void {
+		if (!!scratchSound.nativeSound) return;
+
+		var flashSnd:Sound = scratchSound.nativeSound = new Sound();
+		var convertedSamples:ByteArray = new ByteArray();
+		convertedSamples.length = endOffset - startOffset;
+		bytePosition = startOffset;
+		var sampleCount:uint = 0;
+		while (bytePosition < endOffset) {
+			var n:Number = interpolatedSample();
+			convertedSamples.writeFloat(n);
+			convertedSamples.writeFloat(n);
+			++sampleCount;
+		}
+
+		convertedSamples.position = 0;
+		flashSnd.loadPCMFromByteArray(convertedSamples, sampleCount);
+	}
+
+	public function startPlayingNative(doneFunction:Function = null):void {
+		stopIfAlreadyPlaying();
+		activeSounds.push(this);
+
+		createNative();
+
+		soundChannel = scratchSound.nativeSound.play();
+		if (soundChannel) {
+			soundChannel.addEventListener(Event.SOUND_COMPLETE, function(e:Event):void {
+				soundChannel = null;
+				if (doneFunction != null) doneFunction();
+			});
+		} else {
+			// User has no sound card or too many sounds already playing.
+			stopPlaying();
+			if (doneFunction != null) doneFunction();
+		}
+	}
+
+		protected function stopIfAlreadyPlaying():void {
 		if (scratchSound == null) return;
 		var stopped:Boolean, i:int;
 		for (i = 0; i < activeSounds.length; i++) {
