@@ -23,13 +23,12 @@ package render3d {
  *   A display object container which renders in 3D instead
  *   @author Shane M. Clements, shane.m.clements@gmail.com
  */
-import flash.display.Sprite;
-import flash.display3D.textures.Texture;
 
+import flash.display.Sprite;
 public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 
 	import com.adobe.utils.*;
-
+	import flash.system.Capabilities;
 	import filters.FilterPack;
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
@@ -1089,7 +1088,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 	}
 
 	private var emptyStamp:BitmapData = new BitmapData(1, 1, true, 0);
-
+	static private var alwaysResizeBB:Boolean = (Capabilities.version.substr(0,3) == "AND" || Capabilities.version.substr(0,3) == "IOS");
 	public function getRenderedChild(dispObj:DisplayObject, width:Number, height:Number, for_carry:Boolean = false):BitmapData {
 		if(dispObj.parent != scratchStage || !__context)
 			return emptyStamp;
@@ -1147,10 +1146,17 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		var bounds:Rectangle = boundsDict[dispObj];
 		var pScale:Number = appScale * scratchStage.stage.contentsScaleFactor;
 
-		var changeBackBuffer:Boolean = true;//isIOS || (bmd.width > scissorRect.width || bmd.height > scissorRect.height);
+		var changeBackBuffer:Boolean = alwaysResizeBB || (bmd.width > scissorRect.width || bmd.height > scissorRect.height);
+		var tmp_bmd:BitmapData = null;
+		var bb_width:uint = bmd.width, bb_height:uint = bmd.height;
 		if(changeBackBuffer) {
 			projMatrix = createOrthographicProjectionMatrix(bmd.width, bmd.height, 0, 0);
-			__context.configureBackBuffer(Math.max(32, bmd.width), Math.max(32, bmd.height), 0, false);
+			bb_width = Math.max(32, bmd.width);
+			bb_height = Math.max(32, bmd.height);
+			if (bb_width != bmd.width || bb_height != bmd.height) {
+				tmp_bmd = new BitmapData(bb_width, bb_height, true);
+			}
+			__context.configureBackBuffer(bb_width, bb_height, 0, false);
 			pScale = 1;
 		}
 
@@ -1163,10 +1169,16 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		dispObj.y = -bounds.y * dispObj.scaleY;
 
 		__context.clear(0, 0, 0, 0);
-		__context.setScissorRectangle(new Rectangle(0, 0, bmd.width + 1, bmd.height + 1));
+		__context.setScissorRectangle(new Rectangle(0, 0, bb_width, bb_height));
 		setBlendFactors(false);
 		drawChild(dispObj);
-		__context.drawToBitmapData(bmd);
+		__context.drawToBitmapData(tmp_bmd || bmd);
+
+		if (tmp_bmd) {
+			bmd.fillRect(bmd.rect, 0);
+			bmd.copyPixels(tmp_bmd, bmd.rect, new Point);
+			tmp_bmd.dispose();
+		}
 
 		dispObj.x = oldX;
 		dispObj.y = oldY;

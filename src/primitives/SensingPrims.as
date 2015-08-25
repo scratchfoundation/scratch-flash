@@ -93,9 +93,16 @@ public class SensingPrims {
 		if (!s.visible) return false;
 
 		var sBM:BitmapData = s.bitmap(true);
+		var sb:Rectangle = s.bounds();
 		for each (var s2:ScratchSprite in app.stagePane.spritesAndClonesNamed(arg))
-			if (s2.visible && sBM.hitTest(s.bounds().topLeft, 1, s2.bitmap(true), s2.bounds().topLeft, 1))
-				return true;
+			if (s2.visible) {
+				var s2b:Rectangle = s2.bounds();
+				if (sb.intersects(s2b)) {
+					var s2bm:BitmapData = s2.bitmap(true);
+					if (sBM.hitTest(sb.topLeft, 1, s2bm, s2b.topLeft, 1))
+						return true;
+				}
+			}
 
 		return false;
 	}

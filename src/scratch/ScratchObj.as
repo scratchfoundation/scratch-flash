@@ -264,7 +264,8 @@ public class ScratchObj extends Sprite {
 	}
 
 	static private var cTrans:ColorTransform = new ColorTransform();
-	public function applyFilters():void {
+	protected var shapeEffectsChanged:Boolean = false;
+	public function applyFilters(changedFX:String = null):void {
 		img.filters = filterPack.buildFilters();
 		clearCachedBitmap();
 		if(!Scratch.app.isIn3D) {
@@ -277,6 +278,7 @@ public class ScratchObj extends Sprite {
 		else {
 			updateEffectsFor3D();
 		}
+		shapeEffectsChanged = !changedFX || changedFX == 'fisheye' || changedFX == 'whirl' || changedFX == 'pixelate' || changedFX == 'mosaic';
 	}
 
 	public function updateEffectsFor3D():void {

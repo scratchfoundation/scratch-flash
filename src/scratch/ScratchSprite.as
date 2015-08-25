@@ -346,7 +346,7 @@ public class ScratchSprite extends ScratchObj implements IDraggable {
 //	private var testBM:Bitmap = new Bitmap();
 //	private var testSpr:Sprite = new Sprite();
 	public function bitmap(forTest:Boolean = false):BitmapData {
-		if (cachedBitmap != null && (!forTest || !Scratch.app.isIn3D))
+		if (cachedBitmap != null && (!forTest || !Scratch.app.isIn3D || !shapeEffectsChanged))
 			return cachedBitmap;
 
 		// compute cachedBitmap
@@ -356,6 +356,9 @@ public class ScratchSprite extends ScratchObj implements IDraggable {
 		m.scale(scaleX, scaleY);
 		var b:Rectangle = (!Scratch.app.render3D || currentCostume().bitmap) ? img.getChildAt(0).getBounds(this) : getVisibleBounds(this);
 		var r:Rectangle = transformedBounds(b, m);
+
+		// Reset the shape effect flag
+		shapeEffectsChanged = false;
 
 		// returns true if caller should immediately return cachedBitmap
 		var self:ScratchSprite = this;
