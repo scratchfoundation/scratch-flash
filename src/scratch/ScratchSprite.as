@@ -24,19 +24,25 @@
 // rotation style, size, draggability, and pen state.
 
 package scratch {
-	import flash.display.*;
-	import flash.events.*;
-import flash.filters.GlowFilter;
+import filters.FilterPack;
+
+import flash.display.*;
+import flash.events.*;
 import flash.geom.*;
-import flash.geom.ColorTransform;
+import flash.net.FileReference;
 import flash.utils.*;
-	import flash.net.FileReference;
-	import filters.FilterPack;
-	import interpreter.Variable;
-	import translation.Translator;
-	import uiwidgets.Menu;
-	import util.*;
-	import watchers.ListWatcher;
+
+import interpreter.Variable;
+
+import logging.LogLevel;
+
+import translation.Translator;
+
+import uiwidgets.Menu;
+
+import util.*;
+
+import watchers.ListWatcher;
 
 public class ScratchSprite extends ScratchObj {
 
@@ -548,7 +554,7 @@ public class ScratchSprite extends ScratchObj {
 
 	private function saveToLocalFile():void {
 		function success():void {
-			Scratch.app.log('sprite saved to file: ' + file.name);
+			Scratch.app.log(LogLevel.INFO, 'sprite saved to file', {filename: file.name});
 		}
 		var zipData:ByteArray = new ProjectIO(Scratch.app).encodeSpriteAsZipFile(copyToShare());
 		var defaultName:String = objName + '.sprite2';
