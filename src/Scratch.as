@@ -664,7 +664,7 @@ public class Scratch extends Sprite {
 
 	private function setSmallStageMode(flag:Boolean):void {
 		stageIsContracted = flag;
-		stagePart.refresh();
+		stagePart.updateRecordingTools();
 		fixLayout();
 		libraryPart.refresh();
 		tabsPart.refresh();
@@ -858,6 +858,18 @@ public class Scratch extends Sprite {
 
 		updateLayout(w, h);
 	}
+	
+	public function updateRecordingTools(t:Number):void {
+		stagePart.updateRecordingTools(t);
+	}
+	
+	public function removeRecordingTools():void {
+		stagePart.removeRecordingTools();
+	}
+	
+	public function refreshStagePart():void {
+		stagePart.refresh();
+	}
 
 	protected function updateLayout(w:int, h:int):void {
 		if (!isMicroworld) {
@@ -1013,10 +1025,19 @@ public class Scratch extends Sprite {
 
 		m.showOnStage(stage, b.x, topBarPart.bottom() - 1);
 	}
+	
+	public function stopVideo(b:*):void {
+		runtime.stopVideo();
+	}
 
 	protected function addFileMenuItems(b:*, m:Menu):void {
 		m.addItem('Load Project', runtime.selectProjectFile);
 		m.addItem('Save Project', exportProjectToFile);
+		if (runtime.recording || runtime.ready>=0) {
+			m.addItem('Stop Video', runtime.stopVideo);
+		} else {
+			m.addItem('Record Project Video', runtime.exportToVideo);
+		}
 		if (canUndoRevert()) {
 			m.addLine();
 			m.addItem('Undo Revert', undoRevert);

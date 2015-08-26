@@ -164,10 +164,10 @@ public class DialogBox extends Sprite {
 		return spr;
 	}
 
-	public function addAcceptCancelButtons(acceptLabel:String = null):void {
+	public function addAcceptCancelButtons(acceptLabel:String = null,cancelLabel:String='Cancel'):void {
 		// Add a cancel button and an optional accept button with the given label.
 		if (acceptLabel != null) addButton(acceptLabel, accept);
-		addButton('Cancel', cancel);
+		addButton(cancelLabel, cancel);
 	}
 
 	public function addButton(label:String, action:Function):void {

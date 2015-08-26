@@ -59,6 +59,9 @@ public class CursorTool {
 		case 'draw':
 			showSoftwareCursor(Resources.createBmp('pencilCursor'));
 			break;
+		case 'click':
+			showSoftwareCursor(Resources.createBmp('mouseCircle'));
+			break;
 		default:
 			tool = null;
 		}
@@ -69,8 +72,10 @@ public class CursorTool {
 		// Hide the current cursor and revert to using the hardware cursor.
 		if (currentCursor && currentCursor.parent) currentCursor.parent.removeChild(currentCursor);
 		currentCursor = null;
-		Mouse.cursor = MouseCursor.AUTO;
-		Mouse.show();
+		if (tool!='click') {
+			Mouse.cursor = MouseCursor.AUTO;
+			Mouse.show();
+		}
 	}
 
 	private static function showSoftwareCursor(bm:Bitmap, offsetX:int = 999, offsetY:int = 999):void {
@@ -79,8 +84,15 @@ public class CursorTool {
 			currentCursor = new Bitmap(bm.bitmapData);
 			CursorTool.offsetX = (offsetX <= bm.width) ? offsetX : (bm.width / 2);
 			CursorTool.offsetY = (offsetY <= bm.height) ? offsetY : (bm.height / 2);
-			app.stage.addChild(currentCursor);
-			Mouse.hide();
+			if (tool=='click' && !app.runtime.fullEditor) {
+				app.stagePane.addChild(currentCursor);
+			}
+			else {
+				app.stage.addChild(currentCursor);
+			}
+			if (tool!='click') {
+				Mouse.hide();
+			}
 			mouseMove(null);
 		}
 	}
@@ -93,13 +105,21 @@ public class CursorTool {
 
 	private static function mouseMove(ignore:*):void {
 		if (currentCursor) {
-			Mouse.hide();
-			currentCursor.x = app.mouseX - offsetX;
-			currentCursor.y = app.mouseY - offsetY;
+			if (tool!='click') {
+				Mouse.hide();
+			}
+			if (tool=='click'&&!app.runtime.fullEditor) {
+				currentCursor.x = app.stagePane.mouseX - offsetX;
+				currentCursor.y = app.stagePane.mouseY - offsetY;
+			}
+			else {
+				currentCursor.x = app.mouseX - offsetX;
+				currentCursor.y = app.mouseY - offsetY;
+			}
 		}
 	}
 
-	private static function mouseLeave(ignore:*):void { Mouse.cursor = MouseCursor.AUTO; Mouse.show() }
+	private static function mouseLeave(ignore:*):void { if (tool!='click') { Mouse.cursor = MouseCursor.AUTO; Mouse.show() }}
 
 	public static function setCustomCursor(name:String, bmp:BitmapData = null, hotSpot:Point = null, reuse:Boolean = true):void {
 		const standardCursors:Array = ['arrow', 'auto', 'button', 'hand', 'ibeam'];
