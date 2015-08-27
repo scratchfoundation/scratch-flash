@@ -24,6 +24,9 @@ import util.JSON;
 
 public class Log {
 
+	// Should the logger echo log entries to JavaScript?
+	public var echoToJS:Boolean = true;
+
 	public const logBuffer:Vector.<LogEntry> = new <LogEntry>[];
 
 	private var fixedBuffer:Boolean;
@@ -63,7 +66,7 @@ public class Log {
 		if (Capabilities.isDebugger) {
 			trace(getEntryString());
 		}
-		if (Scratch.app.jsEnabled) {
+		if (Scratch.app.jsEnabled && echoToJS) {
 			Scratch.app.externalCall('console.log', null, getEntryString());
 		}
 		if (LogLevel.TRACK == severity && Scratch.app.jsEnabled) {
