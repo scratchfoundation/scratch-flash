@@ -28,7 +28,6 @@ import flash.display.Sprite;
 public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 
 	import com.adobe.utils.*;
-	import flash.system.Capabilities;
 	import filters.FilterPack;
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
@@ -65,7 +64,7 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		FX_COLOR, FX_FISHEYE, FX_WHIRL, FX_MOSAIC, FX_BRIGHTNESS, FX_GHOST];
 
 	private var contextRequested:Boolean = false;
-	private static var isIOS:Boolean = Capabilities.os.indexOf('iPhone') != -1;
+	static private var alwaysResizeBB:Boolean = (Capabilities.version.substr(0,3) == "AND" || Capabilities.version.substr(0,3) == "IOS");
 
 	/** Context to create textures on */
 	private var __context:Context3D;
@@ -1088,7 +1087,6 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 	}
 
 	private var emptyStamp:BitmapData = new BitmapData(1, 1, true, 0);
-	static private var alwaysResizeBB:Boolean = (Capabilities.version.substr(0,3) == "AND" || Capabilities.version.substr(0,3) == "IOS");
 	public function getRenderedChild(dispObj:DisplayObject, width:Number, height:Number, for_carry:Boolean = false):BitmapData {
 		if(dispObj.parent != scratchStage || !__context)
 			return emptyStamp;
@@ -1203,7 +1201,6 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 
 //	private var testTouchBM:Bitmap;
 	private var cachedOtherRenderBitmaps:Dictionary;
-
 	public function getOtherRenderedChildren(skipObj:DisplayObject, scale:Number):BitmapData {
 		if(skipObj.parent != scratchStage)
 			return null;
@@ -1228,30 +1225,60 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		var rot:Number = skipObj.rotation;
 
 		var childTL:Point = bounds.topLeft;
-		var scaleX:Number = appScale;
-		var scaleY:Number = appScale;
+		var scaleX:Number = appScale * scratchStage.stage.contentsScaleFactor;
+		var scaleY:Number = scaleX;
 		childTL.x *= skipObj.scaleX;
 		childTL.y *= skipObj.scaleY;
 		var oldProj:Matrix3D = projMatrix.clone();
-		projMatrix.prependScale(scale / scaleX, scale / scaleY, 1);
-		projMatrix.prependTranslation(-childTL.x, -childTL.y, 0);
-		projMatrix.prependRotation(-rot, Vector3D.Z_AXIS);
-		projMatrix.prependTranslation(-skipObj.x, -skipObj.y, 0);
 
 		skipObj.visible = false;
 		pixelateAll = true;
+
+		var tmp_bmd:BitmapData = null;
+		var bb_width:uint = cr.width, bb_height:uint = cr.height;
+		if(alwaysResizeBB) {
+			projMatrix = createOrthographicProjectionMatrix(cr.width, cr.height, 0, 0);
+			bb_width = Math.max(32, cr.width);
+			bb_height = Math.max(32, cr.height);
+			if (bb_width != cr.width || bb_height != cr.height) {
+				tmp_bmd = new BitmapData(bb_width, bb_height, true);
+			}
+			__context.configureBackBuffer(bb_width, bb_height, 0, false);
+		}
+		else
+			projMatrix.prependScale(scale / scaleX, scale / scaleY, 1);
+
+		projMatrix.prependTranslation(-childTL.x, -childTL.y, 0);
+		projMatrix.prependRotation(-rot, Vector3D.Z_AXIS);
+		projMatrix.prependTranslation(-skipObj.x, -skipObj.y, 0);
 		__context.setScissorRectangle(cr.rect);
 		draw();
 		pixelateAll = false;
 		skipObj.visible = vis;
 		projMatrix = oldProj;
-		__context.drawToBitmapData(cr);
-		__context.setScissorRectangle(scissorRect);
+
+		__context.drawToBitmapData(tmp_bmd || cr);
+
+		if (tmp_bmd) {
+			cr.fillRect(cr.rect, 0);
+			cr.copyPixels(tmp_bmd, cr.rect, new Point);
+			tmp_bmd.dispose();
+		}
+
+		if (alwaysResizeBB) {
+			scissorRect = null;
+			// Reset scissorRect and framebuffer size
+			setupContext3D();
+		}
+		else {
+			__context.setScissorRectangle(scissorRect);
+		}
+
 //		if(!testTouchBM) {
 //			testTouchBM = new Bitmap(cr);
 //			scratchStage.stage.addChild(testTouchBM);
 //		}
-//		testTouchBM.bitmapData = cr;
+//		testTouchBM.bitmapData = cr.clone();
 		cr.inner_x = skipObj.x;
 		cr.inner_y = skipObj.y;
 		cr.inner_w = skipObj.rotation;
