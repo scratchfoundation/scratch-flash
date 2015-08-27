@@ -126,10 +126,8 @@ public class SensingPrims {
 		// can create false colors. Unfortunately, that caused serious performance issues.
 		var s:ScratchSprite = interp.targetSprite();
 		if (s == null) return false;
-		var c:int = interp.arg(b, 0) | 0xFF000000;
-		var myBM:BitmapData = s.bitmap(true);
-		var stageBM:BitmapData = stageBitmapWithoutSpriteFilteredByColor(s, c);
-//		if(s.objName == 'sensor') {
+		return spriteTouchesColor(s, interp.arg(b, 0));
+//		if(s.objName == 'Ball') {
 //			if(!testSpr) {
 //				testSpr = new Sprite();
 //				app.stage.addChild(testSpr);
@@ -146,7 +144,6 @@ public class SensingPrims {
 //			testSpr.graphics.lineStyle(1);
 //			testSpr.graphics.drawRect(myBM.width, 300, stageBM.width, stageBM.height);
 //		}
-		return myBM.hitTest(new Point(0, 0), 1, stageBM, new Point(0, 0), 1);
 	}
 
 	private function primColorSees(b:Block):Boolean {
@@ -202,6 +199,10 @@ public class SensingPrims {
 
 	private function stageBitmapWithoutSpriteFilteredByColor(s:ScratchSprite, c:int):BitmapData {
 		return app.stagePane.getBitmapWithoutSpriteFilteredByColor(s, c);
+	}
+
+	private function spriteTouchesColor(s:ScratchSprite, c:uint):Boolean {
+		return app.stagePane.spriteTouchesColor(s, c);
 	}
 
 	private function primAsk(b:Block):void {

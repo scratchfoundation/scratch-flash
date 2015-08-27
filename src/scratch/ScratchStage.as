@@ -603,23 +603,77 @@ public class ScratchStage extends ScratchObj implements DropTarget, ITool {
 		}
 	}
 
-	public function getBitmapWithoutSpriteFilteredByColor(s:ScratchSprite, c:int):BitmapData {
+	public function spriteTouchesColor(s:ScratchSprite, color:uint):Boolean {
 		commitPenStrokes(); // force any pen strokes to be rendered so they can be sensed
 
 		var bm1:BitmapData;
-		var mask:uint = 0xF0F8F8F0;
-		if(Scratch.app.isIn3D) {
-			var b:Rectangle;
-			SCRATCH::allow3d {
-				b = s.currentCostume().bitmap ? s.img.getChildAt(0).getBounds(s) : s.getVisibleBounds(s);
+		var mask:uint = 0xF0F0F0F0;
+		var match:uint = (color | 0xFF000000) & mask;
+		if (SCRATCH::allow3d) {
+			if (Scratch.app.isIn3D) {
 				bm1 = Scratch.app.render3D.getOtherRenderedChildren(s, 1);
 				//mask = 0x80F8F8F0;
 			}
 		}
-		else {
-			// OLD code here
+
+		// OLD code here
+		if (!bm1)
 			bm1 = bitmapWithoutSprite(s);
+
+		// Mask the stage render with the sprite
+//		var pxs:String = '';
+		var last:uint = bm1.width*bm1.height;
+		var xx:uint, yy:uint;
+//		for (var jj:uint=0; jj<last; ++jj) {
+//			pxs += getNumberAsHexString(bm1.getPixel32(xx, yy), 8) + ', ';
+//			++xx;
+//			if (xx == bm1.width) {
+//				xx = 0;
+//				++yy;
+//			}
+//		}
+//		trace('Stage bitmap pixels: '+pxs);
+
+//		var sbm:BitmapData = new BitmapData(bm1.width, bm1.height, true, 0);
+		var rbm:BitmapData = s.bitmap();
+//		var m:Matrix = new Matrix();
+//		m.scale(bm1.width / rbm.width, bm1.height / rbm.height);
+//		sbm.draw(rbm, m);
+		bm1.copyChannel(rbm, bm1.rect, bm1.rect.topLeft, BitmapDataChannel.ALPHA, BitmapDataChannel.ALPHA);
+//		sbm.dispose();
+		xx = yy = 0;
+//		pxs = '';
+		for (var ii:uint=0; ii<last; ++ii) {
+			var maskedPixel:uint = bm1.getPixel32(xx, yy) & mask;
+//			pxs += getNumberAsHexString(maskedPixel, 8) + ', ';
+			if (maskedPixel == match) return true;
+			++xx;
+			if (xx == bm1.width) {
+				xx = 0;
+				++yy;
+			}
 		}
+
+//		trace('Looking for '+getNumberAsHexString(match, 8)+'   bitmap pixels: '+pxs);
+
+		return false;
+	}
+
+	public function getBitmapWithoutSpriteFilteredByColor(s:ScratchSprite, c:uint):BitmapData {
+		commitPenStrokes(); // force any pen strokes to be rendered so they can be sensed
+
+		var bm1:BitmapData;
+		var mask:uint = 0xF0F8F8F0;
+		if (SCRATCH::allow3d) {
+			if (Scratch.app.isIn3D) {
+				bm1 = Scratch.app.render3D.getOtherRenderedChildren(s, 1);
+				//mask = 0x80F8F8F0;
+			}
+		}
+
+		// OLD code here
+		if (!bm1)
+			bm1 = bitmapWithoutSprite(s);
 
 		var bm2:BitmapData = new BitmapData(bm1.width, bm1.height, true, 0);
 		bm2.threshold(bm1, bm1.rect, bm1.rect.topLeft, '==', c, 0xFF000000, mask); // match only top five bits of each component
@@ -628,7 +682,7 @@ public class ScratchStage extends ScratchObj implements DropTarget, ITool {
 //			stage.addChild(testBM);
 //		}
 //		testBM.x = bm1.width;
-//		testBM.y = 300;
+//		testBM.y = 400;
 //		testBM.bitmapData = bm1;
 //		if(dumpPixels) {
 //			var arr:Vector.<uint> = bm1.getVector(bm1.rect);
