@@ -125,6 +125,7 @@ public class SVGImporter {
 		return null;
 	}
 
+	static private const emptyImg:String = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAADklEQVR42mNhgAIWGAMAAH4ACYwGaSAAAAAtdEVYdFNvZnR3YXJlAGJ5LmJsb29kZHkuY3J5cHRvLmltYWdlLlBORzI0RW5jb2RlcqgGf+4AAAAASUVORK5CYII=';
 	private function readBasic(xml:XML, parentList:Array):SVGElement {
 		var result:SVGElement = new SVGElement(xml.localName(), xml.attribute('id'));
 		if ('text' == xml.localName()) result.text = xml.text()[0];
@@ -138,6 +139,12 @@ public class SVGImporter {
 				else result.attributes[attrName] = convertUnits(attrValue);
 			}
 		}
+
+		// Discard blank 2x2 bitmaps (resulting from a bug in empty bitmap to vector costume conversion)
+		if (result.tag == 'image' && result.attributes['width'] == 2 &&
+			result.attributes['height'] == 2 && result.attributes['href'] == emptyImg)
+				return null;
+
 		inheritAttributes(result, parentList);
 		new SVGImportPath().generatePathCmds(result);
 		elements[result.id] = result;
