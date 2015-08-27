@@ -711,8 +711,6 @@ public class ScratchSprite extends ScratchObj implements IDraggable {
 			// Force rendering with PixelBender for a dragged sprite
 			preDragScale = scaleX;
 			if (Scratch.app.isIn3D) {
-				var r:Number = rotation;
-				rotation = 0;
 				var scale:Number = stage.contentsScaleFactor * scaleX * Scratch.app.stagePane.scaleX * Scratch.app.scaleX;
 				var b:Rectangle = getVisibleBounds(this);
 				var bm:Bitmap = new Bitmap(Scratch.app.render3D.getRenderedChild(this, b.width * scale, b.height * scale, true), "auto", true);
@@ -720,7 +718,6 @@ public class ScratchSprite extends ScratchObj implements IDraggable {
 				img.addChild(bm);
 				img.x = b.x * scale;
 				img.y = b.y * scale;
-				rotation = r;
 				scaleX = scaleY = 1 / stage.contentsScaleFactor;
 			}
 			else {
