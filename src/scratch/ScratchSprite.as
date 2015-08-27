@@ -692,12 +692,10 @@ public class ScratchSprite extends ScratchObj implements IDraggable {
 			geomShape.scaleX = img.getChildAt(0).scaleX;
 		}
 
-		var b:Rectangle = geomShape.getRect(space);
+		var b:Rectangle = geomShape.getBounds(space);
 
 		if(space == this) {
 			rotation = rot;
-			b.inflate(2, 2);
-			b.offset(-1, -1);
 		}
 
 		return b;
@@ -716,8 +714,8 @@ public class ScratchSprite extends ScratchObj implements IDraggable {
 				var r:Number = rotation;
 				rotation = 0;
 				var scale:Number = stage.contentsScaleFactor * scaleX * Scratch.app.stagePane.scaleX * Scratch.app.scaleX;
-				var b:Rectangle = getBounds(this);
-				var bm:Bitmap = new Bitmap(Scratch.app.render3D.getRenderedChild(this, b.width * scale, b.height * scale), "auto", true);
+				var b:Rectangle = getVisibleBounds(this);
+				var bm:Bitmap = new Bitmap(Scratch.app.render3D.getRenderedChild(this, b.width * scale, b.height * scale, true), "auto", true);
 				while (img.numChildren > 0) img.removeChildAt(0);
 				img.addChild(bm);
 				img.x = b.x * scale;
