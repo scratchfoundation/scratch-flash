@@ -144,10 +144,13 @@ public class ScratchRuntime {
 		ScratchSoundPlayer.stopAllSounds();
 		app.extensionManager.stopButtonPressed();
 		app.stagePane.clearFilters();
+		app.stagePane.resetVarIndex(true);
 		for each (var s:ScratchSprite in app.stagePane.sprites()) {
 			s.clearFilters();
 			s.hideBubble();
+			s.resetVarIndex(false);
 		}
+		app.varsAreDirty = false;  // index positions consistent now, ready to cache
 		clearAskPrompts();
 		app.removeLoadProgressBox();
 		motionDetector = null;
@@ -638,7 +641,7 @@ public class ScratchRuntime {
 	}
 
 	public function updateVariable(v:Variable):void {}
-	public function makeVariable(varObj:Object):Variable { return new Variable(varObj.name, varObj.value); }
+	public function makeVariable(varObj:Object):Variable { return new Variable(varObj.name, varObj.value, varObj.pos); }
 	public function makeListWatcher():ListWatcher { return new ListWatcher(); }
 
 	private function updateVarRefs(oldName:String, newName:String, owner:ScratchObj):void {

@@ -108,6 +108,7 @@ public class Scratch extends Sprite {
 	protected var wasEdited:Boolean; // true if the project was edited and autosaved
 	private var _usesUserNameBlock:Boolean = false;
 	protected var languageChanged:Boolean; // set when language changed
+	public var varsAreDirty:Boolean = true;  // cleaned when stop/GF clicked
 
 	// UI Elements
 	public var playerBG:Shape;

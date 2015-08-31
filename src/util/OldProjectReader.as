@@ -55,7 +55,7 @@ public class OldProjectReader {
 				stageContents = entry[5];
 				newStage = entry[0];
 				newStage.objName = entry[9];
-				newStage.variables = buildVars(entry[10]);
+				newStage.variables = buildVars(entry[10],true);
 				newStage.scripts = buildScripts(entry[11]);
 				newStage.scriptComments = buildComments(entry[11]);
 				fixCommentRefs(newStage.scriptComments, newStage.scripts)
@@ -85,7 +85,7 @@ public class OldProjectReader {
 			*/
 				var s:ScratchSprite = entry[0];
 				s.objName = entry[9];
-				s.variables = buildVars(entry[10]);
+				s.variables = buildVars(entry[10],false);
 				s.scripts = buildScripts(entry[11]);
 				s.scriptComments = buildComments(entry[11]);
 				fixCommentRefs(s.scriptComments, s.scripts)
@@ -147,11 +147,12 @@ public class OldProjectReader {
 		}
 	}
 
-	private function buildVars(pairs:Array):Array {
+	private function buildVars(pairs:Array,forStage:Boolean):Array {
 		if (pairs == null) return [];
 		var result:Array = [];
+		var fact:int = forStage ? -1 : 1;
 		for (var i:int = 0; i < (pairs.length - 1); i += 2) {
-			result.push(new Variable(pairs[i], pairs[i + 1]));
+			result.push(new Variable(pairs[i], pairs[i + 1], fact*(i/2+1)));
 		}
 		return result;
 	}

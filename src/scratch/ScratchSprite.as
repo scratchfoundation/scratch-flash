@@ -114,7 +114,12 @@ public class ScratchSprite extends ScratchObj {
 		// Copy variables and lists.
 		for (i = 0; i < spr.variables.length; i++) {
 			var v:Variable = spr.variables[i];
-			variables.push(new Variable(v.name, v.value));
+			if (v.pos>0 && v.pos!=i+1) {  // should never happen...
+				trace( 'incosistent var index: '+v.pos+' vs '+(i+1) );
+				v.pos = 0;
+				spr.variables[i].pos = 0;  // fix this too, to be safe
+			}
+			variables.push(new Variable(v.name, v.value, v.pos));
 		}
 		for (i = 0; i < spr.lists.length; i++) {
 			var lw:ListWatcher = spr.lists[i];

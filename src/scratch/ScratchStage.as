@@ -829,6 +829,8 @@ public class ScratchStage extends ScratchObj {
 		for each (var scratchObj:ScratchObj in allObjects()) {
 			scratchObj.instantiateFromJSON(this);
 		}
+
+		Scratch.app.varsAreDirty = false;  // should be ok just after reading project
 	}
 
 	public override function getSummary():String {

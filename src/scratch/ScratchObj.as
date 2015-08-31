@@ -450,7 +450,8 @@ public class ScratchObj extends Sprite {
 		// Lookup and return a variable. If lookup fails, create the variable in this object.
 		var v:Variable = lookupVar(varName);
 		if (v == null) { // not found; create it
-			v = new Variable(varName, 0);
+			// don't trust index for created vars of a sprite (may be different for clones)
+			v = new Variable(varName, 0, isStage ? variables.length+1 : 0);
 			variables.push(v);
 			Scratch.app.updatePalette(false);
 		}
@@ -464,6 +465,7 @@ public class ScratchObj extends Sprite {
 		for each (v in variables) {
 			if (v.name == varName) return v;
 		}
+		if (this is ScratchStage) return null;
 		for each (v in Scratch.app.stagePane.variables) {
 			if (v.name == varName) return v;
 		}
@@ -482,6 +484,18 @@ public class ScratchObj extends Sprite {
 			else newVars.push(v);
 		}
 		variables = newVars;
+		Scratch.app.varsAreDirty = true;  // can't rely on blocks' index caches
+		resetVarIndex(isStage);  // reset index cache for object's vars & blocks
+	}
+
+	public function resetVarIndex(forStage:Boolean): void {
+		// reset index caches for blocks, ready to cache again on next run
+		for each (var stack:Block in scripts)
+			stack.allBlocksDo(function(b:Block):void { b.variableIndex = 0; });
+		// correct all index positions in object's variables
+		if (variables.length<1) return;
+		var fact:int = forStage ? -1 : 1;
+		for (var i:int = 0; i < variables.length; i++) variables[i].pos = fact*(i+1);
 	}
 
 	/* Lists */
@@ -600,9 +614,11 @@ public class ScratchObj extends Sprite {
 
 	public function readJSON(jsonObj:Object):void {
 		objName = jsonObj.objName;
+		var fact:int = objName=='Stage' ? -1 : 1;
 		variables = jsonObj.variables || [];
 		for (var i:int = 0; i < variables.length; i++) {
 			var varObj:Object = variables[i];
+			varObj.pos = (i+1)*fact;  // wasn't saved, so reconstruct
 			variables[i] = Scratch.app.runtime.makeVariable(varObj);
 		}
 		lists = jsonObj.lists || [];

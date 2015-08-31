@@ -64,6 +64,7 @@ public class Block extends Sprite {
 	public var type:String;
 	public var op:String = "";
 	public var opFunction:Function;
+	public var variableIndex:int = 0;  // cache of variable index
 	public var args:Array = [];
 	public var defaultArgValues:Array = [];
 	public var parameterIndex:int = -1;	// cache of parameter index, used by GET_PARAM block
