@@ -37,10 +37,10 @@ import interpreter.*;
 import primitives.VideoMotionPrims;
 import sound.ScratchSoundPlayer;
 import translation.*;
+import assets.Resources;
 import ui.media.MediaInfo;
 import ui.BlockPalette;
 import uiwidgets.DialogBox;
-import uiwidgets.CursorTool;
 import ui.RecordingSpecEditor;
 import util.*;
 import watchers.*;
@@ -83,9 +83,6 @@ public class ScratchRuntime {
 			saveAfterInstall = false;
 			return;
 		}
-		if (mouse && CursorTool.tool=='click') {
-			CursorTool.setTool('');
-		}
 		if (ready==0) {
 			var tR:Number = getTimer()*.001-secs;
 			while (t>sounds.length/framerate+1/framerate) {
@@ -94,6 +91,7 @@ public class ScratchRuntime {
 			var count:int = 3;
 			if (tR>=3.75){
 				ready = 1;
+				count = 1;
 				sounds = [];
 				frames=[];
 			}
@@ -111,12 +109,6 @@ public class ScratchRuntime {
 			}
 		}
 		if (recording) { // Recording a YouTube video?
-			if (mouse && app.gh.mouseIsDown && CursorTool.tool==null) {
-				CursorTool.setTool('click');
-			}
-			else if (mouse && CursorTool.tool==null) {
-				CursorTool.setTool('');
-			}
 			var t:Number = getTimer()*.001-secs;
 			//DialogBox.notify("Timing",secs.toString()+" " + t.toString() + " " + sounds.length.toString() + " "+(sounds.length/framerate+1/framerate).toString())
 			if (t>sounds.length/framerate+1/framerate) {
@@ -169,6 +161,7 @@ public class ScratchRuntime {
 	private var pSound:Boolean;
 	private var mSound:Boolean;
 	private var mouse:Boolean;
+	private var cursor:Boolean;
 	public var fullEditor:Boolean;
 	private var framerate:Number;
 	private var width:int;
@@ -184,16 +177,19 @@ public class ScratchRuntime {
 	
 	private function saveFrame():void {
 		saveSound();
-		if (true) {//sounds.length>2*framerate) {
-			var t:Number = getTimer()*.001-secs;
-			while (t>sounds.length/framerate+1/framerate) {
-				saveSound();
-			}
+		var t:Number = getTimer()*.001-secs;
+		while (t>sounds.length/framerate+1/framerate) {
+			saveSound();
 		}
+		if (cursor) var cursor:DisplayObject = Resources.createDO('videoCursor');
+		if (mouse && app.gh.mouseIsDown) var circle:Bitmap = Resources.createBmp('mouseCircle');
 		var f:BitmapData;
 		if (fullEditor) {
 			var aWidth:int = app.stage.stageWidth;
 			var aHeight:int = app.stage.stageHeight;
+			if (!Scratch.app.isIn3D) {
+				if (app.stagePane.videoImage) app.stagePane.videoImage.visible = false;
+			}
 			if (width!=aWidth || height!=aHeight) {
 				var scale:Number = 1.0;
 				scale = width/aWidth > height/aHeight ? height/aHeight : width/aWidth;
@@ -207,6 +203,13 @@ public class ScratchRuntime {
 					var borderY:int = aHeight<432 ? aHeight*scale : 432*scale;
 					f.draw(d, new Matrix( scale, 0, 0, scale, app.stagePane.localToGlobal(new Point(0, 0)).x*scale, app.stagePane.localToGlobal(new Point(0, 0)).y*scale), null, null, new Rectangle(0,0,borderX,borderY),false);
 				}
+				else if (app.stagePane.videoImage) app.stagePane.videoImage.visible = true;
+				if (mouse && app.gh.mouseIsDown) {
+					f.draw(circle,new Matrix(scale,0,0,scale,(app.stage.mouseX-circle.width/2.0)*scale,(app.stage.mouseY-circle.height/2.0)*scale));
+				}
+				if (cursor) {
+					f.draw(cursor,new Matrix(scale,0,0,scale,app.stage.mouseX*scale,app.stage.mouseY*scale));
+				}
 			}
 			else {
 				f = new BitmapData(width,height,false);
@@ -215,22 +218,32 @@ public class ScratchRuntime {
 					var e:BitmapData = app.stagePane.saveScreenData();
 					f.copyPixels(e, new Rectangle(0,0,486,432),new Point(app.stagePane.localToGlobal(new Point(0, 0)).x, app.stagePane.localToGlobal(new Point(0, 0)).y));
 				}
+				else if (app.stagePane.videoImage) app.stagePane.videoImage.visible = true;
+				if (mouse && app.gh.mouseIsDown) {
+					f.copyPixels(circle.bitmapData,circle.bitmapData.rect,new Point(app.stage.mouseX-circle.width/2.0,app.stage.mouseY-circle.height/2.0));
+				}
+				if (cursor) {
+					f.draw(cursor,new Matrix(1,0,0,1,app.stage.mouseX,app.stage.mouseY));
+				}
 			}
 		}
 		else {
 			f = app.stagePane.saveScreenData();
+			if (mouse && app.gh.mouseIsDown) {
+				f.copyPixels(circle.bitmapData,circle.bitmapData.rect,new Point(app.stagePane.scratchMouseX()+240-circle.width/2.0,-app.stagePane.scratchMouseY()+180-circle.height/2.0));
+			}
+			if (cursor) {
+				f.draw(cursor,new Matrix(1,0,0,1,app.stagePane.scratchMouseX()+240,-app.stagePane.scratchMouseY()+180));
+			}
 		}
 		while (sounds.length>frames.length) {
 			frames.push(f);
-		}
-		if ((frames.length % 100) == 0) {
-			trace('frames: ' + frames.length + ' mem: ' + System.totalMemory);
 		}
 	}
 	
 	private function saveSound():void {
 		var floats:Array = [];
-		if (mSound && mic.activityLevel>=0) {
+		if (mSound && mBytes.length>0) {
 			mBytes.position=mPosition;
 			while (mBytes.length>mBytes.position && floats.length<=baFlvEncoder.audioFrameSize/4) {
 				floats.push(mBytes.readFloat());
@@ -283,6 +296,7 @@ public class ScratchRuntime {
 		pSound = editor.soundFlag();
 		mSound = editor.microphoneFlag();
 		fullEditor = editor.editorFlag();
+		cursor = editor.cursorFlag();
 		mouse = editor.mouseFlag();
 		framerate = (!editor.fifteenFlag()) ? 15.0 : 30.0;
 		if (fullEditor) {
@@ -332,7 +346,7 @@ public class ScratchRuntime {
 			startVideo(specEditor);
 		}
 		var d:DialogBox = new DialogBox(startCountdown);
-		d.addTitle('Record Project Video');
+		d.addTitle('Record & Export Video');
 		d.addWidget(specEditor);
 		d.addAcceptCancelButtons('Start Countdown');
 		d.showOnStage(app.stage, true);

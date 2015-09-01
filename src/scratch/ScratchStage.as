@@ -116,7 +116,7 @@ public class ScratchStage extends ScratchObj {
 		else {
 			addChild(counter);
 		}
-		addChild(arrowText=makeLabel("To stop recording, click here",14));
+		addChild(arrowText=makeLabel("To stop recording, click the square",14));
 		arrowImage = Resources.createBmp('stopArrow');
 		arrowImage.x = 6;
 		arrowImage.y = 335;
@@ -292,11 +292,14 @@ public class ScratchStage extends ScratchObj {
 		else {
 			bm.draw(this);
 		}
-
+	if (Scratch.app !=null && Scratch.app.gh.carriedObj is ScratchSprite) {
+			var spr:ScratchSprite = ScratchSprite(Scratch.app.gh.carriedObj);
+			bm.draw(spr,new Matrix(spr.scaleX, 0, 0, spr.scaleY, spr.scratchX+(STAGEW/2), -spr.scratchY+(STAGEH/2)));
+		}
 		if (videoImage) videoImage.visible = true;
 		return bm;
 	}
-
+	
 	private function saveScreenshot():void {
 		var bitmapData:BitmapData = new BitmapData(STAGEW, STAGEH, true, 0);
 		bitmapData.draw(this);
@@ -631,7 +634,7 @@ public class ScratchStage extends ScratchObj {
 
 		var bm1:BitmapData;
 		var mask:uint = 0x00F8F8F0;
-		if(Scratch.app.isIn3D) {
+		if (Scratch.app.isIn3D) {
 			SCRATCH::allow3d {
 				bm1 = Scratch.app.render3D.getOtherRenderedChildren(s, 1);
 			}

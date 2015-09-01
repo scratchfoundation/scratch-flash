@@ -34,6 +34,7 @@ public class RecordingSpecEditor extends Sprite {
 	private var row:Array = [];
 
 	private var description:TextField;
+	private var notSavedLabel:TextField;
 	private var moreLabel:TextField;
 	private var moreButton:IconButton;
 	private var checkboxLabels:Array = [];
@@ -50,7 +51,8 @@ public class RecordingSpecEditor extends Sprite {
 		addChild(base = new Shape());
 		setWidthHeight(450, 10);
 
-		addChild(description = makeLabel('Capture and download a video of your project.\nYou can record up to a 60 second video.',14))
+		addChild(description = makeLabel('Capture and download a video of your project to your computer.\nYou can record up to a 60 second video.',14));
+		addChild(notSavedLabel = makeLabel('Please note that the video will not be saved on Scratch.',12,true));
 		addChild(moreLabel = makeLabel('More Options', 14));
 		moreLabel.addEventListener(MouseEvent.MOUSE_DOWN, toggleButtons);
 		description.setTextFormat(new TextFormat(null,null,null,null,null,null,null,null,TextFormatAlign.CENTER,null,null,null,5));
@@ -106,7 +108,7 @@ public class RecordingSpecEditor extends Sprite {
 	}
 	
 	public function editorFlag():Boolean {
-		return checkboxes[3].isOn();
+		return checkboxes[4].isOn();
 	}
 
 	public function microphoneFlag():Boolean {
@@ -115,27 +117,32 @@ public class RecordingSpecEditor extends Sprite {
 	}
 	
 	public function mouseFlag():Boolean {
+		return checkboxes[3].isOn();
+	}
+	
+	public function cursorFlag():Boolean {
 		return checkboxes[2].isOn();
 	}
 	
 	public function fifteenFlag():Boolean {
-		return checkboxes[4].isOn();
+		return checkboxes[5].isOn();
 	}
 
 	private function addCheckboxesAndLabels():void {
 		checkboxLabels = [
 		makeLabel('Include sound from project', 14),
 		makeLabel('Include sound from microphone', 14),
+		makeLabel('Show mouse cursor',14),
 		makeLabel('Show mouse clicks',14),
-		makeLabel('Record entire editor (will cause lag)',14),
+		makeLabel('Record entire editor (may run slow)',14),
 		makeLabel('Record at highest quality (not recommended on older devices)',14),
 		];
 		function disable():void {
 			if (editorFlag()) {
-				checkboxes[4].setDisabled(true,.4);
+				checkboxes[5].setDisabled(true,.4);
 			}
 			else {
-				checkboxes[4].setDisabled(false);
+				checkboxes[5].setDisabled(false);
 			}
 		}
 		function hideVolume():void {
@@ -149,6 +156,7 @@ public class RecordingSpecEditor extends Sprite {
 		checkboxes = [
 		new IconButton(null, 'checkbox'),
 		new IconButton(hideVolume, 'checkbox'),
+		new IconButton(null, 'checkbox'),
 		new IconButton(null, 'checkbox'),
 		new IconButton(disable, 'checkbox'),
 		new IconButton(null, 'checkbox'),
@@ -178,10 +186,10 @@ public class RecordingSpecEditor extends Sprite {
 		return micVolumeSlider.value;
 	}
 	
-	private function makeLabel(s:String, fontSize:int):TextField {
+	private function makeLabel(s:String, fontSize:int,italic:Boolean=false):TextField {
 		var tf:TextField = new TextField();
 		tf.selectable = false;
-		tf.defaultTextFormat = new TextFormat(CSS.font, fontSize, CSS.textColor);
+		tf.defaultTextFormat = new TextFormat(CSS.font, fontSize, CSS.textColor,false,italic);
 		tf.autoSize = TextFieldAutoSize.LEFT;
 		tf.text = Translator.map(s);
 		addChild(tf);
@@ -203,23 +211,23 @@ public class RecordingSpecEditor extends Sprite {
 
 	private function showButtons(showParams:Boolean):void {
 		var label:TextField, b:IconButton,i:int;
-		var height:int = 175;
+		var height:int = 175+notSavedLabel.height+5;
 		if (showParams) {
 			height+=14
 			toggleOn = true;
-			for (i=3; i<checkboxLabels.length; i++) {
+			for (i=4; i<checkboxLabels.length; i++) {
 				label = checkboxLabels[i];
 				height+=label.height+7;
 				addChild(label);
 			}
-			for (i=3; i<checkboxes.length; i++) addChild(checkboxes[i]);
+			for (i=4; i<checkboxes.length; i++) addChild(checkboxes[i]);
 		} else {
 			toggleOn = false;
-			for (i=3; i<checkboxLabels.length; i++) {
+			for (i=4; i<checkboxLabels.length; i++) {
 				label = checkboxLabels[i];
 				if (label.parent) removeChild(label);
 			}
-			for (i=3; i<checkboxes.length; i++) removeChild(checkboxes[i]);
+			for (i=4; i<checkboxes.length; i++) removeChild(checkboxes[i]);
 		}
 
 		moreButton.setOn(showParams);
@@ -258,13 +266,15 @@ public class RecordingSpecEditor extends Sprite {
 	private function fixLayout(updateDelete:Boolean = true):void {
 		description.x = (450-description.width)/2;
 		description.y = 0;
+		notSavedLabel.x = (450-notSavedLabel.width)/2;
+		notSavedLabel.y = description.height+5;
 		
 		topBar.x = 20;
-		topBar.y = 48;
+		topBar.y = 48+notSavedLabel.height+5;
 		
 		var buttonX:int = 30;
 
-		var rowY:int = 62;
+		var rowY:int = 62+notSavedLabel.height+5;
 		for (var i:int = 0; i < checkboxes.length; i++) {
 			var label:TextField = checkboxLabels[i];
 			checkboxes[i].x = buttonX;
@@ -286,7 +296,7 @@ public class RecordingSpecEditor extends Sprite {
 		}
 		else {
 			moreButton.x = buttonX+1;
-			moreButton.y = 146;
+			moreButton.y = 174+notSavedLabel.height+5;
 	
 			moreLabel.x = moreButton.x+10;
 			moreLabel.y = moreButton.y - 4;

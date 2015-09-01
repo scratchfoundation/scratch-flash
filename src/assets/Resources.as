@@ -31,6 +31,15 @@ public class Resources {
 		}
 		return new resourceClass();
 	}
+	
+	public static function createDO(resourceName:String):DisplayObject {
+		var resourceClass:Class = Resources[resourceName];
+		if (!resourceClass) {
+			trace('missing resource: ', resourceName);
+			return new Bitmap(new BitmapData(10, 10, false, 0x808080));
+		}
+		return new resourceClass();
+	}
 
 	public static function makeLabel(s:String, fmt:TextFormat, x:int = 0, y:int = 0):TextField {
 		// Create a non-editable text field for use as a label.
@@ -81,6 +90,8 @@ public class Resources {
 	[Embed(source='cursors/shrinkCursor.png')] private static const shrinkCursor:Class;
 	[Embed(source='cursors/mouseCircle.png')] private static const mouseCircle:Class;
 	[Embed(source='UI/paint/zoomInCursor.png')] private static const zoomInCursor:Class;
+	
+	[Embed(source='cursors/videoCursor.svg')] private static const videoCursor:Class;
 
 	// Top bar
 	[Embed(source='UI/topbar/scratchlogoOff.png')] private static const scratchlogoOff:Class;
