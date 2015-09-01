@@ -198,10 +198,15 @@ public class ScratchRuntime {
 				f = new BitmapData(width,height,false);
 				f.draw(app.stage,m,null, null, new Rectangle(0,0,aWidth*scale,aHeight*scale),false);
 				if(Scratch.app.isIn3D) {
+					var scaled:Number = scale;
+					if (!app.editMode) {
+						scaled *= app.presentationScale;
+					}
+					else if (app.stageIsContracted) {
+						scaled*=0.5;
+					}
 					var d:BitmapData = app.stagePane.saveScreenData();
-					var borderX:int = aWidth<486 ? aWidth*scale : 486*scale;
-					var borderY:int = aHeight<432 ? aHeight*scale : 432*scale;
-					f.draw(d, new Matrix( scale, 0, 0, scale, app.stagePane.localToGlobal(new Point(0, 0)).x*scale, app.stagePane.localToGlobal(new Point(0, 0)).y*scale), null, null, new Rectangle(0,0,borderX,borderY),false);
+					f.draw(d, new Matrix( scaled, 0, 0, scaled, app.stagePane.localToGlobal(new Point(0, 0)).x*scale, app.stagePane.localToGlobal(new Point(0, 0)).y*scale));
 				}
 				else if (app.stagePane.videoImage) app.stagePane.videoImage.visible = true;
 				if (mouse && app.gh.mouseIsDown) {
@@ -213,10 +218,18 @@ public class ScratchRuntime {
 			}
 			else {
 				f = new BitmapData(width,height,false);
-				f.draw(app.stage,null,null,null,null,false);
+				f.draw(app.stage);
 				if(Scratch.app.isIn3D) {
+					var scaler:Number = 1;
+					if (!app.editMode) {
+						scaler *= app.presentationScale;
+					}
+					else if (app.stageIsContracted) {
+						scaler*=0.5;
+					}
 					var e:BitmapData = app.stagePane.saveScreenData();
-					f.copyPixels(e, new Rectangle(0,0,486,432),new Point(app.stagePane.localToGlobal(new Point(0, 0)).x, app.stagePane.localToGlobal(new Point(0, 0)).y));
+					if (scaler==1) f.copyPixels(e, new Rectangle(0,0,486,432),new Point(app.stagePane.localToGlobal(new Point(0, 0)).x, app.stagePane.localToGlobal(new Point(0, 0)).y));
+					else f.draw(e, new Matrix( scaler, 0, 0, scaler, app.stagePane.localToGlobal(new Point(0, 0)).x, app.stagePane.localToGlobal(new Point(0, 0)).y));
 				}
 				else if (app.stagePane.videoImage) app.stagePane.videoImage.visible = true;
 				if (mouse && app.gh.mouseIsDown) {

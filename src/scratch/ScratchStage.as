@@ -299,7 +299,7 @@ public class ScratchStage extends ScratchObj {
 				s = 2
 			}
 			if (!Scratch.app.editMode) {
-				s = 0.5;
+				s = 1.0/Scratch.app.presentationScale;
 			}
 			bm.draw(spr,new Matrix(spr.scaleX*s, 0, 0, spr.scaleY*s, spr.scratchX+(STAGEW/2), -spr.scratchY+(STAGEH/2)));
 		}

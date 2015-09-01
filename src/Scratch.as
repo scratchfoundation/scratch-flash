@@ -88,6 +88,8 @@ public class Scratch extends Sprite {
 	public var isExtensionDevMode:Boolean = false; // If true, run in extension development mode (as on ScratchX)
 	public var isMicroworld:Boolean = false;
 
+	public var presentationScale:Number;
+	
 	// Runtime
 	public var runtime:ScratchRuntime;
 	public var interp:Interpreter;
@@ -898,6 +900,7 @@ public class Scratch extends Sprite {
 			scale = Math.max(0.01, scale);
 			var scaledW:int = Math.floor((scale * 480) / 4) * 4; // round down to a multiple of 4
 			scale = scaledW / 480;
+			presentationScale = scale;
 			var playerW:Number = (scale * 480) + extraW;
 			var playerH:Number = (scale * 360) + extraH;
 			stagePart.setWidthHeight(playerW, playerH, scale);
