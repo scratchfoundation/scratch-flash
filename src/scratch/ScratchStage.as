@@ -294,7 +294,14 @@ public class ScratchStage extends ScratchObj {
 		}
 	if (Scratch.app !=null && Scratch.app.gh.carriedObj is ScratchSprite) {
 			var spr:ScratchSprite = ScratchSprite(Scratch.app.gh.carriedObj);
-			bm.draw(spr,new Matrix(spr.scaleX, 0, 0, spr.scaleY, spr.scratchX+(STAGEW/2), -spr.scratchY+(STAGEH/2)));
+			var s:Number = 1;
+			if (Scratch.app.stageIsContracted) {
+				s = 2
+			}
+			if (!Scratch.app.editMode) {
+				s = 0.5;
+			}
+			bm.draw(spr,new Matrix(spr.scaleX*s, 0, 0, spr.scaleY*s, spr.scratchX+(STAGEW/2), -spr.scratchY+(STAGEH/2)));
 		}
 		if (videoImage) videoImage.visible = true;
 		return bm;
