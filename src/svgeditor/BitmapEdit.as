@@ -236,7 +236,7 @@ public class BitmapEdit extends ImageEdit {
 		imagesPart.setCanCrop(false);
 		highlightTool('none');
 		var obj:ISVGEditable = null;
-		if (newMode != toolMode && currentTool is SVGEditTool)
+		if ((bForce || newMode != toolMode) && currentTool is SVGEditTool)
 			obj = (currentTool as SVGEditTool).getObject();
 
 		var prevToolMode:String = toolMode;
@@ -409,6 +409,12 @@ public class BitmapEdit extends ImageEdit {
 	// -----------------------------
 	// Clear/Undo/Redo
 	//------------------------------
+
+	override protected function clearSelection():void {
+		// Re-activate the tool that (looks like) it's currently active
+		// If there's an uncommitted action, this will commit it in the same way that changing the tool would.
+		setToolMode(lastToolMode ? lastToolMode : toolMode, true);
+	}
 
 	public override function canClearCanvas():Boolean {
 		// True if canvas has any marks.

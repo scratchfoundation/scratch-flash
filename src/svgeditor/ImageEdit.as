@@ -824,18 +824,7 @@ package svgeditor {
 			}
 		}
 
-		private function clearSelection():void {
-			if (this is BitmapEdit) {
-				var ot:Boolean = currentTool as ObjectTransformer;
-				var tt:Boolean = currentTool is TextTool;
-				if (ot || tt) {
-					shutdown();
-					if (ot) {
-						targetCostume.undoList.pop(); // remove last entry (added by shutdown)
-						targetCostume.undoListIndex--;
-					}
-				}
-			}
+		protected function clearSelection():void {
 		}
 
 		protected final function recordForUndo(imgData:*, rotationCenterX:int, rotationCenterY:int):void {
