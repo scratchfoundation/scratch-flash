@@ -677,6 +677,8 @@ public class Interpreter {
 	// a reference to the Variable object is cached in the target object.
 
 	private function primVarGet(b:Block):* {
+		if (activeThread == null) return 0;
+
 		var v:Variable = activeThread.target.varCache[b.spec];
 		if (v == null) {
 			v = activeThread.target.varCache[b.spec] = activeThread.target.lookupOrCreateVar(b.spec);
