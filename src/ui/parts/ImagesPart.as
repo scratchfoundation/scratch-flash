@@ -377,7 +377,13 @@ public class ImagesPart extends UIPart {
 		lib.importFromDisk();
 	}
 
-	private function addCostume(c:ScratchCostume):void {
+	private function addCostume(costumeOrList:*):void {
+		var c:ScratchCostume = costumeOrList as ScratchCostume;
+
+		// If they imported a GIF, take the first frame only
+		if (!c && costumeOrList is Array)
+			c = costumeOrList[0] as ScratchCostume;
+
 		var p:Point = new Point(240, 180);
 		editor.addCostume(c, p);
 	}
