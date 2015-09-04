@@ -42,8 +42,6 @@ import flash.geom.Rectangle;
 import org.gestouch.events.GestureEvent;
 import org.gestouch.gestures.TransformGesture;
 
-import ui.ScreenDetector;
-
 import ui.dragdrop.DropTarget;
 import ui.events.DragEvent;
 
@@ -74,11 +72,13 @@ public class ScrollFrame extends Sprite implements DropTarget {
 	private var contentW:Number;
 	private var contentH:Number;
 	private var contentDirty:Boolean;
+	private var contentPadding:int = 0;
 
 	private var panGesture:TransformGesture;
 
-	public function ScrollFrame(dragScrolling:Boolean = false, scrollbarStyle:int = 0) {
+	public function ScrollFrame(dragScrolling:Boolean = false, scrollbarStyle:int = 0, padding:int = 0) {
 		this.scrollbarStyle = scrollbarStyle || Scrollbar.STYLE_DEFAULT;
+		contentPadding = padding;
 		if (dragScrolling) scrollbarThickness = Scrollbar.STYLE_DEFAULT ? 3 : 5;
 		mask = new Shape();
 		addChild(mask);
@@ -241,7 +241,7 @@ public class ScrollFrame extends Sprite implements DropTarget {
 
 	public function showVScrollbar(show:Boolean):void {
 		if (vScrollbar) {
-			vScrollbar.alpha = show ? 1 : idleAlpha
+			vScrollbar.alpha = show ? 1 : idleAlpha;
 			fixLayout();
 		}
 	}
@@ -281,8 +281,8 @@ public class ScrollFrame extends Sprite implements DropTarget {
 	private function getContentW():Number {
 		if (contentDirty) {
 			var rect:Rectangle = contents.getBounds(this);
-			contentW = rect.right + ScreenDetector.pixelsPerCM;
-			contentH = rect.bottom + ScreenDetector.pixelsPerCM;
+			contentW = rect.right + contentPadding;
+			contentH = rect.bottom + contentPadding;
 			contentDirty = false;
 		}
 
@@ -292,8 +292,8 @@ public class ScrollFrame extends Sprite implements DropTarget {
 	private function getContentH():Number {
 		if (contentDirty) {
 			var rect:Rectangle = contents.getBounds(this);
-			contentW = rect.right;
-			contentH = rect.bottom;
+			contentW = rect.right + contentPadding;
+			contentH = rect.bottom + contentPadding;
 			contentDirty = false;
 		}
 

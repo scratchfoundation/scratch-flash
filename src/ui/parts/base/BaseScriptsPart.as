@@ -79,7 +79,7 @@ public class BaseScriptsPart extends UIPart implements IScriptsPart {
 		addChild(paletteFrame);
 
 		var scriptsPane:ScriptsPane = getScriptsPane();
-		scriptsFrame = new ScrollFrame(false);
+		scriptsFrame = getScriptFrame();
 		if (dragScroll) {
 			var scriptsScrollGesture:TransformGesture = new TransformGesture();
 			scriptsScrollGesture.gestureShouldReceiveTouchCallback = shouldScriptsScrollReceiveTouch;
@@ -99,6 +99,9 @@ public class BaseScriptsPart extends UIPart implements IScriptsPart {
 
 	public function showPalette():void {}
 
+	protected function getScriptFrame():ScrollFrame {
+		return new ScrollFrame(false);
+	}
 	protected function getPaletteFrame(dragScroll:Boolean):ScrollFrame {
 		return new ScrollFrame(dragScroll);
 	}
