@@ -128,7 +128,7 @@ public class SoundPrims {
 		if (player == null) return null;
 		player.client = client;
 		player.setDuration(secs);
-		player.startPlayingNative();
+		player.startPlaying();
 		return player;
 	}
 
@@ -137,7 +137,7 @@ public class SoundPrims {
 		if (player == null) return null;
 		player.client = client;
 		player.setNoteAndDuration(midiKey, secs);
-		player.startPlayingNative();
+		player.startPlaying();
 		return player;
 	}
 
