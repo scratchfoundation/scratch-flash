@@ -445,7 +445,7 @@ public class ScratchStage extends ScratchObj implements DropTarget, ITool {
 
 		if (SCRATCH::allow3d) {
 			if (Scratch.app.isIn3D) {
-				var bmd:BitmapData = getBitmapOfSprite(s, stampBounds);
+				var bmd:BitmapData = getBitmapOfSprite(s, stampBounds, true);
 				if (!bmd) return;
 
 				// TODO: Optimize for garbage collection
