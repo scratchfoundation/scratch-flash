@@ -51,6 +51,7 @@ public class ScratchRuntime {
 	public var lastAnswer:String = '';
 	public var cloneCount:int;
 	public var edgeTriggersEnabled:Boolean = false; // initially false, becomes true when project first run
+	public var currentDoObj:ScratchObj = null;
 
 	private var microphone:Microphone;
 	private var timerBase:uint;
@@ -333,7 +334,7 @@ public class ScratchRuntime {
 	private function processEdgeTriggeredHats():void {
 		if (!edgeTriggersEnabled) return;
 		activeHats = [];
-		allStacksAndOwnersDo(startEdgeTriggeredHats);
+		allStacksAndOwnersDo(startEdgeTriggeredHats,true);
 		triggeredHats = activeHats;
 	}
 
@@ -919,7 +920,7 @@ public class ScratchRuntime {
 		return result;
 	}
 
-	public function allStacksAndOwnersDo(f:Function):void {
+	public function allStacksAndOwnersDo(f:Function,setDoObj:Boolean=false):void {
 		// Call the given function on every stack in the project, passing the stack and owning sprite/stage.
 		// This method is used by broadcast, so enumerate sprites/stage from front to back to match Scratch.
 		var stage:ScratchStage = app.stagePane;
@@ -927,10 +928,13 @@ public class ScratchRuntime {
 		for (var i:int = stage.numChildren - 1; i >= 0; i--) {
 			var o:* = stage.getChildAt(i);
 			if (o is ScratchObj) {
+				if (setDoObj) currentDoObj = ScratchObj(o);
 				for each (stack in ScratchObj(o).scripts) f(stack, o);
 			}
 		}
+		if (setDoObj) currentDoObj = stage;
 		for each (stack in stage.scripts) f(stack, stage);
+		currentDoObj = null;
 	}
 
 	public function clearAllCaches():void {
