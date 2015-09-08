@@ -447,7 +447,10 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 		if (textureDirty)
 			packTextureBitmaps();
 
-		__context.clear(0, 0, 0, 0);
+		// Generally the clear color will be replaced by the backdrop and/or pen layer.
+		// However, it will show when we render partially-off-stage regions for getOtherRenderedChildren().
+		// Filling these regions with white matches the behavior we get in 2D.
+		__context.clear(1, 1, 1, 1);
 
 		if (childrenChanged) {// || effectsChanged) {
 			vertexData.position = 0;
