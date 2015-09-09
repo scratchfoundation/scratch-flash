@@ -35,6 +35,7 @@ public class RecordingSpecEditor extends Sprite {
 
 	private var description:TextField;
 	private var notSavedLabel:TextField;
+	private var pleaseNoteLabel:TextField;
 	private var moreLabel:TextField;
 	private var moreButton:IconButton;
 	private var checkboxLabels:Array = [];
@@ -49,10 +50,11 @@ public class RecordingSpecEditor extends Sprite {
 
 	public function RecordingSpecEditor() {
 		addChild(base = new Shape());
-		setWidthHeight(450, 10);
+		setWidthHeight(440, 10);
 
 		addChild(description = makeLabel('Capture and download a video of your project to your computer.\nYou can record up to a 60 second video.',14));
-		addChild(notSavedLabel = makeLabel('Please note that the video will not be saved on Scratch.',12,true));
+		addChild(notSavedLabel = makeLabel('that the video will not be saved on Scratch.',14));
+		addChild(pleaseNoteLabel = makeLabel('Please note',14,true));
 		addChild(moreLabel = makeLabel('More Options', 14));
 		moreLabel.addEventListener(MouseEvent.MOUSE_DOWN, toggleButtons);
 		description.setTextFormat(new TextFormat(null,null,null,null,null,null,null,null,TextFormatAlign.CENTER,null,null,null,5));
@@ -63,12 +65,12 @@ public class RecordingSpecEditor extends Sprite {
 		var g:Graphics = topBar.graphics;
 		g.clear();
 		g.beginFill(slotColor);
-		g.drawRoundRect(0, 0, 410, 1, slotRadius, slotRadius);
+		g.drawRoundRect(0, 0, 400, 1, slotRadius, slotRadius);
 		g.endFill();
 		var gr:Graphics = bottomBar.graphics;
 		gr.clear();
 		gr.beginFill(slotColor);
-		gr.drawRoundRect(0, 0, 410, 1, slotRadius, slotRadius);
+		gr.drawRoundRect(0, 0, 400, 1, slotRadius, slotRadius);
 		gr.endFill();
 		addChild(topBar);
 		addChild(bottomBar);
@@ -135,7 +137,7 @@ public class RecordingSpecEditor extends Sprite {
 		makeLabel('Show mouse cursor',14),
 		makeLabel('Show mouse clicks',14),
 		makeLabel('Record entire editor (may run slow)',14),
-		makeLabel('Record at highest quality (not recommended on older devices)',14),
+		makeLabel('Record at highest quality (may run slow)',14),
 		];
 		function disable():void {
 			if (editorFlag()) {
@@ -186,10 +188,10 @@ public class RecordingSpecEditor extends Sprite {
 		return micVolumeSlider.value;
 	}
 	
-	private function makeLabel(s:String, fontSize:int,italic:Boolean=false):TextField {
+	private function makeLabel(s:String, fontSize:int,bold:Boolean = false):TextField {
 		var tf:TextField = new TextField();
 		tf.selectable = false;
-		tf.defaultTextFormat = new TextFormat(CSS.font, fontSize, CSS.textColor,false,italic);
+		tf.defaultTextFormat = new TextFormat(CSS.font, fontSize, CSS.textColor,bold);
 		tf.autoSize = TextFieldAutoSize.LEFT;
 		tf.text = Translator.map(s);
 		addChild(tf);
@@ -211,7 +213,7 @@ public class RecordingSpecEditor extends Sprite {
 
 	private function showButtons(showParams:Boolean):void {
 		var label:TextField, b:IconButton,i:int;
-		var height:int = 175+notSavedLabel.height+5;
+		var height:int = 230;
 		if (showParams) {
 			height+=14
 			toggleOn = true;
@@ -264,17 +266,15 @@ public class RecordingSpecEditor extends Sprite {
 	}
 
 	private function fixLayout(updateDelete:Boolean = true):void {
-		description.x = (450-description.width)/2;
+		description.x = (440-description.width)/2;
 		description.y = 0;
-		notSavedLabel.x = (450-notSavedLabel.width)/2;
-		notSavedLabel.y = description.height+5;
 		
 		topBar.x = 20;
-		topBar.y = 48+notSavedLabel.height+5;
+		topBar.y = 48;
 		
 		var buttonX:int = 30;
 
-		var rowY:int = 62+notSavedLabel.height+5;
+		var rowY:int = 62;
 		for (var i:int = 0; i < checkboxes.length; i++) {
 			var label:TextField = checkboxLabels[i];
 			checkboxes[i].x = buttonX;
@@ -296,14 +296,20 @@ public class RecordingSpecEditor extends Sprite {
 		}
 		else {
 			moreButton.x = buttonX+1;
-			moreButton.y = 174+notSavedLabel.height+5;
+			moreButton.y = 174;
 	
 			moreLabel.x = moreButton.x+10;
 			moreLabel.y = moreButton.y - 4;
 		}
 		
-			bottomBar.x = 20;
-			bottomBar.y = moreButton.y+20;
+		bottomBar.x = 20;
+		bottomBar.y = moreButton.y+20;
+			
+		notSavedLabel.x = (440-notSavedLabel.width-pleaseNoteLabel.width)/2+pleaseNoteLabel.width;
+		notSavedLabel.y = bottomBar.y+7;
+		
+		pleaseNoteLabel.x = (440-notSavedLabel.width-pleaseNoteLabel.width)/2;
+		pleaseNoteLabel.y = bottomBar.y+7;
 		
 
 		if (parent is DialogBox) DialogBox(parent).fixLayout();

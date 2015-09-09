@@ -42,6 +42,7 @@ import ui.media.MediaInfo;
 import ui.BlockPalette;
 import uiwidgets.DialogBox;
 import ui.RecordingSpecEditor;
+import ui.SharingSpecEditor;
 import util.*;
 import watchers.*;
 import leelib.util.flvEncoder.*;
@@ -118,7 +119,7 @@ public class ScratchRuntime {
 			}
 			else {
 				app.updateRecordingTools(t);
-				if (frames.length>position) {
+				if (frames.length>position && frames.length%2==0 || frames.length%3==0) {
 					baFlvEncoder.addFrame(frames[position],sounds[position]);
 					frames[position]=null;
 					sounds[position]=null;
@@ -243,7 +244,7 @@ public class ScratchRuntime {
 		else {
 			f = app.stagePane.saveScreenData();
 			if (mouse && app.gh.mouseIsDown) {
-				f.copyPixels(circle.bitmapData,circle.bitmapData.rect,new Point(app.stagePane.scratchMouseX()+240-circle.width/2.0,-app.stagePane.scratchMouseY()+180-circle.height/2.0));
+				f.copyPixels(circle.bitmapData,circle.bitmapData.rect,new Point(app.stagePane.mouseX-circle.width/2.0,app.stagePane.mouseY-circle.height/2.0));
 			}
 			if (cursor) {
 				f.draw(cursor,new Matrix(1,0,0,1,app.stagePane.scratchMouseX()+240,-app.stagePane.scratchMouseY()+180));
@@ -358,11 +359,7 @@ public class ScratchRuntime {
 		function startCountdown():void {
 			startVideo(specEditor);
 		}
-		var d:DialogBox = new DialogBox(startCountdown);
-		d.addTitle('Record & Export Video');
-		d.addWidget(specEditor);
-		d.addAcceptCancelButtons('Start Countdown');
-		d.showOnStage(app.stage, true);
+		DialogBox.close("Record Project Video",null,specEditor,"Start Countdown",app.stage,startCountdown);
 	}
 	
 	public function stopVideo():void {
@@ -469,15 +466,13 @@ public class ScratchRuntime {
 			var file:FileReference = new FileReference();
 			file.save(video, "movie.flv");
 			releaseVideo();
+			var specEditor:SharingSpecEditor = new SharingSpecEditor();
+			DialogBox.close("Playing and Sharing Your Video",null,specEditor,"Back to Scratch");
 		}
 		function releaseVideo():void {
 			video = null;
 		}
-		var d:DialogBox = new DialogBox(saveFile, releaseVideo);
-		d.addTitle("Video finished!");
-		d.addText("Download the video to your computer,\nor click Discard to delete it.");
-		d.addAcceptCancelButtons('Download','Discard');
-		d.showOnStage(app.stage);
+		DialogBox.close("Video Finished!","Download the video to your computer.\nClosing this dialog will delete the video.",null,"Download",app.stage,saveFile,releaseVideo,null,true);
 	}
 
 //----------

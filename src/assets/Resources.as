@@ -312,7 +312,8 @@ public class Resources {
 	[Embed(source='UI/paint/bitmapTextOff.png')] private static const bitmapTextOff:Class;
 	[Embed(source='UI/paint/bitmapTextOn.png')] private static const bitmapTextOn:Class;
 	
-	//Recording Stop Arrow
+	//Recording
 	[Embed(source='StopArrow.png')] private static const stopArrow:Class;
+	[Embed(source='VideoShare.svg')] private static const videoShare:Class;
 
 }}
