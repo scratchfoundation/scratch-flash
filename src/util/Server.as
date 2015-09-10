@@ -46,6 +46,8 @@ import flash.system.Capabilities;
 import flash.system.Security;
 import flash.utils.ByteArray;
 
+import logging.LogLevel;
+
 import mx.utils.URLUtil;
 
 public class Server implements IServer {
@@ -137,7 +139,7 @@ public class Server implements IServer {
 			var urlPathStart:int = url.indexOf('/', 10);
 			var policyFileURL:String = url.substr(0, urlPathStart) + '/crossdomain.xml?cb=' + Math.random();
 			Security.loadPolicyFile(policyFileURL);
-			Scratch.app.log('Reloading policy file from : ' + policyFileURL);
+			Scratch.app.log(LogLevel.WARNING, 'Reloading policy file', {url: policyFileURL});
 		}
 		if (data || url.indexOf('/set/') > -1) {
 			// TEMPORARY HOTFIX: Don't send this message since it seems to saturate our logging backend.
@@ -288,7 +290,7 @@ public class Server implements IServer {
 		}
 
 		function imageError(e:IOErrorEvent):void {
-			Scratch.app.log('ServerOnline failed to decode image: ' + url);
+			Scratch.app.log(LogLevel.WARNING, 'ServerOnline failed to decode image', {url: url});
 		}
 
 		function imageDecoded(e:Event):void {
