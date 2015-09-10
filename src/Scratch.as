@@ -71,7 +71,7 @@ import watchers.ListWatcher;
 
 public class Scratch extends Sprite {
 	// Version
-	public static const versionString:String = 'v439.2';
+	public static const versionString:String = 'v439.3';
 	public static var app:Scratch; // static reference to the app, used for debugging
 
 	// Display modes
@@ -169,7 +169,11 @@ public class Scratch extends Sprite {
 		stage.align = StageAlign.TOP_LEFT;
 		stage.scaleMode = StageScaleMode.NO_SCALE;
 		stage.frameRate = 30;
-		stage['color'] = CSS.backgroundColor(); // this setter doesn't exist on Air 2.6, so silently does nothing.
+
+		if (stage.hasOwnProperty('color')) {
+			// Stage doesn't have a color property on Air 2.6, and Linux throws if you try to set it anyway.
+			stage['color'] = CSS.backgroundColor();
+		}
 
 		Block.setFonts(10, 9, true, 0); // default font sizes
 		Block.MenuHandlerFunction = BlockMenus.BlockMenuHandler;
