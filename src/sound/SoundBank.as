@@ -159,16 +159,16 @@ public class SoundBank {
 	// The three-element envelop array may be omitted if the instrument has no envelope.
 
 	static private var instruments:Array = [
-		[[38, 'AcousticPiano_As3', 58, 10266, 17053, [0, 100, 22]],
-		 [44, 'AcousticPiano_C4', 60, 13968, 18975, [0, 100, 20]],
-		 [51, 'AcousticPiano_G4', 67, 12200, 12370, [0, 80, 18]],
-		 [62, 'AcousticPiano_C6', 84, 13042, 13276, [0, 80, 16]],
-		 [70, 'AcousticPiano_F5', 77, 12425, 12965, [0, 40, 14]],
-		 [77, 'AcousticPiano_Ds6', 87, 12368, 12869, [0, 20, 10]],
-		 [85, 'AcousticPiano_Ds6', 87, 12368, 12869, [0, 0, 8]],
-		 [90, 'AcousticPiano_Ds6', 87, 12368, 12869, [0, 0, 6]],
-		 [96, 'AcousticPiano_D7', 98, 7454, 7606, [0, 0, 3]],
-		 [128, 'AcousticPiano_D7', 98, 7454, 7606, [0, 0, 2]]],
+		[[38, 'AcousticPiano_As3', 58, 14767, 21776, [0, 100, 22]],
+		 [44, 'AcousticPiano_C4', 60, 16194, 20495, [0, 100, 20]],
+		 [51, 'AcousticPiano_G4', 67, 14755, 18579, [0, 80, 18]],
+		 [62, 'AcousticPiano_C6', 84, 16560, 17738, [0, 80, 16]],
+		 [70, 'AcousticPiano_F5', 77, 12233, 13476, [0, 40, 14]],
+		 [77, 'AcousticPiano_Ds6', 87, 14268, 15807, [0, 20, 10]],
+		 [85, 'AcousticPiano_Ds6', 87, 14268, 15807, [0, 0, 8]],
+		 [90, 'AcousticPiano_Ds6', 87, 14268, 15807, [0, 0, 6]],
+		 [96, 'AcousticPiano_D7', 98, 7090, 8497, [0, 0, 3]],
+		 [128, 'AcousticPiano_D7', 98, 7090, 8497, [0, 0, 2]]],
 
 		[[48, 'ElectricPiano_C2', 36, 15338, 17360, [0, 80, 10]],
 		 [74, 'ElectricPiano_C4', 60, 11426, 12016, [0, 40, 8]],
