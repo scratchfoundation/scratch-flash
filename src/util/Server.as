@@ -42,8 +42,11 @@ import flash.net.URLLoaderDataFormat;
 import flash.net.URLRequest;
 import flash.net.URLRequestHeader;
 import flash.net.URLRequestMethod;
+import flash.system.Capabilities;
 import flash.system.Security;
 import flash.utils.ByteArray;
+
+import logging.LogLevel;
 
 import mx.utils.URLUtil;
 
@@ -58,8 +61,7 @@ public class Server implements IServer {
 		try {
 			var urlOverrides:String = Scratch.app.loaderInfo.parameters['urlOverrides'];
 			if (urlOverrides) overrideURLs(by.blooddy.crypto.serialization.JSON.decode(urlOverrides));
-		}
-		catch (e:*) {
+		} catch (e:*) {
 		}
 	}
 
@@ -89,6 +91,27 @@ public class Server implements IServer {
 		return URLs.siteCdnPrefix + URLs.staticFiles;
 	}
 
+	// Returns a URL for downloading the JS for an official extension given input like 'myExtension.js'
+	public function getOfficialExtensionURL(extensionName:String):String {
+		var path:String;
+
+		if (Scratch.app.isOffline) {
+			path = 'static/js/scratch_extensions/';
+		}
+		else if (Scratch.app.isExtensionDevMode) {
+			path = 'scratch_extensions/';
+		}
+		else {
+			// Skip the CDN when debugging to make iteration easier
+			var extensionSite:String = Capabilities.isDebugger ? URLs.sitePrefix : URLs.siteCdnPrefix;
+			path = extensionSite + URLs.staticFiles + 'js/scratch_extensions/';
+		}
+
+		path += extensionName;
+
+		return path;
+	}
+
 	// -----------------------------
 	// Server GET/POST
 	//------------------------------
@@ -116,7 +139,7 @@ public class Server implements IServer {
 			var urlPathStart:int = url.indexOf('/', 10);
 			var policyFileURL:String = url.substr(0, urlPathStart) + '/crossdomain.xml?cb=' + Math.random();
 			Security.loadPolicyFile(policyFileURL);
-			Scratch.app.log('Reloading policy file from : ' + policyFileURL);
+			Scratch.app.log(LogLevel.WARNING, 'Reloading policy file', {url: policyFileURL});
 		}
 		if (data || url.indexOf('/set/') > -1) {
 			// TEMPORARY HOTFIX: Don't send this message since it seems to saturate our logging backend.
@@ -140,7 +163,8 @@ public class Server implements IServer {
 	// The whenDone() function is called when the request is done, either with the
 	// data returned by the server or with a null argument if the request failed.
 	// The request includes site and session authentication headers.
-	protected function callServer(url:String, data:*, mimeType:String, whenDone:Function, queryParams:Object = null):URLLoader {
+	protected function callServer(url:String, data:*, mimeType:String, whenDone:Function,
+	                              queryParams:Object = null):URLLoader {
 		function addListeners():void {
 			loader.addEventListener(Event.COMPLETE, completeHandler);
 			loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, errorHandler);
@@ -166,11 +190,7 @@ public class Server implements IServer {
 		function errorHandler(event:ErrorEvent):void {
 			removeListeners();
 			onCallServerError(url, data, event);
-			callServerErrorInfo = {
-				url: url,
-				httpStatus: httpStatus,
-				errorEvent: event
-			};
+			callServerErrorInfo = {url: url, httpStatus: httpStatus, errorEvent: event};
 			whenDone(null);
 			callServerErrorInfo = null;
 		}
@@ -218,8 +238,7 @@ public class Server implements IServer {
 
 		try {
 			loader.load(request);
-		}
-		catch (e:*) {
+		} catch (e:*) {
 			// Local sandbox exception?
 			exceptionHandler(e);
 		}
@@ -271,7 +290,7 @@ public class Server implements IServer {
 		}
 
 		function imageError(e:IOErrorEvent):void {
-			Scratch.app.log('ServerOnline failed to decode image: ' + url);
+			Scratch.app.log(LogLevel.WARNING, 'ServerOnline failed to decode image', {url: url});
 		}
 
 		function imageDecoded(e:Event):void {

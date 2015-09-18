@@ -32,6 +32,8 @@ import flash.events.*;
 import flash.net.URLLoader;
 import flash.utils.*;
 
+import logging.LogLevel;
+
 import scratch.*;
 
 import sound.WAVFile;
@@ -136,7 +138,7 @@ public class ProjectIO {
 		try {
 			var files:Array = new ZipIO().read(zipData);
 		} catch (e:*) {
-			app.log('Bad zip file; attempting to recover');
+			app.log(LogLevel.WARNING, 'Bad zip file; attempting to recover');
 			try {
 				files = new ZipIO().recover(zipData);
 			} catch (e:*) {
@@ -289,7 +291,7 @@ public class ProjectIO {
 			assetDict[md5] = data;
 			assetCount++;
 			if (!data) {
-				app.log('missing asset: ' + md5);
+				app.log(LogLevel.WARNING, 'missing asset: ' + md5);
 			}
 			if (app.lp) {
 				app.lp.setProgress(assetCount / assetsToFetch.length);
@@ -322,7 +324,7 @@ public class ProjectIO {
 		var c:ScratchCostume;
 		function gotCostumeData(data:ByteArray):void {
 			if (!data) {
-				app.log('Image not found on server: ' + id);
+				app.log(LogLevel.WARNING, 'Image not found on server: ' + id);
 				return;
 			}
 			if (ScratchCostume.isSVGData(data)) {
@@ -340,7 +342,7 @@ public class ProjectIO {
 			}
 		}
 		function imageError(event:IOErrorEvent):void {
-			app.log('ProjectIO failed to load: ' + id);
+			app.log(LogLevel.WARNING, 'ProjectIO failed to load image', {id: id});
 		}
 		function imageLoaded(e:Event):void {
 			if (otherData && otherData.centerX)
@@ -358,7 +360,7 @@ public class ProjectIO {
 		// Fetch a sound asset from the server and call whenDone with the resulting ScratchSound.
 		function gotSoundData(sndData:ByteArray):void {
 			if (!sndData) {
-				app.log('Sound not found on server: ' + id);
+				app.log(LogLevel.WARNING, 'Sound not found on server', {id: id});
 				return;
 			}
 			var snd:ScratchSound;
@@ -404,7 +406,7 @@ public class ProjectIO {
 		// Download all media for the given list of ScratchObj objects.
 		function assetReceived(md5:String, data:ByteArray):void {
 			if (!data) {
-				app.log('missing sprite asset: ' + md5);
+				app.log(LogLevel.WARNING, 'missing sprite asset', {md5: md5});
 			}
 			assetDict[md5] = data;
 			assetCount++;

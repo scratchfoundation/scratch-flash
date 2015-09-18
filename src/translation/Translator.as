@@ -18,15 +18,19 @@
  */
 
 package translation {
+import blocks.Block;
+
 import flash.events.Event;
 import flash.net.*;
 import flash.utils.ByteArray;
 import flash.utils.Dictionary;
-import blocks.Block;
+
+import logging.LogLevel;
 
 import mx.utils.StringUtil;
 
 import uiwidgets.Menu;
+
 import util.*;
 
 public class Translator {
@@ -221,9 +225,7 @@ public class Translator {
 		var translatedSpec:String = map(spec);
 		if (translatedSpec == spec) return; // not translated
 		if (!argsMatch(extractArgs(spec), extractArgs(translatedSpec))) {
-			Scratch.app.log('Block argument mismatch:');
-			Scratch.app.log('    ' + spec);
-			Scratch.app.log('    ' + translatedSpec);
+			Scratch.app.log(LogLevel.ERROR, 'Block argument mismatch', {spec: spec, translated: translatedSpec});
 			delete dictionary[spec]; // remove broken entry from dictionary
 		}
 	}
