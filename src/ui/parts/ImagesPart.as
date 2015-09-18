@@ -335,7 +335,10 @@ public class ImagesPart extends UIPart {
 		useBitmapEditor(false);
 
 		var svg:SVGElement = new SVGElement('svg');
-		svg.subElements.push(SVGElement.makeBitmapEl(c.baseLayerBitmap, 1 / c.bitmapResolution));
+		var nonTransparentBounds:Rectangle = c.baseLayerBitmap.getColorBoundsRect(0xFF000000, 0x00000000, false);
+		if (nonTransparentBounds.width != 0 && nonTransparentBounds.height != 0) {
+			svg.subElements.push(SVGElement.makeBitmapEl(c.baseLayerBitmap, 1 / c.bitmapResolution));
+		}
 		c.rotationCenterX /= c.bitmapResolution;
 		c.rotationCenterY /= c.bitmapResolution;
 		c.setSVGData(new SVGExport(svg).svgData(), false, false);
