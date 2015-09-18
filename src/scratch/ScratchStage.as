@@ -693,7 +693,10 @@ public class ScratchStage extends ScratchObj {
 		}
 
 		delete info.userAgent;
-		if (Scratch.app.jsEnabled) {
+		if (Scratch.app.isOffline) {
+			info.userAgent = 'Scratch 2.0 Offline Editor';
+		}
+		else if (Scratch.app.jsEnabled) {
 			Scratch.app.externalCall('window.navigator.userAgent.toString', function(userAgent:String):void {
 				if (userAgent) info.userAgent = userAgent;
 			});
