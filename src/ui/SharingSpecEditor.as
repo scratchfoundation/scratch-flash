@@ -36,6 +36,7 @@ public class SharingSpecEditor extends Sprite {
 
 	private var playLabel:TextField;
 	private var linkLabel:TextField;
+	private var faqLabel:TextField;
 	private var shareLabel:TextField;
 	private var shareImage:DisplayObject;
 
@@ -45,10 +46,11 @@ public class SharingSpecEditor extends Sprite {
 
 	public function SharingSpecEditor() {
 		addChild(base = new Shape());
-		setWidthHeight(400, 240);
+		setWidthHeight(400, 260);
 
 		addChild(playLabel = makeLabel('To play your video, download and install the',14));
 		addChild(linkLabel = makeLinkLabel('VLC media player.',14,"http://www.videolan.org/vlc/index.html"));
+		addChild(faqLabel = makeLinkLabel('Questions?',14,"https://scratch.mit.edu/info/faq/"));
 		addChild(shareLabel = makeLabel('You can also share your video with others to let them see it!',14));
 		addChild(shareImage = Resources.createDO("videoShare"));
 		var h:Number = 160/shareImage.width*shareImage.height;
@@ -134,10 +136,13 @@ public class SharingSpecEditor extends Sprite {
 		linkLabel.y = 0;
 		
 		shareImage.x = (this.width-shareImage.width)/2-25;
-		shareImage.y = 5;
+		shareImage.y = 30;
 		
 		shareLabel.x = (this.width-shareLabel.width)/2;
-		shareLabel.y = 210;
+		shareLabel.y = 24;
+		
+		faqLabel.x = (this.width-faqLabel.width)/2;
+		faqLabel.y = 230;
 		
 		if (parent is DialogBox) DialogBox(parent).fixLayout();
 	}

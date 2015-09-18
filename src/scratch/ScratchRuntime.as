@@ -119,7 +119,7 @@ public class ScratchRuntime {
 			}
 			else {
 				app.updateRecordingTools(t);
-				if (frames.length>position && frames.length%2==0 || frames.length%3==0) {
+				if (frames.length>position && (frames.length%2==0 || frames.length%3==0)) {
 					baFlvEncoder.addFrame(frames[position],sounds[position]);
 					frames[position]=null;
 					sounds[position]=null;
@@ -311,7 +311,7 @@ public class ScratchRuntime {
 		mSound = editor.microphoneFlag();
 		fullEditor = editor.editorFlag();
 		cursor = editor.cursorFlag();
-		mouse = editor.mouseFlag();
+		mouse = editor.cursorFlag();
 		framerate = (!editor.fifteenFlag()) ? 15.0 : 30.0;
 		if (fullEditor) {
 			framerate=10.0;
@@ -359,7 +359,7 @@ public class ScratchRuntime {
 		function startCountdown():void {
 			startVideo(specEditor);
 		}
-		DialogBox.close("Record Project Video",null,specEditor,"Start Countdown",app.stage,startCountdown);
+		DialogBox.close("Record Project Video",null,specEditor,"Start",app.stage,startCountdown);
 	}
 	
 	public function stopVideo():void {
@@ -472,7 +472,7 @@ public class ScratchRuntime {
 		function releaseVideo():void {
 			video = null;
 		}
-		DialogBox.close("Video Finished!","Download the video to your computer.\nClosing this dialog will delete the video.",null,"Download",app.stage,saveFile,releaseVideo,null,true);
+		DialogBox.close("Video Finished!","To save, click the button below.",null,"Save and Download",app.stage,saveFile,releaseVideo,null,true);
 	}
 
 //----------

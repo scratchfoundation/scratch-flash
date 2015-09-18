@@ -52,7 +52,7 @@ public class RecordingSpecEditor extends Sprite {
 		addChild(base = new Shape());
 		setWidthHeight(440, 10);
 
-		addChild(description = makeLabel('Capture and download a video of your project to your computer.\nYou can record up to a 60 second video.',14));
+		addChild(description = makeLabel('Capture and download a video of your project to your computer.\nYou can record up to 60 seconds of video.',14));
 		addChild(notSavedLabel = makeLabel('that the video will not be saved on Scratch.',14));
 		addChild(pleaseNoteLabel = makeLabel('Please note',14,true));
 		addChild(moreLabel = makeLabel('More Options', 14));
@@ -110,7 +110,7 @@ public class RecordingSpecEditor extends Sprite {
 	}
 	
 	public function editorFlag():Boolean {
-		return checkboxes[4].isOn();
+		return checkboxes[3].isOn();
 	}
 
 	public function microphoneFlag():Boolean {
@@ -118,33 +118,28 @@ public class RecordingSpecEditor extends Sprite {
 		return checkboxes[1].isOn();
 	}
 	
-	public function mouseFlag():Boolean {
-		return checkboxes[3].isOn();
-	}
-	
 	public function cursorFlag():Boolean {
 		return checkboxes[2].isOn();
 	}
 	
 	public function fifteenFlag():Boolean {
-		return checkboxes[5].isOn();
+		return checkboxes[4].isOn();
 	}
 
 	private function addCheckboxesAndLabels():void {
 		checkboxLabels = [
 		makeLabel('Include sound from project', 14),
 		makeLabel('Include sound from microphone', 14),
-		makeLabel('Show mouse cursor',14),
-		makeLabel('Show mouse clicks',14),
-		makeLabel('Record entire editor (may run slow)',14),
-		makeLabel('Record at highest quality (may run slow)',14),
+		makeLabel('Show mouse pointer',14),
+		makeLabel('Record entire editor (may run slowly)',14),
+		makeLabel('Record at highest quality (may run slowly)',14),
 		];
 		function disable():void {
 			if (editorFlag()) {
-				checkboxes[5].setDisabled(true,.4);
+				checkboxes[4].setDisabled(true,.4);
 			}
 			else {
-				checkboxes[5].setDisabled(false);
+				checkboxes[4].setDisabled(false);
 			}
 		}
 		function hideVolume():void {
@@ -158,7 +153,6 @@ public class RecordingSpecEditor extends Sprite {
 		checkboxes = [
 		new IconButton(null, 'checkbox'),
 		new IconButton(hideVolume, 'checkbox'),
-		new IconButton(null, 'checkbox'),
 		new IconButton(null, 'checkbox'),
 		new IconButton(disable, 'checkbox'),
 		new IconButton(null, 'checkbox'),
@@ -213,23 +207,25 @@ public class RecordingSpecEditor extends Sprite {
 
 	private function showButtons(showParams:Boolean):void {
 		var label:TextField, b:IconButton,i:int;
-		var height:int = 230;
+		var height:int = 140;
 		if (showParams) {
 			height+=14
 			toggleOn = true;
-			for (i=4; i<checkboxLabels.length; i++) {
+			for (i=1; i<checkboxLabels.length; i++) {
 				label = checkboxLabels[i];
 				height+=label.height+7;
 				addChild(label);
 			}
-			for (i=4; i<checkboxes.length; i++) addChild(checkboxes[i]);
+			for (i=1; i<checkboxes.length; i++) addChild(checkboxes[i]);
+			if (microphoneFlag()) addChild(micVolumeSlider);
 		} else {
 			toggleOn = false;
-			for (i=4; i<checkboxLabels.length; i++) {
+			for (i=1; i<checkboxLabels.length; i++) {
 				label = checkboxLabels[i];
 				if (label.parent) removeChild(label);
 			}
-			for (i=4; i<checkboxes.length; i++) removeChild(checkboxes[i]);
+			for (i=1; i<checkboxes.length; i++) removeChild(checkboxes[i]);
+			if (microphoneFlag()) removeChild(micVolumeSlider);
 		}
 
 		moreButton.setOn(showParams);
@@ -296,7 +292,7 @@ public class RecordingSpecEditor extends Sprite {
 		}
 		else {
 			moreButton.x = buttonX+1;
-			moreButton.y = 174;
+			moreButton.y = 85;
 	
 			moreLabel.x = moreButton.x+10;
 			moreLabel.y = moreButton.y - 4;

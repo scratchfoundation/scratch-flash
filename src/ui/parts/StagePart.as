@@ -251,7 +251,7 @@ public class StagePart extends UIPart {
 		addChild(videoProgressBar);
 		
 		const versionFormat:TextFormat = new TextFormat(CSS.font, 11, CSS.textColor);
-		addChild(recordingTime = makeLabel(" 0 sec",versionFormat));
+		addChild(recordingTime = makeLabel(" 0 secs",versionFormat));
 		
 		recordingIndicator = new Shape();
 		var k:Graphics = recordingIndicator.graphics;
@@ -311,7 +311,7 @@ public class StagePart extends UIPart {
 			if (int(time)<10) {
 				timeString+=" ";
 			}
-			timeString += int(time).toString()+" sec";
+			timeString += int(time).toString()+" secs";
 			removeChild(recordingTime);
 			const versionFormat:TextFormat = new TextFormat(CSS.font, 11, CSS.textColor);
 			addChild(recordingTime = makeLabel(timeString,versionFormat));
