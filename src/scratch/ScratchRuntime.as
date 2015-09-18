@@ -457,7 +457,7 @@ public class ScratchRuntime {
 			if (spr) spr.setDirection(spr.direction);
 		}
 
-		resetPlugin();
+		app.resetPlugin();
 		app.extensionManager.clearImportedExtensions();
 		app.extensionManager.loadSavedExtensions(project.info.savedExtensions);
 		app.installStage(project);
@@ -473,10 +473,6 @@ public class ScratchRuntime {
 		app.extensionManager.step();
 		app.projectLoaded();
 		SCRATCH::allow3d { checkForGraphicEffects(); }
-	}
-
-	protected function resetPlugin():void {
-		if (Scratch.app.jsEnabled) Scratch.app.externalCall('ScratchExtensions.resetPlugin');
 	}
 
 	SCRATCH::allow3d

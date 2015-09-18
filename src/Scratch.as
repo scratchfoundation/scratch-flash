@@ -707,6 +707,11 @@ public class Scratch extends Sprite {
 		}
 	}
 
+	public function resetPlugin():void {
+		if (jsEnabled)
+			externalCall('ScratchExtensions.resetPlugin');
+	}
+
 	protected function step(e:Event):void {
 		// Step the runtime system and all UI components.
 		gh.step();
