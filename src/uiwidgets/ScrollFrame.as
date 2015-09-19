@@ -44,6 +44,7 @@ import org.gestouch.gestures.TransformGesture;
 
 import ui.dragdrop.DropTarget;
 import ui.events.DragEvent;
+import ui.events.PopupEvent;
 
 public class ScrollFrame extends Sprite implements DropTarget {
 
@@ -88,7 +89,7 @@ public class ScrollFrame extends Sprite implements DropTarget {
 		vScrollbar.alpha = idleAlpha;
 		addChild(vScrollbar);
 		setContents(new ScrollFrameContents());
-		addEventListener(ScrollFrameContents.INTERACTION_BEGAN, handleContentInteraction);
+		addEventListener(PopupEvent.OPEN, handlePopupOpen);
 		enableScrollWheel('vertical');
 		if (dragScrolling) enableDragScrolling();
 	}
@@ -97,16 +98,10 @@ public class ScrollFrame extends Sprite implements DropTarget {
 		return contents.handleDrop(obj);
 	}
 
-	private function handleContentInteraction(event:Event):void {
+	private function handlePopupOpen(event:Event):void {
 		// Stop any scrolling
 		if (panGesture) {
 			panGesture.reset();
-		}
-
-		// Make sure the content is visible
-		var b:Rectangle = event.target.getBounds(mask);
-		if (b.bottom > mask.height) {
-			contents.y -= b.bottom - mask.height;
 		}
 	}
 
@@ -166,8 +161,7 @@ public class ScrollFrame extends Sprite implements DropTarget {
 
 	public function setContents(newContents:Sprite):void {
 		if (contents) {
-			contents.removeEventListener(Event.ADDED, contentChanged);
-			contents.removeEventListener(Event.REMOVED, contentChanged);
+			contents.removeEventListener(ScrollFrameContents.CONTENT_CHANGE, contentChanged);
 			removeEventListener(DragEvent.DRAG_OVER, contents.handleDragEvent);
 			removeEventListener(DragEvent.DRAG_MOVE, contents.handleDragEvent);
 			removeEventListener(DragEvent.DRAG_OUT, contents.handleDragEvent);
@@ -184,8 +178,7 @@ public class ScrollFrame extends Sprite implements DropTarget {
 		contents.updateSize();
 		updateScrollbars();
 		contentDirty = true;
-		contents.addEventListener(Event.ADDED, contentChanged, false, 0, true);
-		contents.addEventListener(Event.REMOVED, contentChanged, false, 0, true);
+		contents.addEventListener(ScrollFrameContents.CONTENT_CHANGE, contentChanged, false, 0, true);
 		addEventListener(DragEvent.DRAG_OVER, contents.handleDragEvent, false, 0, true);
 		addEventListener(DragEvent.DRAG_MOVE, contents.handleDragEvent, false, 0, true);
 		addEventListener(DragEvent.DRAG_OUT, contents.handleDragEvent, false, 0, true);
@@ -198,6 +191,7 @@ public class ScrollFrame extends Sprite implements DropTarget {
 
 	private function contentChanged(e:Event):void {
 		contentDirty = true;
+		updateScrollbarVisibility();
 	}
 
 	private var scrollWheelHorizontal:Boolean;
@@ -279,25 +273,22 @@ public class ScrollFrame extends Sprite implements DropTarget {
 	}
 
 	private function getContentW():Number {
-		if (contentDirty) {
-			var rect:Rectangle = contents.getBounds(this);
-			contentW = rect.right + contentPadding;
-			contentH = rect.bottom + contentPadding;
-			contentDirty = false;
-		}
+		if (contentDirty) resetContentSize();
 
 		return contentW;
 	}
 
 	private function getContentH():Number {
-		if (contentDirty) {
-			var rect:Rectangle = contents.getBounds(this);
-			contentW = rect.right + contentPadding;
-			contentH = rect.bottom + contentPadding;
-			contentDirty = false;
-		}
+		if (contentDirty) resetContentSize();
 
 		return contentH;
+	}
+
+	public function resetContentSize():void {
+		var rect:Rectangle = contents.getBounds(this);
+		contentW = rect.width ? rect.right + contentPadding: 0;
+		contentH = rect.height ? rect.bottom + contentPadding : 0;
+		contentDirty = false;
 	}
 
 	public function maxScrollH():int {
@@ -328,7 +319,7 @@ public class ScrollFrame extends Sprite implements DropTarget {
 		updateScrollbars();
 	}
 
-	public function constrainScroll():void {
+	public function  constrainScroll():void {
 		contents.x = Math.max(-maxScrollH(), Math.min(contents.x, 0));
 		contents.y = Math.max(-maxScrollV(), Math.min(contents.y, 0));
 
@@ -338,7 +329,7 @@ public class ScrollFrame extends Sprite implements DropTarget {
 			if (dObj != mask) {
 				var yy:Number = dObj.y + contents.y;
 				var v:Boolean = (yy < h && yy + dObj.height > 0);
-				if (dObj.visible != v)
+				if (dObj.visible != v && dObj.alpha > 0)
 					dObj.visible = v;
 			}
 		}
