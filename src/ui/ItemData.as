@@ -8,12 +8,12 @@ public class ItemData {
 	public var obj:*;
 	public var assetID:String;
 	public var extras:Object;
-	public function ItemData(objType:String, objName:String, md5:String, object:*, extras:Object = null) {
+	public function ItemData(objType:String, objName:String, md5:String, object:*, extraData:Object = null) {
 		type = objType;
 		name = objName;
 		assetID = md5;
 		obj = object;
-		extras = extras;
+		extras = extraData;
 	}
 
 	public function identifier(strict:Boolean = false):String {
