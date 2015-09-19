@@ -9,23 +9,22 @@ import flash.display.DisplayObject;
 import flash.display.Sprite;
 import flash.events.Event;
 import flash.geom.Point;
+import flash.geom.Rectangle;
 import flash.utils.setTimeout;
 
 import scratch.ScratchSprite;
 
 import ui.BaseItem;
 import ui.dragdrop.DragAndDropMgr;
-import ui.dragdrop.DropTarget;
 import ui.events.DragEvent;
 import ui.styles.ContainerStyle;
 import ui.styles.ItemStyle;
 
 public class ArrangeableContents extends ScrollFrameContents {
 	public static const ORDER_CHANGE:String = 'orderChange';
-	public static const CONTENT_CHANGE:String = 'contentChange';
 	public static const CONTENT_ANIMATE:String = 'contentAnimate';
 	private static const leftBehindAlpha:Number = 0.6;
-	public static const defaultStyle:ContainerStyle = new ContainerStyle();
+	public static var defaultStyle:ContainerStyle = new ContainerStyle();
 
 	// Fixed state variables
 	protected var itemStyle:ItemStyle;
@@ -37,6 +36,7 @@ public class ArrangeableContents extends ScrollFrameContents {
 	private var selectedItem:BaseItem;
 	private var editMode:Boolean;
 	public function ArrangeableContents(iStyle:ItemStyle, cStyle:ContainerStyle = null) {
+		super(false);
 		itemStyle = iStyle;
 		if (cStyle) style = cStyle;
 		setWidthHeight(w, h);
@@ -51,6 +51,7 @@ public class ArrangeableContents extends ScrollFrameContents {
 		switch(event.type) {
 			case DragEvent.DRAG_START:
 				event.target.visible = false;
+				event.target.alpha = 0;
 				arrangeItems(true);
 				break;
 
@@ -74,6 +75,18 @@ public class ArrangeableContents extends ScrollFrameContents {
 				// TODO: provide a way for another class to control if a dragged item can be dropped?
 				dropPos = getIndexFromPoint(event.draggedObject.localToGlobal(new Point(event.draggedObject.width/2, event.draggedObject.height/2)));
 				arrangeItems(true);
+
+//				var b:Rectangle = event.draggedObject.getBounds(parent.mask);
+//				if (b.top < 0)
+//					y -= Math.min(-1, b.top / 4);
+//				else if (b.bottom > parent.mask.height)
+//					y -= Math.max(1, (b.bottom - parent.mask.height) / 4);
+//
+//				if (b.left < 0)
+//					x -= Math.min(-1, b.left / 4);
+//				else if (b.right > parent.mask.width)
+//					x -= Math.max(1, (b.right - parent.mask.width) / 4);
+//				(parent as ScrollFrame).constrainScroll();
 				break;
 
 			case DragEvent.DRAG_CANCEL:
@@ -163,6 +176,9 @@ public class ArrangeableContents extends ScrollFrameContents {
 		orderChanged = false;
 		arrangeItems();
 		x = y = 0; // reset scroll offset
+
+		if (parent is ScrollFrame)
+			(parent as ScrollFrame).resetContentSize();
 	}
 
 	private function getIndexFromPoint(pt:Point, forAdding:Boolean = false):int {
@@ -262,15 +278,6 @@ public class ArrangeableContents extends ScrollFrameContents {
 
 	private var animating:Boolean;
 	public function arrangeItems(animate:Boolean = false):void {
-		if (contentChanged) {
-			dispatchEvent(new Event(orderChanged ? ORDER_CHANGE : CONTENT_CHANGE));
-			contentChanged = false;
-			orderChanged = false;
-		}
-		else if (animate) {
-			dispatchEvent(new Event(CONTENT_ANIMATE));
-		}
-
 		if (numChildren > 0) {
 			allItems().forEach(getPlacementFunc(animate));
 			if (!animate)
@@ -280,6 +287,19 @@ public class ArrangeableContents extends ScrollFrameContents {
 		}
 		else
 			refreshBackground();
+
+		if (contentChanged) {
+			if (orderChanged)
+				dispatchEvent(new Event(ORDER_CHANGE));
+			else if (!willDispatchContentChange)
+				dispatchContentChange();
+			contentChanged = false;
+			orderChanged = false;
+		}
+		else if (animate) {
+			dispatchEvent(new Event(CONTENT_ANIMATE));
+		}
+
 	}
 
 	protected function refreshBackground():void {
