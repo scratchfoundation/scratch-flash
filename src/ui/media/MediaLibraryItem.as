@@ -37,6 +37,7 @@ package ui.media {
 	import translation.Translator;
 
 import ui.events.PointerEvent;
+import ui.media.MediaLibrary;
 
 import uiwidgets.*;
 	import util.*;
@@ -117,30 +118,16 @@ public class MediaLibraryItem extends Sprite {
 	}
 
 	private var visualReady:Boolean = false;
-	public function show(shouldShow:Boolean, whenDone:Function = null):void {
-		if (visible == shouldShow && (visualReady || !shouldShow)) {
-			if (whenDone) whenDone();
-			return;
-		}
-
-		// TODO: do more on show/hide?
-		visible = shouldShow;
-		if (shouldShow) {
-			if (!visualReady) {
-				visualReady = true;
-				addThumbnail();
-				addLabel();
-				addInfo();
-				unhighlight();
-				if (isSound) addPlayButton();
-				loadThumbnail(whenDone);
-			}
-			else {
-				if (whenDone) whenDone();
-			}
-		}
-		else {
-			if (whenDone) whenDone();
+	override public function set visible(vis:Boolean):void {
+		super.visible = vis;
+		if (vis && !visualReady) {
+			visualReady = true;
+			addThumbnail();
+			addLabel();
+			addInfo();
+			unhighlight();
+			if (isSound) addPlayButton();
+			loadThumbnail();
 		}
 	}
 
@@ -148,11 +135,10 @@ public class MediaLibraryItem extends Sprite {
 	// Thumbnail
 	//------------------------------
 
-	private function loadThumbnail(done:Function):void {
+	private function loadThumbnail():void {
 		var ext:String = fileType(dbObj.md5);
-		if (['gif', 'png', 'jpg', 'jpeg', 'svg'].indexOf(ext) > -1) setImageThumbnail(dbObj.md5, done);
-		else if (ext == 'json') setSpriteThumbnail(done);
-		else if (done) done();
+		if (['gif', 'png', 'jpg', 'jpeg', 'svg'].indexOf(ext) > -1) setImageThumbnail(dbObj.md5);
+		else if (ext == 'json') setSpriteThumbnail();
 	}
 
 	public function stopLoading():void {
@@ -168,7 +154,7 @@ public class MediaLibraryItem extends Sprite {
 	}
 
 	// all paths must call done() even on failure!
-	private function setImageThumbnail(md5:String, done:Function, spriteMD5:String = null):void {
+	private function setImageThumbnail(md5:String, spriteMD5:String = null):void {
 		var forStage:Boolean = (dbObj.width == 480); // if width is 480, format thumbnail for stage
 		var importer:SVGImporter;
 		function gotSVGData(data:ByteArray):void {
@@ -176,15 +162,11 @@ public class MediaLibraryItem extends Sprite {
 				importer = new SVGImporter(XML(data));
 				importer.loadAllImages(svgImagesLoaded);
 			}
-			else {
-				if (done) done();
-			}
 		}
 		function svgImagesLoaded():void {
 			var c:ScratchCostume = new ScratchCostume('', null);
 			c.setSVGRoot(importer.root, false);
 			setThumbnail(c.thumbnail(thumbnailWidth, thumbnailHeight, forStage));
-			if (done) done();
 		}
 		function setThumbnail(bm:BitmapData):void {
 			if (bm) {
@@ -192,11 +174,10 @@ public class MediaLibraryItem extends Sprite {
 				if (spriteMD5) thumbnailCache[spriteMD5] = bm;
 				setThumbnailBM(bm);
 			}
-			if (done) done();
 		}
 		// first, check the thumbnail cache
 		var cachedBM:BitmapData = thumbnailCache[md5];
-		if (cachedBM) { setThumbnailBM(cachedBM); if (done) done(); return; }
+		if (cachedBM) { setThumbnailBM(cachedBM); return; }
 
 		// if not in the thumbnail cache, fetch/compute it
 		trace('loading '+md5);
@@ -205,7 +186,7 @@ public class MediaLibraryItem extends Sprite {
 	}
 
 	// all paths must call done() even on failure!
-	private function setSpriteThumbnail(done:Function):void {
+	private function setSpriteThumbnail():void {
 		function gotJSONData(data:String):void {
 			var md5:String;
 			if (data) {
@@ -224,16 +205,13 @@ public class MediaLibraryItem extends Sprite {
 				}
 			}
 			if (md5) {
-				setImageThumbnail(md5, done, spriteMD5);
-			}
-			else {
-				if (done) done();
+				setImageThumbnail(md5, spriteMD5);
 			}
 		}
 		// first, check the thumbnail cache
 		var spriteMD5:String = dbObj.md5;
 		var cachedBM:BitmapData = thumbnailCache[spriteMD5];
-		if (cachedBM) { setThumbnailBM(cachedBM); if (done) done(); return; }
+		if (cachedBM) { setThumbnailBM(cachedBM); return; }
 
 		if (spriteCache[spriteMD5]) gotJSONData(spriteCache[spriteMD5]);
 		else loaders.push(Scratch.app.server.getAsset(spriteMD5, gotJSONData));
@@ -317,6 +295,8 @@ public class MediaLibraryItem extends Sprite {
 	public function click(evt:MouseEvent):void {
 		if (!evt.shiftKey) unhighlightAll();
 		toggleHighlight();
+		var lib:MediaLibrary = parent.parent.parent as MediaLibrary;
+		if (lib) lib.addSelected();
 	}
 
 	public function doubleClick(evt:MouseEvent):void {
