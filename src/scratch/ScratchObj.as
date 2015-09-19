@@ -670,8 +670,8 @@ public class ScratchObj extends Sprite {
 		// script comments
 		for (i = 0; i < scriptComments.length; i++) {
 			scriptComments[i] = ScratchComment.fromArray(scriptComments[i]);
-			scriptComments[i].x *= 2.5;
-			scriptComments[i].y *= 2.5;
+			scriptComments[i].x *= posScale;
+			scriptComments[i].y *= posScale;
 		}
 
 		// sounds
