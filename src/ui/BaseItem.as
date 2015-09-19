@@ -77,11 +77,12 @@ public class BaseItem extends Sprite implements IDraggable {
 		var textAreaHeight:uint = style.frameHeight - imageBottom;
 		if (style.hasInfo) {
 			// Split the text area in two
-			textAreaHeight /= 2;
+			textAreaHeight *= 0.5;
 			label.y = imageBottom + (textAreaHeight - Number(label.defaultTextFormat.size))/2;
 			info = Resources.makeLabel('', CSS.thumbnailExtraInfoFormat);
+
 			info.selectable = false;
-			info.y = imageBottom + textAreaHeight + (textAreaHeight - Number(info.defaultTextFormat.size))/2;
+			info.y = imageBottom + textAreaHeight + (textAreaHeight - Number(info.defaultTextFormat.size))/4;
 			addChild(info);
 		}
 		else {
@@ -141,6 +142,7 @@ public class BaseItem extends Sprite implements IDraggable {
 	public function getSpriteToDrag():Sprite {
 		var dup:BaseItem = duplicate();
 		dup.label.visible = false;
+		dup.info.visible = false;
 		dup.scaleX = dup.scaleY = transform.concatenatedMatrix.a;
 		return dup;
 	}
