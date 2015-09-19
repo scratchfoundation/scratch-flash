@@ -57,10 +57,13 @@ public class ScriptsPane extends ScrollFrameContents {
 	protected var nearestTarget:Array = [];
 	protected var feedbackShape:BlockShape;
 
-	public function ScriptsPane(app:Scratch) {
+	public function ScriptsPane(app:Scratch, showComments:Boolean = true) {
+		super(false);
 		this.app = app;
-		addChild(commentLines = new Shape());
-		commentLines.visible = false;
+		if (showComments) {
+			addChild(commentLines = new Shape());
+			commentLines.visible = false;
+		}
 		hExtra = vExtra = 40;
 		createTexture();
 		addEventListener(Event.ADDED_TO_STAGE, handleAdded, false, 0, true);
@@ -127,7 +130,9 @@ public class ScriptsPane extends ScrollFrameContents {
 			var child:DisplayObject = removeChildAt(0);
 //			child.cacheAsBitmap = false;
 		}
-		addChild(commentLines);
+
+		if (commentLines) addChild(commentLines);
+
 		viewedObj = obj;
 		if (viewedObj != null) {
 			var blockList:Array = viewedObj.allBlocks();
@@ -140,13 +145,15 @@ public class ScriptsPane extends ScrollFrameContents {
 			}
 			for each (var c:ScratchComment in viewedObj.scriptComments) {
 				c.updateBlockRef(blockList);
+				c.visible = false;
+				c.alpha = 0;
 				addChild(c);
 			}
 		}
 		fixCommentLayout();
-		updateSize();
+//		updateSize();
 		x = y = 0; // reset scroll offset
-		(parent as ScrollFrame).updateScrollbars();
+		dispatchContentChange();
 	}
 
 	public function saveScripts(saveNeeded:Boolean = true):void {
@@ -165,6 +172,7 @@ public class ScriptsPane extends ScrollFrameContents {
 		}
 		if (saveNeeded) app.setSaveNeeded();
 		fixCommentLayout();
+		dispatchContentChange();
 	}
 
 	public function prepareToDrag(b:BlockStack):void {
@@ -540,9 +548,11 @@ public class ScriptsPane extends ScrollFrameContents {
 
 	public function fixCommentLayout():void {
 		const commentLineColor:int = 0xFFFF80;
-		var g:Graphics = commentLines.graphics;
-		g.clear();
-		g.lineStyle(2, commentLineColor);
+		var g:Graphics = commentLines ? commentLines.graphics : null;
+		if (g) {
+			g.clear();
+			g.lineStyle(2, commentLineColor);
+		}
 		for (var i:int = 0; i < numChildren; i++) {
 			var c:ScratchComment = getChildAt(i) as ScratchComment;
 			if (c && c.blockRef) updateCommentConnection(c, g);
@@ -565,9 +575,11 @@ public class ScriptsPane extends ScrollFrameContents {
 		if (c.blockRef.isHat) c.y = blockP.y + c.blockRef.base.substack1y() - 25;
 
 		// draw connecting line
-		var lineY:int = c.y + 10;
-		g.moveTo(blockP.x + c.blockRef.base.width, lineY);
-		g.lineTo(c.x, lineY);
+		if (g) {
+			var lineY:int = c.y + 10;
+			g.moveTo(blockP.x + c.blockRef.base.width, lineY);
+			g.lineTo(c.x, lineY);
+		}
 	}
 
 	/* Stack cleanup */
