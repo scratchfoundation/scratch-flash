@@ -113,7 +113,10 @@ public class MediaInfo extends BaseItem {
 			objIsObj = true;
 		}
 
-		var d:ItemData = new ItemData(t, objName, md5, obj, {owner:owningObj});
+		var extras:Object = obj.hasOwnProperty('extras') ? obj.extras : {};
+		if (owningObj != null)
+			extras.owner = owningObj;
+		var d:ItemData = new ItemData(t, objName, md5, obj, extras);
 		var style:ItemStyle = (t == 'sound' && owner ? CSS.soundItemStyle : CSS.itemStyle);
 		if (objIsObj && obj._style is ItemStyle)
 			style = obj._style;
