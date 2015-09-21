@@ -142,7 +142,7 @@ public class BaseItem extends Sprite implements IDraggable {
 	public function getSpriteToDrag():Sprite {
 		var dup:BaseItem = duplicate();
 		dup.label.visible = false;
-		dup.info.visible = false;
+		if (dup.info) dup.info.visible = false;
 		dup.scaleX = dup.scaleY = transform.concatenatedMatrix.a;
 		return dup;
 	}
