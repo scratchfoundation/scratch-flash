@@ -157,7 +157,7 @@ public class BlockMenus implements DragClient {
 		// translated. This mechanism prevents translating proper names such as sprite,
 		// costume, or variable names.
 		function isGeneric(s:String):Boolean {
-			return ['duplicate', 'delete', 'add comment'].indexOf(s) > -1;
+			return ['duplicate', 'delete', 'add comment', 'clean up'].indexOf(s) > -1;
 		}
 		switch (menuName) {
 		case 'attribute':
