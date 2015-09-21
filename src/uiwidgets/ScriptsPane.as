@@ -145,8 +145,10 @@ public class ScriptsPane extends ScrollFrameContents {
 			}
 			for each (var c:ScratchComment in viewedObj.scriptComments) {
 				c.updateBlockRef(blockList);
-				c.visible = false;
-				c.alpha = 0;
+				if (!commentLines) {
+					c.visible = false;
+					c.alpha = 0;
+				}
 				addChild(c);
 			}
 		}
