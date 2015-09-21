@@ -109,8 +109,10 @@ public class ScratchCostume {
 	}
 
 	public function set baseLayerData(data:ByteArray):void {
+		var wasNull:Boolean = __baseLayerData == null;
 		__baseLayerData = data;
-		baseLayerMD5 = null;
+		if (!wasNull)
+			baseLayerMD5 = null;
 	}
 
 	public function get textLayerData():ByteArray {
