@@ -117,6 +117,7 @@ public class TranslatableStrings {
 		addAll(ProjectIO.strings());
 		// Get the strings from the Scratch app instance so that the offline version can add strings
 		addAll(Scratch.app.strings());
+		addAll(ScriptsPane.strings());
 		addAll(SoundEditor.strings());
 		addAll(SoundsPart.strings());
 		addAll(SpriteInfoPart.strings());
