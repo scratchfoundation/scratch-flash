@@ -871,7 +871,7 @@ public class Block extends Sprite implements IDraggable {
 	private function editArg(evt:MouseEvent):Boolean {
 		var arg:BlockArg = evt.target as BlockArg;
 		if (!arg) arg = evt.target.parent as BlockArg;
-		if (arg && arg.isEditable && (arg.parent == this)) {
+		if (arg && arg.isEditable && (arg.parent == this) && !(parent is BlockPalette)) {
 			arg.startEditing();
 			return true;
 		}
