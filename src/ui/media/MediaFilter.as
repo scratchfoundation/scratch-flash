@@ -31,16 +31,16 @@ import ui.events.PointerEvent;
 
 public class MediaFilter extends Sprite {
 
-	private const titleFormat:TextFormat = new TextFormat(CSS.font, 15, CSS.buttonLabelOverColor, false);
-	private const selectorFormat:TextFormat = new TextFormat(CSS.font, 14, CSS.textColor);
+	public static const titleFormat:TextFormat = new TextFormat(CSS.font, 15, CSS.buttonLabelOverColor, false);
+	public static const selectorFormat:TextFormat = new TextFormat(CSS.font, 14, CSS.textColor);
 
-	private const unselectedColor:int = CSS.overColor; // 0x909090;
-	private const selectedColor:int = CSS.textColor;
-	private const rolloverColor:int = CSS.buttonLabelOverColor;
+	public static var unselectedColor:int = CSS.overColor; // 0x909090;
+	public static var selectedColor:int = CSS.textColor;
+	public static var rolloverColor:int = CSS.buttonLabelOverColor;
 
-	private var title:TextField;
+	protected var title:TextField;
 	private var selectorNames:Array = []; // strings representing tags/themes/categories
-	private var selectors:Array = []; // TextFields (translated)
+	protected var selectors:Array = []; // TextFields (translated)
 	private var selection:String = '';
 	private var whenChanged:Function;
 
@@ -55,7 +55,7 @@ public class MediaFilter extends Sprite {
 	public function set currentSelection(s:String):void { select(selectorNames.indexOf(s)) }
 	public function get currentSelection():String { return selection }
 
-	private function fixLayout():void {
+	protected function fixLayout():void {
 		title.x = title.y = 0;
 		var nextY:int = title.height + 2;
 		for each (var sel:TextField in selectors) {

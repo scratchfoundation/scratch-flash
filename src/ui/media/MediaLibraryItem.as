@@ -24,23 +24,20 @@
 // a name, thumbnail, and a line of information for the media object it represents.
 
 package ui.media {
-	import flash.display.*;
-	import flash.events.MouseEvent;
-	import flash.net.URLLoader;
-	import flash.text.*;
-	import flash.utils.ByteArray;
-	import assets.Resources;
-	import scratch.*;
-	import sound.ScratchSoundPlayer;
-	import sound.mp3.MP3SoundPlayer;
-	import svgutils.SVGImporter;
-	import translation.Translator;
-
+import flash.display.*;
+import flash.events.MouseEvent;
+import flash.net.URLLoader;
+import flash.text.*;
+import flash.utils.ByteArray;
+import assets.Resources;
+import scratch.*;
+import sound.ScratchSoundPlayer;
+import sound.mp3.MP3SoundPlayer;
+import svgutils.SVGImporter;
+import translation.Translator;
 import ui.events.PointerEvent;
-import ui.media.MediaLibrary;
-
+import util.*;
 import uiwidgets.*;
-	import util.*;
 
 public class MediaLibraryItem extends Sprite {
 	public var dbObj:Object;

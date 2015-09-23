@@ -34,7 +34,7 @@ import util.*;
 
 public class MediaLibrary extends Sprite {
 
-	private const titleFormat:TextFormat = new TextFormat(CSS.font, 24, 0x444143);
+	public static const titleFormat:TextFormat = new TextFormat(CSS.font, 24, 0x444143);
 
 	private static const backdropCategories:Array = [
 		'All', 'Indoors', 'Outdoors', 'Other'];
@@ -95,7 +95,7 @@ public class MediaLibrary extends Sprite {
 			'Backdrop Library', 'Costume Library', 'Sprite Library', 'Sound Library',
 			'Category', 'Theme', 'Type', 'Features',
 			'Uploading image...', 'Uploading sprite...', 'Uploading sound...',
-			'Importing sound...', 'Converting mp3...',
+			'Importing sound...', 'Converting mp3...'
 		];
 		result = result.concat(backdropCategories);
 		result = result.concat(costumeCategories);
@@ -215,7 +215,7 @@ public class MediaLibrary extends Sprite {
 		g.endFill();
 	}
 
-	private function addTitle():void {
+	protected function addTitle():void {
 		var s:String = assetType;
 		if ('backdrop' == s) s = 'Backdrop Library';
 		if ('costume' == s) s = 'Costume Library';
@@ -232,26 +232,30 @@ public class MediaLibrary extends Sprite {
 		if ('extension' == assetType) categories = extensionCategories;
 		if ('sprite' == assetType) categories = costumeCategories;
 		if ('sound' == assetType) categories = soundCategories;
-		categoryFilter = new MediaFilter('Category', categories, filterChanged);
+		categoryFilter = createMediaFilter('Category', categories, filterChanged);
 		addChild(categoryFilter);
 
-		themeFilter = new MediaFilter(
+		themeFilter = createMediaFilter(
 			'Theme',
 			('backdrop' == assetType) ? backdropThemes : costumeThemes,
 			filterChanged);
 		themeFilter.currentSelection = '';
 		addChild(themeFilter);
 
-		imageTypeFilter = new MediaFilter('Type', imageTypes, filterChanged);
+		imageTypeFilter = createMediaFilter('Type', imageTypes, filterChanged);
 		addChild(imageTypeFilter);
 
-		spriteFeaturesFilter = new MediaFilter('Features', spriteFeatures, filterChanged);
+		spriteFeaturesFilter = createMediaFilter('Features', spriteFeatures, filterChanged);
 		addChild(spriteFeaturesFilter);
 
 		themeFilter.visible = (['sprite', 'costume', 'backdrop'].indexOf(assetType) > -1);
 		imageTypeFilter.visible = (['sprite', 'costume'].indexOf(assetType) > -1);
 		//spriteFeaturesFilter.visible = ('sprite' == assetType);
 		spriteFeaturesFilter.visible = false; // disable features filter for now
+	}
+
+	protected function createMediaFilter(name:String, options:Array, whenDone:Function):MediaFilter {
+		return new MediaFilter(name, options, whenDone);
 	}
 
 	private function filterChanged(filter:MediaFilter):void {
@@ -261,7 +265,7 @@ public class MediaLibrary extends Sprite {
 
 		// scroll to top when filters change
 		resultsPane.y = 0;
-		resultsFrame.updateScrollbars()
+		resultsFrame.constrainScroll();
 	}
 
 	private function addResultsFrame():void {
