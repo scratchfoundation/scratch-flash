@@ -372,8 +372,12 @@ public class PaletteBuilder {
 
 	protected function getExtensionMenu(ext:ScratchExtension):Menu {
 		function showAbout():void {
-			// Open in the tips window if the URL starts with /info/ and another tab otherwise
-			if (ext.url) {
+			if (ext.isInternal) {
+				// Internal extensions are handled specially by tip-bar.js
+				app.showTip('ext:' + ext.name);
+			}
+			else if (ext.url) {
+				// Open in the tips window if the URL starts with /info/ and another tab otherwise
 				if (ext.url.indexOf('/info/') === 0) app.showTip(ext.url);
 				else if (ext.url.indexOf('http') === 0) navigateToURL(new URLRequest(ext.url));
 				else DialogBox.notify('Extensions', 'Unable to load about page: the URL given for extension "' + ext.name + '" is not formatted correctly.');
