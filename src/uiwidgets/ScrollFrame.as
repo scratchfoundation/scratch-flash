@@ -340,8 +340,6 @@ public class ScrollFrame extends Sprite implements DropTarget {
 		yHistory = [0,0,0];
 		contents.mouseChildren = false;
 		contents.mouseEnabled = false;
-//		contents.cacheAsBitmap = true;
-//		Scratch.app.cacheAsBitmap = true;
 		removeEventListener(Event.ENTER_FRAME, step);
 		onPanGestureChanged(event);
 	}
@@ -381,8 +379,6 @@ public class ScrollFrame extends Sprite implements DropTarget {
 		addEventListener(Event.ENTER_FRAME, step);
 		contents.mouseChildren = true;
 		contents.mouseEnabled = true;
-//		contents.cacheAsBitmap = false;
-//		Scratch.app.cacheAsBitmap = false;
 	}
 
 	public function shutdown():void {}

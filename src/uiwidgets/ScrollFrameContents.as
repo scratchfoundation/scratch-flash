@@ -37,6 +37,8 @@ import flash.events.FocusEvent;
 import flash.geom.Rectangle;
 import flash.utils.setTimeout;
 
+import ui.PopupMenu;
+
 import ui.events.DragEvent;
 import ui.events.PopupEvent;
 
@@ -79,7 +81,7 @@ public class ScrollFrameContents extends Sprite {
 		willDispatchContentChange = false;
 	}
 
-	private var openMenu:DisplayObject;
+	private var openMenu:PopupMenu;
 	private function handlePopupEvent(e:PopupEvent):void {
 		if (e.type == PopupEvent.OPEN) {
 			openMenu = e.menu;
