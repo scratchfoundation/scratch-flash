@@ -352,6 +352,7 @@ package svgeditor {
 					if ('bitmapSelect' == toolName) iconName = 'bitmapSelect';
 					if ('ellipse' == toolName) iconName = 'bitmapEllipse';
 					if ('paintbucket' == toolName) iconName = 'bitmapPaintbucket';
+					if ('bitmapSegment' == toolName) iconName = 'bitmapPaintbucket';
 					if ('rect' == toolName) iconName = 'bitmapRect';
 					if ('text' == toolName) iconName = 'bitmapText';
 
@@ -608,6 +609,7 @@ package svgeditor {
 				case 'bitmapEraser': currentTool = new BitmapPencilTool(this, true); break;
 				case 'bitmapSelect': currentTool = new ObjectTransformer(this); break;
 				case 'paintbucket': currentTool = new PaintBucketTool(this); break;
+				case 'bitmapSegment': currentTool = new BitmapBackgroundTool(this); break;
 			}
 
 			if(currentTool is SVGEditTool) {
@@ -664,7 +666,7 @@ package svgeditor {
 			drawPropsUI.showFontUI('text' == newMode);
 
 			var strokeModes:Array = [
-				'bitmapBrush', 'line', 'rect', 'ellipse',
+				'bitmapBrush', 'bitmapSegment', 'line', 'rect', 'ellipse',
 				'select', 'pathedit', 'path', 'vectorLine', 'vectorRect', 'vectorEllipse'];
 			var eraserModes:Array = ['bitmapEraser', 'eraser'];
 			drawPropsUI.showStrokeUI(

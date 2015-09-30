@@ -24,7 +24,7 @@ package svgeditor.tools {
 	import flash.ui.Mouse;
 	import svgeditor.*;
 
-public final class BitmapPencilTool extends SVGTool {
+public class BitmapPencilTool extends SVGTool {
 
 	private var eraseMode:Boolean;	// true if this is the eraser tool
 
@@ -40,7 +40,7 @@ public final class BitmapPencilTool extends SVGTool {
 	private var brush:BitmapData;
 	private var eraser:BitmapData;
 	private var tempBM:BitmapData;
-	private var lastPoint:Point;
+	private var _lastPoint:Point;
 
 	public function BitmapPencilTool(editor:ImageEdit, eraseMode:Boolean = false) {
 		super(editor);
@@ -67,12 +67,14 @@ public final class BitmapPencilTool extends SVGTool {
 		super.shutdown();
 	}
 
+	protected function getBrushColor():int{ return brushColor; }
+
 	public function updateProperties():void {
 		updateFeedback();
 		moveFeedback();
 	}
 
-	private function mouseDown(evt:MouseEvent):void {
+	protected function mouseDown(evt:MouseEvent):void {
 		if (!editor) return;
 		if (!editor.isActive()) return;
 		if (!editor.getWorkArea().clickInBitmap(evt.stageX, evt.stageY)) return; // mouse down not over canvas
@@ -103,7 +105,13 @@ public final class BitmapPencilTool extends SVGTool {
 		}
 	}
 
-	private function mouseUp(evt:MouseEvent):void {
+	protected function set lastPoint(p:Point):void{
+		_lastPoint = p;
+	}
+
+	protected function get lastPoint():Point{return _lastPoint;}
+
+	protected function mouseUp(evt:MouseEvent):void {
 		if (brush) editor.saveContent();
 		brush = eraser = tempBM = null;
 	}
