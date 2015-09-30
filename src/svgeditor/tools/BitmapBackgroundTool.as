@@ -105,19 +105,19 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 		var workingData:ByteArray= workingBM.getPixels(workingBM.rect);
 		var fgPts:String = JSON.stringify(objectPoints);
 		var bgPts:String = JSON.stringify(backgroundPoints);
-		editor.app.externalCall("JSGetMinCut", didGetObjectMask, workingData, fgPts, bgPts, workingBM.width, workingBM.height);
-		//var args:Vector.<int> = new Vector.<int>();
-		//var imgPtr:int = CModule.malloc(workingData.length);
-		//workingData.position = 0;
-		//CModule.writeBytes(imgPtr, workingData.length, workingData);
-		//var scribblePtr:int = CModule.malloc(workingData.length);
-		//workingData.position = 0;
-		//CModule.writeBytes(scribblePtr, workingData.length, workingData);
-		//args.push(imgPtr, scribblePtr, workingBM.width, workingBM.height, 1)
-		//var func:int = CModule.getPublicSymbol("grabCut")
-		//CModule.callI(func, args);
-		//CModule.free(imgPtr);
-		//CModule.free(scribblePtr);
+		//editor.app.externalCall("JSGetMinCut", didGetObjectMask, workingData, fgPts, bgPts, workingBM.width, workingBM.height);
+		var args:Vector.<int> = new Vector.<int>();
+		var imgPtr:int = CModule.malloc(workingData.length);
+		workingData.position = 0;
+		CModule.writeBytes(imgPtr, workingData.length, workingData);
+		var scribblePtr:int = CModule.malloc(workingData.length);
+		workingData.position = 0;
+		CModule.writeBytes(scribblePtr, workingData.length, workingData);
+		args.push(imgPtr, scribblePtr, workingBM.width, workingBM.height, 1)
+		var func:int = CModule.getPublicSymbol("grabCut")
+		CModule.callI(func, args);
+		CModule.free(imgPtr);
+		CModule.free(scribblePtr);
 	}
 
 
