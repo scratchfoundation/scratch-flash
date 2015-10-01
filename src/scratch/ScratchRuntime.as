@@ -798,7 +798,7 @@ public class ScratchRuntime {
 			if (spr) spr.setDirection(spr.direction);
 		}
 
-		if (Scratch.app.jsEnabled) Scratch.app.externalCall('ScratchExtensions.resetPlugin');
+		app.resetPlugin();
 		app.extensionManager.clearImportedExtensions();
 		app.extensionManager.loadSavedExtensions(project.info.savedExtensions);
 		app.installStage(project);

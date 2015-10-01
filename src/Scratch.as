@@ -443,7 +443,7 @@ public class Scratch extends Sprite {
 	public function jsThrowError(s:String):void {
 		// Throw the given string as an error in the browser. Errors on the production site are logged.
 		var errorString:String = 'SWF Error: ' + s;
-		logMessage(LogLevel.ERROR, errorString);
+		log(LogLevel.ERROR, errorString);
 		if (jsEnabled) {
 			externalCall('JSthrowError', null, errorString);
 		}
@@ -707,6 +707,11 @@ public class Scratch extends Sprite {
 			}
 			externalCall('JSprojectLoaded');
 		}
+	}
+
+	public function resetPlugin():void {
+		if (jsEnabled)
+			externalCall('ScratchExtensions.resetPlugin');
 	}
 
 	protected function step(e:Event):void {
