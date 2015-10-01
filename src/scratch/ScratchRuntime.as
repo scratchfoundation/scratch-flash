@@ -45,6 +45,7 @@ import ui.RecordingSpecEditor;
 import ui.SharingSpecEditor;
 import util.*;
 import watchers.*;
+import logging.LogLevel;
 import leelib.util.flvEncoder.*;
 
 public class ScratchRuntime {
@@ -95,6 +96,7 @@ public class ScratchRuntime {
 				count = 1;
 				sounds = [];
 				frames=[];
+				Scratch.app.log(LogLevel.TRACK, "Project video started");
 			}
 			else if (tR>=2.5){
 				count=1
@@ -449,6 +451,7 @@ public class ScratchRuntime {
 			timeout = setTimeout(saveRecording, 1);
 			return;
 		}
+		var seconds:Number = frames.length/framerate;
 		app.removeLoadProgressBox();
 		baFlvEncoder.updateDurationMetadata();
 		if (mSound) {
@@ -465,14 +468,19 @@ public class ScratchRuntime {
 		function saveFile():void {
 			var file:FileReference = new FileReference();
 			file.save(video, "movie.flv");
-			releaseVideo();
+			Scratch.app.log(LogLevel.TRACK, "Project video downloaded", {details: roundToTens(seconds), megabytes: roundToTens(video.length/1000000)});
 			var specEditor:SharingSpecEditor = new SharingSpecEditor();
 			DialogBox.close("Playing and Sharing Your Video",null,specEditor,"Back to Scratch");
-		}
+		    releaseVideo();
+        }
 		function releaseVideo():void {
 			video = null;
 		}
 		DialogBox.close("Video Finished!","To save, click the button below.",null,"Save and Download",app.stage,saveFile,releaseVideo,null,true);
+	}
+	
+	private function roundToTens(x:Number):Number {
+		return int((x)*10)/10.;
 	}
 
 //----------
