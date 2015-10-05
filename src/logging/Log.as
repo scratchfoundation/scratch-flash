@@ -63,14 +63,23 @@ public class Log {
 			return entryString || (entryString = entry.toString());
 		}
 
+		var extraString:String;
+		function getExtraString():String {
+			return extraString || (extraString = util.JSON.stringify(extraData));
+		}
+
 		if (Capabilities.isDebugger) {
 			trace(getEntryString());
 		}
-		if (Scratch.app.jsEnabled && echoToJS) {
-			Scratch.app.externalCall('console.log', null, getEntryString());
-		}
-		if (LogLevel.TRACK == severity && Scratch.app.jsEnabled) {
-			Scratch.app.externalCall('JStrackEvent', null, messageKey, extraData ? util.JSON.stringify(extraData) : null);
+		if (Scratch.app.jsEnabled) {
+			if (echoToJS) {
+				Scratch.app.externalCall(
+						'console.log', null, getEntryString() + (extraData ? '\n' + getExtraString() : ''));
+			}
+			if (LogLevel.TRACK == severity) {
+				Scratch.app.externalCall(
+						'JStrackEvent', null, messageKey, extraData ? getExtraString() : null);
+			}
 		}
 		return entry;
 	}
