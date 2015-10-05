@@ -225,7 +225,7 @@ public class Translator {
 		var translatedSpec:String = map(spec);
 		if (translatedSpec == spec) return; // not translated
 		if (!argsMatch(extractArgs(spec), extractArgs(translatedSpec))) {
-			Scratch.app.log(LogLevel.ERROR, 'Block argument mismatch', {spec: spec, translated: translatedSpec});
+			Scratch.app.log(LogLevel.WARNING, 'Block argument mismatch', {spec: spec, translated: translatedSpec});
 			delete dictionary[spec]; // remove broken entry from dictionary
 		}
 	}
