@@ -251,7 +251,7 @@ public class Block extends Sprite implements IDraggable {
 		return b;
 	}
 
-	public function isProcDef():Boolean { return op == Specs.PROCEDURE_DEF }
+	public function isProcDef():Boolean { return op == Specs.PROCEDURE_DEF; }
 
 	public function isEmbeddedInProcHat():Boolean {
 		return (parent is Block) &&
