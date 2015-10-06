@@ -28,8 +28,8 @@ package uiwidgets {
 
 public class DialogBox extends Sprite {
 
-	private var fields:Dictionary = new Dictionary();
-	private var booleanFields:Dictionary = new Dictionary();
+	protected var fields:Dictionary = new Dictionary();
+	protected var booleanFields:Dictionary = new Dictionary();
 	public var widget:DisplayObject;
 	protected var w:int, h:int;
 	public var leftJustify:Boolean;
