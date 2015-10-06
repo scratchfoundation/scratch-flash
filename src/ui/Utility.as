@@ -3,10 +3,12 @@
  */
 package ui {
 import flash.display.DisplayObject;
+import flash.system.Capabilities;
 
 public class Utility {
-	function Utility(){}
-
+	public static const isAndroid:Boolean = ('AND' == Capabilities.version.substr(0,3));
+	public static const isIOS:Boolean = ('IOS' == Capabilities.version.substr(0,3));
+	public static const isMobile:Boolean = isAndroid || isIOS;
 	public static function verticallyCenterElements(top:Number, ... elems):Number {
 		var maxHeight:Number = 0;
 		for(var i:int=0, l:int=elems.length; i<l; ++i) {
