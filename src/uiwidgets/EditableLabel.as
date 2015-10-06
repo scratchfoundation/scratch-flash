@@ -94,7 +94,7 @@ public class EditableLabel extends Sprite {
 	}
 
 	private function addTextField(format:TextFormat):void {
-		tf = new TextField();
+		tf = createTextField();
 		tf.defaultTextFormat = format;
 		tf.type = TextFieldType.INPUT;
 		var debugAlignment:Boolean = false;
@@ -108,6 +108,10 @@ public class EditableLabel extends Sprite {
 		tf.addEventListener(FocusEvent.FOCUS_OUT, focusChange);
 		tf.addEventListener(KeyboardEvent.KEY_DOWN, keystroke);
 		addChild(tf);
+	}
+
+	protected function createTextField():TextField {
+		return new TextField();
 	}
 
 	protected function addFilter():void {
