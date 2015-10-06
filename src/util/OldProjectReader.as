@@ -177,7 +177,7 @@ public class OldProjectReader {
 			var topBlock:BlockStack = new BlockStack(BlockIO.arrayToStack(stack[1]));
 			topBlock.x = stack[0][0];
 			topBlock.y = stack[0][1];
-			result.push(topBlock);
+			result.push(topBlock.firstBlock);
 		}
 		return result;
 	}
