@@ -117,7 +117,7 @@ public class ScrollFrameContents extends Sprite {
 	private function handleTextFieldFocus(e:FocusEvent):void {
 		// Scroll up if necessary?
 		if (e.type == FocusEvent.FOCUS_IN) {
-			var b:Rectangle = stage.focus.getBounds(stage);
+			var b:Rectangle = e.target.getBounds(stage);
 			if (b.bottom > stage.stageHeight / 3) {
 				if (origScrollY != origScrollY)
 					origScrollY = y;
