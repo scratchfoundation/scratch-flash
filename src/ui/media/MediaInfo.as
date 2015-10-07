@@ -61,7 +61,7 @@ public class MediaInfo extends BaseItem {
 	public var isBackdrop:Boolean;
 	public var forBackpack:Boolean;
 
-	private var frame:Shape; // visible when selected
+	protected var frame:Shape; // visible when selected
 	protected var deleteButton:IconButton;
 
 	public function get asCostume():ScratchCostume {
