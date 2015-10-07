@@ -105,7 +105,10 @@ public class BaseItem extends Sprite implements IDraggable {
 			tf.text = s + '\u2026'; // truncated name with ellipses
 		}
 
-		tf.x = (style.frameWidth - tf.textWidth) / 2;
+		if (style.centerText)
+			tf.x = (style.frameWidth - tf.textWidth) / 2;
+		else
+			tf.x = CSS.tinyPadding;
 	}
 
 	public function remove():void {
