@@ -170,10 +170,9 @@ public class ScratchSoundPlayer {
 		for (i = 0; i < 4096; i++) {
 			var n:Number = interpolatedSample();
 			data.writeFloat(n);
-			dataBytes.writeFloat(n);
 			data.writeFloat(n);
-			dataBytes.writeFloat(n);
 		}
+		dataBytes.writeBytes(data);
 		if ((bytePosition >= endOffset) && (lastBufferTime == 0)) {
 			lastBufferTime = getTimer();
 		}

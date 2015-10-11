@@ -57,7 +57,10 @@ public class RecordingSpecEditor extends Sprite {
 		addChild(pleaseNoteLabel = makeLabel('Please note',14,true));
 		addChild(moreLabel = makeLabel('More Options', 14));
 		moreLabel.addEventListener(MouseEvent.MOUSE_DOWN, toggleButtons);
-		description.setTextFormat(new TextFormat(null,null,null,null,null,null,null,null,TextFormatAlign.CENTER,null,null,null,5));
+		var format:TextFormat = new TextFormat();
+		format.align = TextFormatAlign.CENTER;
+		format.leading = 5;
+		description.setTextFormat(format);
 		
 		topBar = new Shape();
 		bottomBar = new Shape();
