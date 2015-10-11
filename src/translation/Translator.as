@@ -65,8 +65,8 @@ public class Translator {
 		function gotPOFile(data:ByteArray):void {
 			if (data) {
 				dictionary = parsePOData(data);
+				setFontsFor(lang); // also sets currentLang
 				checkBlockTranslations();
-				setFontsFor(lang);
 			}
 			Scratch.app.translationChanged();
 		}
@@ -81,7 +81,7 @@ public class Translator {
 	public static function setLanguage(lang:String):void {
 		if ('import translation file' == lang) { importTranslationFromFile(); return; }
 		if ('set font size' == lang) { fontSizeMenu(); return; }
-		
+
 		setLanguageValue(lang);
 		Scratch.app.server.setSelectedLang(lang);
 	}
@@ -225,7 +225,9 @@ public class Translator {
 		var translatedSpec:String = map(spec);
 		if (translatedSpec == spec) return; // not translated
 		if (!argsMatch(extractArgs(spec), extractArgs(translatedSpec))) {
-			Scratch.app.log(LogLevel.ERROR, 'Block argument mismatch', {spec: spec, translated: translatedSpec});
+			Scratch.app.log(
+					LogLevel.WARNING, 'Block argument mismatch',
+					{language: currentLang, spec: spec, translated: translatedSpec});
 			delete dictionary[spec]; // remove broken entry from dictionary
 		}
 	}
