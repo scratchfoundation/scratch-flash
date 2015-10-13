@@ -441,7 +441,7 @@ public class Scratch extends Sprite {
 	public function jsThrowError(s:String):void {
 		// Throw the given string as an error in the browser. Errors on the production site are logged.
 		var errorString:String = 'SWF Error: ' + s;
-		log(LogLevel.ERROR, errorString);
+		log(LogLevel.WARNING, errorString);
 		if (jsEnabled) {
 			externalCall('JSthrowError', null, errorString);
 		}
