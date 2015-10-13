@@ -74,7 +74,7 @@ import watchers.ListWatcher;
 
 public class Scratch extends Sprite {
 	// Version
-	public static const versionString:String = 'v440.1';
+	public static const versionString:String = 'v440.2';
 	public static var app:Scratch; // static reference to the app, used for debugging
 
 	// Display modes
@@ -441,7 +441,7 @@ public class Scratch extends Sprite {
 	public function jsThrowError(s:String):void {
 		// Throw the given string as an error in the browser. Errors on the production site are logged.
 		var errorString:String = 'SWF Error: ' + s;
-		log(LogLevel.ERROR, errorString);
+		log(LogLevel.WARNING, errorString);
 		if (jsEnabled) {
 			externalCall('JSthrowError', null, errorString);
 		}
