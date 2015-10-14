@@ -120,17 +120,10 @@ public class Scratch extends Sprite {
 
 		// This one must finish before most other queries can start, so do it separately
 		determineJSAccess();
-		stage.addEventListener(MouseEvent.MOUSE_DOWN, mouseHandler, true, 10, true);
-		stage.addEventListener(MouseEvent.MOUSE_UP, mouseHandler, true, 10, true);
 	}
 
 	public function getVersionString():String {
 		return versionString;
-	}
-
-	public var mouseIsDown:Boolean;
-	private function mouseHandler(e:MouseEvent):void {
-		mouseIsDown = (e.type == MouseEvent.MOUSE_DOWN);
 	}
 
 	protected function initialize():void {

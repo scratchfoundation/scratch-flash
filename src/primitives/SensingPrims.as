@@ -23,12 +23,13 @@
 // Sensing primitives.
 
 package primitives {
-	import flash.display.*;
-	import flash.geom.*;
-	import flash.utils.Dictionary;
-	import blocks.Block;
-	import interpreter.*;
-	import scratch.*;
+import flash.display.*;
+import flash.geom.*;
+import flash.utils.Dictionary;
+import blocks.Block;
+import interpreter.*;
+import org.gestouch.core.Gestouch;
+import scratch.*;
 
 public class SensingPrims {
 
@@ -49,7 +50,7 @@ public class SensingPrims {
 		primTable['doAsk']				= primAsk;
 		primTable['answer']				= function(b:*):* { return app.runtime.lastAnswer };
 
-		primTable['mousePressed']		= function(b:*):* { return app.mouseIsDown };
+		primTable['mousePressed']		= function(b:*):* { return Gestouch.touchesManager.activeTouchesCount > 0; };
 		primTable['mouseX']				= function(b:*):* { return app.stagePane.scratchMouseX() };
 		primTable['mouseY']				= function(b:*):* { return app.stagePane.scratchMouseY() };
 		primTable['timer']				= function(b:*):* { return app.runtime.timer() };
