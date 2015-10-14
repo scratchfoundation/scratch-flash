@@ -596,7 +596,7 @@ public class ScratchStage extends ScratchObj implements DropTarget, ITool {
 	SCRATCH::allow3d
 	public function updateSpriteEffects(spr:DisplayObject, effects:Object):void {
 		if(Scratch.app.isIn3D) {
-			if (videoImage && videoImage.alpha < 1 && !effects.ghost)
+			if (videoImage && videoImage.alpha < 1 && effects && !effects.ghost)
 				effects.ghost = BlockArg.epsilon;
 
 			Scratch.app.render3D.updateFilters(spr, effects);
