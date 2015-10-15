@@ -201,10 +201,6 @@ public class Scratch extends Sprite {
 		stage.addEventListener(MouseEvent.MOUSE_UP, gh.mouseUp);
 		stage.addEventListener(MouseEvent.MOUSE_WHEEL, gh.mouseWheel);
 		stage.addEventListener('rightClick', gh.rightMouseClick);
-		stage.addEventListener(KeyboardEvent.KEY_DOWN, function(evt:KeyboardEvent): void {
-			if (!evt.shiftKey && evt.charCode == 27) gh.escKeyDown();
-			else runtime.keyDown(evt);
-		});
 
 		stage.addEventListener(KeyboardEvent.KEY_UP, runtime.keyUp);
 		stage.addEventListener(KeyboardEvent.KEY_DOWN, keyDown); // to handle escape key
@@ -655,8 +651,12 @@ public class Scratch extends Sprite {
 	}
 
 	private function keyDown(evt:KeyboardEvent):void {
+		// Escape stops drag operations
+		if (!evt.shiftKey && evt.charCode == 27) {
+			gh.escKeyDown();
+		}
 		// Escape exists presentation mode.
-		if ((evt.charCode == 27) && stagePart.isInPresentationMode()) {
+		else if ((evt.charCode == 27) && stagePart.isInPresentationMode()) {
 			setPresentationMode(false);
 			stagePart.exitPresentationMode();
 		}
@@ -673,6 +673,9 @@ public class Scratch extends Sprite {
 			}
 			evt.preventDefault();
 			evt.stopImmediatePropagation();
+		}
+		else {
+			runtime.keyDown(evt);
 		}
 	}
 

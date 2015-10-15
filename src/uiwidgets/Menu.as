@@ -108,6 +108,7 @@ public class Menu extends Sprite {
 	}
 
 	public function selected(itemValue:*):void {
+		stage.focus = null;
 		// Run the clientFunction, if there is one. Otherwise, if itemValue is a function, run that.
 		if (clientFunction != null) {
 			clientFunction(itemValue);
