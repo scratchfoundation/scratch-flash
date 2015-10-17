@@ -96,7 +96,8 @@ public class ScratchRuntime {
 				count = 1;
 				videoSounds = [];
 				videoFrames=[];
-				Scratch.app.log(LogLevel.TRACK, "Project video started");
+				if (fullEditor) Scratch.app.log(LogLevel.TRACK, "Editor video started",{"projectID":app.projectID});
+				else Scratch.app.log(LogLevel.TRACK, "Project video started",{"projectID":app.projectID});
 			}
 			else if (tR>=2.5){
 				count=1
@@ -478,13 +479,14 @@ public class ScratchRuntime {
 		function saveFile():void {
 			var file:FileReference = new FileReference();
 			file.save(video, "movie.flv");
-			Scratch.app.log(LogLevel.TRACK, "Project video downloaded", {seconds: roundToTens(seconds), megabytes: roundToTens(video.length/1000000)});
+			Scratch.app.log(LogLevel.TRACK, "Video downloaded", {projectID: app.projectID, seconds: roundToTens(seconds), megabytes: roundToTens(video.length/1000000)});
 			var specEditor:SharingSpecEditor = new SharingSpecEditor();
 			DialogBox.close("Playing and Sharing Your Video",null,specEditor,"Back to Scratch");
-		    releaseVideo();
+		    releaseVideo(false);
         }
-		function releaseVideo():void {
-			video = null;
+		function releaseVideo(log:Boolean = true):void {
+			if (log) Scratch.app.log(LogLevel.TRACK, "Video canceled", {projectID: app.projectID, seconds: roundToTens(seconds), megabytes: roundToTens(video.length/1000000)});
+            video = null;
 		}
 		DialogBox.close("Video Finished!","To save, click the button below.",null,"Save and Download",app.stage,saveFile,releaseVideo,null,true);
 	}
