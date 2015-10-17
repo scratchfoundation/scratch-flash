@@ -96,8 +96,8 @@ public class ScratchRuntime {
 				count = 1;
 				videoSounds = [];
 				videoFrames=[];
-				if (fullEditor) Scratch.app.log(LogLevel.TRACK, "Editor video started",{"projectID":app.projectID});
-				else Scratch.app.log(LogLevel.TRACK, "Project video started",{"projectID":app.projectID});
+				if (fullEditor) Scratch.app.log(LogLevel.TRACK, "Editor video started",{projectID: app.projectID});
+				else Scratch.app.log(LogLevel.TRACK, "Project video started",{projectID: app.projectID});
 			}
 			else if (tR>=2.5){
 				count=1
