@@ -74,7 +74,7 @@ import watchers.ListWatcher;
 
 public class Scratch extends Sprite {
 	// Version
-	public static const versionString:String = 'v440.1';
+	public static const versionString:String = 'v440.3';
 	public static var app:Scratch; // static reference to the app, used for debugging
 
 	// Display modes
@@ -203,10 +203,6 @@ public class Scratch extends Sprite {
 		stage.addEventListener(MouseEvent.MOUSE_UP, gh.mouseUp);
 		stage.addEventListener(MouseEvent.MOUSE_WHEEL, gh.mouseWheel);
 		stage.addEventListener('rightClick', gh.rightMouseClick);
-		stage.addEventListener(KeyboardEvent.KEY_DOWN, function(evt:KeyboardEvent): void {
-			if (!evt.shiftKey && evt.charCode == 27) gh.escKeyDown();
-			else runtime.keyDown(evt);
-		});
 
 		stage.addEventListener(KeyboardEvent.KEY_UP, runtime.keyUp);
 		stage.addEventListener(KeyboardEvent.KEY_DOWN, keyDown); // to handle escape key
@@ -443,7 +439,7 @@ public class Scratch extends Sprite {
 	public function jsThrowError(s:String):void {
 		// Throw the given string as an error in the browser. Errors on the production site are logged.
 		var errorString:String = 'SWF Error: ' + s;
-		log(LogLevel.ERROR, errorString);
+		log(LogLevel.WARNING, errorString);
 		if (jsEnabled) {
 			externalCall('JSthrowError', null, errorString);
 		}
@@ -657,8 +653,12 @@ public class Scratch extends Sprite {
 	}
 
 	private function keyDown(evt:KeyboardEvent):void {
+		// Escape stops drag operations
+		if (!evt.shiftKey && evt.charCode == 27) {
+			gh.escKeyDown();
+		}
 		// Escape exists presentation mode.
-		if ((evt.charCode == 27) && stagePart.isInPresentationMode()) {
+		else if ((evt.charCode == 27) && stagePart.isInPresentationMode()) {
 			setPresentationMode(false);
 			stagePart.exitPresentationMode();
 		}
@@ -675,6 +675,9 @@ public class Scratch extends Sprite {
 			}
 			evt.preventDefault();
 			evt.stopImmediatePropagation();
+		}
+		else {
+			runtime.keyDown(evt);
 		}
 	}
 
