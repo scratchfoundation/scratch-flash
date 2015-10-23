@@ -6,6 +6,7 @@ import com.greensock.TweenLite;
 import com.greensock.easing.Linear;
 
 import flash.display.DisplayObject;
+import flash.display.Shape;
 import flash.display.Sprite;
 import flash.events.Event;
 import flash.geom.Point;
@@ -35,6 +36,7 @@ public class ArrangeableContents extends ScrollFrameContents {
 	private var h:uint = 100;
 	private var selectedItem:BaseItem;
 	private var editMode:Boolean;
+	private var sizeShape:Shape = new Shape();
 	public function ArrangeableContents(iStyle:ItemStyle, cStyle:ContainerStyle = null) {
 		super(false);
 		itemStyle = iStyle;
@@ -250,7 +252,7 @@ public class ArrangeableContents extends ScrollFrameContents {
 		var items:Vector.<BaseItem> = new Vector.<BaseItem>();
 		for (var i:int = 0; i < numChildren; i++) {
 			var item:BaseItem = getChildAt(i) as BaseItem;
-			if (item && item.visible && item.isInteractive()) items.push(item);
+			if (item && item.isInteractive()) items.push(item);
 		}
 		return items;
 	}
@@ -259,7 +261,7 @@ public class ArrangeableContents extends ScrollFrameContents {
 		var items:Vector.<BaseItem> = new Vector.<BaseItem>();
 		for (var i:int = 0; i < numChildren; i++) {
 			var item:BaseItem = getChildAt(i) as BaseItem;
-			if (item && item.visible && (includeUI || !item.isUI())) items.push(item);
+			if (item && (includeUI || !item.isUI())) items.push(item);
 		}
 		return items;
 	}
@@ -276,17 +278,9 @@ public class ArrangeableContents extends ScrollFrameContents {
 		return false;
 	}
 
-	private var animating:Boolean;
 	public function arrangeItems(animate:Boolean = false):void {
-		if (numChildren > 0) {
+		if (numChildren > 0)
 			allItems().forEach(getPlacementFunc(animate));
-			if (!animate)
-				refreshBackground();
-			else
-				setTimeout(refreshBackground, style.animationDuration * 1000);
-		}
-		else
-			refreshBackground();
 
 		if (contentChanged) {
 			if (orderChanged)
@@ -300,11 +294,6 @@ public class ArrangeableContents extends ScrollFrameContents {
 			dispatchEvent(new Event(CONTENT_ANIMATE));
 		}
 
-	}
-
-	protected function refreshBackground():void {
-		graphics.clear();
-		super.setWidthHeight(w, Math.max(h, height + style.padding * 2));
 	}
 
 	// Return a function that places items and iterates to the next position with each call
@@ -361,10 +350,35 @@ public class ArrangeableContents extends ScrollFrameContents {
 				y: y,
 				ease: Linear
 			});
+			setTimeout(dispatchContentChange, style.animationDuration);
 		}
 		else {
 			item.x = x;
 			item.y = y;
 		}
+	}
+
+	override public function getBounds(ref:DisplayObject):Rectangle {
+		if (!sizeShape.parent) addChild(sizeShape);
+		sizeShape.graphics.beginFill(0, 0);
+		var count:uint = allItems().length;
+		if (style.layout == ContainerStyle.TYPE_STRIP_HORIZONTAL) {
+			sizeShape.graphics.drawRect(0, 0, style.padding * 2 + count * itemStyle.frameWidth + (count-1) * style.itemPadding, h);
+		}
+		else if (style.layout == ContainerStyle.TYPE_STRIP_VERTICAL) {
+			sizeShape.graphics.drawRect(0, 0, w, style.padding * 2 + count * itemStyle.frameHeight + (count-1) * style.itemPadding);
+		}
+		else {
+			var realWidth:int = w - style.padding * 2;
+			var colCount:int = (realWidth + style.itemPadding) / (itemStyle.frameWidth + style.itemPadding);
+			var rowCount:int = Math.ceil(count / colCount);
+			sizeShape.graphics.drawRect(0, 0, w, style.padding * 2 + rowCount * itemStyle.frameHeight + (rowCount-1) * style.itemPadding);
+		}
+		sizeShape.graphics.endFill();
+
+		var rect:Rectangle =  sizeShape.getBounds(ref);
+		trace(rect);
+		sizeShape.graphics.clear();
+		return rect;
 	}
 }}
