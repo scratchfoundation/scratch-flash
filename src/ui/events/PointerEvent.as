@@ -58,7 +58,15 @@ public class PointerEvent extends MouseEvent {
 		if (e.type == 'pointerDown')
 			activePointers[e.pointerID] = true;
 
-		var target:DisplayObject = (e.type == 'pointerOver' || e.type == 'pointerOut') ? event.target : capturedPointers[e.pointerID];
+		var target:DisplayObject = capturedPointers[e.pointerID];
+		if (target) {
+			trace('Using capture target ' + target);
+		}
+
+		if (!target && (e.type == 'pointerOver' || e.type == 'pointerOut')) {
+			target = event.target;
+		}
+
 		if (!target) {
 			var objs:Array = stage.getObjectsUnderPoint(lastPt);
 			if (objs.length) {
@@ -104,8 +112,10 @@ public class PointerEvent extends MouseEvent {
 		if (!(pointerID in activePointers)) throw new Error('InvalidPointerId');
 		if (!elem || !elem.stage) throw new Error('InvalidStateError');
 
-		if (pointerID in activePointers)
+		if (pointerID in activePointers) {
 			capturedPointers[pointerID] = elem;
+			trace('set pointer capture for '+pointerID+' on '+elem);
+		}
 	}
 
 	static public function releasePointerCapture(elem:DisplayObject, pointerID:int):void {
