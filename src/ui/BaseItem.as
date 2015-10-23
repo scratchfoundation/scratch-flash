@@ -35,7 +35,7 @@ public class BaseItem extends Sprite implements IDraggable {
 		style = s;
 		data = itemData;
 		addText();
-		refresh();
+		refresh(true);
 		setupInteractions();
 	}
 
