@@ -46,7 +46,7 @@ import uiwidgets.*;
 
 import util.*;
 
-public class Watcher extends Sprite {
+public class Watcher extends Sprite implements ITool {
 
 	private static const decimalPlaces:uint = 6;
 	public static function formatValue(value:*):String {
@@ -416,7 +416,7 @@ public class Watcher extends Sprite {
 		if (mode != SLIDER_MODE) return;
 		var p:Point = globalToLocal(new Point(evt.stageX, evt.stageY));
 		if (p.y > 20) {
-			PointerEvent.setPointerCapture(this, evt.pointerID);
+			ToolMgr.activateTool(this, evt);
 			mouseHandler(evt);
 		}
 	}
@@ -442,6 +442,8 @@ public class Watcher extends Sprite {
 
 		return true;
 	}
+
+	public function shutdown():void {}
 
 	private function clickAt(localX:Number):void {
 		var sign:Number = (localX < knob.x) ? -1 : 1;
