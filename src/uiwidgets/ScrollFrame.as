@@ -191,6 +191,7 @@ public class ScrollFrame extends Sprite implements DropTarget {
 
 	private function contentChanged(e:Event):void {
 		contentDirty = true;
+		constrainScroll();
 		updateScrollbarVisibility();
 	}
 
@@ -286,8 +287,8 @@ public class ScrollFrame extends Sprite implements DropTarget {
 
 	public function resetContentSize():void {
 		var rect:Rectangle = contents.getBounds(this);
-		contentW = rect.width ? rect.right + contentPadding: 0;
-		contentH = rect.height ? rect.bottom + contentPadding : 0;
+		contentW = rect.width;
+		contentH = rect.height;
 		contentDirty = false;
 	}
 
