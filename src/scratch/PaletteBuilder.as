@@ -76,6 +76,11 @@ public class PaletteBuilder {
 			}
 		}
 		addBlocksForCategory(selectedCategory, catColor);
+
+		var padding:Shape = new Shape;
+		padding.graphics.drawRect(0,0,10,CSS.palPadding - CSS.palSpacing);
+		addItem(padding);
+
 		updateCheckboxes();
 	}
 
