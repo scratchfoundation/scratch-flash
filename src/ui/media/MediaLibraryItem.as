@@ -25,6 +25,7 @@
 
 package ui.media {
 import flash.display.*;
+import flash.events.Event;
 import flash.events.MouseEvent;
 import flash.net.URLLoader;
 import flash.text.*;
@@ -90,6 +91,8 @@ public class MediaLibraryItem extends Sprite {
 		unhighlight();
 		addEventListener(PointerEvent.TAP, click);
 		addEventListener(PointerEvent.DOUBLE_TAP, doubleClick);
+
+		addEventListener(PointerEvent.POINTER_DOWN, press);
 	}
 
 	public static function strings():Array { return ['Costumes:', 'Scripts:'] }
@@ -288,6 +291,19 @@ public class MediaLibraryItem extends Sprite {
 	// -----------------------------
 	// User interaction
 	//------------------------------
+	protected function press(evt:PointerEvent):void {
+		frame.alpha = 0.9;
+		parent.addEventListener(ScrollFrameContents.SCROLL_X, release, false, 0, true);
+		parent.addEventListener(ScrollFrameContents.SCROLL_Y, release, false, 0, true);
+		addEventListener(PointerEvent.POINTER_UP, release, false, 0, true);
+	}
+
+	private function release(evt:Event):void {
+		if (Math.abs(frame.alpha - 0.9) < 0.01) frame.alpha = 0;
+		parent.removeEventListener(ScrollFrameContents.SCROLL_X, release);
+		parent.removeEventListener(ScrollFrameContents.SCROLL_Y, release);
+		removeEventListener(PointerEvent.POINTER_UP, release);
+	}
 
 	public function click(evt:MouseEvent):void {
 		if (!evt.shiftKey) unhighlightAll();
