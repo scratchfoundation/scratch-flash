@@ -65,7 +65,14 @@ public class Log {
 
 		var extraString:String;
 		function getExtraString():String {
-			return extraString || (extraString = util.JSON.stringify(extraData));
+			if (!extraString) {
+				try {
+					extraString = util.JSON.stringify(extraData);
+				} catch (e:*) {
+					extraString = '<extraData stringify failed>';
+				}
+			}
+			return extraString;
 		}
 
 		if (Capabilities.isDebugger) {
@@ -73,12 +80,15 @@ public class Log {
 		}
 		if (Scratch.app.jsEnabled) {
 			if (echoToJS) {
-				Scratch.app.externalCall(
-						'console.log', null, getEntryString() + (extraData ? '\n' + getExtraString() : ''));
+				if (extraData) {
+					Scratch.app.externalCall('console.log', null, getEntryString(), extraData);
+				}
+				else {
+					Scratch.app.externalCall('console.log', null, getEntryString());
+				}
 			}
 			if (LogLevel.TRACK == severity) {
-				Scratch.app.externalCall(
-						'JStrackEvent', null, messageKey, extraData ? getExtraString() : null);
+				Scratch.app.externalCall('JStrackEvent', null, messageKey, extraData ? getExtraString() : null);
 			}
 		}
 		return entry;
