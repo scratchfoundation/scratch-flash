@@ -150,7 +150,7 @@ public class BlockIO {
 		// Return an array of zero or more arguments for the given command.
 		// Arguments may be literal values or reporter blocks (expressions).
 		var result:Array = [];
-		for (var i:int = 1; i < 1 + numArgs; i++) {
+		for (var i:int = 1; i <= numArgs; i++) {
 			var a:* = cmd[i];
 			if (a is Array) {
 				// block
