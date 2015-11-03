@@ -111,8 +111,8 @@ public class BlockIO {
 			b = new Block(label, spec[1], Specs.blockColor(spec[2]), spec[3]);
 		}
 
-		var args:Array = argsForCmd(cmd, b.rightToLeft);
-		var substacks:Array = substacksForCmd(cmd);
+		var args:Array = argsForCmd(cmd, b.args.length, b.rightToLeft);
+		var substacks:Array = substacksForCmd(cmd, b.args.length);
 		var hadSpriteRef:Boolean;
 		for (var i:int = 0; i < args.length; i++) {
 			var a:* = args[i];
@@ -146,15 +146,15 @@ public class BlockIO {
 		return [spec, undefinedBlockType, 0, op]; // no match found
 	}
 
-	private static function argsForCmd(cmd:Array, reverseArgs:Boolean):Array {
+	private static function argsForCmd(cmd:Array, numArgs:uint, reverseArgs:Boolean):Array {
 		// Return an array of zero or more arguments for the given command.
-		// Skip substacks. Arguments may be literal values or reporter blocks (expressions).
+		// Arguments may be literal values or reporter blocks (expressions).
 		var result:Array = [];
-		for (var i:int = 1; i < cmd.length; i++) {
+		for (var i:int = 1; i <= numArgs; i++) {
 			var a:* = cmd[i];
 			if (a is Array) {
-				// block (skip if substack)
-				if (!(a[0] is Array)) result.push(arrayToBlock(a, 'r'));
+				// block
+				result.push(arrayToBlock(a, 'r'));
 			} else {
 				// literal value
 				result.push(a);
@@ -164,14 +164,13 @@ public class BlockIO {
 		return result;
 	}
 
-	private static function substacksForCmd(cmd:Array):Array {
+	private static function substacksForCmd(cmd:Array, numArgs:uint):Array {
 		// Return an array of zero or more substacks for the given command.
 		var result:Array = [];
-		for (var i:int = 1; i < cmd.length; i++) {
+		for (var i:int = 1 + numArgs; i < cmd.length; i++) {
 			var a:* = cmd[i];
 			if (a == null) result.push(null); // null indicates an empty stack
-			// a is substack if (1) it is an array and (2) it's first element is an array (vs. a String)
-			if ((a is Array) && (a[0] is Array)) result.push(arrayToStack(a));
+			else result.push(arrayToStack(a));
 		}
 		return result;
 	}
