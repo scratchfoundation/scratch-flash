@@ -277,6 +277,7 @@ public class JSON {
 		if (value is Number) buf += isFinite(value) ? value : '0';
 		else if (value is Boolean) buf += value;
 		else if (value is String) buf += '"' + encodeString(value) + '"';
+		else if (value is ByteArray) buf += '"' + encodeString(value.toString()) + '"';
 		else if (value == null) buf += "null";
 		else if (value is Array) writeArray(value);
 		else if (value is BitmapData) buf += "null"; // bitmaps sometimes appear in old project info objects

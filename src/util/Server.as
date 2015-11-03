@@ -127,24 +127,15 @@ public class Server implements IServer {
 	// This will be called if callServer encounters an error, before whenDone(null) is called.
 	// The url and data parameters match those passed to callServer.
 	protected function onCallServerError(url:String, data:*, event:ErrorEvent):void {
-//			if(err.type != IOErrorEvent.IO_ERROR || url.indexOf('/backpack/') == -1) {
-//				if(data)
-//					Scratch.app.logMessage('Failed server request for '+url+' with data ['+data+']');
-//				else
-//					Scratch.app.logMessage('Failed server request for '+url);
-//			}
+		// Don't send this as an error since it seems to saturate our logging backend.
+		Scratch.app.log(LogLevel.WARNING, 'Failed server request', {event: event, url: url, data: data});
 		// We shouldn't have SecurityErrorEvents unless the crossdomain file failed to load
 		// Re-trying here should help project save failures but we'll need to add more code to re-try loading projects
 		if (event is SecurityErrorEvent) {
 			var urlPathStart:int = url.indexOf('/', 10);
 			var policyFileURL:String = url.substr(0, urlPathStart) + '/crossdomain.xml?cb=' + Math.random();
 			Security.loadPolicyFile(policyFileURL);
-			Scratch.app.log(LogLevel.WARNING, 'Reloading policy file', {url: policyFileURL});
-		}
-		if (data || url.indexOf('/set/') > -1) {
-			// TEMPORARY HOTFIX: Don't send this message since it seems to saturate our logging backend.
-			//Scratch.app.logMessage('Failed server request for '+url+' with data ['+data+']');
-			trace('Failed server request for ' + url + ' with data [' + data + ']');
+			Scratch.app.log(LogLevel.WARNING, 'Reloading policy file', {policy: policyFileURL, initiator: url});
 		}
 	}
 
