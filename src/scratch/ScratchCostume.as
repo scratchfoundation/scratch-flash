@@ -42,7 +42,13 @@ package scratch {
 	import flash.geom.*;
 	import flash.text.TextField;
 	import flash.utils.*;
-	import svgutils.*;
+
+import svgeditor.DrawProperties;
+import svgeditor.objs.SegmentationState;
+
+import svgeditor.tools.BitmapBackgroundTool;
+
+import svgutils.*;
 	import util.*;
 	import by.blooddy.crypto.MD5;
 	import by.blooddy.crypto.image.PNG24Encoder;
@@ -86,6 +92,8 @@ public class ScratchCostume {
 	public var undoList:Array = [];
 	public var undoListIndex:int;
 
+	private var segmentation:SegmentationState = new SegmentationState();
+
 	public function ScratchCostume(name:String, data:*, centerX:int = 99999, centerY:int = 99999, bmRes:int = 1) {
 		costumeName = name;
 		rotationCenterX = centerX;
@@ -120,6 +128,10 @@ public class ScratchCostume {
 	public function set textLayerData(data:ByteArray):void {
 		__textLayerData = data;
 		textLayerMD5 = null;
+	}
+
+	public function get segmentationState():SegmentationState{
+		return segmentation;
 	}
 
 	public static function scaleForScratch(bm:BitmapData):BitmapData {
@@ -588,7 +600,8 @@ public class ScratchCostume {
 		// the text layer bitmap only, rather than the entire composite image.)
 
 		if (oldComposite == null || baseLayerBitmap == null) return; // nothing to do
-		var diff:* = oldComposite.compare(baseLayerBitmap); // diff is 0 if oldComposite and baseLayerBitmap are identical
+		var diff:* = oldComposite.compare(baseLayerBitmap); // diff is 0 if oldComposite and baseLayerBitmap are
+                                                            // identical
 		if (diff is BitmapData) {
 			var stencil:BitmapData = new BitmapData(diff.width, diff.height, true, 0);
 			stencil.threshold(diff, diff.rect, new Point(0, 0), '!=', 0, 0xFF000000);

@@ -296,4 +296,14 @@ public class Resources {
 	[Embed(source='UI/paint/bitmapTextOff.png')] private static const bitmapTextOff:Class;
 	[Embed(source='UI/paint/bitmapTextOn.png')] private static const bitmapTextOn:Class;
 
+	[Embed(source='UI/paint/bg-marker-on.png')] private static const bgMarkerOn:Class;
+	[Embed(source='UI/paint/bg-marker-off.png')] private static const bgMarkerOff:Class;
+	[Embed(source='UI/paint/toggle-grayscale-on.png')] private static const toggleGreyscaleOn:Class;
+	[Embed(source='UI/paint/toggle-grayscale-off.png')] private static const toggleGreyscaleOff:Class;
+	[Embed(source='UI/paint/object-marker-on.png')] private static const objectMarkerOn:Class;
+	[Embed(source='UI/paint/object-marker-off.png')] private static const objectMarkerOff:Class;
+	[Embed(source='UI/paint/punch-it-on.png')] private static const applyMaskOn:Class;
+	[Embed(source='UI/paint/punch-it-off.png')] private static const applyMaskOff:Class;
+
+
 }}

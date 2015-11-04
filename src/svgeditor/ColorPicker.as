@@ -29,29 +29,29 @@ package svgeditor {
 
 public class ColorPicker extends Sprite {
 
-	private var editor:ImageEdit;
-	private var drawPropsUI:DrawPropertyUI;
-	private var gradientMode:Boolean;
+			private var editor:ImageEdit;
+			private var drawPropsUI:DrawPropertyUI;
+			private var gradientMode:Boolean;
 
-	// UI elements
-	private var palette:Sprite;
-	private var wheelSelector:Shape;
-	private var hsvColorPicker:Sprite;
-	private var paletteSwitchButton:Sprite;
-	private var primaryColorSwatch:Sprite;
-	private var secondaryColorSwatch:Sprite;
+			// UI elements
+			private var palette:Sprite;
+			private var wheelSelector:Shape;
+			private var hsvColorPicker:Sprite;
+			private var paletteSwitchButton:Sprite;
+			private var primaryColorSwatch:Sprite;
+			private var secondaryColorSwatch:Sprite;
 
-	// Color mapping
-	private var paletteDict:Dictionary;
-	private var paletteReverseDict:Dictionary;
+			// Color mapping
+			private var paletteDict:Dictionary;
+			private var paletteReverseDict:Dictionary;
 
-	// Selected and transparent color boxes in palette
-	private var selectedColor:Sprite;
-	private var transparentColor:Sprite;
+			// Selected and transparent color boxes in palette
+			private var selectedColor:Sprite;
+			private var transparentColor:Sprite;
 
-	public function ColorPicker(editor:ImageEdit, drawPropsUI:DrawPropertyUI) {
-		this.editor = editor;
-		this.drawPropsUI = drawPropsUI;
+			public function ColorPicker(editor:ImageEdit, drawPropsUI:DrawPropertyUI) {
+				this.editor = editor;
+				this.drawPropsUI = drawPropsUI;
 
 		makeColorSwatches();
 		makeEyeDropperButton();
