@@ -24,7 +24,10 @@ package svgeditor {
 	import flash.geom.*;
 	import flash.text.TextField;
 	import assets.Resources;
-	import translation.Translator;
+
+import svgeditor.tools.BitmapBackgroundTool;
+
+import translation.Translator;
 	import ui.parts.UIPart;
 	import uiwidgets.*;
 	import flash.text.TextFormat;
@@ -33,6 +36,7 @@ public class DrawPropertyUI extends Sprite {
 
 	public static const ONCHANGE:String = 'onchange';
 	public static const ONFONTCHANGE:String = 'onfontchange';
+	public static const ONGREYSCALECLICK:String = 'greyscale';
 
 	private var editor:ImageEdit;
 	private var currentValues:DrawProperties;
@@ -52,6 +56,12 @@ public class DrawPropertyUI extends Sprite {
 	private var fillBtnHorizontal:IconButton;
 	private var fillBtnVertical:IconButton;
 	private var fillBtnRadial:IconButton;
+
+	private var segmentUI:Sprite;
+	private var objectMarkerBtn:IconButton;
+	private var bgMarkerBtn:IconButton;
+	private var toggleGreyscaleBtn:IconButton;
+	private var punchSegmentationBtn:IconButton;
 
 	// Font UI
 	private var fontLabel:TextField;
@@ -90,6 +100,7 @@ public class DrawPropertyUI extends Sprite {
 		addChild(colorPicker = new ColorPicker(editor, this));
 		makeShapeUI();
 		makeStrokeUI();
+		makeSegmentationUI();
 		makeFillUI();
 		makeFontUI();
 		makeSmoothnessUI();
@@ -193,6 +204,14 @@ public class DrawPropertyUI extends Sprite {
 		shapeBtnHollow.setOn(!currentValues.filledShape);
 	}
 
+	public function toggleSegmentationUI(enabled:Boolean, tool:BitmapBackgroundTool):void{
+		segmentUI.visible=enabled;
+		updateSegmentationUI();
+		if(tool && enabled){
+				tool.addEventListener(BitmapBackgroundTool.GOTMASK, updateSegmentationUI, false, 0, true);
+		}
+	}
+
 	public function showSmoothnessUI(flag:Boolean, forDrawing:Boolean = true):void {
 		smoothnessUI.visible = flag;
 		if (flag) {
@@ -217,6 +236,7 @@ public class DrawPropertyUI extends Sprite {
 		if(!disableEvents) dispatchEvent(new Event(ONCHANGE));
 		if (fillUI.visible) updateFillUI();
 		if (shapeUI.visible) updateShapeUI();
+		if (segmentUI.visible) updateSegmentationUI();
 	}
 
 	private function makeFillUI():void {
@@ -480,6 +500,94 @@ public class DrawPropertyUI extends Sprite {
 		ttBg.graphics.beginFill(0xFF0000, 0);
 		ttBg.graphics.drawRect(r.x, r.y, r.width, r.height);
 		ttBg.graphics.endFill();
+	}
+
+	private function makeSegmentationUI():void {
+
+
+		segmentUI = new Sprite();
+		var iconSize:Point = new Point(42, 32);
+		objectMarkerBtn = new IconButton(editor.segmentationModeChanged, ImageEdit.makeToolButton("objectMarker", true, iconSize), ImageEdit.makeToolButton("objectMarker", false, iconSize), true);
+		objectMarkerBtn.name = 'object';
+		segmentUI.addChild(objectMarkerBtn);
+
+		bgMarkerBtn = new IconButton(editor.segmentationModeChanged, ImageEdit.makeToolButton("bgMarker", true, iconSize), ImageEdit.makeToolButton("bgMarker", false, iconSize), true);
+		bgMarkerBtn.name = 'background';
+		bgMarkerBtn.x = 42;
+		segmentUI.addChild(bgMarkerBtn);
+
+		toggleGreyscaleBtn = new IconButton(editor.toggleGreyscale, ImageEdit.makeToolButton("toggleGreyscale", true, iconSize), ImageEdit.makeToolButton("toggleGreyscale", false, iconSize), false);
+		toggleGreyscaleBtn.name = 'grey';
+		toggleGreyscaleBtn.x = 84;
+		segmentUI.addChild(toggleGreyscaleBtn);
+
+		punchSegmentationBtn = new IconButton(editor.applySegmentationMask, ImageEdit.makeToolButton("applyMask", true, iconSize), ImageEdit.makeToolButton("applyMask", false, iconSize), true);
+		punchSegmentationBtn.name = 'punch';
+		punchSegmentationBtn.x = 126;
+		punchSegmentationBtn.isMomentary = true;
+		segmentUI.addChild(punchSegmentationBtn);
+
+		var resetSegmentationBtn:Button = new Button("Start Over", editor.resetSegmentation);
+		resetSegmentationBtn.x = 100;
+		resetSegmentationBtn.y = 60;
+		segmentUI.addChild(resetSegmentationBtn);
+
+		segmentUI.x = 15;
+		segmentUI.y = 15;
+		segmentUI.visible = false;
+
+		updateSegmentationUI();
+		addChild(segmentUI);
+	}
+
+	private function updateSegmentationUI(e:Event=null):void{
+		if(editor.targetCostume){
+		updateStrokeWidthDisplay();
+		(editor.targetCostume.segmentationState.mode == 'object' ? objectMarkerBtn : bgMarkerBtn).setOn(true);
+		(editor.targetCostume.segmentationState.mode == 'object' ? bgMarkerBtn : objectMarkerBtn).setOn(false);
+		toggleGreyscaleBtn.setDisabled(!editor.targetCostume.segmentationState.lastMask, .5);
+		toggleGreyscaleBtn.setOn(editor.targetCostume.segmentationState.isGreyscale);
+		punchSegmentationBtn.setDisabled(!editor.targetCostume.segmentationState.lastMask, .5);
+
+		}
+	}
+
+	private function makeSegmentationIcon(action:String, isOn:Boolean):Sprite{
+
+		const buttonSize:Point = new Point(37, 25);
+		const iconW:int = 29;
+		const iconH:int = 17;
+
+		var colors:Array = [currentValues.color, currentValues.secondColor];
+		if (currentValues.alpha < 1) colors[0] = 0xFFFFFF;
+		if (currentValues.secondAlpha < 1) colors[1] = 0xFFFFFF;
+		var icon:Shape = new Shape();
+		var m:Matrix = new Matrix();
+		var g:Graphics = icon.graphics;
+
+		switch (action) {
+		case 'markObj':
+			m.createGradientBox(iconW, iconH, 0, 0, 0);
+			g.beginGradientFill(GradientType.LINEAR, colors, [1, 1], [0, 255], m);
+			break;
+		case 'markBg':
+			m.createGradientBox(iconW, iconH, 0, 0, 0);
+			g.beginGradientFill(GradientType.LINEAR, colors, [1, 1], [0, 255], m);
+			break;
+		case 'addBg':
+			m.createGradientBox(iconW, iconH, 0, 0, 0);
+			g.beginGradientFill(GradientType.LINEAR, colors, [1, 1], [0, 255], m);
+			break;
+		case 'rmObj':
+			m.createGradientBox(iconW, iconH, 0, 0, 0);
+			g.beginGradientFill(GradientType.LINEAR, colors, [1, 1], [0, 255], m);
+			break;
+		default:
+			g.beginFill(colors[0]);
+		}
+		g.drawRect(0, 0, iconW, iconH);
+		return ImageEdit.buttonFrame(icon, isOn, buttonSize);
+
 	}
 
 	private function updateStrokeWidthDisplay(ignore:* = null):void {

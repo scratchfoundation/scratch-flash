@@ -65,6 +65,10 @@ package svgeditor {
 		private var svgEditorMask:Shape;
 		private var currentCursor:String;
 
+		private function get segmentationTool():BitmapBackgroundTool{
+			return currentTool as BitmapBackgroundTool;
+		}
+
 		public function ImageEdit(app:Scratch, imagesPart:ImagesPart) {
 			this.app = app;
 			this.imagesPart = imagesPart;
@@ -352,7 +356,7 @@ package svgeditor {
 					if ('bitmapSelect' == toolName) iconName = 'bitmapSelect';
 					if ('ellipse' == toolName) iconName = 'bitmapEllipse';
 					if ('paintbucket' == toolName) iconName = 'bitmapPaintbucket';
-					if ('bitmapSegment' == toolName) iconName = 'bitmapPaintbucket';
+					if ('bitmapSegment' == toolName) iconName = 'applyMask';
 					if ('rect' == toolName) iconName = 'bitmapRect';
 					if ('text' == toolName) iconName = 'bitmapText';
 
@@ -569,6 +573,10 @@ package svgeditor {
 			var toolChanged:Boolean = true;//!currentTool || (immediateTools.indexOf(newMode) == -1);
 			var s:Selection = null;
 			if(currentTool) {
+				var tool:BitmapBackgroundTool = segmentationTool;
+				if(tool){
+					segmentationTool.restoreUnmarked();
+				}
 				if(toolMode == 'select' && newMode != 'select')
 					s = (currentTool as ObjectTransformer).getSelection();
 
@@ -609,7 +617,14 @@ package svgeditor {
 				case 'bitmapEraser': currentTool = new BitmapPencilTool(this, true); break;
 				case 'bitmapSelect': currentTool = new ObjectTransformer(this); break;
 				case 'paintbucket': currentTool = new PaintBucketTool(this); break;
-				case 'bitmapSegment': currentTool = new BitmapBackgroundTool(this); break;
+				case 'bitmapSegment':{
+					currentTool = new BitmapBackgroundTool(this);
+					if(fromButton){
+						segmentationTool.loadState();
+					}
+					refreshSegmentationMode();
+					break;
+				}
 			}
 
 			if(currentTool is SVGEditTool) {
@@ -653,6 +668,7 @@ package svgeditor {
 				drawPropsUI.toggleShapeUI(false);
 
 			drawPropsUI.toggleFillUI(newMode == 'vpaintbrush' || newMode == 'paintbucket');
+			drawPropsUI.toggleSegmentationUI(newMode == 'bitmapSegment', currentTool as BitmapBackgroundTool)
 			drawPropsUI.showSmoothnessUI(newMode == 'path');
 			if(newMode == 'path') {
 				var strokeWidth:Number = drawPropsUI.settings.strokeWidth;
@@ -724,6 +740,10 @@ package svgeditor {
 			isScene = forStage;
 			if (toolButtons['setCenter']) (toolButtons['setCenter'] as IconButton).setDisabled(isScene);
 			loadCostume(targetCostume);
+			if(segmentationTool){
+				segmentationTool.loadState();
+				refreshSegmentationMode();
+			}
 			if (imagesPart) imagesPart.refreshUndoButtons();
 
 			if(currentTool is SVGEditTool)
@@ -748,6 +768,7 @@ package svgeditor {
 			// Called before switching costumes. Should commit any operations that were in
 			// progress (e.g. entering text). Forcing a re-select of the current tool should work.
 			setToolMode(toolMode, true);
+
 		}
 
 	//---------------------------------
@@ -900,5 +921,49 @@ package svgeditor {
 			return toolsP;
 		}
 
+
+		public function segmentationModeChanged(ib:IconButton):void{
+			targetCostume.segmentationState.mode = ib.name;
+			refreshSegmentationMode();
+		}
+
+		private function refreshSegmentationMode():void{
+			if(segmentationTool){
+				var mode:String = targetCostume.segmentationState.mode;
+				if(mode == 'object'){
+					setCurrentColor(0xff0000, 1);
+				}
+				else if(mode =='background') {
+					setCurrentColor(0x0000ff, 1);
+				}
+				drawPropsUI.sendChangeEvent();
+			}
+		}
+
+		public function applySegmentationMask(ib:IconButton):void{
+			if(segmentationTool){
+				segmentationTool.commitMask();
+				drawPropsUI.sendChangeEvent()
+			}
+
+		}
+
+		public function toggleGreyscale(ib:IconButton):void{
+			if(segmentationTool){
+				segmentationTool.refreshGreyscale();
+				drawPropsUI.sendChangeEvent();
+			}
+		}
+
+		public function resetSegmentation():void{
+			if(segmentationTool){
+				targetCostume.segmentationState.reset();
+                segmentationTool.restoreUnmarked();
+				segmentationTool.loadState();
+                refreshSegmentationMode();
+				drawPropsUI.sendChangeEvent();
+			}
+
+		}
 	}
 }

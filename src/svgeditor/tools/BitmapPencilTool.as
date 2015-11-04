@@ -113,6 +113,10 @@ public class BitmapPencilTool extends SVGTool {
 
 	protected function mouseUp(evt:MouseEvent):void {
 		if (brush) editor.saveContent();
+		resetBrushes();
+	}
+
+	protected function resetBrushes():void{
 		brush = eraser = tempBM = null;
 	}
 
@@ -197,16 +201,17 @@ public class BitmapPencilTool extends SVGTool {
 		}
 	}
 
-	private function drawAtPoint(p:Point):void {
+	protected function drawAtPoint(p:Point, targetCanvas:BitmapData=null):void {
+		targetCanvas = targetCanvas || canvas;
 		// Stamp with the brush or erase with the eraser at the given point.
 		var isErasing:Boolean = eraseMode || (brushColor == 0);
 		if (isErasing && !editor.isScene) {
 			var r:Rectangle = new Rectangle(p.x, p.y, brushSize, brushSize);
 			tempBM.fillRect(tempBM.rect, 0);
-			tempBM.copyPixels(canvas, r, new Point(0, 0), eraser, new Point(0, 0), true);
-			canvas.copyPixels(tempBM, tempBM.rect, p);
+			tempBM.copyPixels(targetCanvas, r, new Point(0, 0), eraser, new Point(0, 0), true);
+			targetCanvas.copyPixels(tempBM, tempBM.rect, p);
 		} else {
-			canvas.copyPixels(brush, brush.rect, p, null, null, true);
+			targetCanvas.copyPixels(brush, brush.rect, p, null, null, true);
 		}
 	}
 
