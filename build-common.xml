@@ -16,7 +16,7 @@
             <local name="git.revision"/>
             <available file="@{repository}/.git" property="git.present"/>
             <exec executable="git" dir="@{repository}" outputproperty="git.revision" failifexecutionfails="false">
-                <arg line="describe --dirty --tags --always"/>
+                <arg line="describe --dirty --long --always"/>
             </exec>
             <condition property="@{outputproperty}" value="${git.revision}" else="unknown">
                 <and>

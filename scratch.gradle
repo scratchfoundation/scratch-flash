@@ -21,7 +21,7 @@ repositories {
 apply plugin: org.gradlefx.plugins.GradleFxPlugin
 
 ext.getCommitID = { repository ->
-    def gitProc = "git describe --dirty --tags --always".execute(null, file(repository))
+    def gitProc = "git describe --dirty --long --always".execute(null, file(repository))
     return gitProc.text.trim() ?: 'unknown'
 }
 
