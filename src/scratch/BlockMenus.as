@@ -206,7 +206,8 @@ public class BlockMenus implements DragClient {
 	private function attributeMenu(evt:MouseEvent):void {
 		var obj:*;
 		if (block && block.args[1]) {
-			obj = app.stagePane.objNamed(block.args[1].argValue);
+			if (block.args[1] is BlockArg) obj = app.stagePane.objNamed(block.args[1].argValue);
+			else obj = app.stagePane;  // this gives it the stage menus, but it's better than nothing
 		}
 		var attributes:Array = obj is ScratchStage ? stageAttributes : spriteAttributes;
 		var m:Menu = new Menu(setBlockArg, 'attribute');
