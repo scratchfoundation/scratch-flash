@@ -144,6 +144,15 @@ public class ScratchCostume {
 		return result;
 	}
 
+	public function scaleAndCenter(bm:BitmapData, isScene:Boolean):void{
+		var scale:Number = 2 / bitmapResolution;
+		var costumeBM:BitmapData = bitmapForEditor(isScene);
+		var destP:Point = isScene ?
+			new Point(0, 0) :
+			new Point(480 - (scale * rotationCenterX), 360 - (scale * rotationCenterY));
+		bm.copyPixels(costumeBM, costumeBM.rect, destP);
+	}
+
 	public static function isSVGData(data:ByteArray):Boolean {
 		if (!data || (data.length < 10)) return false;
 		var oldPosition:int = data.position;
