@@ -178,15 +178,15 @@ public class BitmapEdit extends ImageEdit {
 	protected override function loadCostume(c:ScratchCostume):void {
 		var bm:BitmapData = workArea.getBitmap().bitmapData;
 		bm.fillRect(bm.rect, bgColor()); // clear
-
+		c.scaleAndCenter(bm, isScene); //draw on this bm
 		var scale:Number = 2 / c.bitmapResolution;
-		var costumeBM:BitmapData = c.bitmapForEditor(isScene);
-		var destP:Point = isScene ?
-			new Point(0, 0) :
-			new Point(480 - (scale * c.rotationCenterX), 360 - (scale * c.rotationCenterY));
-		bm.copyPixels(costumeBM, costumeBM.rect, destP);
+//		var costumeBM:BitmapData = c.bitmapForEditor(isScene);
+//		var destP:Point = isScene ?
+//			new Point(0, 0) :
+//			new Point(480 - (scale * c.rotationCenterX), 360 - (scale * c.rotationCenterY));
+//		bm.copyPixels(costumeBM, costumeBM.rect, destP);
 		if (c.undoList.length == 0) {
-			recordForUndo(costumeBM, (scale * c.rotationCenterX), (scale * c.rotationCenterY));
+			recordForUndo(c.bitmapForEditor(isScene), (scale * c.rotationCenterX), (scale * c.rotationCenterY));
 		}
 	}
 

@@ -76,6 +76,7 @@ package svgeditor {
 			// Create the layers from back to front
 			toolsLayer = new Sprite();
 			workArea = new ImageCanvas(100, 100, this);
+
 			addChild(workArea);
 			addChild(toolsLayer);
 			addChild(uiLayer = new Sprite());
@@ -619,10 +620,7 @@ package svgeditor {
 				case 'paintbucket': currentTool = new PaintBucketTool(this); break;
 				case 'bitmapSegment':{
 					currentTool = new BitmapBackgroundTool(this);
-					if(fromButton){
-						segmentationTool.loadState();
-					}
-					refreshSegmentationMode();
+					segmentationTool.loadState();
 					break;
 				}
 			}
@@ -654,6 +652,11 @@ package svgeditor {
 				// Listen for any changes to the content
 				currentTool.addEventListener(Event.CHANGE, saveContent, false, 0, true);
 			}
+			//now that you've update toolMode, refresh
+			if(segmentationTool){
+				refreshSegmentationMode();
+			}
+
 			if (lastToolMode != '') highlightTool(lastToolMode);
 
 			// Make sure the tool selected is visible!
@@ -931,10 +934,10 @@ package svgeditor {
 			if(segmentationTool){
 				var mode:String = targetCostume.segmentationState.mode;
 				if(mode == 'object'){
-					setCurrentColor(0xff0000, 1);
+					setCurrentColor(0x0000ff, 1);
 				}
 				else if(mode =='background') {
-					setCurrentColor(0x0000ff, 1);
+					setCurrentColor(0xff0000, 1);
 				}
 				drawPropsUI.sendChangeEvent();
 			}
@@ -956,13 +959,12 @@ package svgeditor {
 		}
 
 		public function resetSegmentation():void{
-			if(segmentationTool){
-				targetCostume.segmentationState.reset();
+            if(segmentationTool){
+                targetCostume.segmentationState.reset();
                 segmentationTool.restoreUnmarked();
-				segmentationTool.loadState();
+                segmentationTool.loadState();
                 refreshSegmentationMode();
-				drawPropsUI.sendChangeEvent();
-			}
+            }
 
 		}
 	}

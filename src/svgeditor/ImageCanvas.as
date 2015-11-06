@@ -34,6 +34,7 @@ package svgeditor
 		private var visibleCanvas:Sprite;
 		private var contentLayer:Sprite;
 		private var bitmapLayer:Bitmap;
+		private var segmentationLayer:Bitmap;
 		private var visibleMask:Shape;
 
 		static public const canvasWidth:uint = 480;
@@ -104,6 +105,10 @@ package svgeditor
 			return bitmapLayer;
 		}
 
+        public function getSegmentation():Bitmap {
+			return segmentationLayer;
+		}
+
 		public function bitmapMousePoint():Point {
 			if (!bitmapLayer) return new Point(0, 0);
 			var bm:BitmapData = bitmapLayer.bitmapData;
@@ -143,6 +148,9 @@ package svgeditor
 				var bm:BitmapData = new BitmapData(960, 720, true, 0);
 				visibleArea.addChild(bitmapLayer = new Bitmap(bm));
 				bitmapLayer.scaleX = bitmapLayer.scaleY = 0.5;
+                visibleArea.addChild(segmentationLayer = new Bitmap(bm.clone()));
+                segmentationLayer.scaleX = segmentationLayer.scaleY = 0.5;
+
 			}
 
 			visibleArea.mask = visibleMask;

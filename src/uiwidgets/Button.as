@@ -28,6 +28,7 @@ public class Button extends Sprite {
 	private var labelOrIcon:DisplayObject;
 	private var color:* = CSS.titleBarColors;
 	private var minWidth:int = 50;
+	private var paddingX:Number = 5.5;
 	private var compact:Boolean;
 
 	private var action:Function; // takes no arguments
@@ -66,10 +67,15 @@ public class Button extends Sprite {
 		setMinWidthHeight(0, 0);
 	}
 
+    public function setWidth(val:int):void{
+        paddingX = (val - labelOrIcon.width)/2;
+        setMinWidthHeight(5, 5);
+    }
+
 	public function setMinWidthHeight(minW:int, minH:int):void {
 		if (labelOrIcon != null) {
 			if (labelOrIcon is TextField) {
-				minW = Math.max(minWidth, labelOrIcon.width + 11);
+				minW = Math.max(minWidth, labelOrIcon.width + paddingX * 2);
 				minH = compact ? 20 : 25;
 			} else {
 				minW = Math.max(minWidth, labelOrIcon.width + 12);
