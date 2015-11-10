@@ -136,7 +136,7 @@ public class ScratchRuntime {
 
 //----------
 	public function stopAll():void {
-		interp.stopAllThreads();
+		interp.stopAllThreads();  // this does clearAskPrompts now
 		clearRunFeedback();
 		app.stagePane.deleteClones();
 		cloneCount = 0;
@@ -148,7 +148,6 @@ public class ScratchRuntime {
 			s.clearFilters();
 			s.hideBubble();
 		}
-		clearAskPrompts();
 		app.removeLoadProgressBox();
 		motionDetector = null;
 	}
