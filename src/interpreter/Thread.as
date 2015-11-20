@@ -108,13 +108,9 @@ public class Thread {
 		return false;
 	}
 
-	public function returnFromProcedure():Boolean {
+	public function wantReturnFromProcedure():Boolean {
 		for (var i:int = sp - 1; i >= 0; i--) {
-			if (stack[i].block.op == Specs.CALL) {
-				sp = i + 1;
-				popState();
-				return true;
-			}
+			if (stack[i].block.op == Specs.CALL) return true;  // let it just return by itself
 		}
 		return false;
 	}
