@@ -110,7 +110,11 @@ public class Thread {
 
 	public function wantReturnFromProcedure():Boolean {
 		for (var i:int = sp - 1; i >= 0; i--) {
-			if (stack[i].block.op == Specs.CALL) return true;  // let it just return by itself
+			if (stack[i].block.op == Specs.CALL) {
+				// nullify all blocks up to caller, so they end through usual mechanism
+				while (i<sp-1) stack[++i].block = null;
+				return true;
+			}
 		}
 		return false;
 	}
