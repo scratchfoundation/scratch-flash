@@ -272,7 +272,6 @@ public class Interpreter {
 
 			while (activeThread.block == null) { // end of block sequence
 				if (!activeThread.popState()) return; // end of script
-				if (activeThread.block == null) continue;  // can end up null if procedure did "stop this script"
 				if ((activeThread.block == warpBlock) && activeThread.firstTime) { // end of outer warp block
 					clearWarpBlock();
 					activeThread.block = activeThread.block.nextBlock;
@@ -666,9 +665,7 @@ public class Interpreter {
 
 	private function primReturn(b:Block):void {
 		// Return from the innermost procedure. If not in a procedure, stop the thread.
-		if (activeThread.wantReturnFromProcedure()) {
-			activeThread.block = null;  // script will return 'naturally'
-		} else {
+		if (!activeThread.returnFromProcedure()) {
 			activeThread.stop();
 			yield = true;
 		}

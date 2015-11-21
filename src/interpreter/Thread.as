@@ -108,11 +108,11 @@ public class Thread {
 		return false;
 	}
 
-	public function wantReturnFromProcedure():Boolean {
+	public function returnFromProcedure():Boolean {
 		for (var i:int = sp - 1; i >= 0; i--) {
 			if (stack[i].block.op == Specs.CALL) {
-				// nullify all blocks up to caller, so they end through usual mechanism
-				while (i<sp-1) stack[++i].block = null;
+				sp = i + 1;  // 'hack' the stack pointer, but don't do the final popState here
+				block = null;  // make it do the final popState through the usual stepActiveThread mechanism
 				return true;
 			}
 		}
