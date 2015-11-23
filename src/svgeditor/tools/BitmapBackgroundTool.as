@@ -33,6 +33,7 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 	static private const SCALE_FACTOR:Number = .5;
 	static private var startedAsync:Boolean = false;
 
+    private var borderPoints:Vector.<Point>;
 	private var segmentationRequired:Boolean = false;
     private var workingScribble:BitmapData;
 
@@ -169,30 +170,80 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 		super.lastPoint = p;
 	}
 
-	override protected function drawAtPoint(p:Point, targetCanvas:BitmapData=null):void{
+	override protected function drawAtPoint(p:Point, targetCanvas:BitmapData=null, altBrush:BitmapData=null):void{
 		targetCanvas = targetCanvas || workingScribble;
-        super.drawAtPoint(p, scribbleBitmap);
-		super.drawAtPoint(p, targetCanvas);
+        super.drawAtPoint(p, scribbleBitmap, altBrush);
+		super.drawAtPoint(p, targetCanvas, altBrush);
 	}
+
+    private function pixelIdx(x:int, y:int):int{
+        if(x < 0 || x >= workingBitmap.width || y < 0 || y >= workingBitmap.height)
+        {
+            return -1;
+        }
+        return ((y * workingBitmap.width) + x) * 4;
+    }
+
 
 	private function applyPreviewMask(maskBytes:ByteArray):ByteArray{
 		var workingBytes:ByteArray = workingBitmap.clone().getPixels(workingBitmap.rect);
-		for(var i:int = 0; i<workingBytes.length/4; i++){
-			var pxID:int = i * 4;
-			if(maskBytes[pxID] == 0){
-				var average:int = (workingBytes[pxID+1] + workingBytes[pxID+2]+workingBytes[pxID+3])/3
-				workingBytes[pxID] = Math.min(workingBytes[pxID], 150);
-				workingBytes[pxID + 1] = average;
-				workingBytes[pxID + 2] = average;
-				workingBytes[pxID + 3] = average;
-			}
-			else{
-				workingBytes[pxID + 1] = Math.min(255, workingBytes[pxID + 1] + 100);
-			}
-		}
+        var w:int = workingBitmap.width * 4;
+        var h:int = workingBitmap.height * 4;
+        borderPoints = new Vector.<Point>();
+		for(var i:int =0; i < workingBytes.length/4; i++){
+			    var pxIdx:int = i * 4;
+                if(isBorderPx(maskBytes, pxIdx, w, h)){
+                    borderPoints.push(new Point(i % workingBitmap.width, Math.floor(i/workingBitmap.width)));
+                }
+	    		if(maskBytes[pxIdx] == 0){
+                    var average:int = (workingBytes[pxIdx + 1] + workingBytes[pxIdx + 2] + workingBytes[pxIdx + 3]) / 3
+                    workingBytes[pxIdx] = Math.min(workingBytes[pxIdx], 150);
+                    workingBytes[pxIdx + 1] = average;
+                    workingBytes[pxIdx + 2] = average;
+                    workingBytes[pxIdx + 3] = average;
+		    }
+        }
+
 		workingBytes.position = 0;
 		return workingBytes;
 	}
+
+    private function isBorderPx(maskBytes:ByteArray, pxIdx:int, w:int, h:int):Boolean{
+        var left:int = pxIdx - 4;
+        var right:int = pxIdx + 4;
+        var above:int =  pxIdx - (4 * workingBitmap.width)
+        var below:int = pxIdx + (4 * workingBitmap.width);
+        if(maskBytes[pxIdx] == 0){
+            if(pxIdx % w >= 4  && maskBytes[left] != 0){
+                return true;
+            }
+            if(pxIdx % w < w - 4 && maskBytes[right] != 0){
+                return true;
+            }
+            if(Math.floor(pxIdx / w) > 0 && maskBytes[above] != 0){
+                return true;
+            }
+            if(Math.floor(pxIdx / w) < h && maskBytes[below] != 0){
+                return true;
+            }
+        }
+        else{
+            if(pxIdx % w <= 4 || maskBytes[left] == 0){
+                return true;
+            }
+            if(pxIdx % w > w - 4 || maskBytes[right] == 0){
+                return true;
+            }
+            if(Math.floor(pxIdx / w) <= 0 || maskBytes[above] == 0){
+                return true;
+            }
+            if(Math.floor(pxIdx / w) >= h|| maskBytes[below] == 0){
+                return true;
+            }
+        }
+        return false;
+
+    }
 
 	private function applyMask(maskBytes:ByteArray):ByteArray{
 		var workingBytes:ByteArray = workingBitmap.clone().getPixels(workingBitmap.rect);
@@ -333,6 +384,9 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
         editor.getWorkArea().getSegmentation().visible = true;
         workingScribble.fillRect(workingScribble.rect, 0);
 		workingScribble.setPixels(workingBitmap.rect, applyPreviewMask(lastMask));
+        for each(var bp:Point in borderPoints){
+           super.drawAtPoint(bp, workingScribble, makeBrush(1, 0xFF00FF00));
+        }
 		isGreyscale = true;
 	}
 

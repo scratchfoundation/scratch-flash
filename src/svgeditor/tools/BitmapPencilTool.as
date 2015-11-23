@@ -201,7 +201,8 @@ public class BitmapPencilTool extends SVGTool {
 		}
 	}
 
-	protected function drawAtPoint(p:Point, targetCanvas:BitmapData=null):void {
+	protected function drawAtPoint(p:Point, targetCanvas:BitmapData=null, altBrush:BitmapData=null):void {
+		var currentBrush:BitmapData = altBrush || brush;
 		targetCanvas = targetCanvas || canvas;
 		// Stamp with the brush or erase with the eraser at the given point.
 		var isErasing:Boolean = eraseMode || (brushColor == 0);
@@ -211,11 +212,11 @@ public class BitmapPencilTool extends SVGTool {
 			tempBM.copyPixels(targetCanvas, r, new Point(0, 0), eraser, new Point(0, 0), true);
 			targetCanvas.copyPixels(tempBM, tempBM.rect, p);
 		} else {
-			targetCanvas.copyPixels(brush, brush.rect, p, null, null, true);
+			targetCanvas.copyPixels(currentBrush, currentBrush.rect, p, null, null, true);
 		}
 	}
 
-	private function makeBrush(diameter:int, c:int, bgColor:int = 0, outlineOnly:Boolean = false):BitmapData {
+	protected function makeBrush(diameter:int, c:int, bgColor:int = 0, outlineOnly:Boolean = false):BitmapData {
 		// Return a BitmapData object containing a round brush with the given diameter and colors.
 		if (outlineOnly) c = 0xFF303030;
 		var bm:BitmapData = new BitmapData(diameter, diameter, true, bgColor);
