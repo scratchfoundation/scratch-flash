@@ -202,7 +202,7 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 		var glowObject:BitmapData = workingBitmap.clone();
         applyMask(lastMask, glowObject);
         dest.setPixels(dest.rect, workingBytes);
-        glowObject.applyFilter(glowObject, glowObject.rect, new Point(0,0), new GlowFilter(16711680, 1.0, 6.0, 6.0, 2, 1, false, true));
+        glowObject.applyFilter(glowObject, glowObject.rect, new Point(0,0), new GlowFilter(0xffff4d, 1.0, 32.0, 32.0, 2, 1, false, true));
         dest.draw(glowObject);
 	}
 
