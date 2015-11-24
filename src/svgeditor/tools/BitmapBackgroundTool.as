@@ -2,19 +2,30 @@
  * Created by Mallory on 9/18/15.
  */
 package svgeditor.tools {
+
+import assets.Resources;
+
 import flash.display.Bitmap;
 import flash.display.BitmapData;
 import flash.display.BitmapData;
+import flash.display.Graphics;
 import flash.events.Event;
 import flash.events.MouseEvent;
+import flash.events.TimerEvent;
+import flash.filters.BitmapFilterType;
 import flash.filters.GlowFilter;
+import flash.filters.GradientGlowFilter;
 import flash.geom.Matrix;
 import flash.geom.Point;
 import flash.geom.Rectangle;
 import flash.ui.Mouse;
 import flash.utils.ByteArray;
+import flash.utils.Timer;
 
 import grabcut.CModule;
+
+import grabcut_2F_var_2F_folders_2F_6q_2F_k8f6r3f11mz7vklyw3c3_thc0000gn_2F_T_2F__2F_ccWVlzPy_2E_o_3A_2533C483_2D_20F9_2D_49F2_2D_96B7_2D_F80F19E622DF.__GLOBAL__D_objectColors;
+
 import scratch.ScratchCostume;
 
 import svgeditor.ImageCanvas;
@@ -28,7 +39,6 @@ import util.Base64Encoder;
 
 public class BitmapBackgroundTool extends BitmapPencilTool{
 
-
 	static public const GOTMASK:String='got_mask';
 
 	static private const SCALE_FACTOR:Number = .5;
@@ -37,6 +47,12 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
     private var borderPoints:Vector.<Point>;
 	private var segmentationRequired:Boolean = false;
     private var workingScribble:BitmapData;
+
+
+    private var timer:Timer = new Timer(100);
+    private var previewFrameBackgrounds:Vector.<BitmapData> = new Vector.<BitmapData>();
+    private var previewFrameIdx:int = 0;
+    private var previewFrames:Vector.<BitmapData>;
 
 	private function get isObjectMode():Boolean{
 		return editor.targetCostume.segmentationState.mode == 'object';
@@ -111,8 +127,24 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 			CModule.startAsync();
 			startedAsync=true;
 		}
+        previewFrameBackgrounds.push(
+            Resources.createBmp("first").bitmapData,
+            Resources.createBmp("second").bitmapData,
+            Resources.createBmp("third").bitmapData,
+            Resources.createBmp("fourth").bitmapData,
+            Resources.createBmp("fifth").bitmapData,
+            Resources.createBmp("sixth").bitmapData,
+            Resources.createBmp("seventh").bitmapData,
+            Resources.createBmp("eighth").bitmapData
+        )
+        timer.addEventListener("timer", nextPreviewFrame);
 		super(editor, false)
 	}
+
+    private function nextPreviewFrame(event:TimerEvent):void{
+        previewFrameIdx = (previewFrameIdx + 1) % previewFrameBackgrounds.length;
+        workingScribble.copyPixels(previewFrames[previewFrameIdx], previewFrames[previewFrameIdx].rect, new Point(0, 0));
+    }
 
 	public function loadState():void{
         workingScribble = editor.getWorkArea().getSegmentation().bitmapData;
@@ -139,6 +171,7 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
     protected override function shutdown():void{
         workingScribble.fillRect(workingScribble.rect, 0);
         editor.getWorkArea().visible = true;
+        timer.stop();
         super.shutdown();
     }
 
@@ -149,6 +182,13 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 		}
 		resetBrushes();
 	}
+
+    override protected function mouseDown(evt:MouseEvent):void{
+        if (editor.getWorkArea().clickInBitmap(evt.stageX, evt.stageY)){
+            timer.stop();
+        }
+        super.mouseDown(evt);
+    }
 
 	override protected function set lastPoint(p:Point):void{
 		if(p != null){
@@ -198,12 +238,21 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
                     workingBytes[pxIdx + 3] = average;
 		    }
         }
+
 		workingBytes.position = 0;
 		var glowObject:BitmapData = workingBitmap.clone();
         applyMask(lastMask, glowObject);
         dest.setPixels(dest.rect, workingBytes);
-        glowObject.applyFilter(glowObject, glowObject.rect, new Point(0,0), new GlowFilter(0xffff4d, 1.0, 32.0, 32.0, 2, 1, false, true));
-        dest.draw(glowObject);
+        previewFrames = new Vector.<BitmapData>();
+        previewFrameIdx = 0;
+        glowObject.applyFilter(glowObject, glowObject.rect, new Point(0,0), new GlowFilter(0xffff4d, 1.0, 4.0, 4.0, 255, 1, false, true));
+        for each(var bg:BitmapData in previewFrameBackgrounds){
+            var frame:BitmapData = dest.clone();
+            glowObject.copyPixels(bg, bg.rect, new Point(0, 0), glowObject);
+            frame.draw(glowObject);
+            previewFrames.push(frame);
+        }
+        dest.copyPixels(previewFrames[previewFrameIdx], previewFrames[previewFrameIdx].rect, new Point(0, 0));
 	}
 
     private function isBorderPx(maskBytes:ByteArray, pxIdx:int, w:int, h:int):Boolean{
@@ -370,6 +419,7 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 	}
 
 	private function setFullColor():void{
+        timer.stop();
         workingScribble.fillRect(workingScribble.rect, 0);
         workingScribble.draw(scribbleBitmap);
 		editor.getWorkArea().getBitmap().visible = true;
@@ -382,6 +432,7 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
         editor.getWorkArea().getSegmentation().visible = true;
         workingScribble.fillRect(workingScribble.rect, 0);
 		applyPreviewMask(lastMask, workingScribble);
+        timer.start();
 		isGreyscale = true;
 	}
 
@@ -392,6 +443,7 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 
 	public function commitMask():void{
 		if(lastMask) {
+            timer.stop();
             editor.getWorkArea().getBitmap().visible = true;
 			applyMask(lastMask, workingBitmap);
 			workingScribble.fillRect(scribbleBitmap.rect, 0x00000000);
