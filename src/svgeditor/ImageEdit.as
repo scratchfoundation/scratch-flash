@@ -946,7 +946,7 @@ package svgeditor {
 		public function applySegmentationMask(ib:IconButton):void{
 			if(segmentationTool){
 				segmentationTool.commitMask();
-				drawPropsUI.sendChangeEvent()
+                refreshSegmentationMode();
 			}
 
 		}

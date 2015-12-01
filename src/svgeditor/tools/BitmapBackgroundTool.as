@@ -22,22 +22,31 @@ import flash.ui.Mouse;
 import flash.utils.ByteArray;
 import flash.utils.Timer;
 
+import grabcut.vfs.ISpecialFile
 import grabcut.CModule;
-
-import grabcut_2F_var_2F_folders_2F_6q_2F_k8f6r3f11mz7vklyw3c3_thc0000gn_2F_T_2F__2F_ccWVlzPy_2E_o_3A_2533C483_2D_20F9_2D_49F2_2D_96B7_2D_F80F19E622DF.__GLOBAL__D_objectColors;
 
 import scratch.ScratchCostume;
 
 import svgeditor.ImageCanvas;
 
 import svgeditor.ImageEdit;
+import svgeditor.objs.FlasccConsole;
 import svgeditor.objs.SegmentationState;
 
 import uiwidgets.EditableLabel;
 
 import util.Base64Encoder;
 
+
+import flash.display.Sprite;
+import flash.text.TextField;
+import flash.events.Event;
+
+
+
+
 public class BitmapBackgroundTool extends BitmapPencilTool{
+
 
 	static public const GOTMASK:String='got_mask';
 
@@ -124,7 +133,11 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 
 	public function BitmapBackgroundTool(editor:ImageEdit){
 		if(!startedAsync){
+//            var console:FlasccConsole = new FlasccConsole();
+//			CModule.vfs.console = console;
+//            console.SampleApplication();
 			CModule.startAsync();
+//            editor.addChild(console);
 			startedAsync=true;
 		}
         previewFrameBackgrounds.push(
@@ -437,6 +450,7 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 	}
 
 	public function restoreUnmarked():void{
+        timer.stop();
         workingScribble.fillRect(workingScribble.rect, 0);
         editor.getWorkArea().getBitmap().visible = true;
 	}
@@ -446,10 +460,12 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
             timer.stop();
             editor.getWorkArea().getBitmap().visible = true;
 			applyMask(lastMask, workingBitmap);
-			workingScribble.fillRect(scribbleBitmap.rect, 0x00000000);
-            scribbleBitmap.fillRect(scribbleBitmap.rect, 0x00000000);
-			lastMask = null;
-			isGreyscale = false;
+            editor.targetCostume.segmentationState.reset();
+            loadState();
+	///		workingScribble.fillRect(scribbleBitmap.rect, 0x00000000);
+    ///        scribbleBitmap.fillRect(scribbleBitmap.rect, 0x00000000);
+	///		lastMask = null;
+	///		isGreyscale = false;
 			editor.saveContent();
 		}
 	}
