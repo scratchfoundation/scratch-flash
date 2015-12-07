@@ -91,6 +91,8 @@ public class Scratch extends Sprite {
 	public var isExtensionDevMode:Boolean = false; // If true, run in extension development mode (as on ScratchX)
 	public var isMicroworld:Boolean = false;
 
+	public var presentationScale:Number;
+	
 	// Runtime
 	public var runtime:ScratchRuntime;
 	public var interp:Interpreter;
@@ -681,7 +683,7 @@ public class Scratch extends Sprite {
 
 	private function setSmallStageMode(flag:Boolean):void {
 		stageIsContracted = flag;
-		stagePart.refresh();
+		stagePart.updateRecordingTools();
 		fixLayout();
 		libraryPart.refresh();
 		tabsPart.refresh();
@@ -880,6 +882,18 @@ public class Scratch extends Sprite {
 
 		updateLayout(w, h);
 	}
+	
+	public function updateRecordingTools(t:Number):void {
+		stagePart.updateRecordingTools(t);
+	}
+	
+	public function removeRecordingTools():void {
+		stagePart.removeRecordingTools();
+	}
+	
+	public function refreshStagePart():void {
+		stagePart.refresh();
+	}
 
 	protected function updateLayout(w:int, h:int):void {
 		if (!isMicroworld) {
@@ -908,6 +922,7 @@ public class Scratch extends Sprite {
 			scale = Math.max(0.01, scale);
 			var scaledW:int = Math.floor((scale * 480) / 4) * 4; // round down to a multiple of 4
 			scale = scaledW / 480;
+			presentationScale = scale;
 			var playerW:Number = (scale * 480) + extraW;
 			var playerH:Number = (scale * 360) + extraH;
 			stagePart.setWidthHeight(playerW, playerH, scale);
@@ -1035,10 +1050,19 @@ public class Scratch extends Sprite {
 
 		m.showOnStage(stage, b.x, topBarPart.bottom() - 1);
 	}
+	
+	public function stopVideo(b:*):void {
+		runtime.stopVideo();
+	}
 
 	protected function addFileMenuItems(b:*, m:Menu):void {
 		m.addItem('Load Project', runtime.selectProjectFile);
 		m.addItem('Save Project', exportProjectToFile);
+		if (runtime.recording || runtime.ready==ReadyLabel.COUNTDOWN || runtime.ready==ReadyLabel.READY) {
+			m.addItem('Stop Video', runtime.stopVideo);
+		} else {
+			m.addItem('Record Project Video', runtime.exportToVideo);
+		}
 		if (canUndoRevert()) {
 			m.addLine();
 			m.addItem('Undo Revert', undoRevert);

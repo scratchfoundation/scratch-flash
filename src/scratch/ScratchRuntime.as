@@ -24,6 +24,8 @@ package scratch {
 import flash.display.*;
 import flash.events.*;
 import flash.geom.Rectangle;
+import flash.geom.Point;
+import flash.geom.Matrix;
 import flash.media.*;
 import flash.net.*;
 import flash.system.System;
@@ -35,11 +37,17 @@ import interpreter.*;
 import primitives.VideoMotionPrims;
 import sound.ScratchSoundPlayer;
 import translation.*;
+import assets.Resources;
 import ui.media.MediaInfo;
 import ui.BlockPalette;
 import uiwidgets.DialogBox;
+import ui.RecordingSpecEditor;
+import ui.SharingSpecEditor;
 import util.*;
 import watchers.*;
+import logging.LogLevel;
+import scratch.ReadyLabel;
+import leelib.util.flvEncoder.*;
 
 public class ScratchRuntime {
 
@@ -77,8 +85,68 @@ public class ScratchRuntime {
 			saveAfterInstall = false;
 			return;
 		}
-
-		if (recording) saveFrame(); // Recording a YouTube video?  Old / Unused currently.
+		if (ready==ReadyLabel.COUNTDOWN) {
+			var tR:Number = getTimer()*.001-videoSeconds;
+			while (t>videoSounds.length/videoFramerate+1/videoFramerate) {
+				saveSound();
+			}
+			var count:int = 3;
+			if (tR>=3.75){
+				ready = ReadyLabel.READY;
+				count = 1;
+				videoSounds = [];
+				videoFrames=[];
+				if (fullEditor) Scratch.app.log(LogLevel.TRACK, "Editor video started",{projectID: app.projectID});
+				else Scratch.app.log(LogLevel.TRACK, "Project video started",{projectID: app.projectID});
+			}
+			else if (tR>=2.5){
+				count=1
+			}
+			else if (tR>=1.25 && micReady) {
+				count=2;
+			}
+			else if (tR>=1.25) {
+				videoSeconds+=tR;
+			}
+			else {
+				app.refreshStagePart();
+			}
+		}
+		if (recording) { // Recording a YouTube video?
+			var t:Number = getTimer()*.001-videoSeconds;
+			//If, based on time and framerate, the current frame needs to be in the video, capture the frame.
+			//Will always be true if framerate is 30, as every frame is captured.
+			if (t>videoSounds.length/videoFramerate+1/videoFramerate) {
+				if (fullEditor) app.removeRecordingTools();
+				//saves visual frame to frames and sound clip to sounds
+				saveFrame();
+				app.updateRecordingTools(t);
+			}
+			else {
+				//Will only run in low quality or full editor mode, when this frame isn't captured for video
+				//To reduce lag in low quality mode and full editor mode, video frames are only written
+				//to the file if a new frame isn't being captured and the total number of frames captured so far
+				//is divisible by 2 or 3.
+				//Some frames will be written to the file after recording has finished.
+				app.updateRecordingTools(t);
+				if (videoFrames.length>videoPosition && (videoFrames.length%2==0 || videoFrames.length%3==0)) {
+					baFlvEncoder.addFrame(videoFrames[videoPosition],videoSounds[videoPosition]);
+					//forget about frame just written
+					videoFrames[videoPosition]=null;
+					videoSounds[videoPosition]=null;
+					videoPosition++;
+				}
+			}
+			//For a high quality video, every frame is immediately written to the video file
+			//after being captured, to reduce memory.
+			if (videoFrames.length>videoPosition && videoFramerate==30.0) {
+				baFlvEncoder.addFrame(videoFrames[videoPosition],videoSounds[videoPosition]);
+				//forget about frame just written
+				videoFrames[videoPosition]=null;
+				videoSounds[videoPosition]=null;
+				videoPosition++;
+			}
+		}
 		app.extensionManager.step();
 		if (motionDetector) motionDetector.step(); // Video motion detection
 
@@ -89,49 +157,342 @@ public class ScratchRuntime {
 		processEdgeTriggeredHats();
 		interp.stepThreads();
 		app.stagePane.commitPenStrokes();
-	}
-
-//-------- recording test ---------
-	public var recording:Boolean;
-	private var frames:Array = [];
-
-	private function saveFrame():void {
-		var f:BitmapData = new BitmapData(480, 360);
-		f.draw(app.stagePane);
-		frames.push(f);
-		if ((frames.length % 100) == 0) {
-			trace('frames: ' + frames.length + ' mem: ' + System.totalMemory);
+		
+		if (ready==ReadyLabel.COUNTDOWN || ready==ReadyLabel.READY) {
+			app.stagePane.countdown(count);
 		}
 	}
 
-	public function startRecording():void {
+//-------- recording video code ---------
+	public var recording:Boolean;
+	private var videoFrames:Array = [];
+	private var videoSounds:Array = [];
+	private var videoTimer:Timer;
+	private var baFlvEncoder:ByteArrayFlvEncoder;
+	private var videoPosition:int;
+	private var videoSeconds:Number;
+	private var videoAlreadyDone:int;
+	
+	private var projectSound:Boolean;
+	private var micSound:Boolean;
+	private var showCursor:Boolean;
+	public var fullEditor:Boolean;
+	private var videoFramerate:Number;
+	private var videoWidth:int;
+	private var videoHeight:int;
+	public var ready:int=ReadyLabel.NOT_READY;
+	
+	private var micBytes:ByteArray;
+	private var micPosition:int = 0;
+	private var mic:Microphone;
+	private var micReady:Boolean;
+	
+	private var timeout:int;
+	
+	private function saveFrame():void {
+		saveSound();
+		var t:Number = getTimer()*.001-videoSeconds;
+		while (t>videoSounds.length/videoFramerate+1/videoFramerate) {
+			saveSound();
+		}
+		if (showCursor) var cursor:DisplayObject = Resources.createDO('videoCursor');
+		if (showCursor && app.gh.mouseIsDown) var circle:Bitmap = Resources.createBmp('mouseCircle');
+		var f:BitmapData;
+		if (fullEditor) {
+			var aWidth:int = app.stage.stageWidth;
+			var aHeight:int = app.stage.stageHeight;
+			if (!Scratch.app.isIn3D) {
+				if (app.stagePane.videoImage) app.stagePane.videoImage.visible = false;
+			}
+			if (videoWidth!=aWidth || videoHeight!=aHeight) {
+				var scale:Number = 1.0;
+				scale = videoWidth/aWidth > videoHeight/aHeight ? videoHeight/aHeight : videoWidth/aWidth;
+				var m:Matrix = new Matrix();
+				m.scale(scale,scale);
+				f = new BitmapData(videoWidth,videoHeight,false);
+				f.draw(app.stage,m,null, null, new Rectangle(0,0,aWidth*scale,aHeight*scale),false);
+				if(Scratch.app.isIn3D) {
+					var scaled:Number = scale;
+					if (!app.editMode) {
+						scaled *= app.presentationScale;
+					}
+					else if (app.stageIsContracted) {
+						scaled*=0.5;
+					}
+					var d:BitmapData = app.stagePane.saveScreenData();
+					f.draw(d, new Matrix( scaled, 0, 0, scaled, app.stagePane.localToGlobal(new Point(0, 0)).x*scale, app.stagePane.localToGlobal(new Point(0, 0)).y*scale));
+				}
+				else if (app.stagePane.videoImage) app.stagePane.videoImage.visible = true;
+				if (showCursor && app.gh.mouseIsDown) {
+					f.draw(circle,new Matrix(scale,0,0,scale,(app.stage.mouseX-circle.width/2.0)*scale,(app.stage.mouseY-circle.height/2.0)*scale));
+				}
+				if (showCursor) {
+					f.draw(cursor,new Matrix(scale,0,0,scale,app.stage.mouseX*scale,app.stage.mouseY*scale));
+				}
+			}
+			else {
+				f = new BitmapData(videoWidth,videoHeight,false);
+				f.draw(app.stage);
+				if(Scratch.app.isIn3D) {
+					var scaler:Number = 1;
+					if (!app.editMode) {
+						scaler *= app.presentationScale;
+					}
+					else if (app.stageIsContracted) {
+						scaler*=0.5;
+					}
+					var e:BitmapData = app.stagePane.saveScreenData();
+					if (scaler==1) f.copyPixels(e, e.rect,new Point(app.stagePane.localToGlobal(new Point(0, 0)).x, app.stagePane.localToGlobal(new Point(0, 0)).y));
+					else f.draw(e, new Matrix( scaler, 0, 0, scaler, app.stagePane.localToGlobal(new Point(0, 0)).x, app.stagePane.localToGlobal(new Point(0, 0)).y));
+				}
+				else if (app.stagePane.videoImage) app.stagePane.videoImage.visible = true;
+				if (showCursor && app.gh.mouseIsDown) {
+					f.copyPixels(circle.bitmapData,circle.bitmapData.rect,new Point(app.stage.mouseX-circle.width/2.0,app.stage.mouseY-circle.height/2.0));
+				}
+				if (showCursor) {
+					f.draw(cursor,new Matrix(1,0,0,1,app.stage.mouseX,app.stage.mouseY));
+				}
+			}
+		}
+		else {
+			f = app.stagePane.saveScreenData();
+			if (showCursor && app.gh.mouseIsDown) {
+				f.copyPixels(circle.bitmapData,circle.bitmapData.rect,new Point(app.stagePane.mouseX-circle.width/2.0,app.stagePane.mouseY-circle.height/2.0));
+			}
+			if (showCursor) {
+				f.draw(cursor,new Matrix(1,0,0,1,app.stagePane.scratchMouseX()+240,-app.stagePane.scratchMouseY()+180));
+			}
+		}
+		while (videoSounds.length>videoFrames.length) {
+			videoFrames.push(f);
+		}
+	}
+	
+	private function saveSound():void {
+		var floats:Array = [];
+		if (micSound && micBytes.length>0) {
+			micBytes.position=micPosition;
+			while (micBytes.length>micBytes.position && floats.length<=baFlvEncoder.audioFrameSize/4) {
+				floats.push(micBytes.readFloat());
+			}
+			micPosition = micBytes.position;
+			micBytes.position = micBytes.length;
+		}
+		while (floats.length<=baFlvEncoder.audioFrameSize/4) {
+			floats.push(0);
+		}
+		if (projectSound) {
+			for (var p:int = 0; p<ScratchSoundPlayer.activeSounds.length; p++) {
+				var index:int = 0;
+				var d:ScratchSoundPlayer = ScratchSoundPlayer.activeSounds[p];
+				d.dataBytes.position = d.readPosition;
+				while (index<floats.length && d.dataBytes.position<d.dataBytes.length) {
+					floats[index]+=d.dataBytes.readFloat();
+					if (p==ScratchSoundPlayer.activeSounds.length-1) {
+						if (floats[index]<-1 || floats[index]>1) {
+							var current1:int = p+1+int(micSound);
+							floats[index]=floats[index]/current1;
+						}
+					}
+					index++;
+				}
+				d.readPosition=d.dataBytes.position;
+				d.dataBytes.position=d.dataBytes.length;
+			}
+		}
+		var combinedStream:ByteArray = new ByteArray();
+		for each (var n:Number in floats) {
+			combinedStream.writeFloat(n);
+		}
+		floats = null;
+		videoSounds.push(combinedStream);
+		combinedStream = null;
+	}
+	
+	private function micSampleDataHandler(event:SampleDataEvent):void 
+	{ 
+	    while(event.data.bytesAvailable) 
+	    {
+	        var sample:Number = event.data.readFloat(); 
+	        micBytes.writeFloat(sample);  
+	        micBytes.writeFloat(sample);
+	    } 
+	} 
+	
+	public function startVideo(editor:RecordingSpecEditor):void {
+		projectSound = editor.soundFlag();
+		micSound = editor.microphoneFlag();
+		fullEditor = editor.editorFlag();
+		showCursor = editor.cursorFlag();
+		videoFramerate = (!editor.fifteenFlag()) ? 15.0 : 30.0;
+		if (fullEditor) {
+			videoFramerate=10.0;
+		}
+		micReady = true;
+		if (micSound) {
+			mic = Microphone.getMicrophone(); 
+			mic.setSilenceLevel(0);
+			mic.gain = editor.getMicVolume(); 
+			mic.rate = 44; 
+			micReady=false;
+		}
+		if (fullEditor) {
+			if (app.stage.stageWidth<960 && app.stage.stageHeight<640) {
+				videoWidth = app.stage.stageWidth;
+				videoHeight = app.stage.stageHeight;
+			}
+			else {
+				var ratio:Number = app.stage.stageWidth/app.stage.stageHeight;
+				if (960/ratio<640) {
+					videoWidth = 960;
+					videoHeight = 960/ratio;
+				}
+				else {
+					videoWidth = 640*ratio;
+					videoHeight = 640;
+				}
+			}
+		}
+		else {
+			videoWidth = 480;
+			videoHeight = 360;
+		}
+		ready=ReadyLabel.COUNTDOWN;
+		videoSeconds = getTimer()*.001;
+		baFlvEncoder = new ByteArrayFlvEncoder(videoFramerate);
+		baFlvEncoder.setVideoProperties(videoWidth, videoHeight);
+		baFlvEncoder.setAudioProperties(FlvEncoder.SAMPLERATE_44KHZ, true, true, true);
+		baFlvEncoder.start();
+		waitAndStart();
+	}
+	
+	public function exportToVideo():void {
+		var specEditor:RecordingSpecEditor = new RecordingSpecEditor();
+		function startCountdown():void {
+			startVideo(specEditor);
+		}
+		DialogBox.close("Record Project Video",null,specEditor,"Start",app.stage,startCountdown);
+	}
+	
+	public function stopVideo():void {
+		if (recording) videoTimer.dispatchEvent(new TimerEvent(TimerEvent.TIMER));
+		else if (ready==ReadyLabel.COUNTDOWN || ReadyLabel.READY) {
+			ready=ReadyLabel.NOT_READY;
+			app.refreshStagePart();
+			app.stagePane.countdown(0);
+		}
+	}
+	
+	public function finishVideoExport(event:TimerEvent):void {
+		stopRecording();
+		stopAll();
+		app.addLoadProgressBox("Writing video to file...");
+		videoAlreadyDone = videoPosition;
+		clearTimeout(timeout);
+		timeout = setTimeout(saveRecording,1);
+	}
+	
+	public function waitAndStart():void {
+		if (!micReady && !mic.hasEventListener(StatusEvent.STATUS)) {
+			micBytes = new ByteArray();
+			mic.addEventListener(SampleDataEvent.SAMPLE_DATA, micSampleDataHandler);
+			micReady=true;
+		}
+		if (ready==ReadyLabel.COUNTDOWN || ready==ReadyLabel.NOT_READY) {
+			if (ready==ReadyLabel.NOT_READY) {
+				baFlvEncoder=null;
+				return;
+			}
+			clearTimeout(timeout);
+			timeout = setTimeout(waitAndStart, 1);
+			return;
+		}
+		app.stagePane.countdown(0);
+		ready=ReadyLabel.NOT_READY;
+		app.refreshStagePart();
+		var player:ScratchSoundPlayer, length:int;
+		videoSeconds = getTimer() * 0.001;
+		for each (player in ScratchSoundPlayer.activeSounds) {
+			length = int((player.soundChannel.position*.001)*videoFramerate);
+			player.readPosition = Math.max(Math.min(baFlvEncoder.audioFrameSize*length,player.dataBytes.length),0);
+		}
 		clearRecording();
 		recording = true;
+		var seconds:int = 60; //modify to change length of video
+		videoTimer = new Timer(1000*seconds,1);
+    	videoTimer.addEventListener(TimerEvent.TIMER, finishVideoExport);
+    	videoTimer.start();
 	}
-
+	
 	public function stopRecording():void {
 		recording = false;
+		videoTimer.stop();
+    	videoTimer.removeEventListener(TimerEvent.TIMER, finishVideoExport);
+		videoTimer = null;
+		//if (fullEditor && app.render3D) app.go3D();
+		app.refreshStagePart();
 	}
 
 	public function clearRecording():void {
 		recording = false;
-		frames = [];
+		videoFrames = [];
+		videoSounds = [];
+		micBytes = new ByteArray();
+		micPosition=0;
+		videoPosition=0;
 		System.gc();
+		ready=ReadyLabel.NOT_READY;
 		trace('mem: ' + System.totalMemory);
 	}
 
-	// TODO: If keeping this then make it write each frame while recording AND add sound recording
 	public function saveRecording():void {
-		var myWriter:SimpleFlvWriter = SimpleFlvWriter.getInstance();
-		var data:ByteArray = new ByteArray();
-		myWriter.createFile(data, 480, 360, 30, frames.length / 30.0);
-		for (var i:int = 0; i < frames.length; i++) {
-			myWriter.saveFrame(frames[i]);
-			frames[i] = null;
+		//any captured frames that haven't been written to file yet are written here
+		if (videoFrames.length>videoPosition) {
+			for (var b:int=0; b<20; b++) {
+				if (videoPosition>=videoFrames.length) {
+					break;
+				}
+				baFlvEncoder.addFrame(videoFrames[videoPosition],videoSounds[videoPosition]);
+				videoFrames[videoPosition]=null;
+				videoSounds[videoPosition]=null;
+				videoPosition++;
+			}
+			if (app.lp) app.lp.setProgress(Math.min((videoPosition-videoAlreadyDone) / (videoFrames.length-videoAlreadyDone), 1)); 
+			clearTimeout(timeout);
+			timeout = setTimeout(saveRecording, 1);
+			return;
 		}
-		frames = [];
-		trace('data: ' + data.length);
-		new FileReference().save(data, 'movie.flv');
+		var seconds:Number = videoFrames.length/videoFramerate;
+		app.removeLoadProgressBox();
+		baFlvEncoder.updateDurationMetadata();
+		if (micSound) {
+			mic.removeEventListener(SampleDataEvent.SAMPLE_DATA, micSampleDataHandler);
+			mic = null;
+		}
+		videoFrames = [];
+		videoSounds = [];
+		micBytes = null;
+		micPosition=0;
+		var video:ByteArray;
+		video = baFlvEncoder.byteArray;
+		baFlvEncoder.kill();
+		function saveFile():void {
+			var file:FileReference = new FileReference();
+			file.save(video, "movie.flv");
+			Scratch.app.log(LogLevel.TRACK, "Video downloaded", {projectID: app.projectID, seconds: roundToTens(seconds), megabytes: roundToTens(video.length/1000000)});
+			var specEditor:SharingSpecEditor = new SharingSpecEditor();
+			DialogBox.close("Playing and Sharing Your Video",null,specEditor,"Back to Scratch");
+		    releaseVideo(false);
+        }
+		function releaseVideo(log:Boolean = true):void {
+			if (log) Scratch.app.log(LogLevel.TRACK, "Video canceled", {projectID: app.projectID, seconds: roundToTens(seconds), megabytes: roundToTens(video.length/1000000)});
+            video = null;
+		}
+		DialogBox.close("Video Finished!","To save, click the button below.",null,"Save and Download",app.stage,saveFile,releaseVideo,null,true);
+	}
+	
+	private function roundToTens(x:Number):Number {
+		return int((x)*10)/10.;
 	}
 
 //----------
