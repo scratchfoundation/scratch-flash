@@ -20,6 +20,7 @@ import flash.geom.Point;
 import flash.geom.Rectangle;
 import flash.ui.Mouse;
 import flash.utils.ByteArray;
+import flash.utils.Dictionary;
 import flash.utils.Timer;
 
 import grabcut.vfs.ISpecialFile
@@ -52,6 +53,8 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 
 	static private const SCALE_FACTOR:Number = .5;
 	static private var startedAsync:Boolean = false;
+
+    private var bgIDs:Array;
 
     private var borderPoints:Vector.<Point>;
 	private var segmentationRequired:Boolean = false;
@@ -230,31 +233,27 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 		super.drawAtPoint(p, targetCanvas, altBrush);
 	}
 
-    private function pixelIdx(x:int, y:int):int{
-        if(x < 0 || x >= workingBitmap.width || y < 0 || y >= workingBitmap.height)
-        {
-            return -1;
-        }
-        return ((y * workingBitmap.width) + x) * 4;
-    }
-
-
 	private function applyPreviewMask(maskBytes:ByteArray, dest:BitmapData):void{
 		var workingBytes:ByteArray = workingBitmap.clone().getPixels(workingBitmap.rect);
 		for(var i:int =0; i < workingBytes.length/4; i++){
-			    var pxIdx:int = i * 4;
-	    		if(maskBytes[pxIdx] == 0){
-                    var average:int = (workingBytes[pxIdx + 1] + workingBytes[pxIdx + 2] + workingBytes[pxIdx + 3]) / 3
-                    workingBytes[pxIdx] = Math.min(workingBytes[pxIdx], 150);
-                    workingBytes[pxIdx + 1] = average;
-                    workingBytes[pxIdx + 2] = average;
-                    workingBytes[pxIdx + 3] = average;
+            var pxID:int = i * 4;
+            var x:int = i % workingBitmap.width;
+            var y:int = Math.floor(i / workingBitmap.width);
+	    	if(maskBytes[pxID] == 0){
+                var average:int = (workingBytes[pxID + 1] + workingBytes[pxID + 2] + workingBytes[pxID + 3]) / 3
+                workingBytes[pxID] = Math.min(workingBytes[pxID], 150);
+                workingBytes[pxID + 1] = average;
+                workingBytes[pxID + 2] = average;
+                workingBytes[pxID + 3] = average;
 		    }
+			else{
+				trace("NON ZERO IN MASK!");
+			}
         }
 
 		workingBytes.position = 0;
 		var glowObject:BitmapData = workingBitmap.clone();
-        applyMask(lastMask, glowObject);
+        applyMask(maskBytes, glowObject);
         dest.setPixels(dest.rect, workingBytes);
         previewFrames = new Vector.<BitmapData>();
         previewFrameIdx = 0;
@@ -268,54 +267,42 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
         dest.copyPixels(previewFrames[previewFrameIdx], previewFrames[previewFrameIdx].rect, new Point(0, 0));
 	}
 
-    private function isBorderPx(maskBytes:ByteArray, pxIdx:int, w:int, h:int):Boolean{
-        var left:int = pxIdx - 4;
-        var right:int = pxIdx + 4;
-        var above:int =  pxIdx - (4 * workingBitmap.width)
-        var below:int = pxIdx + (4 * workingBitmap.width);
-        if(maskBytes[pxIdx] == 0){
-            if(pxIdx % w >= 4  && maskBytes[left] != 0){
-                return true;
-            }
-            if(pxIdx % w < w - 4 && maskBytes[right] != 0){
-                return true;
-            }
-            if(Math.floor(pxIdx / w) > 0 && maskBytes[above] != 0){
-                return true;
-            }
-            if(Math.floor(pxIdx / w) < h && maskBytes[below] != 0){
-                return true;
-            }
-        }
-        else{
-            if(pxIdx % w <= 4 || maskBytes[left] == 0){
-                return true;
-            }
-            if(pxIdx % w > w - 4 || maskBytes[right] == 0){
-                return true;
-            }
-            if(Math.floor(pxIdx / w) <= 0 || maskBytes[above] == 0){
-                return true;
-            }
-            if(Math.floor(pxIdx / w) >= h|| maskBytes[below] == 0){
-                return true;
-            }
-        }
-        return false;
-
-    }
-
-	private function applyMask(maskBytes:ByteArray, dest:BitmapData):void{
+    private function applyMask(maskBytes:ByteArray, dest:BitmapData):void{
 		var workingBytes:ByteArray = workingBitmap.clone().getPixels(workingBitmap.rect);
 		for(var i:int = 0; i<workingBytes.length/4; i++){
 			var pxID:int = i * 4;
+
 			if(maskBytes[pxID] == 0){
-				workingBytes[pxID] = 0;
+		        workingBytes[pxID] = 0;
 			}
 		}
 		workingBytes.position = 0;
         dest.setPixels(dest.rect, workingBytes)
 	}
+
+    private function reMask(segmentBitmap:BitmapData):BitmapData {
+        var maskBytes:ByteArray = segmentBitmap.getPixels(segmentBitmap.rect);
+        var newMask:BitmapData = new BitmapData(segmentBitmap.width, segmentBitmap.height, true, 0x00ffffff);
+        var newMaskBytes:ByteArray = newMask.getPixels(newMask.rect);
+        for (var i:int = 0; i < newMaskBytes.length / 4; i++) {
+            var pxID:int = i * 4;
+            if (bgIDs.indexOf(maskBytes[pxID + 3]) >= 0) {
+                newMaskBytes[pxID] = 0;
+                newMaskBytes[pxID + 1] = 0;
+                newMaskBytes[pxID + 2] = 0;
+                newMaskBytes[pxID + 3] = 0;
+            }
+            else{
+                newMaskBytes[pxID] = 255;
+                newMaskBytes[pxID + 1] = 255;
+                newMaskBytes[pxID + 2] = 255;
+                newMaskBytes[pxID + 3] = 255;
+            }
+        }
+		newMaskBytes.position = 0;
+		newMask.setPixels(newMask.rect, newMaskBytes);
+		return newMask;
+    }
 
 	private function cropAndScale(targetBitmap:BitmapData):BitmapData{
 		var cropRect:Rectangle = new Rectangle(cropX(), cropY(), cropWidth(), cropHeight());
@@ -400,8 +387,6 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 
 	}
 
-
-
 	private function didGetObjectMask(retVal:*, imgPtr:int, imgLength:int, width:int, height:int):void {
 		var bmData:ByteArray= new ByteArray();
 		CModule.readBytes(imgPtr, imgLength, bmData);
@@ -409,6 +394,8 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 		rgbaToArgb(bmData);
 		var scaledMaskBitmap:BitmapData = new BitmapData(width, height, true, 0x00ffffff);
 		scaledMaskBitmap.setPixels(scaledMaskBitmap.rect, bmData);
+        removeIslands(scaledMaskBitmap);
+        removeIslands(scaledMaskBitmap);
 		var m:Matrix = new Matrix();
 		m.scale(1./SCALE_FACTOR,1./SCALE_FACTOR);
 		m.tx = cropX();
@@ -420,6 +407,73 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 		setGreyscale();
 		dispatchEvent(new Event(BitmapBackgroundTool.GOTMASK));
 	}
+
+    private function removeIslands(maskBitmap:BitmapData):void{
+        var resultBitmap:BitmapData = new BitmapData(maskBitmap.width, maskBitmap.height, true, 0x00ffffff);
+        var objectSegments:Array = new Array();
+        var bgSegments:Array = new Array();
+        bgIDs = [0xff];
+        var segmentId:uint = 0;
+        for(var j:int = 0; j<maskBitmap.height; j++ ){
+            for(var i:int = 0; i<maskBitmap.width; i++ ){
+                if(resultBitmap.getPixel32(i,j) != 0){
+                    continue
+                }
+                var segment:uint = maskBitmap.getPixel32(i,j);
+                (segment == 0 ? bgSegments : objectSegments)[segmentId] = floodFill(maskBitmap, resultBitmap, segment, 0xff000000 + segmentId, i, j);
+//                trace("SEGMENT: ", segmentId, segment == 0);
+//                trace("SIZE", (segment == 0 ? bgSegments : objectSegments)[segmentId]);
+//                trace("AT: ", i, ",", j);
+                segmentId++;
+            }
+        }
+        var bgMax:uint = 0;
+        for each(var bgElem:* in bgSegments){
+            bgMax = Math.max(bgMax, bgElem as uint);
+        }
+        for(var bgIdx:* in bgSegments){
+           if(bgSegments[bgIdx as uint] > bgMax * 0.1){
+               bgIDs.push(bgIdx as uint);
+           }
+        }
+        var objMax:uint = 0;
+        for each(var objElem:* in objectSegments){
+            objMax = Math.max(objMax, objElem as uint);
+        }
+        for(var objIdx:* in objectSegments){
+            if(objectSegments[objIdx as uint] < objMax * 0.1){
+                bgIDs.push(objIdx as uint);
+            }
+        }
+		maskBitmap.copyPixels(reMask(resultBitmap), resultBitmap.rect, new Point(0,0));
+    }
+
+    private function floodFill(maskBitmap:BitmapData, processedBitmap:BitmapData, segment:uint, segmentId:uint, x:uint, y:uint):uint{
+        processedBitmap.setPixel32(x, y, segmentId)
+        var componentSize:uint = 1;
+        var points:Array = new Array();
+        points.push(new Point(x,y));
+        while(!points.length == 0){
+            var current:Point = points.pop();
+            for(var i:int=-1; i<=1; i++){
+                for(var j:int=-1; j<=1; j++){
+					var cx:int = current.x + i;
+                    var cy:int = current.y + j;
+                    if(cx < 0 || cx >= maskBitmap.width ||
+                       cy < 0 || cy >= maskBitmap.height ||
+                       maskBitmap.getPixel32(cx, cy) != segment ||
+                       processedBitmap.getPixel32(cx, cy) == segmentId)
+                    {
+                        continue;
+                    }
+                    processedBitmap.setPixel32(cx, cy, segmentId);
+                    points.push(new Point(cx, cy));
+                    componentSize++;
+                }
+            }
+        }
+        return componentSize;
+    }
 
 	public function refreshGreyscale():void{
 		if(!lastMask) return;
