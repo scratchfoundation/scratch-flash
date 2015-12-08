@@ -246,9 +246,6 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
                 workingBytes[pxID + 2] = average;
                 workingBytes[pxID + 3] = average;
 		    }
-			else{
-				trace("NON ZERO IN MASK!");
-			}
         }
 
 		workingBytes.position = 0;
@@ -421,9 +418,6 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
                 }
                 var segment:uint = maskBitmap.getPixel32(i,j);
                 (segment == 0 ? bgSegments : objectSegments)[segmentId] = floodFill(maskBitmap, resultBitmap, segment, 0xff000000 + segmentId, i, j);
-//                trace("SEGMENT: ", segmentId, segment == 0);
-//                trace("SIZE", (segment == 0 ? bgSegments : objectSegments)[segmentId]);
-//                trace("AT: ", i, ",", j);
                 segmentId++;
             }
         }
