@@ -41,9 +41,9 @@ public class ToolMgr {
 
 	static public function deactivateTool(tool:ITool):Boolean {
 		var touchID:int = -1;
-		for(var tid:int in currentTools)
+		for(var tid:String in currentTools)
 			if (currentTools[tid] == tool) {
-				touchID = tid;
+				touchID = int(tid);
 				break;
 			}
 
