@@ -676,11 +676,11 @@ public class Interpreter {
 	// a reference to the Variable object is cached in the target object.
 
 	private function primVarGet(b:Block):* {
-		if (activeThread == null) return 0;
+		var target:ScratchObj = app.runtime.currentDoObj ? app.runtime.currentDoObj : activeThread.target;
 
-		var v:Variable = activeThread.target.varCache[b.spec];
+		var v:Variable = target.varCache[b.spec];
 		if (v == null) {
-			v = activeThread.target.varCache[b.spec] = activeThread.target.lookupOrCreateVar(b.spec);
+			v = target.varCache[b.spec] = target.lookupOrCreateVar(b.spec);
 			if (v == null) return 0;
 		}
 		// XXX: Do we need a get() for persistent variables here ?
