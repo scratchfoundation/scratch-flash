@@ -702,6 +702,7 @@ public class ScratchRuntime {
 		// Turn on video the first time a video sensor reporter or hat block is added.
 		stack.allBlocksDo(function(b:Block):void {
 			var op:String = b.op;
+			if (op == Specs.GET_PARAM) b.parameterIndex = -1;  // need to invalidate index cache
 			if (('senseVideoMotion' == op) ||
 					(('whenSensorGreaterThan' == op) && ('video motion' == interp.arg(b, 0)))) {
 				app.libraryPart.showVideoButton();
@@ -1231,7 +1232,7 @@ public class ScratchRuntime {
 			// for each block in stack
 			stack.allBlocksDo(function (b:Block):void {
 				if (b.op == Specs.GET_VAR && b.spec == varName) result.push(b);
-				if (variableBlocks.indexOf(b.op) != -1 && b.args[0].argValue == varName) result.push(b);
+				if (variableBlocks.indexOf(b.op) != -1 && b.args[0] is BlockArg && b.args[0].argValue == varName) result.push(b);
 			});
 		}
 		return result;
