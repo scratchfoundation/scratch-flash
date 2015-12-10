@@ -93,8 +93,8 @@ public class Interpreter {
 //		checkPrims();
 	}
 
-	public function targetObj():ScratchObj { return ScratchObj(activeThread.target) }
-	public function targetSprite():ScratchSprite { return activeThread.target as ScratchSprite }
+	public function targetObj():ScratchObj { return app.runtime.currentDoObj ? app.runtime.currentDoObj : activeThread.target }
+	public function targetSprite():ScratchSprite { return (app.runtime.currentDoObj ? app.runtime.currentDoObj : activeThread.target) as ScratchSprite }
 
 	/* Threads */
 
