@@ -1074,6 +1074,7 @@ public class Scratch extends Sprite {
 		if (b.lastEvent.shiftKey) {
 			m.addLine();
 			m.addItem('Save Project Summary', saveSummary);
+			m.addItem('Show version details', showVersionDetails);
 		}
 		if (b.lastEvent.shiftKey && jsEnabled) {
 			m.addLine();
@@ -1243,6 +1244,22 @@ public class Scratch extends Sprite {
 		if (x == null) x = stage.mouseX;
 		if (y == null) y = stage.mouseY;
 		gh.showBubble(text, Number(x), Number(y), width);
+	}
+
+	// TODO: calculate field width for up to 40 hex digits of CSS.normalTextFont
+	protected const kGitHashFieldWidth:int = 7 * 41;
+	protected function makeVersionDetailsDialog():DialogBox {
+		var d:DialogBox = new DialogBox();
+		d.addTitle('Version Details');
+		d.addField('GPU enabled', kGitHashFieldWidth, SCRATCH::allow3d);
+		d.addField('scratch-flash', kGitHashFieldWidth, SCRATCH::revision);
+		return d;
+	}
+
+	protected function showVersionDetails():void {
+		var versionDetailsBox:DialogBox = makeVersionDetailsDialog();
+		versionDetailsBox.addButton('OK', versionDetailsBox.accept);
+		versionDetailsBox.showOnStage(stage);
 	}
 
 	// -----------------------------
