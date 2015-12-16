@@ -102,9 +102,19 @@ public class IconButton extends Sprite {
 	public function bottom():int { return y + height }
 
 	public function isDisabled():Boolean { return alpha < 1 };
-	public function setDisabled(disabledFlag:Boolean, disabledAlpha:Number = 0.0):void {
+	public function setDisabled(disabledFlag:Boolean, disabledAlpha:Number = 0.0, disabledImg:DisplayObject=null):void {
 		alpha = disabledFlag ? disabledAlpha : 1;
-		if (disabledFlag) { mouseIsOver = false; turnOff() }
+		if (disabledFlag) {
+			mouseIsOver = false;
+			turnOff();
+			if(disabledImg){
+				while (numChildren > 0) removeChildAt(0);
+				addChild(disabledImg);
+			}
+		}
+		else if(disabledImg){
+			redraw();
+		}
 		mouseEnabled = !disabledFlag;
 	};
 

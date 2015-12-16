@@ -25,6 +25,8 @@ package svgeditor {
 	import flash.text.TextField;
 	import assets.Resources;
 
+import mx.resources.ResourceBundle;
+
 import svgeditor.tools.BitmapBackgroundTool;
 
 import translation.Translator;
@@ -32,11 +34,12 @@ import translation.Translator;
 	import uiwidgets.*;
 	import flash.text.TextFormat;
 
+import uiwidgets.IconButton;
+
 public class DrawPropertyUI extends Sprite {
 
 	public static const ONCHANGE:String = 'onchange';
 	public static const ONFONTCHANGE:String = 'onfontchange';
-	public static const ONGREYSCALECLICK:String = 'greyscale';
 
 	private var editor:ImageEdit;
 	private var currentValues:DrawProperties;
@@ -57,13 +60,19 @@ public class DrawPropertyUI extends Sprite {
 	private var fillBtnVertical:IconButton;
 	private var fillBtnRadial:IconButton;
 
+	// Segmentation UI
 	private var segmentUI:Sprite;
+	private var segmentIcon:DisplayObject;
     private var segmentControlUI:Sprite;
-	private var objectMarkerBtn:IconButton;
-	private var bgMarkerBtn:IconButton;
-	private var toggleGreyscaleBtn:IconButton;
-	private var punchSegmentationBtn:IconButton;
-    private var resetSegmentationBtn:Button;
+	private var segmentKeepBtn:IconButton;
+	private var segmentKeepLabel:TextField;
+	private var segmentHeaderLabel:TextField;
+	private var segmentRmBtn:IconButton;
+	private var segmentRmLabel:TextField;
+	private var segmentResetBtn:IconButton;
+	private var segmentApplyBtn:IconButton;
+	private var segmentationTipsBtn:IconButton;
+	private var oldWidth:int;
 
 	// Font UI
 	private var fontLabel:TextField;
@@ -83,6 +92,8 @@ public class DrawPropertyUI extends Sprite {
 
 	// Other UI elements
 	private var bg:Shape; // background rectangle
+	private var segmentBG:Shape;
+	private var segmentHeader:Shape;
 	private var zoomButtons:Sprite;
 	private var modeLabel:TextField;
 	private var modeButton:Button;
@@ -99,6 +110,8 @@ public class DrawPropertyUI extends Sprite {
 		eraserStrokeMode = false;
 
 		addChild(bg = new Shape());
+		addChild(segmentBG = new Shape());
+		addChild(segmentHeader = new Shape());
 		addChild(colorPicker = new ColorPicker(editor, this));
 		makeShapeUI();
 		makeStrokeUI();
@@ -109,7 +122,6 @@ public class DrawPropertyUI extends Sprite {
 		makeZoomButtons();
 		makeModeLabelAndButton();
 		makeReadouts();
-
 		addEventListener(ONCHANGE, updateStrokeWidthDisplay);
 		updateStrokeWidthDisplay();
 	}
@@ -123,35 +135,31 @@ public class DrawPropertyUI extends Sprite {
 	}
 
 	public var w:int, h:int;
-	public function setWidthHeight(w:int, h:int):void {
+	public function setWidthHeight(w:int, h:int, sx:int=0, sy:int=0):void {
 		this.w = w;
 		this.h = h;
 		var g:Graphics = bg.graphics;
 		g.clear();
 		g.lineStyle(1, CSS.borderColor);
 		g.beginFill(0xF6F6F6);
-		g.drawRect(0, 0, w - 1, h);
-		fixLayout(w, h);
+		g.drawRect(sx, sy, w - 1, h);
+		fixLayout(w, h, sx, sy);
 	}
 
-	private function fixLayout(w:int, h:int):void {
-		colorPicker.x = 105 + Math.max(0, Math.floor((w - 390) / 2));
-		colorPicker.y = 6;
-        segmentControlUI.x = colorPicker.x - segmentUI.x;
+	private function fixLayout(w:int, h:int, sx:int=0, sy:int=0):void {
+		colorPicker.x = sx + 105 + Math.max(0, Math.floor((w - 390) / 2));
+		colorPicker.y = sy + 6;
 
-		zoomButtons.x = w - zoomButtons.width - 5;
-		zoomButtons.y = 5;
 
-		var modeX:int = w - 5 - Math.max(modeLabel.width, modeButton.width) / 2;
+		zoomButtons.x = sx + w - zoomButtons.width - 5;
+		zoomButtons.y = sy + 5;
+
+		var modeX:int = sx + w - 5 - Math.max(modeLabel.width, modeButton.width) / 2;
 		modeLabel.x = modeX - modeLabel.width / 2;
-		modeLabel.y = h - 47;
+		modeLabel.y = sy + h - 47;
 		modeButton.x = modeX - modeButton.width / 2;
 		modeButton.y = modeLabel.y + 22;
 
-        resetSegmentationBtn.y = (modeButton.y) - segmentUI.y;
-        resetSegmentationBtn.setWidth(punchSegmentationBtn.right() - toggleGreyscaleBtn.x);
-
-        //resetSegmentationBtn.setMinWidthHeight(punchSegmentationBtn.right() - toggleGreyscaleBtn.x, 0);
 
 		// hide in embedded editor???
 		//modeLabel.visible = modeButton.visible = !isEmbedded;
@@ -214,12 +222,40 @@ public class DrawPropertyUI extends Sprite {
 	}
 
 	public function toggleSegmentationUI(enabled:Boolean, tool:BitmapBackgroundTool):void{
+		if(tool && enabled){
+			tool.addEventListener(BitmapBackgroundTool.GOTMASK, updateSegmentationUI, false, 0, true);
+			tool.addEventListener(BitmapBackgroundTool.GOTPOINTS, enableSegmentationReset, false, 0, true);
+			if(segmentBG.width == 0){
+			oldWidth = this.w;
+			setWidthHeight(120, this.h, this.w - 120, 0);
+			var g:Graphics = segmentBG.graphics;
+			g.clear();
+			g.lineStyle(1, CSS.borderColor);
+			g.beginFill(0xF6F6F6);
+			g.drawRect(0, 0, oldWidth - 130, this.h);
+
+			g = segmentHeader.graphics;
+			g.clear();
+			g.lineStyle(1, CSS.borderColor);
+			g.beginFill(0xF6F6F6);
+			g.drawRect(0, 0, oldWidth - 130, segmentResetBtn.height + 10);
+			}
+
+			segmentControlUI.x = segmentHeader.x + segmentHeader.width - segmentUI.x - segmentControlUI.width - 5;
+			segmentControlUI.y =  5 - segmentUI.y;
+		}
+		else{
+			segmentBG.graphics.clear();
+			segmentHeader.graphics.clear();
+			if(oldWidth > 0){
+				setWidthHeight(oldWidth, this.h);
+			}
+		}
+		segmentHeaderLabel.visible=enabled;
+		segmentIcon.visible=enabled;
 		segmentUI.visible=enabled;
 		colorPicker.visible=!enabled;
 		updateSegmentationUI();
-		if(tool && enabled){
-				tool.addEventListener(BitmapBackgroundTool.GOTMASK, updateSegmentationUI, false, 0, true);
-		}
 	}
 
 	public function showSmoothnessUI(flag:Boolean, forDrawing:Boolean = true):void {
@@ -513,40 +549,77 @@ public class DrawPropertyUI extends Sprite {
 	}
 
 	private function makeSegmentationUI():void {
-
-
 		segmentUI = new Sprite();
-        segmentControlUI = new Sprite();
-		var iconSize:Point = new Point(42, 32);
-		objectMarkerBtn = new IconButton(editor.segmentationModeChanged, ImageEdit.makeToolButton("objectMarker", true, iconSize), ImageEdit.makeToolButton("objectMarker", false, iconSize), true);
-		objectMarkerBtn.name = 'object';
-		segmentUI.addChild(objectMarkerBtn);
-
-		bgMarkerBtn = new IconButton(editor.segmentationModeChanged, ImageEdit.makeToolButton("bgMarker", true, iconSize), ImageEdit.makeToolButton("bgMarker", false, iconSize), true);
-		bgMarkerBtn.name = 'background';
-		bgMarkerBtn.x = objectMarkerBtn.right() + 5;
-		segmentUI.addChild(bgMarkerBtn);
-
-		toggleGreyscaleBtn = new IconButton(editor.toggleGreyscale, ImageEdit.makeToolButton("toggleGreyscale", true, iconSize), ImageEdit.makeToolButton("toggleGreyscale", false, iconSize), false);
-		toggleGreyscaleBtn.name = 'grey';
-		segmentControlUI.addChild(toggleGreyscaleBtn);
-
-		punchSegmentationBtn = new IconButton(editor.applySegmentationMask, ImageEdit.makeToolButton("applyMask", true, iconSize), ImageEdit.makeToolButton("applyMask", false, iconSize), true);
-		punchSegmentationBtn.name = 'punch';
-		punchSegmentationBtn.x = toggleGreyscaleBtn.right() + 5;
-		punchSegmentationBtn.isMomentary = true;
-		segmentControlUI.addChild(punchSegmentationBtn);
-
-        resetSegmentationBtn = new Button("Start Over", editor.resetSegmentation, true);
-
-		resetSegmentationBtn.x = toggleGreyscaleBtn.x;
-		resetSegmentationBtn.y = strokeWidthSlider.y + strokeWidthSlider.parent.y - segmentUI.y;
-		segmentControlUI.addChild(resetSegmentationBtn);
-
-        segmentUI.addChild(segmentControlUI);
 		segmentUI.x = 10;
 		segmentUI.y = 15;
 		segmentUI.visible = false;
+
+		segmentIcon = Resources.createBmp("magicEraserIcon");
+		segmentIcon.x = -segmentUI.x;
+		segmentIcon.y = -segmentUI.y;
+		segmentUI.addChild(segmentIcon);
+
+        segmentControlUI = new Sprite();
+		var iconSize:Point = new Point(40, 36);
+		segmentKeepBtn = new IconButton(editor.segmentationModeChanged, ImageEdit.makeToolButton("objectMarker", true, iconSize), ImageEdit.makeToolButton("objectMarker", false, iconSize), true);
+		segmentKeepBtn.name = 'object';
+		segmentKeepBtn.x = segmentIcon.x + segmentIcon.width/2;
+		segmentKeepBtn.y = strokeWidthSlider.y - segmentKeepBtn.height - segmentUI.y;
+		segmentUI.addChild(segmentKeepBtn);
+
+		segmentKeepLabel = Resources.makeLabel("Scribble on the parts\nyou want to keep",CSS.normalTextFormat, segmentKeepBtn.right() + 5, segmentKeepBtn.y);
+		segmentKeepLabel.x = segmentKeepBtn.right() + 5;
+		segmentKeepLabel.y = segmentKeepBtn.y + segmentKeepBtn.height/2 - segmentKeepLabel.height/2;
+		segmentUI.addChild(segmentKeepLabel);
+
+		segmentRmBtn = new IconButton(editor.segmentationModeChanged, ImageEdit.makeToolButton("bgMarker", true, iconSize), ImageEdit.makeToolButton("bgMarker", false, iconSize), true);
+		segmentRmBtn.name = 'background';
+		segmentRmBtn.x = segmentKeepLabel.x + segmentKeepLabel.width + 20;
+		segmentRmBtn.y = strokeWidthSlider.y - segmentKeepBtn.height - segmentUI.y;
+		segmentUI.addChild(segmentRmBtn);
+
+		segmentRmLabel = Resources.makeLabel("Scribble on the\nbackground",CSS.normalTextFormat, segmentRmBtn.right() + 5, segmentRmBtn.y);
+		segmentRmLabel.x = segmentRmBtn.right() + 5;
+		segmentRmLabel.y = segmentRmBtn.y + segmentRmBtn.height/2 - segmentRmLabel.height/2;
+		segmentUI.addChild(segmentRmLabel);
+
+		segmentResetBtn = new IconButton(editor.resetSegmentation, "bgReset");
+		segmentResetBtn.name = 'reset';
+		segmentResetBtn.isMomentary = true;
+		segmentControlUI.addChild(segmentResetBtn);
+
+		segmentIcon.height = segmentResetBtn.height + 10
+		segmentIcon.width = segmentIcon.height;
+
+		segmentHeaderLabel = Resources.makeLabel("Background Removal Tool",CSS.titleFormat, segmentKeepBtn.right() + 5, segmentKeepBtn.y);
+		segmentHeaderLabel.y = segmentIcon.y + segmentIcon.height/2 - segmentHeaderLabel.height/2;
+		segmentHeaderLabel.x = segmentIcon.x + segmentIcon.width + 5;
+		segmentUI.addChild(segmentHeaderLabel);
+
+		segmentApplyBtn = new IconButton(editor.applySegmentationMask, "applyMask");
+		segmentApplyBtn.name = 'punch';
+		segmentApplyBtn.x = segmentResetBtn.right();
+		segmentApplyBtn.isMomentary = true;
+		segmentControlUI.addChild(segmentApplyBtn);
+		var onlineRoot:ScratchOnline = Scratch.app as ScratchOnline;
+		function showTip(btn:IconButton):void{
+			onlineRoot.showTip(btn.name);
+		}
+		if(onlineRoot && !onlineRoot.isOffline) {
+			segmentationTipsBtn = new IconButton(showTip, "moreInfo");
+			segmentationTipsBtn.isMomentary = true;
+		}
+		else{
+			segmentationTipsBtn = new IconButton(null, "moreInfo");
+			segmentationTipsBtn.visible = false;
+		}
+		segmentationTipsBtn.y = segmentHeaderLabel.y + segmentHeaderLabel.height/2 - segmentationTipsBtn.height/2;
+		segmentationTipsBtn.x = segmentHeaderLabel.x + segmentHeaderLabel.width + 8;
+		segmentUI.addChild(segmentationTipsBtn);
+
+        segmentUI.addChild(segmentControlUI);
+
+
 
 		updateSegmentationUI();
 		addChild(segmentUI);
@@ -554,52 +627,16 @@ public class DrawPropertyUI extends Sprite {
 
 	private function updateSegmentationUI(e:Event=null):void{
 		if(editor.targetCostume){
-		updateStrokeWidthDisplay();
-			(editor.targetCostume.segmentationState.mode == 'object' ? objectMarkerBtn : bgMarkerBtn).setOn(true);
-			(editor.targetCostume.segmentationState.mode == 'object' ? bgMarkerBtn : objectMarkerBtn).setOn(false);
-			toggleGreyscaleBtn.setDisabled(!editor.targetCostume.segmentationState.lastMask, .5);
-			toggleGreyscaleBtn.setOn(editor.targetCostume.segmentationState.isGreyscale);
-			punchSegmentationBtn.setDisabled(!editor.targetCostume.segmentationState.lastMask, .5);
+			(editor.targetCostume.segmentationState.mode == 'object' ? segmentKeepBtn : segmentRmBtn).setOn(true);
+			(editor.targetCostume.segmentationState.mode == 'object' ? segmentRmBtn : segmentKeepBtn).setOn(false);
+			segmentResetBtn.setDisabled(!editor.targetCostume.segmentationState.lastMask, .5);
+			segmentApplyBtn.setDisabled(!editor.targetCostume.segmentationState.lastMask, .5, Resources.createBmp("applyMaskDisabled"));
 
 		}
 	}
 
-	private function makeSegmentationIcon(action:String, isOn:Boolean):Sprite{
-
-		const buttonSize:Point = new Point(37, 25);
-		const iconW:int = 29;
-		const iconH:int = 17;
-
-		var colors:Array = [currentValues.color, currentValues.secondColor];
-		if (currentValues.alpha < 1) colors[0] = 0xFFFFFF;
-		if (currentValues.secondAlpha < 1) colors[1] = 0xFFFFFF;
-		var icon:Shape = new Shape();
-		var m:Matrix = new Matrix();
-		var g:Graphics = icon.graphics;
-
-		switch (action) {
-		case 'markObj':
-			m.createGradientBox(iconW, iconH, 0, 0, 0);
-			g.beginGradientFill(GradientType.LINEAR, colors, [1, 1], [0, 255], m);
-			break;
-		case 'markBg':
-			m.createGradientBox(iconW, iconH, 0, 0, 0);
-			g.beginGradientFill(GradientType.LINEAR, colors, [1, 1], [0, 255], m);
-			break;
-		case 'addBg':
-			m.createGradientBox(iconW, iconH, 0, 0, 0);
-			g.beginGradientFill(GradientType.LINEAR, colors, [1, 1], [0, 255], m);
-			break;
-		case 'rmObj':
-			m.createGradientBox(iconW, iconH, 0, 0, 0);
-			g.beginGradientFill(GradientType.LINEAR, colors, [1, 1], [0, 255], m);
-			break;
-		default:
-			g.beginFill(colors[0]);
-		}
-		g.drawRect(0, 0, iconW, iconH);
-		return ImageEdit.buttonFrame(icon, isOn, buttonSize);
-
+	private function enableSegmentationReset(evt:Event):void{
+		segmentResetBtn.setDisabled(false);
 	}
 
 	private function updateStrokeWidthDisplay(ignore:* = null):void {

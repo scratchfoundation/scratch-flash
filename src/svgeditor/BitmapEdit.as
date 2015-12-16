@@ -58,7 +58,7 @@ public class BitmapEdit extends ImageEdit {
 		{ name: 'paintbucket',		desc: 'Fill with color' },
 		{ name: 'bitmapEraser',		desc: 'Erase' },
 		{ name: 'bitmapSelect',		desc: 'Select' },
-		{ name: 'bitmapSegment',    desc: 'Remove Background'}
+		{ name: 'magicEraser',    desc: 'Remove Background'}
 	];
 
 	private var offscreenBM:BitmapData;

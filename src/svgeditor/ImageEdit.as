@@ -357,7 +357,7 @@ package svgeditor {
 					if ('bitmapSelect' == toolName) iconName = 'bitmapSelect';
 					if ('ellipse' == toolName) iconName = 'bitmapEllipse';
 					if ('paintbucket' == toolName) iconName = 'bitmapPaintbucket';
-					if ('bitmapSegment' == toolName) iconName = 'applyMask';
+					if ('magicEraser' == toolName) iconName = 'magicEraser';
 					if ('rect' == toolName) iconName = 'bitmapRect';
 					if ('text' == toolName) iconName = 'bitmapText';
 
@@ -618,7 +618,7 @@ package svgeditor {
 				case 'bitmapEraser': currentTool = new BitmapPencilTool(this, true); break;
 				case 'bitmapSelect': currentTool = new ObjectTransformer(this); break;
 				case 'paintbucket': currentTool = new PaintBucketTool(this); break;
-				case 'bitmapSegment':{
+				case 'magicEraser':{
 					currentTool = new BitmapBackgroundTool(this);
 					segmentationTool.loadState();
 					break;
@@ -671,7 +671,9 @@ package svgeditor {
 				drawPropsUI.toggleShapeUI(false);
 
 			drawPropsUI.toggleFillUI(newMode == 'vpaintbrush' || newMode == 'paintbucket');
-			drawPropsUI.toggleSegmentationUI(newMode == 'bitmapSegment', currentTool as BitmapBackgroundTool)
+			if(! (this is SVGEdit)){
+				drawPropsUI.toggleSegmentationUI(newMode == 'magicEraser', currentTool as BitmapBackgroundTool)
+			}
 			drawPropsUI.showSmoothnessUI(newMode == 'path');
 			if(newMode == 'path') {
 				var strokeWidth:Number = drawPropsUI.settings.strokeWidth;
@@ -685,7 +687,7 @@ package svgeditor {
 			drawPropsUI.showFontUI('text' == newMode);
 
 			var strokeModes:Array = [
-				'bitmapBrush', 'bitmapSegment', 'line', 'rect', 'ellipse',
+				'bitmapBrush', 'line', 'rect', 'ellipse',
 				'select', 'pathedit', 'path', 'vectorLine', 'vectorRect', 'vectorEllipse'];
 			var eraserModes:Array = ['bitmapEraser', 'eraser'];
 			drawPropsUI.showStrokeUI(
@@ -951,14 +953,7 @@ package svgeditor {
 
 		}
 
-		public function toggleGreyscale(ib:IconButton):void{
-			if(segmentationTool){
-				segmentationTool.refreshGreyscale();
-				drawPropsUI.sendChangeEvent();
-			}
-		}
-
-		public function resetSegmentation():void{
+		public function resetSegmentation(ib:IconButton):void{
             if(segmentationTool){
                 targetCostume.segmentationState.reset();
                 segmentationTool.restoreUnmarked();
