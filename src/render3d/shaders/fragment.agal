@@ -140,10 +140,11 @@ ft1 = sat(ft1)
 ft2.z = max(ft1.y, ft1.z) //float v = max(dst.g, dst.b);				v		= ft2.z
 ft2.z = max(ft1.x, ft2.z) //v = max(dst.r, v);
 
-//				float span = v - min(r, min(g, b));
-ft2.w = min(ft1.y, ft1.z) //float span =  min(dst.g, dst.b);			span	= ft2.w
-ft2.w = min(ft1.x, ft2.w) //span = min(dst.r, span);
-ft2.w = ft2.z - ft2.w //span = v - span;
+//				float vmin = min(r, min(g, b);
+//				float span = v - vmin;
+ft2.x = min(ft1.y, ft1.z) //float vmin =  min(dst.g, dst.b);			vmin	= ft2.x
+ft2.x = min(ft1.x, ft2.x) //vmin = min(dst.r, vmin);
+ft2.w = ft2.z - ft2.x //float span = v - vmin;                          span	= ft2.w
 
 //				if (span == 0.0) {
 //					h = s = 0.0;
@@ -151,13 +152,8 @@ ft2.w = ft2.z - ft2.w //span = v - span;
 //					if (r == v) h = 60.0 * ((g - b) / span);
 //					else if (g == v) h = 120.0 + (60.0 * ((b - r) / span));
 //					else if (b == v) h = 240.0 + (60.0 * ((r - g) / span));
-//					s = span / v;
 //				}
-ft3.y = ft2.z == 0 //int v_eq_zero = (v == 0);
-ft3.w = 0.001 * ft3.y //tiny = 0.000001 * v_eq_zero;				tiny	= ft3.w
-ft2.z += ft3.w //v = v + tiny;					Avoid division by zero, v != 0
-
-ft3.x = ft2.w == 0 //int span_eq_zero = (span == 0);		span_eq_zero= ft3.x
+ft5.x = ft2.w == 0 //int span_eq_zero = (span == 0);		span_eq_zero= ft5.y
 ft2.y = ft2.w != 0 //int span_not_zero = (span != 0.0); span_not_zero	= ft2.y
 ft3.x = ft1.x == ft2.z //int r_eq_v = (dst.r == v);				r_eq_v	= ft3.x
 ft4.x = ft1.x != ft2.z //int r_not_v = (dst.r != v);				r_not_v	= ft4.x
@@ -168,7 +164,7 @@ ft4.y = ft3.x + ft3.y //int not_g_eq_v_or_r_eq_v = r_eq_v + g_eq_v	not_g_eq_v_or
 ft4.y = ft4.y == 0 //not_g_eq_v_or_r_eq_v = (not_g_eq_v_or_r_eq_v == 0)
 ft3.z *= ft4.y //b_eq_v = b_eq_v * not_g_eq_v_or_r_eq_v	// (b==v) is only valid when the other two are not
 
-ft3.w = 0.001 * ft3.x //tiny = 0.000001 * span_eq_zero;			tiny	= ft3.w
+ft3.w = 0.001 * ft5.x //tiny = 0.000001 * span_eq_zero;			tiny	= ft3.w
 ft2.w += ft3.w //span = span + tiny;					Avoid division by zero, span != 0
 
 ft3.xyz *= ft2.yyy //{r,g,b}_eq_v = {r,g,b}_eq_v * span_not_zero;
@@ -188,50 +184,30 @@ ft4.w *= ft4.x //h_b_eq_v = h_b_eq_v * 60_div_span;
 ft4.w += 240 //h_b_eq_v = h_b_eq_v + 240;
 ft4.w *= ft3.z //h_b_eq_v = h_b_eq_v * b_eq_v;
 
-/*** ft2 == (h, s, v) ***/
+/*** ft2 == (h, s, 2l) ***/
+
+// Twice lightness into ft2.z
+ft2.w = ft2.z - ft2.x // want real span back, without tiny added
+ft2.z += ft2.x // float l_times2 = v + vmin
+
+// Hue into ft2.x
 ft2.x = ft4.y		 //float h = h_r_eq_v;							h	= ft2.x
 ft2.x += ft4.z //h = h + h_g_eq_v;
 ft2.x += ft4.w //h = h + h_b_eq_v;
 
-ft3.z = ft2.w / ft2.z //float s_span_not_zero = span / v; s_span_not_zero= ft3.z
-ft2.y *= ft3.z //float s = s_span_not_zero * span_not_zero;	s	= ft2.y
-
-//				if (hueShift != 0.0 && v < 0.11) { v = 0.11; s = 1.0; }
-/*** ft3 is now free ***/  // Check this section for accuracy / mistakes
-#if ENABLE_color
-ft3.y = 1
-#else // ENABLE_color
-ft3.y = 0
-#endif // ENABLE_color
-ft3.z = ft2.z < 0.11 //int v_lt_0_11 = (v < 0.11);			v_lt_0_11	= ft3.z
-ft3.z *= ft3.y //v_lt_0_11 = v_lt_0_11 * hs_not_zero;
-ft3.w = ft3.z == 0 //int !v_lt_0_11						!v_lt_0_11	= ft3.w
-
-ft2.z *= ft3.w //v  = v * !v_lt_0_11
-ft3.x = 0.11 * ft3.z //float vv = 0.11 * v_lt_0_11;					vv	= ft3.x
-ft2.z += ft3.x //v = v + vv;
-
-ft2.y *= ft3.w //s  = s * !v_lt_0_11
-ft2.y += ft3.z //s = s + v_lt_0_11;
-
-//				if (hueShift != 0.0 && s < 0.09) s = 0.09;
-ft3.w = ft2.y < 0.09 //int s_lt_0_09 = (s < 0.09);			s_lt_0_09	= ft3.w
-ft3.w *= ft3.y //s_lt_0_09 = s_lt_0_09 * hs_not_zero;
-ft3.z = ft3.w == 0 //int !s_lt_0_09						!s_lt_0_09	= ft3.z
-
-ft2.y *= ft3.z //s  = s * !s_lt_0_09
-ft3.x = 0.09 * ft3.w //float ss = 0.09 * s_lt_0_09;					ss	= ft3.x
-ft2.y += ft3.x //s = s + ss;
-
-//				if (hueShift != 0.0 && (v == 0.11 || s == 0.09)) h = 0.0;
-ft4.x = ft2.z == 0.11 //int v_eq_0_11 = (v == 0.11);			v_eq_0_11	= ft4.x
-ft4.y = ft2.y == 0.09 //int s_eq_0_09 = (s == 0.09);			s_eq_0_09	= ft4.y
-ft4.z = ft4.x + ft4.y //int v_eq_0_11_or_s_eq_0_09 = v_eq_0_11 + s_eq_0_09;	v_eq_0_11_or_s_eq_0_09 = ft4.z
-ft4.z *= ft3.y //v_eq_0_11_or_s_eq_0_09 = v_eq_0_11_or_s_eq_0_09 * hs_not_zero;
-
-// Multiply h by !v_eq_0_11_or_s_eq_0_09. if v_eq_0_11_or_s_eq_0_09 is true, then h=0, otherwise it's untouched.
-ft4.z = ft4.z == 0 //v_eq_0_11_or_s_eq_0_09 = !v_eq_0_11_or_s_eq_0_09
-ft2.x *= ft4.z //h = h * (!v_eq_0_11_or_s_eq_0_09);
+// Saturation (in HSL colour-space) into ft2.y
+//				float c = 1 - abs(l_times2 - 1)
+//				float s = span / c
+ft4.x = 2 - ft2.z // float c = 2 - l_times2
+ft5.y = ft2.z < 1 // int l_times2_lt_one = (l_times2 < 1)
+ft5.z = ft2.z >= 1 // int l_times2_ge_one = (l_times2 >= 1)
+ft4.x *= ft5.z // c = c * l_times2_ge_one
+ft5.y *= ft2.z // float d = l_times2 * l_times2_lt_one
+ft4.x += ft5.y // c = c + d
+ft5.y = ft4.x == 0 // prevent division by zero (happens for zero or 100% lightness)
+ft4.x += ft5.y
+ft2.y = ft2.w / ft4.x // float s = span / c
+ft2.y = sat(ft2.y) // should be already?
 
 //				h = mod(h + hueShift, 360.0);
 #if ENABLE_color
@@ -246,14 +222,23 @@ ft4.y = ft2.x < 0 //int h_lt_0 = (h < 0.0);					h_lt_0	= ft4.y
 ft4.x = 360 * ft4.y //float hh = 360 * h_lt_0;						hh	= ft4.x
 ft2.x += ft4.x //h = h + hh;
 
-//				s = max(0.0, min(s, 1.0));
-ft2.y = sat(ft2.y) //s = sat(s);
-
-//				v = max(0.0, min(v + brightnessShift, 1.0));
+// Add to or subtract from lightness in accordance with FX_brightness...
+// If FX_brightness>=0 then add that as fraction of the lightness between current and 100%.
+// If FX_brightness<0 then subtract that as fraction of lightness between current and zero.
+// The idea is that as FX_brightness heads towards 1, the lightness will reach towards 100%.
+// And as FX_brightness heads towards -1, the lightness will reach towards zero.
 #if ENABLE_brightness
-ft2.z += FX_brightness //v = v + brightnessShift;
+ft3.x = FX_brightness
+ft3.y = ft3.x < 0
+ft3.z = ft3.x >= 0
+ft4.x = 2 - ft2.z
+ft3.z *= ft4.x
+ft3.z *= ft3.x
+ft3.y *= ft2.z
+ft3.y *= ft3.x
+ft2.z += ft3.y
+ft2.z += ft3.z
 #endif // ENABLE_brightness
-ft2.z = sat(ft2.z) //v = sat(v);
 
 //				int i = int(floor(h / 60.0));
 //				float f = (h / 60.0) - float(i);
@@ -261,20 +246,27 @@ ft3.x = ft2.x / 60 //float h_div_60 =  h / 60;			h_div_60	= ft3.x
 ft3.y = frc(ft3.x) //float f = frc(h_div_60);							f	= ft3.y
 ft3.x -= ft3.y //float i = h_div_60 - f;						i	= ft3.x
 
-//				float p = v * (1.0 - s);
-//				float q = v * (1.0 - (s * f));
-//				float t = v * (1.0 - (s * (1.0 - f)));
-/*** ft5 = [p, q, t, v] ***/
-ft5.x = 1 - ft2.y //ft5.x = 1.0 - s; // p
-ft5.x *= ft2.z //ft5.x = ft5.x * v;
-ft5.y = ft2.y * ft3.y //ft5.y = (s * f); // q
-ft5.y = 1 - ft5.y //ft5.y = 1.0 - ft5.y;
-ft5.y *= ft2.z //ft5.y = ft5.y * v;
-ft5.z = 1 - ft3.y //ft5.z = 1.0 - f; // t
-ft5.z *= ft2.y //ft5.z = s * ft5.z;
-ft5.z = 1 - ft5.z //ft5.z = 1.0 - ft5.z;
-ft5.z *= ft2.z //ft5.z = ft5.z * v;
-ft5.w = ft2.z //mov ft5.w, v; // v
+/***   float c = 1 - abs(l_times2 - 1)  ***/
+ft4.x = 2 - ft2.z
+ft5.y = ft2.z < 1
+ft5.z = ft2.z >= 1
+ft4.x *= ft5.z
+ft5.y *= ft2.z
+ft4.x += ft5.y
+
+//				float p = (l_times2 - c*s)/2;
+//				float q = p + c*s*(1 - f);
+//				float t = p + c*s*f
+//				float v = p + c*s
+/*** ft5.xyzw = [v, q, t, p] ***/
+ft4.x *= ft2.y // c * s
+ft5.x = ft4.x
+ft5.y = 1 - ft3.y // 1 - f
+ft5.y *= ft4.x // c * s * (1-f)
+ft5.z = ft4.x * ft3.y // c * s * f
+ft5.w = ft2.z - ft4.x // (l*2 - c*s)
+ft5.w /= 2 // (l*2 - c*s)/2
+ft5.xyz += ft5.www
 
 /*** FIX i to be an integer on Intel Graphics 3000 with Chrome Pepper Flash ***/
 ft3.x += 0.001 // fix i?
@@ -293,28 +285,29 @@ ft4.y = ft3.x == 5 //int i_eq_5 = (i == 5);					i_eq_5	= ft4.y
 ft4.z = ft3.x == 6 //int i_eq_6 = (i == 6);					i_eq_6	= ft4.z
 
 // Write to ft7.w ?
-//				if ((i == 0) || (i == 6)) dst.rgb = float3(v, t, p);
-ft7.xyz = ft4.zzz * ft5.wzx //ft7 = i_eq_6 * ft5.wzx
+//				if (i == 6) dst.rgb = float3(v, t, p);
+ft7.xyz = ft4.zzz * ft5.xzw //ft7 = i_eq_6 * ft5.xzw
 
 //				else if (i == 1) dst.rgb = float3(q, v, p);
-ft6.xyz = ft3.yyy * ft5.ywx //ft6 = i_eq_1 * ft5.ywx
+ft6.xyz = ft3.yyy * ft5.yxw //ft6 = i_eq_1 * ft5.yxw
 ft7.xyz += ft6.xyz //ft7 = ft7 + ft6
 
 //				else if (i == 2) dst.rgb = float3(p, v, t);
-ft6.xyz = ft3.zzz * ft5.xwz //ft6 = i_eq_2 * ft5.xwz
+ft6.xyz = ft3.zzz * ft5.wxz //ft6 = i_eq_2 * ft5.wxz
 ft7.xyz += ft6.xyz //ft7 = ft7 + ft6
 
 //				else if (i == 3) dst.rgb = float3(p, q, v);
-ft6.xyz = ft3.www * ft5.xyw //ft6 = i_eq_3 * ft5.xyw
+ft6.xyz = ft3.www * ft5.wyx //ft6 = i_eq_3 * ft5.wyx
 ft7.xyz += ft6.xyz //ft7 = ft7 + ft6
 
 //				else if (i == 4) dst.rgb = float3(t, p, v);
-ft6.xyz = ft4.xxx * ft5.zxw //ft6 = i_eq_4 * ft5.zxw
+ft6.xyz = ft4.xxx * ft5.zwx //ft6 = i_eq_4 * ft5.zwx
 ft7.xyz += ft6.xyz //ft7 = ft7 + ft6
 
 //				else if (i == 5) dst.rgb = float3(v, p, q);
-ft6.xyz = ft4.yyy * ft5.wxy //ft6 = i_eq_5 * ft5.wxy
+ft6.xyz = ft4.yyy * ft5.xwy //ft6 = i_eq_5 * ft5.xwy
 ft7.xyz += ft6.xyz //ft7 = ft7 + ft6
+
 
 ft1.xyz = sat(ft7.xyz)			// Move the shifted color into ft1
 #endif // ENABLE_color || ENABLE_brightness
