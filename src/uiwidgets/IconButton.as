@@ -107,12 +107,9 @@ public class IconButton extends Sprite {
 		if (disabledFlag) {
 			mouseIsOver = false;
 			turnOff();
-			if(disabledImg){
-				while (numChildren > 0) removeChildAt(0);
-				addChild(disabledImg);
-			}
 		}
-		else if(disabledImg){
+		if(disabledImg){
+			offImage = disabledImg;
 			redraw();
 		}
 		mouseEnabled = !disabledFlag;
@@ -150,15 +147,15 @@ public class IconButton extends Sprite {
 	}
 
 	private function redraw():void {
-		var img:DisplayObject = buttonIsOn ? onImage : offImage;
-		if (mouseIsOver && !buttonIsOn) img = onImage;
-		while (numChildren > 0) removeChildAt(0);
-		addChild(img);
-		// Make the entire button rectangle be mouse-sensitive:
-		graphics.clear();
-		graphics.beginFill(0xA0, 0); // invisible but mouse-sensitive; min size 10x10
-		graphics.drawRect(0, 0, Math.max(10, img.width), Math.max(10, img.height));
-		graphics.endFill();
+			var img:DisplayObject = buttonIsOn ? onImage : offImage;
+			if (mouseIsOver && !buttonIsOn) img = onImage;
+			while (numChildren > 0) removeChildAt(0);
+			addChild(img);
+			// Make the entire button rectangle be mouse-sensitive:
+			graphics.clear();
+			graphics.beginFill(0xA0, 0); // invisible but mouse-sensitive; min size 10x10
+			graphics.drawRect(0, 0, Math.max(10, img.width), Math.max(10, img.height));
+			graphics.endFill();
 	}
 
 	private function mouseDown(e:MouseEvent):void {

@@ -827,18 +827,22 @@ package svgeditor {
 		public function canUndo():Boolean {
 			return targetCostume &&
 					(targetCostume.undoList.length > 0) &&
-					(targetCostume.undoListIndex > 0);
+					(targetCostume.undoListIndex > 0) || (segmentationTool && !targetCostume.segmentationState.isBlank);
 		}
 
 		public function canRedo():Boolean {
 			return targetCostume &&
 					(targetCostume.undoList.length > 0) &&
-					(targetCostume.undoListIndex < (targetCostume.undoList.length - 1));
+					(targetCostume.undoListIndex < (targetCostume.undoList.length - 1)) && (!segmentationTool || !targetCostume.segmentationState.isGreyscale);
 		}
 
 		public function undo(ignore:* = null):void {
 			clearSelection();
 			if (canUndo()) {
+				if(segmentationTool && !targetCostume.segmentationState.isBlank){
+					resetSegmentation();
+					return;
+				}
 				var undoRec:Array = targetCostume.undoList[--targetCostume.undoListIndex];
 				installUndoRecord(undoRec);
 			}
@@ -953,7 +957,7 @@ package svgeditor {
 
 		}
 
-		public function resetSegmentation(ib:IconButton):void{
+		public function resetSegmentation():void{
             if(segmentationTool){
                 targetCostume.segmentationState.reset();
                 segmentationTool.restoreUnmarked();

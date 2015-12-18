@@ -17,6 +17,7 @@ public class SegmentationState {
 	public var yMin:int;
 	public var xMax:int;
 	public var yMax:int;
+	public var isBlank:Boolean;
 
 	public function SegmentationState() {
         reset();
@@ -31,6 +32,7 @@ public class SegmentationState {
         yMin = -1;
         xMax = 0;
         yMax = 0;
+		isBlank = true;
 	}
 
 }

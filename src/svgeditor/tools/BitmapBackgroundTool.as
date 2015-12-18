@@ -55,22 +55,21 @@ import flash.events.Event;
 public class BitmapBackgroundTool extends BitmapPencilTool{
 
 
-	static public const GOTMASK:String='got_mask';
-	static public const GOTPOINTS:String='got_points';
+	static public const UPDATE_REQUIRED:String='got_mask';
 	static private const SCALE_FACTOR:Number = .5;
-
 	static private var startedAsync:Boolean = false;
-
+	static private const BUSY_CURSOR:String = "segmentationBusy";
+	static private const BG_ISLAND_THRESHOLD:Number = 0.1;
+	static private const OBJECT_ISLAND_THRESHOLD:Number = 0.1;
 
 	private var segmentationRequired:Boolean = false;
     private var workingScribble:BitmapData;
 
-    private var timer:Timer = new Timer(100);
+    private var previewFrameTimer:Timer = new Timer(100);
     private var previewFrameBackgrounds:Vector.<BitmapData> = new Vector.<BitmapData>();
     private var previewFrameIdx:int = 0;
     private var previewFrames:Vector.<BitmapData>;
 
-	static private const BUSY_CURSOR:String = "segmentationBusy";
 	private var cursor:MouseCursorData = new MouseCursorData();
 
     private function get workingBitmap():BitmapData
@@ -103,7 +102,7 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
             Resources.createBmp("seventh").bitmapData,
             Resources.createBmp("eighth").bitmapData
         )
-        timer.addEventListener("timer", nextPreviewFrame);
+        previewFrameTimer.addEventListener("timer", nextPreviewFrame);
 		var frames:Vector.<BitmapData> = new Vector.<BitmapData>();
 		frames.push(Resources.createBmp(BitmapBackgroundTool.BUSY_CURSOR).bitmapData);
 		cursor.hotSpot = new Point(10,10);
@@ -118,7 +117,7 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
     }
 
 	public function loadState():void{
-		timer.stop();
+		previewFrameTimer.stop();
         workingScribble = editor.getWorkArea().getSegmentation().bitmapData;
         workingScribble.fillRect(workingScribble.rect, 0);
         editor.getWorkArea().getBitmap().visible = true;
@@ -143,7 +142,7 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
     protected override function shutdown():void{
         workingScribble.fillRect(workingScribble.rect, 0);
         editor.getWorkArea().visible = true;
-        timer.stop();
+        previewFrameTimer.stop();
         super.shutdown();
     }
 
@@ -162,7 +161,7 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 
     override protected function mouseDown(evt:MouseEvent):void{
         if (editor.getWorkArea().clickInBitmap(evt.stageX, evt.stageY)){
-            timer.stop();
+            previewFrameTimer.stop();
         }
         super.mouseDown(evt);
     }
@@ -170,7 +169,8 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 	override protected function set lastPoint(p:Point):void{
 		if(p != null){
 			if(super.lastPoint == null){
-				dispatchEvent(new Event(BitmapBackgroundTool.GOTPOINTS));
+				segmentationState.isBlank = false;
+				dispatchEvent(new Event(BitmapBackgroundTool.UPDATE_REQUIRED));
 			}
 			if(p.x > segmentationState.xMax){
 				segmentationState.xMax = p.x
@@ -333,7 +333,7 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 			segmentationState.lastMask = maskBitmap
 			//Show our hard earned results
 			setGreyscale();
-			dispatchEvent(new Event(BitmapBackgroundTool.GOTMASK));
+			dispatchEvent(new Event(BitmapBackgroundTool.UPDATE_REQUIRED));
 			function resetCursor():void{
 				if(Mouse.supportsNativeCursor){
 					Mouse.cursor = "arrow";
@@ -349,6 +349,8 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 
 
     private function removeIslands(maskBitmap:BitmapData, iterations:int):BitmapData{
+		//Look for small pieces of object or background, tag them, reassign them as necessary, and create
+		//a new mask based on this.  Iterate n times to remove nested pieces.
 		iterations--;
 		if(iterations < 0){
 			return maskBitmap;
@@ -364,7 +366,6 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
                     continue
                 }
                 var segment:uint = maskBitmap.getPixel32(i,j);
-//                (segment == 0 ? bgSegments : objectSegments)[segmentId] = floodFill(maskBitmap, resultBitmap, segment, 0xff000000 + segmentId, i, j);
 				(segment == 0 ? bgSegments : objectSegments)[segmentId] = tagComponent(maskBitmap, resultBitmap, segmentId, segment, i, j);
                 segmentId *= 2;
 				if(segmentId >= 0x00FFFFFF){
@@ -375,12 +376,14 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 				break;
 			}
         }
+		//Now that we know component sizes, switch small ones to the opposite segment
+		//Note that if pieces are nested, you will end up with an erroneous swap, requiring another iteration
         var bgMax:uint = 0;
         for each(var bgElem:* in bgSegments){
             bgMax = Math.max(bgMax, bgElem as uint);
         }
         for(var bgIdx:* in bgSegments){
-           if(bgSegments[bgIdx as uint] > bgMax * 0.1){
+           if(bgSegments[bgIdx as uint] > bgMax * BG_ISLAND_THRESHOLD){
                bgIDs.push(bgIdx as uint);
            }
         }
@@ -389,7 +392,7 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
             objMax = Math.max(objMax, objElem as uint);
         }
         for(var objIdx:* in objectSegments){
-            if(objectSegments[objIdx as uint] < objMax * 0.1){
+            if(objectSegments[objIdx as uint] < objMax * OBJECT_ISLAND_THRESHOLD){
                 bgIDs.push(objIdx as uint);
             }
         }
@@ -404,6 +407,7 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
     }
 
 	private function tagComponent(maskBitmap:BitmapData, resultBitmap:BitmapData, segmentID:uint, segment:uint, x:uint, y:uint):uint{
+		//Tag the component starting at this point with the given ID, copy to result, return component size
 		var tagColor:uint = 0xff000000 + segmentID;
 		maskBitmap.floodFill(x, y, tagColor);
 		return resultBitmap.threshold(maskBitmap, maskBitmap.rect, new Point(0,0), "==", tagColor, tagColor, 0xFFFFFFFF);
@@ -413,19 +417,19 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
         editor.getWorkArea().getBitmap().visible = false;
         editor.getWorkArea().getSegmentation().visible = true;
 		applyPreviewMask(segmentationState.lastMask, workingScribble);
-        timer.start();
+        previewFrameTimer.start();
 		segmentationState.isGreyscale = true;
 	}
 
 	public function restoreUnmarked():void{
-        timer.stop();
+        previewFrameTimer.stop();
         workingScribble.fillRect(workingScribble.rect, 0);
         editor.getWorkArea().getBitmap().visible = true;
 	}
 
 	public function commitMask():void{
 		if(segmentationState.lastMask) {
-            timer.stop();
+            previewFrameTimer.stop();
             editor.getWorkArea().getBitmap().visible = true;
 			applyMask(segmentationState.lastMask, workingBitmap);
             editor.targetCostume.segmentationState.reset();
