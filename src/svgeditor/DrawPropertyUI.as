@@ -599,18 +599,11 @@ public class DrawPropertyUI extends Sprite {
 		segmentApplyLabel.y = segmentApplyBtn.y + segmentApplyBtn.height/2 - segmentApplyLabel.height/2;
 		segmentUI.addChild(segmentApplyLabel);
 
-		var onlineRoot:ScratchOnline = Scratch.app as ScratchOnline;
 		function showTip(btn:IconButton):void{
-			onlineRoot.showTip(btn.name);
+			editor.app.showTip("segmentation");
 		}
-		if(onlineRoot && !onlineRoot.isOffline) {
-			segmentationTipsBtn = new IconButton(showTip, "moreInfo");
-			segmentationTipsBtn.isMomentary = true;
-		}
-		else{
-			segmentationTipsBtn = new IconButton(null, "moreInfo");
-			segmentationTipsBtn.visible = false;
-		}
+		segmentationTipsBtn = new IconButton(showTip, "moreInfo");
+		segmentationTipsBtn.isMomentary = true;
 		segmentationTipsBtn.y = segmentHeaderLabel.y + segmentHeaderLabel.height/2 - segmentationTipsBtn.height/2;
 		segmentUI.addChild(segmentationTipsBtn);
 
