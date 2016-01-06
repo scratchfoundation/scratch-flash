@@ -12,6 +12,7 @@ public class SegmentationState {
 	public var isGreyscale:Boolean;
 	public var mode:String;
 	public var scribbleBitmap:BitmapData;
+	public var unmarkedBitmap:BitmapData;
 	public var lastMask:BitmapData;
 	public var xMin:int;
 	public var yMin:int;

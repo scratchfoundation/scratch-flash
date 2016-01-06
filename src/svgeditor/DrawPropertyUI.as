@@ -558,7 +558,7 @@ public class DrawPropertyUI extends Sprite {
 		var iconSize:Point = new Point(40, 36);
 		segmentKeepBtn = new IconButton(editor.segmentationModeChanged, ImageEdit.makeToolButton("objectMarker", true, iconSize), ImageEdit.makeToolButton("objectMarker", false, iconSize), true);
 		segmentKeepBtn.name = 'object';
-		segmentKeepBtn.x = segmentIcon.x + segmentIcon.width/2;
+		segmentKeepBtn.x = segmentIcon.x + segmentIcon.width;
 		segmentKeepBtn.y = strokeWidthSlider.y - segmentKeepBtn.height - segmentUI.y;
 		segmentUI.addChild(segmentKeepBtn);
 
@@ -586,18 +586,18 @@ public class DrawPropertyUI extends Sprite {
 		segmentHeaderLabel.y = segmentIcon.y + segmentIcon.height/2 - segmentHeaderLabel.height/2;
 		segmentHeaderLabel.x = segmentIcon.x + segmentIcon.width + 5;
 		segmentUI.addChild(segmentHeaderLabel);
-
-		segmentApplyBtn = new IconButton(editor.applySegmentationMask, ImageEdit.makeToolButton("applyMask", true, iconSize), ImageEdit.makeToolButton("applyMask", false, iconSize));
-		segmentApplyBtn.name = 'punch';
-		segmentApplyBtn.isMomentary = true;
-		segmentApplyBtn.x = segmentRmLabel.x + segmentRmLabel.width + 15;
-		segmentApplyBtn.y = strokeWidthSlider.y - segmentApplyBtn.height - segmentUI.y;
-		segmentUI.addChild(segmentApplyBtn);
-
-		segmentApplyLabel = Resources.makeLabel("Keep drawing,\nor click when done",CSS.normalTextFormat, segmentApplyBtn.right() + 5, segmentApplyBtn.y);
-		segmentApplyLabel.x = segmentApplyBtn.right() + 5;
-		segmentApplyLabel.y = segmentApplyBtn.y + segmentApplyBtn.height/2 - segmentApplyLabel.height/2;
-		segmentUI.addChild(segmentApplyLabel);
+//
+//		segmentApplyBtn = new IconButton(editor.applySegmentationMask, ImageEdit.makeToolButton("applyMask", true, iconSize), ImageEdit.makeToolButton("applyMask", false, iconSize));
+//		segmentApplyBtn.name = 'punch';
+//		segmentApplyBtn.isMomentary = true;
+//		segmentApplyBtn.x = segmentRmLabel.x + segmentRmLabel.width + 15;
+//		segmentApplyBtn.y = strokeWidthSlider.y - segmentApplyBtn.height - segmentUI.y;
+//		segmentUI.addChild(segmentApplyBtn);
+//
+//		segmentApplyLabel = Resources.makeLabel("Keep drawing,\nor click when done",CSS.normalTextFormat, segmentApplyBtn.right() + 5, segmentApplyBtn.y);
+//		segmentApplyLabel.x = segmentApplyBtn.right() + 5;
+//		segmentApplyLabel.y = segmentApplyBtn.y + segmentApplyBtn.height/2 - segmentApplyLabel.height/2;
+//		segmentUI.addChild(segmentApplyLabel);
 
 		function showTip(btn:IconButton):void{
 			editor.app.showTip("segmentation");
@@ -619,7 +619,7 @@ public class DrawPropertyUI extends Sprite {
 			(editor.targetCostume.segmentationState.mode == 'object' ? segmentKeepBtn : segmentRmBtn).setOn(true);
 			(editor.targetCostume.segmentationState.mode == 'object' ? segmentRmBtn : segmentKeepBtn).setOn(false);
 			var isDisabled:Boolean = !editor.targetCostume.segmentationState.lastMask;
-			segmentApplyBtn.setDisabled(isDisabled, .5, ImageEdit.buttonFrame(isDisabled ? Resources.createBmp("applyMaskDisabled") : Resources.createBmp("applyMaskOff"), false, new Point(40,36)));
+			//segmentApplyBtn.setDisabled(isDisabled, .5, ImageEdit.buttonFrame(isDisabled ? Resources.createBmp("applyMaskDisabled") : Resources.createBmp("applyMaskOff"), false, new Point(40,36)));
 
 		}
 	}

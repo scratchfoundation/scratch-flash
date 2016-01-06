@@ -179,6 +179,7 @@ public class BitmapEdit extends ImageEdit {
 		var bm:BitmapData = workArea.getBitmap().bitmapData;
 		bm.fillRect(bm.rect, bgColor()); // clear
 		c.scaleAndCenter(bm, isScene); //draw on this bm
+		c.segmentationState.unmarkedBitmap = bm.clone();
 		var scale:Number = 2 / c.bitmapResolution;
 //		var costumeBM:BitmapData = c.bitmapForEditor(isScene);
 //		var destP:Point = isScene ?
