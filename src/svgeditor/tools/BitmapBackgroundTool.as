@@ -189,9 +189,7 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 			if(p.y < segmentationState.yMin){
 				segmentationState.yMin = p.y
 			}
-			if(!(segmentationState.mode == "object") || segmentationState.lastMask){
-				segmentationRequired = true;
-			}
+			segmentationRequired = true;
 		}
 		super.lastPoint = p;
 	}
@@ -250,13 +248,13 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 	}
 
 	private function cropWidth():int{
-		return cropX() + (segmentationState.xMax - segmentationState.xMin) + 10 < workingBitmap.width ?
-			(segmentationState.xMax - segmentationState.xMin) + 10 : workingBitmap.width - segmentationState.xMin;
+		return cropX() + (segmentationState.xMax - segmentationState.xMin)*1.2 < workingBitmap.width ?
+			(segmentationState.xMax - segmentationState.xMin) *1.2 : workingBitmap.width - segmentationState.xMin;
 	}
 
 	private function cropHeight():int{
-		return cropY() + (segmentationState.yMax - segmentationState.yMin) + 10 < workingBitmap.height ?
-		(segmentationState.yMax - segmentationState.yMin) + 10 : workingBitmap.height - segmentationState.yMin;
+		return cropY() + (segmentationState.yMax - segmentationState.yMin) *1.2 < workingBitmap.height ?
+		(segmentationState.yMax - segmentationState.yMin) *1.2 : workingBitmap.height - segmentationState.yMin;
 	}
 
 	private function cropX():int{
