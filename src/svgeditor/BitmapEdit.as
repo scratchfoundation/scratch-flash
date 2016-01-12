@@ -208,10 +208,10 @@ public class BitmapEdit extends ImageEdit {
 		if (currentTool is ObjectTransformer) return;
 		if (currentTool is TextTool) return; // should select the text so it can be manipulated
 		bakeIntoBitmap();
-		saveToCostume();
+		saveToCostume(!(evt is SegmentationEvent));
 	}
 
-	private function saveToCostume():void {
+	private function saveToCostume(undoable:Boolean=true):void {
 		// Note: Although the bitmap is double resolution, the rotation center is not doubled,
 		// since it is applied to the costume after the bitmap has been scaled down.
 		var c:ScratchCostume = targetCostume;
@@ -230,8 +230,13 @@ public class BitmapEdit extends ImageEdit {
 				c.setBitmapData(newBM, 0, 0);
 			}
 		}
-		recordForUndo(c.baseLayerBitmap.clone(), c.rotationCenterX, c.rotationCenterY);
-		Scratch.app.setSaveNeeded();
+		if(undoable){
+			recordForUndo(c.baseLayerBitmap.clone(), c.rotationCenterX, c.rotationCenterY);
+			Scratch.app.setSaveNeeded();
+		}
+		else if (targetCostume.undoListIndex < targetCostume.undoList.length) {
+			targetCostume.undoList = targetCostume.undoList.slice(0, targetCostume.undoListIndex + 1);
+		}
 	}
 
 	override public function setToolMode(newMode:String, bForce:Boolean = false, fromButton:Boolean = false):void {

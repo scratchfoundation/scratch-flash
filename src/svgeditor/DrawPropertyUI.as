@@ -60,19 +60,6 @@ public class DrawPropertyUI extends Sprite {
 	private var fillBtnVertical:IconButton;
 	private var fillBtnRadial:IconButton;
 
-	// Segmentation UI
-	private var segmentUI:Sprite;
-	private var segmentIcon:DisplayObject;
-	private var segmentKeepBtn:IconButton;
-	private var segmentKeepLabel:TextField;
-	private var segmentHeaderLabel:TextField;
-	private var segmentRmBtn:IconButton;
-	private var segmentRmLabel:TextField;
-	private var segmentApplyBtn:IconButton;
-	private var segmentApplyLabel:TextField;
-	private var segmentationTipsBtn:IconButton;
-	private var oldWidth:int;
-
 	// Font UI
 	private var fontLabel:TextField;
 	private var fontMenuButton:IconButton;
@@ -91,8 +78,6 @@ public class DrawPropertyUI extends Sprite {
 
 	// Other UI elements
 	private var bg:Shape; // background rectangle
-	private var segmentBG:Shape;
-	private var segmentHeader:Shape;
 	private var zoomButtons:Sprite;
 	private var modeLabel:TextField;
 	private var modeButton:Button;
@@ -109,12 +94,9 @@ public class DrawPropertyUI extends Sprite {
 		eraserStrokeMode = false;
 
 		addChild(bg = new Shape());
-		addChild(segmentBG = new Shape());
-		addChild(segmentHeader = new Shape());
 		addChild(colorPicker = new ColorPicker(editor, this));
 		makeShapeUI();
 		makeStrokeUI();
-		makeSegmentationUI();
 		makeFillUI();
 		makeFontUI();
 		makeSmoothnessUI();
@@ -222,36 +204,8 @@ public class DrawPropertyUI extends Sprite {
 	public function toggleSegmentationUI(enabled:Boolean, tool:BitmapBackgroundTool):void{
 		if(tool && enabled){
 			tool.addEventListener(BitmapBackgroundTool.UPDATE_REQUIRED, updateSegmentationUI, false, 0, true);
-			if(segmentBG.width == 0){
-			oldWidth = this.w;
-			setWidthHeight(120, this.h, this.w - 120, 0);
-			var g:Graphics = segmentBG.graphics;
-			g.clear();
-			g.lineStyle(1, CSS.borderColor);
-			g.beginFill(0xF6F6F6);
-			g.drawRect(0, 0, oldWidth - 130, this.h);
-
-			g = segmentHeader.graphics;
-			g.clear();
-			g.lineStyle(1, CSS.borderColor);
-			g.beginFill(0xF6F6F6);
-			g.drawRect(0, 0, oldWidth - 130, 34);
-			segmentationTipsBtn.x = segmentHeader.width - segmentationTipsBtn.width - segmentUI.x - 10;
-			}
 
 		}
-		else{
-			segmentBG.graphics.clear();
-			segmentHeader.graphics.clear();
-			if(oldWidth > 0){
-				setWidthHeight(oldWidth, this.h);
-			}
-		}
-		segmentHeaderLabel.visible=enabled;
-		segmentIcon.visible=enabled;
-		segmentUI.visible=enabled;
-		colorPicker.visible=!enabled;
-		updateSegmentationUI();
 	}
 
 	public function showSmoothnessUI(flag:Boolean, forDrawing:Boolean = true):void {
@@ -278,7 +232,6 @@ public class DrawPropertyUI extends Sprite {
 		if(!disableEvents) dispatchEvent(new Event(ONCHANGE));
 		if (fillUI.visible) updateFillUI();
 		if (shapeUI.visible) updateShapeUI();
-		if (segmentUI.visible) updateSegmentationUI();
 	}
 
 	private function makeFillUI():void {
@@ -544,83 +497,10 @@ public class DrawPropertyUI extends Sprite {
 		ttBg.graphics.endFill();
 	}
 
-	private function makeSegmentationUI():void {
-		segmentUI = new Sprite();
-		segmentUI.x = 10;
-		segmentUI.y = 15;
-		segmentUI.visible = false;
-
-		segmentIcon = Resources.createBmp("magicEraserIcon");
-		segmentIcon.x = -segmentUI.x;
-		segmentIcon.y = -segmentUI.y;
-		segmentUI.addChild(segmentIcon);
-
-		var iconSize:Point = new Point(40, 36);
-		segmentKeepBtn = new IconButton(editor.segmentationModeChanged, ImageEdit.makeToolButton("objectMarker", true, iconSize), ImageEdit.makeToolButton("objectMarker", false, iconSize), true);
-		segmentKeepBtn.name = 'object';
-		segmentKeepBtn.x = segmentIcon.x + segmentIcon.width;
-		segmentKeepBtn.y = strokeWidthSlider.y - segmentKeepBtn.height - segmentUI.y;
-		segmentUI.addChild(segmentKeepBtn);
-
-		segmentKeepLabel = Resources.makeLabel("Draw inside something\nyou want to keep",CSS.normalTextFormat, segmentKeepBtn.right() + 5, segmentKeepBtn.y);
-		segmentKeepLabel.x = segmentKeepBtn.right() + 5;
-		segmentKeepLabel.y = segmentKeepBtn.y + segmentKeepBtn.height/2 - segmentKeepLabel.height/2;
-		segmentUI.addChild(segmentKeepLabel);
-
-		segmentRmBtn = new IconButton(editor.segmentationModeChanged, ImageEdit.makeToolButton("bgMarker", true, iconSize), ImageEdit.makeToolButton("bgMarker", false, iconSize), true);
-		segmentRmBtn.name = 'background';
-		segmentRmBtn.x = segmentKeepLabel.x + segmentKeepLabel.width + 15;
-		segmentRmBtn.y = strokeWidthSlider.y - segmentRmBtn.height - segmentUI.y;
-		segmentUI.addChild(segmentRmBtn);
-
-		segmentRmLabel = Resources.makeLabel("Draw outside\nyour object",CSS.normalTextFormat, segmentRmBtn.right() + 5, segmentRmBtn.y);
-		segmentRmLabel.x = segmentRmBtn.right() + 5;
-		segmentRmLabel.y = segmentRmBtn.y + segmentRmBtn.height/2 - segmentRmLabel.height/2;
-		segmentUI.addChild(segmentRmLabel);
-
-
-		segmentIcon.height = 34;
-		segmentIcon.width = segmentIcon.height;
-
-		segmentHeaderLabel = Resources.makeLabel("Magic Eraser - Remove the background of a photo",CSS.titleFormat, segmentKeepBtn.right() + 5, segmentKeepBtn.y);
-		segmentHeaderLabel.y = segmentIcon.y + segmentIcon.height/2 - segmentHeaderLabel.height/2;
-		segmentHeaderLabel.x = segmentIcon.x + segmentIcon.width + 5;
-		segmentUI.addChild(segmentHeaderLabel);
-//
-//		segmentApplyBtn = new IconButton(editor.applySegmentationMask, ImageEdit.makeToolButton("applyMask", true, iconSize), ImageEdit.makeToolButton("applyMask", false, iconSize));
-//		segmentApplyBtn.name = 'punch';
-//		segmentApplyBtn.isMomentary = true;
-//		segmentApplyBtn.x = segmentRmLabel.x + segmentRmLabel.width + 15;
-//		segmentApplyBtn.y = strokeWidthSlider.y - segmentApplyBtn.height - segmentUI.y;
-//		segmentUI.addChild(segmentApplyBtn);
-//
-//		segmentApplyLabel = Resources.makeLabel("Keep drawing,\nor click when done",CSS.normalTextFormat, segmentApplyBtn.right() + 5, segmentApplyBtn.y);
-//		segmentApplyLabel.x = segmentApplyBtn.right() + 5;
-//		segmentApplyLabel.y = segmentApplyBtn.y + segmentApplyBtn.height/2 - segmentApplyLabel.height/2;
-//		segmentUI.addChild(segmentApplyLabel);
-
-		function showTip(btn:IconButton):void{
-			editor.app.showTip("segmentation");
-		}
-		segmentationTipsBtn = new IconButton(showTip, "moreInfo");
-		segmentationTipsBtn.isMomentary = true;
-		segmentationTipsBtn.y = segmentHeaderLabel.y + segmentHeaderLabel.height/2 - segmentationTipsBtn.height/2;
-		segmentUI.addChild(segmentationTipsBtn);
-
-		updateSegmentationUI();
-		addChild(segmentUI);
-	}
 
 	private function updateSegmentationUI(e:Event=null):void{
 		if(editor && editor.imagesPart){
 			editor.imagesPart.refreshUndoButtons();
-		}
-		if(editor && editor.targetCostume){
-			(editor.targetCostume.segmentationState.mode == 'object' ? segmentKeepBtn : segmentRmBtn).setOn(true);
-			(editor.targetCostume.segmentationState.mode == 'object' ? segmentRmBtn : segmentKeepBtn).setOn(false);
-			var isDisabled:Boolean = !editor.targetCostume.segmentationState.lastMask;
-			//segmentApplyBtn.setDisabled(isDisabled, .5, ImageEdit.buttonFrame(isDisabled ? Resources.createBmp("applyMaskDisabled") : Resources.createBmp("applyMaskOff"), false, new Point(40,36)));
-
 		}
 	}
 

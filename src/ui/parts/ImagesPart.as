@@ -393,10 +393,10 @@ public class ImagesPart extends UIPart {
 
 	public function refreshUndoButtons():void {
 		if(undoButton){
-			undoButton.setDisabled(!editor.canUndo(), 0.5);
+			undoButton.setDisabled(!(editor.canUndo() || editor.canUndoSegmentation()), 0.5);
 		}
 		if(redoButton){
-			redoButton.setDisabled(!editor.canRedo(), 0.5);
+			redoButton.setDisabled(!(editor.canRedo() || editor.canRedoSegmentation()), 0.5);
 		}
 		if(clearButton){
 			if (editor.canClearCanvas()) {

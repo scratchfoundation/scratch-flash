@@ -575,9 +575,6 @@ package svgeditor {
 			var s:Selection = null;
 			if(currentTool) {
 				var tool:BitmapBackgroundTool = segmentationTool;
-				if(tool){
-					segmentationTool.restoreUnmarked();
-				}
 				if(toolMode == 'select' && newMode != 'select')
 					s = (currentTool as ObjectTransformer).getSelection();
 
@@ -620,7 +617,6 @@ package svgeditor {
 				case 'paintbucket': currentTool = new PaintBucketTool(this); break;
 				case 'magicEraser':{
 					currentTool = new BitmapBackgroundTool(this);
-					segmentationTool.loadState();
 					break;
 				}
 			}
@@ -652,16 +648,13 @@ package svgeditor {
 				// Listen for any changes to the content
 				currentTool.addEventListener(Event.CHANGE, saveContent, false, 0, true);
 			}
-			//now that you've update toolMode, refresh
-			if(segmentationTool){
-				refreshSegmentationMode();
-			}
 
 			if (lastToolMode != '') highlightTool(lastToolMode);
 
 			// Make sure the tool selected is visible!
 			if(toolButtons.hasOwnProperty(newMode) && currentTool)
 				(toolButtons[newMode] as IconButton).setDisabled(false);
+			imagesPart.refreshUndoButtons();
 		}
 
 		protected function updateDrawPropsForTool(newMode:String):void {
@@ -746,8 +739,8 @@ package svgeditor {
 			if (toolButtons['setCenter']) (toolButtons['setCenter'] as IconButton).setDisabled(isScene);
 			loadCostume(targetCostume);
 			if(segmentationTool){
-				segmentationTool.loadState();
-				refreshSegmentationMode();
+				segmentationTool.initState();
+				//refreshSegmentationMode();
 			}
 			if (imagesPart) imagesPart.refreshUndoButtons();
 
@@ -827,28 +820,46 @@ package svgeditor {
 		public function canUndo():Boolean {
 			return targetCostume &&
 					(targetCostume.undoList.length > 0) &&
-					(targetCostume.undoListIndex > 0) || (segmentationTool && !targetCostume.segmentationState.isBlank);
+					(targetCostume.undoListIndex > 0);
 		}
 
 		public function canRedo():Boolean {
 			return targetCostume &&
 					(targetCostume.undoList.length > 0) &&
-					(targetCostume.undoListIndex < (targetCostume.undoList.length - 1)) && (!segmentationTool || !targetCostume.segmentationState.isGreyscale);
+					(targetCostume.undoListIndex < (targetCostume.undoList.length - 1)) && !targetCostume.segmentationState.lastMask;
+		}
+
+		public function canUndoSegmentation():Boolean{
+			return segmentationTool && targetCostume.segmentationState.canUndo();
+		}
+
+		public function canRedoSegmentation():Boolean{
+			return segmentationTool && targetCostume.segmentationState.canRedo() && !canRedo();
 		}
 
 		public function undo(ignore:* = null):void {
+
+			//This is handled as a special case since clearSelection will commit a
+			//segmentation earlier than desired
+			if(canUndoSegmentation()){
+				undoSegmentation();
+				return;
+			}
+
 			clearSelection();
 			if (canUndo()) {
-				if(segmentationTool && !targetCostume.segmentationState.isBlank){
-					resetSegmentation();
-					return;
-				}
 				var undoRec:Array = targetCostume.undoList[--targetCostume.undoListIndex];
 				installUndoRecord(undoRec);
 			}
 		}
 
 		public function redo(ignore:* = null):void {
+
+			if(canRedoSegmentation()){
+				redoSegmentation();
+				return;
+			}
+
 			clearSelection();
 			if (canRedo()) {
 				var undoRec:Array = targetCostume.undoList[++targetCostume.undoListIndex];
@@ -930,41 +941,20 @@ package svgeditor {
 			return toolsP;
 		}
 
-
-		public function segmentationModeChanged(ib:IconButton):void{
-			targetCostume.segmentationState.mode = ib.name;
-			refreshSegmentationMode();
-		}
-
-		private function refreshSegmentationMode():void{
-			if(segmentationTool){
-				var mode:String = targetCostume.segmentationState.mode;
-				if(mode == 'object'){
-					setCurrentColor(0x0000ff, 1);
-				}
-				else if(mode =='background') {
-					setCurrentColor(0xff0000, 1);
-				}
-				drawPropsUI.sendChangeEvent();
-			}
-		}
-
-		public function applySegmentationMask(ib:IconButton):void{
-			if(segmentationTool){
-				segmentationTool.commitMask();
-                refreshSegmentationMode();
-			}
-
-		}
-
-		public function resetSegmentation():void{
+		public function undoSegmentation():void{
             if(segmentationTool){
-                targetCostume.segmentationState.reset();
-                segmentationTool.restoreUnmarked();
-                segmentationTool.loadState();
-                refreshSegmentationMode();
+                targetCostume.segmentationState.undo();
+                segmentationTool.refreshSegmentation();
+				imagesPart.refreshUndoButtons();
             }
+		}
 
+		public function redoSegmentation():void{
+            if(segmentationTool){
+                targetCostume.segmentationState.redo();
+                segmentationTool.refreshSegmentation();
+				imagesPart.refreshUndoButtons();
+            }
 		}
 	}
 }
