@@ -183,7 +183,7 @@ public class Watcher extends Sprite implements DragClient {
 	}
 
 	private function specForCmd():String {
-		var i:int = cmd.indexOf('.');
+		var i:int = cmd.lastIndexOf('.');
 		if(i > -1) {
 			var spec:Array = Scratch.app.extensionManager.specForCmd(cmd);
 			if(spec) return cmd.substr(0, i) + ': '+spec[0];
@@ -238,7 +238,7 @@ public class Watcher extends Sprite implements DragClient {
 			case "yScroll": return app.stagePane.yScroll;
 		}
 
-		if(cmd.indexOf('.') > -1) {
+		if(cmd.lastIndexOf('.') > -1) {
 			var spec:Array = Scratch.app.extensionManager.specForCmd(cmd);
 			if(spec) {
 				block = new Block(spec[0], spec[1], Specs.blockColor(spec[2]), spec[3]);
