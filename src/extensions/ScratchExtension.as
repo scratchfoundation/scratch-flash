@@ -71,7 +71,7 @@ public class ScratchExtension {
 
 	public static function PicoBoard():ScratchExtension {
 		// Return a descriptor for the Scratch PicoBoard extension.
-		var result:ScratchExtension = new ScratchExtension('PicoBoard', 0);
+		var result:ScratchExtension = new ScratchExtension(ExtensionManager.picoBoardExt, 0);
 		result.isInternal = true;
 		result.javascriptURL = Scratch.app.server.getOfficialExtensionURL('picoExtension.js');
 		result.thumbnailMD5 = '82318df0f682b1de33f64da8726660dc.png';
@@ -85,8 +85,19 @@ public class ScratchExtension {
 		var result:ScratchExtension = new ScratchExtension(ExtensionManager.wedoExt, 0);
 		result.isInternal = true;
 		result.javascriptURL = Scratch.app.server.getOfficialExtensionURL('wedoExtension.js');
-		result.thumbnailMD5 = 'c4a6bfa4cb9f4d71b3d1e65db63cb761.png';
+		result.thumbnailMD5 = 'c323d815dee53ca545d71fdc107af708.png';
 		result.url = 'http://wiki.scratch.mit.edu/wiki/LEGO_WeDo_Blocks';
+		result.tags = ['hardware'];
+		return result;
+	}
+
+	public static function WeDo2():ScratchExtension {
+		// Return a descriptor for the LEGO WeDo 2.0 extension.
+		var result:ScratchExtension = new ScratchExtension(ExtensionManager.wedo2Ext, 0);
+		result.isInternal = true;
+		result.javascriptURL = Scratch.app.server.getOfficialExtensionURL('wedo2Extension.js');
+		result.thumbnailMD5 = 'f20bd801dbeb1359f6f384fd942d9314.png';
+		result.url = 'http://wiki.scratch.mit.edu/wiki/LEGO_WeDo2_Blocks'; // TODO
 		result.tags = ['hardware'];
 		return result;
 	}

@@ -49,7 +49,9 @@ public class ExtensionManager {
 	protected var extensionDict:Object = new Object(); // extension name -> extension record
 	private var justStartedWait:Boolean;
 	private var pollInProgress:Dictionary = new Dictionary(true);
-	static public const wedoExt:String = 'LEGO WeDo';
+	static public const picoBoardExt:String = 'PicoBoard';
+	static public const wedoExt:String = 'LEGO WeDo 1.0';
+	static public const wedo2Ext:String = 'LEGO WeDo 2.0';
 
 	public function ExtensionManager(app:Scratch) {
 		this.app = app;
@@ -72,8 +74,9 @@ public class ExtensionManager {
 
 		// Clear imported extensions before loading a new project.
 		extensionDict = {};
-		extensionDict['PicoBoard'] = ScratchExtension.PicoBoard();
+		extensionDict[picoBoardExt] = ScratchExtension.PicoBoard();
 		extensionDict[wedoExt] = ScratchExtension.WeDo();
+		extensionDict[wedo2Ext] = ScratchExtension.WeDo2();
 	}
 
 	// -----------------------------
