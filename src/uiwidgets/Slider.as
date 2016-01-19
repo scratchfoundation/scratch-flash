@@ -39,13 +39,15 @@ public class Slider extends Sprite implements DragClient {
 	private var positionFraction:Number = 0; // range: 0-1
 
 	private var isVertical:Boolean;
+	private var isTriangle:Boolean;
 	private var dragOffset:int;
 	private var scrollFunction:Function;
 	private var minValue:Number;
 	private var maxValue:Number;
 
-	public function Slider(w:int, h:int, scrollFunction:Function = null) {
+	public function Slider(w:int, h:int, scrollFunction:Function = null,isTriangle:Boolean=false) {
 		this.scrollFunction = scrollFunction;
+		this.isTriangle=isTriangle;
 		minValue = 0;
 		maxValue = 1;
 		addChild(slot = new Shape());
@@ -78,31 +80,49 @@ public class Slider extends Sprite implements DragClient {
 	}
 
 	private function drawSlot(w:int, h:int):void {
-		const slotRadius:int = 9;
 		var g:Graphics = slot.graphics;
-		g.clear();
-		if (slotColor2 >= 0) {
-			var m:Matrix = new Matrix();
-			m.createGradientBox(w, h, (isVertical ? -Math.PI / 2 : Math.PI), 0, 0);
-			g.beginGradientFill(GradientType.LINEAR, [slotColor, slotColor2], [1, 1], [0, 255], m);
-		} else {
-			g.beginFill(slotColor);
+		if (isTriangle) {
+			g.beginFill(slotColor,1); 
+			g.moveTo(0,h/2.0+.5);
+			g.lineTo(w,h);
+			g.lineTo(w,0);
+			g.lineTo(0,h/2.0-0.5);
+			g.endFill();
 		}
-		g.drawRoundRect(0, 0, w, h, slotRadius, slotRadius);
-		g.endFill();
+		else {
+			const slotRadius:int = 9;
+			g.clear();
+			if (slotColor2 >= 0) {
+				var m:Matrix = new Matrix();
+				m.createGradientBox(w, h, (isVertical ? -Math.PI / 2 : Math.PI), 0, 0);
+				g.beginGradientFill(GradientType.LINEAR, [slotColor, slotColor2], [1, 1], [0, 255], m);
+			} else {
+				g.beginFill(slotColor);
+			}
+			g.drawRoundRect(0, 0, w, h, slotRadius, slotRadius);
+			g.endFill();
+		}
 	}
 
 	private function drawKnob(w:int, h:int):void {
 		const knobOutline:int = 0x707070;
 		const knobFill:int = 0xEBEBEB;
 		const knobRadius:int = 6; // 3;
-		var knobW:int = isVertical ? w + 7 : 7;
-		var knobH:int = isVertical ? 7 : h + 7;
+		var knobW:int,knobH:int,o:int=0.5;
+		if (isTriangle) {
+			knobW = isVertical ? w + 3 : 7;
+			knobH = isVertical ? 7 : h + 3;
+			o+=2
+		}
+		else {
+			knobW = isVertical ? w + 7 : 7;
+			knobH = isVertical ? 7 : h + 7;
+		}
 		var g:Graphics = knob.graphics;
 		g.clear();
 		g.lineStyle(1, knobOutline);
 		g.beginFill(knobFill);
-		g.drawRoundRect(0.5, 0.5, knobW, knobH, knobRadius, knobRadius);
+		g.drawRoundRect(o, o, knobW, knobH, knobRadius, knobRadius);
 		g.endFill();
 	}
 

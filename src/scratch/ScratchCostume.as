@@ -587,7 +587,7 @@ public class ScratchCostume {
 		// the base layer bitmap from the composite bitmap. (The new costume format keeps
 		// the text layer bitmap only, rather than the entire composite image.)
 
-		if (oldComposite == null) return; // nothing to do
+		if (oldComposite == null || baseLayerBitmap == null) return; // nothing to do
 		var diff:* = oldComposite.compare(baseLayerBitmap); // diff is 0 if oldComposite and baseLayerBitmap are identical
 		if (diff is BitmapData) {
 			var stencil:BitmapData = new BitmapData(diff.width, diff.height, true, 0);

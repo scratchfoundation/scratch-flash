@@ -547,7 +547,11 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 			var loader:Loader = new Loader();
 			loader.contentLoaderInfo.addEventListener(Event.COMPLETE, imageDecoded);
 			loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, function(e:Event):void { decodeError(); });
-			loader.loadBytes(data);
+			try {
+				loader.loadBytes(data);
+			} catch(e:*) {
+				decodeError();
+			}
 		} else if (fExt == '.gif') {
 			try {
 				importGIF(fName, data);
@@ -561,10 +565,7 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 			uploadCostume(costumeOrSprite as ScratchCostume, uploadComplete);
 		} else {
 			data.position = 0;
-			if (data.readUTFBytes(4) != 'ObjS') {
-				data.position = 0;
-				new ProjectIO(app).decodeSpriteFromZipFile(data, spriteDecoded, spriteError);
-			} else {
+			if (data.bytesAvailable > 4 && data.readUTFBytes(4) == 'ObjS') {
 				var info:Object;
 				var objTable:Array;
 				data.position = 0;
@@ -582,6 +583,9 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 					return;
 				}
 				new ProjectIO(app).decodeAllImages(newProject.allObjects(), imagesDecoded, spriteError);
+			} else {
+				data.position = 0;
+				new ProjectIO(app).decodeSpriteFromZipFile(data, spriteDecoded, spriteError);
 			}
 		}
 	}

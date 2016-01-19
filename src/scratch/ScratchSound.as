@@ -30,10 +30,15 @@
 
 package scratch {
 import by.blooddy.crypto.MD5;
+
 import flash.media.Sound;
 import flash.utils.*;
+
+import logging.LogLevel;
+
 import sound.*;
 import sound.mp3.MP3Loader;
+
 import util.*;
 
 public class ScratchSound {
@@ -143,7 +148,7 @@ public class ScratchSound {
 		// Support for converting MP3 format sounds in Scratch projects was removed during alpha test.
 		// If this is on old, MP3 formatted sound, convert it to WAV format. Otherwise, do nothing.
 		function whenDone(snd:ScratchSound):void {
-Scratch.app.log('Converting MP3 to WAV: ' + soundName);
+			Scratch.app.log(LogLevel.INFO, 'Converting MP3 to WAV', {soundName: soundName});
 			md5 = null;
 			soundData = snd.soundData;
 			format = snd.format;
@@ -191,7 +196,8 @@ Scratch.app.log('Converting MP3 to WAV: ' + soundName);
 		if (format == 'squeak') { // convert Squeak ADPCM to WAV ADPCM
 			var uncompressedData:ByteArray = new SqueakSoundDecoder(bitsPerSample).decode(soundData);
 			if (uncompressedData.length == 0) uncompressedData.writeShort(0); // a WAV file must have at least one sample
-Scratch.app.log('Converting squeak sound to WAV ADPCM; sampleCount old: ' + sampleCount + ' new: ' + (uncompressedData.length / 2));
+			Scratch.app.log(LogLevel.INFO, 'Converting squeak sound to WAV ADPCM',
+				{oldSampleCount: sampleCount, newSampleCount: (uncompressedData.length / 2)});
 			sampleCount = uncompressedData.length / 2;
 			soundData = WAVFile.encode(uncompressedData, sampleCount, rate, true);
 			format = 'adpcm';
@@ -200,7 +206,7 @@ Scratch.app.log('Converting squeak sound to WAV ADPCM; sampleCount old: ' + samp
 		}
 		reduceSizeIfNeeded(1); // downsample or compress to reduce size before saving
 		if (soundID == WasEdited) { md5 = null; soundID = -1 } // sound was edited; force md5 to be recomputed
-		if (!md5) md5 = by.blooddy.crypto.MD5.hashBytes(soundData) + '.wav';
+		if (!md5) md5 = MD5.hashBytes(soundData) + '.wav';
 	}
 
 	public static function isWAV(data:ByteArray):Boolean {

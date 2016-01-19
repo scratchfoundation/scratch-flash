@@ -59,6 +59,13 @@ public class ScriptsPane extends ScrollFrameContents {
 		addFeedbackShape();
 	}
 
+	public static function strings():Array {
+		return [
+			'add comment',
+			'clean up'
+		];
+	}
+
 	private function createTexture():void {
 		const alpha:int = 0x90 << 24;
 		const bgColor:int = alpha | 0xD7D7D7;

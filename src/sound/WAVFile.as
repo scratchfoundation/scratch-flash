@@ -319,6 +319,10 @@ public class WAVFile {
 		var lastByte:int = -1; // -1 indicates that there is no saved lastByte
 		var out:ByteArray = new ByteArray();
 		out.endian = Endian.LITTLE_ENDIAN;
+
+		// Bail and return no samples if we have no data
+		if (!compressedData) return out;
+
 		compressedData.position = 0;
 		while (true) {
 			if (((compressedData.position % blockSize) == 0) && (lastByte < 0)) { // read block header

@@ -436,13 +436,20 @@ public class ExtensionManager {
 					activeThread.firstTime = true;
 				}
 			}
-			else
+			else {
 				httpCall(ext, op, args);
+			}
 		} else {
-			if(op == 'reset_all') op = 'resetAll';
+			if (Scratch.app.jsEnabled) {
+				if (op == 'reset_all') {
+					app.externalCall('ScratchExtensions.stop', null, ext.name);
+				}
+				else {
+					// call a JavaScript extension function with the given arguments
+					app.externalCall('ScratchExtensions.runCommand', null, ext.name, op, args);
+				}
+			}
 
-			// call a JavaScript extension function with the given arguments
-			if(Scratch.app.jsEnabled) app.externalCall('ScratchExtensions.runCommand', null, ext.name, op, args);
 			app.interp.redraw(); // make sure interpreter doesn't do too many extension calls in one cycle
 		}
 	}

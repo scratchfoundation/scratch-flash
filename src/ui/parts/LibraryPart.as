@@ -350,7 +350,7 @@ public class LibraryPart extends UIPart {
 		app.addNewSprite(spr, true);
 	}
 
-	private function spriteFromCamera(b:IconButton):void {
+	protected function spriteFromCamera(b:IconButton):void {
 		function savePhoto(photo:BitmapData):void {
 			var s:ScratchSprite = new ScratchSprite();
 			s.setInitialCostume(new ScratchCostume(Translator.map('photo1'), photo));
@@ -398,7 +398,7 @@ public class LibraryPart extends UIPart {
 	// New Backdrop Operations
 	//------------------------------
 
-	private function backdropFromCamera(b:IconButton):void {
+	protected function backdropFromCamera(b:IconButton):void {
 		function savePhoto(photo:BitmapData):void {
 			addBackdrop(new ScratchCostume(Translator.map('photo1'), photo));
 			app.closeCameraDialog();
@@ -420,7 +420,7 @@ public class LibraryPart extends UIPart {
 		addBackdrop(ScratchCostume.emptyBitmapCostume(Translator.map('backdrop1'), true));
 	}
 
-	private function addBackdrop(costumeOrList:*):void {
+	protected function addBackdrop(costumeOrList:*):void {
 		var c:ScratchCostume = costumeOrList as ScratchCostume;
 		if (c) {
 			if (!c.baseLayerData) c.prepareToSave();

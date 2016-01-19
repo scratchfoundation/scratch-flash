@@ -1,11 +1,13 @@
 /.idea/uiDesigner.xml
 /.idea/workspace.xml
+/.gradle/
+/.settings/
 /bin/
 /bin-debug/
 /bin-release/
+/build/
 .DS_Store
 .actionScriptProperties
 .flexLibProperties
 .project
-.settings/
 local.properties

@@ -46,6 +46,10 @@ public class ScratchSoundPlayer {
 
 	// sound being played
 	public var scratchSound:ScratchSound;
+	
+	//video recording
+	public var dataBytes:ByteArray;
+	public var readPosition:int;
 
 	// sound data, step size, and current stream position
 	protected var soundData:ByteArray;
@@ -54,12 +58,13 @@ public class ScratchSoundPlayer {
 	protected var stepSize:Number;
 	private var adpcmBlockSize:int;
 	protected var bytePosition:int;  // use our own position to allow sound data to be shared
-	protected var soundChannel:SoundChannel;
+	public var soundChannel:SoundChannel;
 	private var lastBufferTime:uint;
 
 	// volume support
 	public var client:*;
-	protected var volume:Number = 1.0;
+	public var volume:Number = 1.0;
+	public var savedVolume:Number;
 	private var lastClientVolume:Number;
 
 	// interpolation function and state
@@ -68,6 +73,7 @@ public class ScratchSoundPlayer {
 	private var thisSample:int, nextSample:int;
 
 	public function ScratchSoundPlayer(wavFileData:ByteArray) {
+		readPosition = 0;
 		getSample = getSample16Uncompressed;
 		if (wavFileData != null) {
 			try {
@@ -105,9 +111,13 @@ public class ScratchSoundPlayer {
 		}
 		var i:int = activeSounds.indexOf(this);
 		if (i >= 0) activeSounds.splice(i, 1);
+		dataBytes = null;
 	}
 
 	public function startPlaying(doneFunction:Function = null):void {
+		readPosition=0;
+		dataBytes = new ByteArray();
+		dataBytes.position=0;
 		stopIfAlreadyPlaying();
 		activeSounds.push(this);
 		bytePosition = startOffset;
@@ -162,6 +172,7 @@ public class ScratchSoundPlayer {
 			data.writeFloat(n);
 			data.writeFloat(n);
 		}
+		dataBytes.writeBytes(data);
 		if ((bytePosition >= endOffset) && (lastBufferTime == 0)) {
 			lastBufferTime = getTimer();
 		}
