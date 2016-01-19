@@ -41,6 +41,7 @@ import assets.Resources;
 import ui.media.MediaInfo;
 import ui.BlockPalette;
 import uiwidgets.DialogBox;
+import uiwidgets.Menu;
 import ui.RecordingSpecEditor;
 import ui.SharingSpecEditor;
 import util.*;
@@ -224,6 +225,12 @@ public class ScratchRuntime {
 					f.draw(d, new Matrix( scaled, 0, 0, scaled, app.stagePane.localToGlobal(new Point(0, 0)).x*scale, app.stagePane.localToGlobal(new Point(0, 0)).y*scale));
 				}
 				else if (app.stagePane.videoImage) app.stagePane.videoImage.visible = true;
+                for (var i:int = 0; i < app.stage.numChildren; i++) {
+                    if (app.stage.getChildAt(i) is Menu) {
+                        var m1:Menu = Menu(app.stage.getChildAt(i));
+                        f.draw(m1,new Matrix(scale,0,0,scale,m1.localToGlobal(new Point(0, 0)).x*scale,m1.localToGlobal(new Point(0, 0)).y*scale));
+                    }
+                }
 				if (showCursor && app.gh.mouseIsDown) {
 					f.draw(circle,new Matrix(scale,0,0,scale,(app.stage.mouseX-circle.width/2.0)*scale,(app.stage.mouseY-circle.height/2.0)*scale));
 				}
@@ -247,6 +254,12 @@ public class ScratchRuntime {
 					else f.draw(e, new Matrix( scaler, 0, 0, scaler, app.stagePane.localToGlobal(new Point(0, 0)).x, app.stagePane.localToGlobal(new Point(0, 0)).y));
 				}
 				else if (app.stagePane.videoImage) app.stagePane.videoImage.visible = true;
+                for (var i2:int = 0; i2 < app.stage.numChildren; i2++) {
+                    if (app.stage.getChildAt(i2) is Menu) {
+                        var m2:Menu = Menu(app.stage.getChildAt(i2));
+                        f.draw(m2,new Matrix(1,0,0,1,m2.localToGlobal(new Point(0, 0)).x,m2.localToGlobal(new Point(0, 0)).y));
+                    }
+                }
 				if (showCursor && app.gh.mouseIsDown) {
 					f.copyPixels(circle.bitmapData,circle.bitmapData.rect,new Point(app.stage.mouseX-circle.width/2.0,app.stage.mouseY-circle.height/2.0));
 				}
