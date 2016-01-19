@@ -1,11 +1,14 @@
-language: node_js
-node_js:
-- '0.10'
+language: groovy
 cache:
   directories:
-  - node_modules
-before_script:
-- npm install flex-sdk
+  - $HOME/.gradle/caches/
+  - $HOME/.gradle/wrapper/dists/
+install:
+  - ./gradlew build -Ptarget=11.6
+  - ./gradlew build -Ptarget=10.2
+script:
+  - ./gradlew check -Ptarget=11.6
+  - ./gradlew check -Ptarget=10.2
 notifications:
   slack:
     secure: TFnMix3WLFecQLMgmSIsUrnZUV7s5U7mJlzkfLrGU02u0uztjLcJr9qekg65I0wFtqGuMGAOfPAZo4hf0l5djzJTSUobLdlTpEunIEWd53IUZlljKCJQsVT8hfJtbjpIXMraLRLyTzDkXcRO3v2xthU30vsSI75sxQYufBx5/sU=

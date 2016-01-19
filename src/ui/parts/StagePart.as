@@ -27,6 +27,7 @@
 package ui.parts {
 	import flash.display.*;
 	import flash.events.*;
+	import flash.geom.Matrix;
 	import flash.text.*;
 	import flash.media.*;
 	import assets.Resources;
@@ -54,6 +55,12 @@ public class StagePart extends UIPart {
 	private var stopButton:IconButton;
 	private var fullscreenButton:IconButton;
 	private var stageSizeButton:Sprite;
+	
+	//video recording tools
+	private var stopRecordingButton:IconButton;
+	private var recordingIndicator:Shape;
+	private var videoProgressBar:Shape;
+	private var recordingTime:TextField;
 
 	private var playButton:Sprite; // YouTube-like play button in center of screen; used by Kiosk version
 	private var userNameWarning:Sprite; // Container for privacy warning message for projects that use username block
@@ -72,6 +79,7 @@ public class StagePart extends UIPart {
 		addChild(outline);
 		addTitleAndInfo();
 		addRunStopButtons();
+		addRecordingTools();
 		addTurboIndicator();
 		addFullScreenButton();
 		addXYReadouts();
@@ -79,7 +87,7 @@ public class StagePart extends UIPart {
 		fixLayout();
 		addEventListener(MouseEvent.MOUSE_WHEEL, mouseWheel);
 	}
-
+	
 	public static function strings():Array {
 		return [
 			'by', 'shared', 'unshared', 'Turbo Mode',
@@ -133,12 +141,20 @@ public class StagePart extends UIPart {
 	}
 
 	public function refresh():void {
+		if ((app.runtime.ready==ReadyLabel.COUNTDOWN || app.runtime.ready==ReadyLabel.READY) && !stopRecordingButton.isDisabled()) {
+			resetTime();
+		}
 		readouts.visible = app.editMode;
 		projectTitle.visible = app.editMode;
 		projectInfo.visible = app.editMode;
 		stageSizeButton.visible = app.editMode;
 		turboIndicator.visible = app.interp.turboMode;
 		fullscreenButton.visible = !app.isSmallPlayer;
+		stopRecordingButton.visible = (app.runtime.ready==ReadyLabel.COUNTDOWN || app.runtime.recording) && app.editMode;
+		videoProgressBar.visible = (app.runtime.ready==ReadyLabel.COUNTDOWN || app.runtime.recording) && app.editMode;
+		recordingTime.visible = (app.runtime.ready==ReadyLabel.COUNTDOWN || app.runtime.recording) && app.editMode;
+		recordingIndicator.visible = app.runtime.recording && app.editMode;
+		
 		if (app.editMode) {
 			fullscreenButton.setOn(false);
 			drawStageSizeButton();
@@ -198,13 +214,118 @@ public class StagePart extends UIPart {
 		var top:int = h + 1;
 		xReadout.y = yReadout.y = top;
 		xLabel.y = yLabel.y = top - 2;
+		
+		//recording tools
+		stopRecordingButton.x=2;
+		stopRecordingButton.y=top+2;
+		recordingIndicator.x=8+stopRecordingButton.width;
+		recordingIndicator.y=top+3;
+		recordingTime.x = recordingIndicator.x+recordingIndicator.width+6;
+		recordingTime.y=top;
+		videoProgressBar.x = recordingTime.x+42;
+		videoProgressBar.y=top+3;
 
 		stageSizeButton.x = w - 4;
 		stageSizeButton.y = h + 2;
 
 		if (playButton) playButton.scaleX = playButton.scaleY = app.stagePane.scaleX;
 	}
-
+	
+	private var lastTime:int=0;
+	
+	private function addRecordingTools():void {
+		stopRecordingButton = new IconButton(app.stopVideo, 'stopVideo');
+		addChild(stopRecordingButton);
+		
+		videoProgressBar = new Shape();
+		var slotColor:int = CSS.overColor;
+		var slotColor2:int = 0xBBBDBF;
+		var slotRadius:int = 10;
+		var g:Graphics = videoProgressBar.graphics;
+		g.clear();
+		g.beginGradientFill(GradientType.LINEAR, [slotColor, CSS.borderColor], [1, 1], [0, 0]);
+		g.drawRoundRect(0, 0, 300, 10, slotRadius,slotRadius);
+		g.beginGradientFill(GradientType.LINEAR, [slotColor, slotColor2], [1, 1], [0, 0]);
+		g.drawRoundRect(0, .5, 300, 9,9,9);
+		g.endFill();
+		addChild(videoProgressBar);
+		
+		const versionFormat:TextFormat = new TextFormat(CSS.font, 11, CSS.textColor);
+		addChild(recordingTime = makeLabel(" 0 secs",versionFormat));
+		
+		recordingIndicator = new Shape();
+		var k:Graphics = recordingIndicator.graphics;
+		k.clear();
+		k.beginFill(0xFF0000);
+		k.drawRoundRect(0, 0, 10, 10, slotRadius, slotRadius);
+		k.endFill();
+		addChild(recordingIndicator);
+	}
+	
+	private function resetTime():void {
+		updateRecordingTools(0);
+		
+		removeChild(stopRecordingButton);
+		
+		stopRecordingButton = new IconButton(app.stopVideo, 'stopVideo');
+		addChild(stopRecordingButton);
+		
+		fixLayout();
+	}
+	
+	public function removeRecordingTools():void {
+		stopRecordingButton.visible=false;
+		videoProgressBar.visible=false;
+		recordingTime.visible=false;
+		recordingIndicator.visible=false;
+	}
+	
+	public function updateRecordingTools(time:Number = -1.0):void {
+		if (time<0) {
+			time = Number(lastTime);
+		}
+		var slotColor:int = CSS.overColor;
+		var slotColor2:int = CSS.tabColor;
+		var g:Graphics = videoProgressBar.graphics;
+		var slotRadius:int = 10;
+		g.clear();
+		var barWidth:int = 300;
+		if (app.stageIsContracted) {
+			barWidth = 64;
+		}
+		var m:Matrix = new Matrix();
+		m.createGradientBox(barWidth, 10, 0, int(time/60.0*barWidth), 0);
+		g.beginGradientFill(GradientType.LINEAR, [slotColor, CSS.borderColor], [1, 1], [0, 0]);
+		g.drawRoundRect(0, 0, barWidth, 10, slotRadius,slotRadius);
+		if (time==0) {
+			g.beginGradientFill(GradientType.LINEAR, [slotColor, slotColor2], [1, 1], [0, 0]);
+		}
+		else {
+			g.beginGradientFill(GradientType.LINEAR, [slotColor, slotColor2], [1, 1], [0, 0],m);
+		}
+		g.drawRoundRect(0, .5, barWidth, 9,9,9);
+		g.endFill();
+		
+		if (lastTime!=int(time)) {
+			var timeString:String = "";
+			if (int(time)<10) {
+				timeString+=" ";
+			}
+			timeString += int(time).toString()+" secs";
+			removeChild(recordingTime);
+			const versionFormat:TextFormat = new TextFormat(CSS.font, 11, CSS.textColor);
+			addChild(recordingTime = makeLabel(timeString,versionFormat));
+			lastTime = int(time);
+		}
+		if (time!=0) {
+			fixLayout();
+			refresh();
+			if (int(time)%2==0) {
+				recordingIndicator.visible=false;
+			}
+		}
+	}
+	
 	private function addTitleAndInfo():void {
 		var fmt:TextFormat = app.isOffline ? new TextFormat(CSS.font, 16, CSS.textColor) : CSS.projectTitleFormat;
 		projectTitle = getProjectTitle(fmt);

@@ -29,6 +29,7 @@ import flash.display.*;
 import flash.geom.*;
 import flash.media.*;
 import flash.events.*;
+import flash.text.*;
 import flash.system.Capabilities;
 import flash.utils.ByteArray;
 import flash.net.FileReference;
@@ -39,6 +40,7 @@ import uiwidgets.Menu;
 import ui.media.MediaInfo;
 import util.*;
 import watchers.*;
+import assets.Resources;
 import by.blooddy.crypto.image.PNG24Encoder;
 import by.blooddy.crypto.image.PNGFilter;
 import by.blooddy.crypto.MD5;
@@ -57,6 +59,10 @@ public class ScratchStage extends ScratchObj {
 	public var penLayerMD5:String;
 
 	private var bg:Shape;
+	private var overlay:Shape;
+	private var counter:TextField;
+	private var arrowImage:DisplayObject;
+	private var arrowText:TextField;
 
 	// camera support
 	public var videoImage:Bitmap;
@@ -84,6 +90,50 @@ public class ScratchStage extends ScratchObj {
 
 	public function setTempo(bpm:Number):void {
 		tempoBPM = Math.max(20, Math.min(bpm, 500));
+	}
+	
+	public function countdown(number:int=-1):void {
+		if (overlay) {
+			removeChild(overlay);
+			removeChild(counter);
+			removeChild(arrowImage);
+			removeChild(arrowText);
+			if (number==0) {
+				overlay = null;
+				return;
+			}
+		}
+		else if (number<0) {
+			return;
+		}
+		overlay = new Shape();
+		overlay.graphics.beginFill(CSS.overColor,.75);
+		overlay.graphics.drawRect(0, 0, STAGEW, STAGEH);
+		addChild(overlay);
+		if (number>0) {
+			addChild(counter=makeLabel(number.toString(),80));
+		}
+		else {
+			addChild(counter);
+		}
+		addChild(arrowText=makeLabel("To stop recording, click the square",14));
+		arrowImage = Resources.createBmp('stopArrow');
+		arrowImage.x = 6;
+		arrowImage.y = 335;
+		addChild(arrowImage);
+		counter.x = (STAGEW-counter.width)/2;
+		counter.y = (STAGEH-counter.height)/2;
+		arrowText.x = 28;
+		arrowText.y = 328;
+	}
+	
+	private function makeLabel(s:String, fontSize:int):TextField {
+		var tf:TextField = new TextField();
+		tf.selectable = false;
+		tf.defaultTextFormat = new TextFormat(CSS.font, fontSize, 0xFFFFFF,true);
+		tf.autoSize = TextFieldAutoSize.LEFT;
+		tf.text = Translator.map(s);
+		return tf;
 	}
 
 	public function objNamed(s:String):ScratchObj {
@@ -228,7 +278,35 @@ public class ScratchStage extends ScratchObj {
 		m.addItem('save picture of stage', saveScreenshot);
 		return m;
 	}
-
+	
+	public function saveScreenData():BitmapData {
+		var bm:BitmapData = new BitmapData(STAGEW,STAGEH, false);
+		if (videoImage) videoImage.visible = false;
+		// Get a screenshot of the stage
+		if (SCRATCH::allow3d) {
+			if(Scratch.app.isIn3D) {
+				Scratch.app.render3D.getRender(bm);
+			}
+			else bm.draw(this);
+		}
+		else {
+			bm.draw(this);
+		}
+	if (Scratch.app !=null && Scratch.app.gh.carriedObj is ScratchSprite) {
+			var spr:ScratchSprite = ScratchSprite(Scratch.app.gh.carriedObj);
+			var s:Number = 1;
+			if (Scratch.app.stageIsContracted) {
+				s = 2
+			}
+			if (!Scratch.app.editMode) {
+				s = 1.0/Scratch.app.presentationScale;
+			}
+			bm.draw(spr,new Matrix(spr.scaleX*s, 0, 0, spr.scaleY*s, spr.scratchX+(STAGEW/2), -spr.scratchY+(STAGEH/2)));
+		}
+		if (videoImage) videoImage.visible = true;
+		return bm;
+	}
+	
 	private function saveScreenshot():void {
 		var bitmapData:BitmapData = new BitmapData(STAGEW, STAGEH, true, 0);
 		bitmapData.draw(this);
@@ -466,13 +544,21 @@ public class ScratchStage extends ScratchObj {
 			video.attachCamera(camera);
 			videoImage = new Bitmap(new BitmapData(video.width, video.height, false));
 			videoImage.alpha = videoAlpha;
+			SCRATCH::allow3d {
+				updateSpriteEffects(videoImage, {'ghost': 100 * (1 - videoAlpha)});
+			}
 			addChildAt(videoImage, getChildIndex(penLayer) + 1);
 		}
 	}
 
 	public function setVideoTransparency(transparency:Number):void {
 		videoAlpha = 1 - Math.max(0, Math.min(transparency / 100, 1));
-		if (videoImage) videoImage.alpha = videoAlpha;
+		if (videoImage) {
+			videoImage.alpha = videoAlpha;
+			SCRATCH::allow3d {
+				updateSpriteEffects(videoImage, {'ghost': transparency});
+			}
+		}
 	}
 
 	public function isVideoOn():Boolean { return videoImage != null }
@@ -546,11 +632,6 @@ public class ScratchStage extends ScratchObj {
 	SCRATCH::allow3d
 	public function updateSpriteEffects(spr:DisplayObject, effects:Object):void {
 		if(Scratch.app.isIn3D) {
-			if (videoImage && videoImage.alpha < 1) {
-				if (!effects) effects = {};
-				if (!effects.ghost) effects.ghost = BlockArg.epsilon;
-			}
-
 			Scratch.app.render3D.updateFilters(spr, effects);
 		}
 	}
@@ -560,7 +641,7 @@ public class ScratchStage extends ScratchObj {
 
 		var bm1:BitmapData;
 		var mask:uint = 0x00F8F8F0;
-		if(Scratch.app.isIn3D) {
+		if (Scratch.app.isIn3D) {
 			SCRATCH::allow3d {
 				bm1 = Scratch.app.render3D.getOtherRenderedChildren(s, 1);
 			}
@@ -690,7 +771,10 @@ public class ScratchStage extends ScratchObj {
 		}
 
 		delete info.userAgent;
-		if (Scratch.app.jsEnabled) {
+		if (Scratch.app.isOffline) {
+			info.userAgent = 'Scratch 2.0 Offline Editor';
+		}
+		else if (Scratch.app.jsEnabled) {
 			Scratch.app.externalCall('window.navigator.userAgent.toString', function(userAgent:String):void {
 				if (userAgent) info.userAgent = userAgent;
 			});

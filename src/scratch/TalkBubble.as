@@ -93,7 +93,7 @@ public class TalkBubble extends Sprite {
 		var g:Graphics = shape.graphics;
 		g.clear();
 		g.beginFill(0xFFFFFF);
-		g.lineStyle(lineWidth, outlineColor);
+		g.lineStyle(lineWidth, outlineColor, 1, true);
 		if (type == 'think') drawThink(w, h);
 		else drawTalk(w, h);
 	}

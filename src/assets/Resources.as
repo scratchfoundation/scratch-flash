@@ -31,6 +31,15 @@ public class Resources {
 		}
 		return new resourceClass();
 	}
+	
+	public static function createDO(resourceName:String):DisplayObject {
+		var resourceClass:Class = Resources[resourceName];
+		if (!resourceClass) {
+			trace('missing resource: ', resourceName);
+			return new Bitmap(new BitmapData(10, 10, false, 0x808080));
+		}
+		return new resourceClass();
+	}
 
 	public static function makeLabel(s:String, fmt:TextFormat, x:int = 0, y:int = 0):TextField {
 		// Create a non-editable text field for use as a label.
@@ -79,7 +88,10 @@ public class Resources {
 	[Embed(source='cursors/growCursor.png')] private static const growCursor:Class;
 	[Embed(source='cursors/helpCursor.png')] private static const helpCursor:Class;
 	[Embed(source='cursors/shrinkCursor.png')] private static const shrinkCursor:Class;
+	[Embed(source='cursors/mouseCircle.png')] private static const mouseCircle:Class;
 	[Embed(source='UI/paint/zoomInCursor.png')] private static const zoomInCursor:Class;
+	
+	[Embed(source='cursors/videoCursor.svg')] private static const videoCursor:Class;
 
 	// Top bar
 	[Embed(source='UI/topbar/scratchlogoOff.png')] private static const scratchlogoOff:Class;
@@ -129,10 +141,14 @@ public class Resources {
 	[Embed(source='UI/buttons/spriteInfoOn.png')] private static const spriteInfoOn:Class;
 	[Embed(source='UI/buttons/stopOff.png')] private static const stopOff:Class;
 	[Embed(source='UI/buttons/stopOn.png')] private static const stopOn:Class;
+	[Embed(source='UI/buttons/toggleOff.gif')] private static const toggleOff:Class;
+	[Embed(source='UI/buttons/toggleOn.gif')] private static const toggleOn:Class;
 	[Embed(source='UI/buttons/undoOff.png')] private static const undoOff:Class;
 	[Embed(source='UI/buttons/undoOn.png')] private static const undoOn:Class;
 	[Embed(source='UI/buttons/unlockedOff.png')] private static const unlockedOff:Class;
 	[Embed(source='UI/buttons/unlockedOn.png')] private static const unlockedOn:Class;
+	[Embed(source='UI/buttons/stopVideoOff.gif')] private static const stopVideoOff:Class;
+	[Embed(source='UI/buttons/stopVideoOn.gif')] private static const stopVideoOn:Class;
 
 	// Misc UI Elements
 	[Embed(source='UI/misc/hatshape.png')] private static const hatshape:Class;
@@ -295,5 +311,9 @@ public class Resources {
 	[Embed(source='UI/paint/bitmapStampOn.png')] private static const bitmapStampOn:Class;
 	[Embed(source='UI/paint/bitmapTextOff.png')] private static const bitmapTextOff:Class;
 	[Embed(source='UI/paint/bitmapTextOn.png')] private static const bitmapTextOn:Class;
+	
+	//Recording
+	[Embed(source='StopArrow.png')] private static const stopArrow:Class;
+	[Embed(source='VideoShare.svg')] private static const videoShare:Class;
 
 }}

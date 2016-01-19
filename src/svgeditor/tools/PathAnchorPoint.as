@@ -21,6 +21,7 @@ package svgeditor.tools
 {
 	import flash.display.Graphics;
 	import flash.display.Sprite;
+	import flash.display.Stage;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
@@ -57,7 +58,7 @@ package svgeditor.tools
 					controlPoints = [];
 					controlPoints.push(pcp);
 					controlPoints.push(editTool.getControlPoint(idx, false));
-					addEventListener(Event.REMOVED, removedFromStage);
+					addEventListener(Event.REMOVED, removedFromStage, false, 0, true);
 				}
 			}
 		}
@@ -105,24 +106,25 @@ package svgeditor.tools
 		}
 
 		private function makeInteractive():void {
-			addEventListener(MouseEvent.MOUSE_DOWN, eventHandler);
-			addEventListener(MouseEvent.MOUSE_OVER, toggleHighlight);
-			addEventListener(MouseEvent.MOUSE_OUT, toggleHighlight);
+			addEventListener(MouseEvent.MOUSE_DOWN, eventHandler, false, 0, true);
+			addEventListener(MouseEvent.MOUSE_OVER, toggleHighlight, false, 0, true);
+			addEventListener(MouseEvent.MOUSE_OUT, toggleHighlight, false, 0, true);
 		}
 
 		private var wasMoved:Boolean = false;
 		private var canDelete:Boolean = false;
 		private function eventHandler(event:MouseEvent):void {
 			var p:Point;
+			var _stage:Stage = Scratch.app.stage;
 			switch(event.type) {
 				case MouseEvent.MOUSE_DOWN:
-					stage.addEventListener(MouseEvent.MOUSE_MOVE, arguments.callee);
-					stage.addEventListener(MouseEvent.MOUSE_UP, arguments.callee);
+					_stage.addEventListener(MouseEvent.MOUSE_MOVE, arguments.callee);
+					_stage.addEventListener(MouseEvent.MOUSE_UP, arguments.callee);
 					wasMoved = false;
 					canDelete = !isNaN(event.localX);
 					break;
 				case MouseEvent.MOUSE_MOVE:
-					p = new Point(stage.mouseX, stage.mouseY);
+					p = new Point(_stage.mouseX, _stage.mouseY);
 					pathEditTool.movePoint(index, p);
 					p = pathEditTool.globalToLocal(p);
 					x = p.x;
@@ -130,8 +132,8 @@ package svgeditor.tools
 					wasMoved = true;
 					break;
 				case MouseEvent.MOUSE_UP:
-					stage.removeEventListener(MouseEvent.MOUSE_MOVE, arguments.callee);
-					stage.removeEventListener(MouseEvent.MOUSE_UP, arguments.callee);
+					_stage.removeEventListener(MouseEvent.MOUSE_MOVE, arguments.callee);
+					_stage.removeEventListener(MouseEvent.MOUSE_UP, arguments.callee);
 
 					// Save the path
 					p = new Point(x, y);

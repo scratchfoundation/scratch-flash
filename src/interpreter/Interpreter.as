@@ -93,8 +93,8 @@ public class Interpreter {
 //		checkPrims();
 	}
 
-	public function targetObj():ScratchObj { return ScratchObj(activeThread.target) }
-	public function targetSprite():ScratchSprite { return activeThread.target as ScratchSprite }
+	public function targetObj():ScratchObj { return app.runtime.currentDoObj ? app.runtime.currentDoObj : activeThread.target }
+	public function targetSprite():ScratchSprite { return (app.runtime.currentDoObj ? app.runtime.currentDoObj : activeThread.target) as ScratchSprite }
 
 	/* Threads */
 
@@ -665,8 +665,7 @@ public class Interpreter {
 
 	private function primReturn(b:Block):void {
 		// Return from the innermost procedure. If not in a procedure, stop the thread.
-		var didReturn:Boolean = activeThread.returnFromProcedure();
-		if (!didReturn) {
+		if (!activeThread.returnFromProcedure()) {
 			activeThread.stop();
 			yield = true;
 		}
@@ -677,9 +676,11 @@ public class Interpreter {
 	// a reference to the Variable object is cached in the target object.
 
 	private function primVarGet(b:Block):* {
-		var v:Variable = activeThread.target.varCache[b.spec];
+		var target:ScratchObj = app.runtime.currentDoObj ? app.runtime.currentDoObj : activeThread.target;
+
+		var v:Variable = target.varCache[b.spec];
 		if (v == null) {
-			v = activeThread.target.varCache[b.spec] = activeThread.target.lookupOrCreateVar(b.spec);
+			v = target.varCache[b.spec] = target.lookupOrCreateVar(b.spec);
 			if (v == null) return 0;
 		}
 		// XXX: Do we need a get() for persistent variables here ?

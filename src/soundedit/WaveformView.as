@@ -384,17 +384,20 @@ public class WaveformView extends Sprite implements DragClient {
 		var max:int, i:int;
 		var dups:int = 2 * (44100 / samplingRate); // number of copies of each samples to write
 		if (dups & 1) dups++; // ensure that dups is even
+		if (playEndIndex > samples.length) playEndIndex = samples.length; // Don't try to play more than we have
 		var count:int = 6000 / dups;
 		for (i = 0; i < count && (playIndex < playEndIndex); i++) {
 			var sample:Number = samples[playIndex++] / 32767;
-			for (var j:int = 0; j < dups; j++) evt.data.writeFloat(sample);
+			for (var j:int = 0; j < dups; j++)
+				evt.data.writeFloat(sample);
 		}
 		if (playbackStarting) {
 			if (i < count) {
 				// Very short sound or selection; pad with enough zeros so sound actually plays.
-				for (i = 0; i < 2048; i++) evt.data.writeFloat(0 / 32767);
+				for (i = 0; i < 2048; i++)
+					evt.data.writeFloat(0 / 32767);
 			}
-		playbackStarting = false;
+			playbackStarting = false;
 		}
 	}
 

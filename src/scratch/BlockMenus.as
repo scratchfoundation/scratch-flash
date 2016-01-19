@@ -157,7 +157,7 @@ public class BlockMenus implements DragClient {
 		// translated. This mechanism prevents translating proper names such as sprite,
 		// costume, or variable names.
 		function isGeneric(s:String):Boolean {
-			return ['duplicate', 'delete', 'add comment'].indexOf(s) > -1;
+			return ['duplicate', 'delete', 'add comment', 'clean up'].indexOf(s) > -1;
 		}
 		switch (menuName) {
 		case 'attribute':
@@ -206,7 +206,8 @@ public class BlockMenus implements DragClient {
 	private function attributeMenu(evt:MouseEvent):void {
 		var obj:*;
 		if (block && block.args[1]) {
-			obj = app.stagePane.objNamed(block.args[1].argValue);
+			if (block.args[1] is BlockArg) obj = app.stagePane.objNamed(block.args[1].argValue);
+			else obj = app.stagePane;  // this gives it the stage menus, but it's better than nothing
 		}
 		var attributes:Array = obj is ScratchStage ? stageAttributes : spriteAttributes;
 		var m:Menu = new Menu(setBlockArg, 'attribute');
@@ -295,7 +296,7 @@ public class BlockMenus implements DragClient {
 
 	private function keyMenu(evt:MouseEvent):void {
 		var ch:int;
-		var namedKeys:Array = ['up arrow', 'down arrow', 'right arrow', 'left arrow', 'space'];
+		var namedKeys:Array = ['space', 'up arrow', 'down arrow', 'right arrow', 'left arrow', 'any'];
 		var m:Menu = new Menu(setBlockArg, 'key');
 		for each (var s:String in namedKeys) m.addItem(s);
 		for (ch = 97; ch < 123; ch++) m.addItem(String.fromCharCode(ch)); // a-z
@@ -533,7 +534,25 @@ public class BlockMenus implements DragClient {
 		var m:Menu = new Menu(null, 'proc');
 		addGenericBlockItems(m);
 		m.addItem('edit', editProcSpec);
+		if (block.op==Specs.CALL) {
+			m.addItem('define', jumpToProcDef);
+		}
 		showMenu(m);
+	}
+
+	private function jumpToProcDef():void {
+		if(!app.editMode) return;
+		if (block.op != Specs.CALL) return;
+		var def:Block = app.viewedObj().lookupProcedure(block.spec);
+		if (!def) return;
+		var pane:ScriptsPane = def.parent as ScriptsPane;
+		if (!pane) return;
+		if (pane.parent is ScrollFrame) {
+		   pane.x = 5 - def.x*pane.scaleX;
+		   pane.y = 5 - def.y*pane.scaleX;
+		   (pane.parent as ScrollFrame).constrainScroll();
+		   (pane.parent as ScrollFrame).updateScrollbars();
+		}
 	}
 
 	private function editProcSpec():void {
@@ -641,10 +660,10 @@ public class BlockMenus implements DragClient {
 	}
 
 	private function renameVar():void {
+		var oldName:String = blockVarOrListName();
 		function doVarRename(dialog:DialogBox):void {
 			var newName:String = dialog.getField('New name').replace(/^\s+|\s+$/g, '');
 			if (newName.length == 0 || block.op != Specs.GET_VAR) return;
-			var oldName:String = blockVarOrListName();
 
 			if (oldName.charAt(0) == '\u2601') { // Retain the cloud symbol
 				newName = '\u2601 ' + newName;
@@ -654,7 +673,7 @@ public class BlockMenus implements DragClient {
 		}
 		var d:DialogBox = new DialogBox(doVarRename);
 		d.addTitle(Translator.map('Rename') + ' ' + blockVarOrListName());
-		d.addField('New name', 120);
+		d.addField('New name', 120, oldName);
 		d.addAcceptCancelButtons('OK');
 		d.showOnStage(app.stage);
 	}
@@ -740,6 +759,21 @@ public class BlockMenus implements DragClient {
 
 	// ***** Broadcast menu *****
 
+	private function renameBroadcast():void {
+		function doVarRename(dialog:DialogBox):void {
+			var newName:String = dialog.getField('New name').replace(/^\s+|\s+$/g, '');
+			if (newName.length == 0) return;
+			var oldName:String = block.broadcastMsg;
+
+			app.runtime.renameBroadcast(oldName, newName);
+		}
+		var d:DialogBox = new DialogBox(doVarRename);
+		d.addTitle(Translator.map('Rename') + ' ' + block.broadcastMsg);
+		d.addField('New name', 120, block.broadcastMsg);
+		d.addAcceptCancelButtons('OK');
+		d.showOnStage(app.stage);
+	}
+
 	private function broadcastMenu(evt:MouseEvent):void {
 		function broadcastMenuSelection(selection:*):void {
 			if (selection is Function) selection();
@@ -772,18 +806,24 @@ public class BlockMenus implements DragClient {
 	private function broadcastInfoMenu(evt:MouseEvent):void {
 		function showBroadcasts(selection:*):void {
 			if (selection is Function) { selection(); return; }
-			var msg:String = block.args[0].argValue;
-			var sprites:Array = [];
-			if (selection == 'show senders') sprites = app.runtime.allSendersOfBroadcast(msg);
-			if (selection == 'show receivers') sprites = app.runtime.allReceiversOfBroadcast(msg);
+			var sprites:Array = null; // so we can tell if it got set below
+			if (block.args[0] is BlockArg) {
+				var msg:String = block.args[0].argValue;
+				if (selection == 'show senders') sprites = app.runtime.allSendersOfBroadcast(msg);
+				if (selection == 'show receivers') sprites = app.runtime.allReceiversOfBroadcast(msg);
+			}
 			if (selection == 'clear senders/receivers') sprites = [];
-			app.highlightSprites(sprites);
+			if (sprites!=null) app.highlightSprites(sprites);
 		}
 		var m:Menu = new Menu(showBroadcasts, 'broadcastInfo');
 		addGenericBlockItems(m);
 		if (!isInPalette(block)) {
-			m.addItem('show senders');
-			m.addItem('show receivers');
+			// only add these items if it doesn't contain an expression
+			if (block.args[0] is BlockArg) {
+				m.addItem('rename broadcast', renameBroadcast);
+				m.addItem('show senders');
+				m.addItem('show receivers');
+			}
 			m.addItem('clear senders/receivers');
 		}
 		showMenu(m);

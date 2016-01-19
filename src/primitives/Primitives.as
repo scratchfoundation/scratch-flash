@@ -146,6 +146,7 @@ public class Primitives {
 		return 0;
 	}
 
+	private static const emptyDict:Dictionary = new Dictionary();
 	private static var lcDict:Dictionary = new Dictionary();
 	public static function compare(a1:*, a2:*):int {
 		// This is static so it can be used by the list "contains" primitive.
@@ -154,8 +155,8 @@ public class Primitives {
 		// X != X is faster than isNaN()
 		if (n1 != n1 || n2 != n2) {
 			// Suffix the strings to avoid properties and methods of the Dictionary class (constructor, hasOwnProperty, etc)
-			if (a1 is String) a1 += '_';
-			if (a2 is String) a2 += '_';
+			if (a1 is String && emptyDict[a1]) a1 += '_';
+			if (a2 is String && emptyDict[a2]) a2 += '_';
 
 			// at least one argument can't be converted to a number: compare as strings
 			var s1:String = lcDict[a1];

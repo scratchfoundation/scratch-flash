@@ -223,6 +223,12 @@ public class SensingPrims {
 
 	private function primKeyPressed(b:Block):Boolean {
 		var key:String = interp.arg(b, 0);
+		if (key == 'any') {
+			for each (var k:Boolean in app.runtime.keyIsDown) {
+				if (k) return true;
+			}
+			return false;
+		}
 		var ch:int = key.charCodeAt(0);
 		if (ch > 127) return false;
 		if (key == 'left arrow') ch = 28;
