@@ -134,7 +134,7 @@ public class BlockMenus implements DragClient {
 			handler.videoStateMenu(evt);
 		}
 		return [
-			'up arrow', 'down arrow', 'right arrow', 'left arrow', 'space',
+			'up arrow', 'down arrow', 'right arrow', 'left arrow', 'space', 'any',
 			'other scripts in sprite', 'other scripts in stage',
 			'backdrop #', 'backdrop name', 'volume', 'OK', 'Cancel',
 			'Edit Block', 'Rename' , 'New name', 'Delete', 'Broadcast', 'New Message', 'Message Name',
