@@ -33,6 +33,8 @@ import flash.utils.setTimeout;
 import grabcut.vfs.ISpecialFile
 import grabcut.CModule;
 
+import org.osmf.elements.compositeClasses.SerialElementSegment;
+
 import scratch.ScratchCostume;
 
 import svgeditor.DrawProperties;
@@ -67,10 +69,11 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 	static private const OBJECT_ISLAND_THRESHOLD:Number = 0.1;
 	static private const SEGMENT_STROKE_WIDTH:int = 6;
 	static private const SEGMENT_OBJ_COLOR:uint = 0xFF0000FF;
+	static private const SEGMENT_DISPLAY_COLOR:uint = 0xFF00FF00;
 
 	private var segmentationRequired:Boolean = false;
-    private var workingScribble:BitmapData;
 
+	private var initialState:SegmentationState;
     private var previewFrameTimer:Timer = new Timer(100);
     private var previewFrameBackgrounds:Vector.<BitmapData> = new Vector.<BitmapData>();
     private var previewFrameIdx:int = 0;
@@ -83,7 +86,9 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 
 	private var cursor:MouseCursorData = new MouseCursorData();
 
-    private function get workingBitmap():BitmapData
+	private var clickAwayPoint:Point;
+
+    private function get bitmapLayerData():BitmapData
     {
         return editor.getWorkArea().getBitmap().bitmapData;
     }
@@ -91,6 +96,10 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 	private function get segmentationLayer():Bitmap
 	{
 		return editor.getWorkArea().getSegmentation();
+	}
+
+	private function get segmentationLayerData():BitmapData{
+		return editor.getWorkArea().getSegmentation().bitmapData;
 	}
 
 	private function get bitmapLayer():Bitmap
@@ -133,47 +142,27 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 		super(editor, false)
 	}
 
+
+	//Overrides
+
 	protected override function init():void{
 		prevStrokeWidth = editor.getShapeProps().strokeWidth;
 		prevBrushColor = editor.getShapeProps().color
 		prevAlpha = editor.getShapeProps().alpha;
-		editor.setCurrentColor(SEGMENT_OBJ_COLOR, 1);
+		editor.setCurrentColor(SEGMENT_DISPLAY_COLOR, 1);
 		editor.getShapeProps().strokeWidth = SEGMENT_STROKE_WIDTH;
 		segmentBrush = makeBrush(SEGMENT_STROKE_WIDTH, SEGMENT_OBJ_COLOR);
+		initialState = segmentationState;
 		initState();
+		segmentationState.unmarkedBitmap = bitmapLayerData.clone();
 		super.init();
 	}
 
-    private function nextPreviewFrame(event:TimerEvent):void{
-        previewFrameIdx = (previewFrameIdx + 1) % previewFrameBackgrounds.length;
-        workingScribble.copyPixels(previewFrames[previewFrameIdx], previewFrames[previewFrameIdx].rect, new Point(0, 0));
-    }
-
-	public function initState():void{
-		previewFrameTimer.stop();
-        workingScribble = segmentationLayer.bitmapData;
-        workingScribble.fillRect(workingScribble.rect, 0);
-		segmentationState.unmarkedBitmap = workingBitmap.clone();
-        bitmapLayer.visible = true;
-        segmentationLayer.visible = true;
-        if(segmentationState.xMin < 0){
-            segmentationState.xMin = editor.getWorkArea().width;
-        }
-        if(segmentationState.yMin < 0){
-            segmentationState.yMin = editor.getWorkArea().height;
-        }
-		segmentationState.scribbleBitmap = new BitmapData(workingBitmap.width, workingBitmap.height, true, 0x00000000);
-	}
 
     protected override function shutdown():void{
-        workingScribble.fillRect(workingScribble.rect, 0);
-        bitmapLayer.visible = true;
-        previewFrameTimer.stop();
-		if(segmentationState.lastMask){
-			applyMask(segmentationState.lastMask, workingBitmap);
-			segmentationState.reset();
-			editor.saveContent();
-		}
+		if(segmentationState != initialState)
+			commitMask();
+		segmentationState.eraseUndoHistory();
 		editor.getShapeProps().strokeWidth = prevStrokeWidth;
 		editor.setCurrentColor(prevBrushColor, prevAlpha);
 		updateProperties();
@@ -181,29 +170,53 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 
     }
 
-	override protected function mouseUp(evt:MouseEvent):void{
-		if(lastPoint && segmentationRequired){
-			if(Mouse.supportsNativeCursor){
-				Mouse.cursor = BitmapBackgroundTool.BUSY_CURSOR;
-				Mouse.show();
-			}
-			setTimeout(getObjectMask,0);
-			segmentationRequired = false;
-		}
-		resetBrushes();
-	}
-
-    override protected function mouseDown(evt:MouseEvent):void{
+	override protected function mouseDown(evt:MouseEvent):void{
         if (editor.getWorkArea().clickInBitmap(evt.stageX, evt.stageY)){
             previewFrameTimer.stop();
+			segmentationState.recordForUndo();
+			editor.targetCostume.nextSegmentationState();
+			segmentationRequired = true;
+			var p:Point = penPoint();
+			clickAwayPoint = penPoint();
         }
+		else if(editor.clickedOutsideBitmap(evt) && segmentationState.lastMask){
+			if(segmentationState.next == null) {
+				segmentationState.recordForUndo();
+				editor.targetCostume.nextSegmentationState();
+			}
+			commitMask(new SegmentationEvent());
+		}
         super.mouseDown(evt);
     }
+
+	override protected function mouseUp(evt:MouseEvent):void{
+		if(editor){
+			var p:Point = penPoint();
+			if(clickAwayPoint && clickAwayPoint.x == p.x &&
+				clickAwayPoint.y == p.y && !segmentationState.costumeRect.contains(p.x, p.y)
+				&& segmentationState.lastMask){
+				if(segmentationState.next == null) {
+					segmentationState.recordForUndo();
+					editor.targetCostume.nextSegmentationState();
+				}
+				commitMask(new SegmentationEvent());
+			}
+			else if(segmentationRequired && editor.getWorkArea().clickInBitmap(evt.stageX, evt.stageY)){
+				if(Mouse.supportsNativeCursor){
+					Mouse.cursor = BitmapBackgroundTool.BUSY_CURSOR;
+					Mouse.show();
+				}
+				setTimeout(getObjectMask,0);
+				segmentationRequired = false;
+			}
+			clickAwayPoint = null;
+			resetBrushes();
+		}
+	}
 
 	override protected function set lastPoint(p:Point):void{
 		if(p != null){
 			if(super.lastPoint == null){
-				segmentationState.isBlank = false;
 				dispatchEvent(new Event(BitmapBackgroundTool.UPDATE_REQUIRED));
 			}
 			if(p.x > segmentationState.xMax){
@@ -218,16 +231,39 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 			if(p.y < segmentationState.yMin){
 				segmentationState.yMin = p.y
 			}
-			segmentationRequired = true;
 		}
 		super.lastPoint = p;
 	}
 
 	override protected function drawAtPoint(p:Point, targetCanvas:BitmapData=null, altBrush:BitmapData=null):void{
-		targetCanvas = targetCanvas || workingScribble;
+		targetCanvas = targetCanvas || segmentationLayerData;
         super.drawAtPoint(p, segmentationState.scribbleBitmap, segmentBrush);
 		super.drawAtPoint(p, targetCanvas, altBrush);
 	}
+
+	    private function nextPreviewFrame(event:TimerEvent):void{
+        previewFrameIdx = (previewFrameIdx + 1) % previewFrameBackgrounds.length;
+        segmentationLayerData.copyPixels(previewFrames[previewFrameIdx], previewFrames[previewFrameIdx].rect, new Point(0, 0));
+    }
+
+
+	//Segmentation State/Masking operations.  Methods that change the costumes segmentation and how it is displayed
+
+
+	public function initState():void{
+		previewFrameTimer.stop();
+        segmentationLayerData.fillRect(segmentationLayerData.rect, 0);
+        bitmapLayer.visible = true;
+        segmentationLayer.visible = true;
+        if(segmentationState.xMin < 0){
+            segmentationState.xMin = bitmapLayerData.width
+        }
+        if(segmentationState.yMin < 0){
+            segmentationState.yMin = bitmapLayerData.height;
+        }
+		segmentationState.scribbleBitmap = new BitmapData(bitmapLayerData.width, bitmapLayerData.height, true, 0x00000000);
+	}
+
 
 	private function applyPreviewMask(maskBitmap:BitmapData, dest:BitmapData):void{
 		dest.fillRect(dest.rect, 0x0);
@@ -253,42 +289,78 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
         dest.copyPixels(previewFrames[previewFrameIdx], previewFrames[previewFrameIdx].rect, upperLeft);
 	}
 
-    private function applyMask(maskBitmap:BitmapData, dest:BitmapData):void{
+
+
+	public function commitMask(evt:Event=null):void{
+		previewFrameTimer.stop()
+		bitmapLayer.visible = true
+		segmentationLayerData.fillRect(segmentationLayerData.rect, 0);
+		segmentationState.reset();
+		segmentationState.unmarkedBitmap = bitmapLayerData.clone();
+		segmentationState.costumeRect = bitmapLayerData.getColorBoundsRect(0xFF000000, 0x0, false);
+		editor.saveContent(evt)
+		initState();
+	}
+
+	public function refreshSegmentation():void{
+        previewFrameTimer.stop();
+		if(segmentationState.lastMask){
+			setGreyscale();
+			applyMask(segmentationState.lastMask, bitmapLayerData);
+		}
+	}
+
+	public function restoreUnmarkedBitmap():void{
+		previewFrameTimer.stop();
+		segmentationLayerData.fillRect(segmentationLayerData.rect, 0);
+		bitmapLayerData.copyPixels(segmentationState.unmarkedBitmap, segmentationState.unmarkedBitmap.rect, new Point(0,0));
+		bitmapLayer.visible = true;
+		editor.saveContent(new SegmentationEvent());
+	}
+
+	private function setGreyscale():void{
+        bitmapLayer.visible = false;
+        segmentationLayer.visible = true;
+		applyPreviewMask(segmentationState.lastMask, segmentationLayerData);
+        previewFrameTimer.start();
+	}
+
+	private function applyMask(maskBitmap:BitmapData, dest:BitmapData):void{
 		dest.copyPixels(segmentationState.unmarkedBitmap, segmentationState.unmarkedBitmap.rect, new Point(0,0));
 		if(maskBitmap){
 			dest.threshold(maskBitmap, maskBitmap.rect, new Point(0,0), "==", 0x0, 0x0, 0xFF000000, false);
 		}
 	}
 
+	//Utils used in the segmentation process for cropping and byte-level manipulation of costume/mask data
+
+	private function cropRect():Rectangle{
+		var cropX:int = segmentationState.xMin;
+		var cropY:int = segmentationState.yMin
+		var cropWidth:int = segmentationState.xMax - segmentationState.xMin;
+		var cropHeight:int = segmentationState.yMax - segmentationState.yMin;
+		var drawRect:Rectangle = new Rectangle(cropX, cropY, cropWidth, cropHeight);
+		var dx:int = Math.round(drawRect.width * .1);
+		var dy:int = Math.round(drawRect.height * .1);
+		drawRect.inflate(dx, dy);
+		var finalX:int = Math.max(drawRect.x, segmentationState.costumeRect.x);
+		var finalY:int = Math.max(drawRect.y, segmentationState.costumeRect.y);
+		var finalWidth:int = Math.min(drawRect.width, segmentationState.costumeRect.width);
+		var finalHeight:int = Math.min(drawRect.height, segmentationState.costumeRect.height);
+		return new Rectangle(finalX, finalY, finalWidth, finalHeight);
+	}
+
 	private function cropAndScale(targetBitmap:BitmapData):BitmapData{
-		var cropRect:Rectangle = new Rectangle(cropX(), cropY(), cropWidth(), cropHeight());
-		var croppedData:ByteArray = targetBitmap.getPixels(cropRect);
+		var rect:Rectangle = cropRect();
+		var croppedData:ByteArray = targetBitmap.getPixels(rect);
 		croppedData.position = 0;
-		var croppedBitmap:BitmapData = new BitmapData(cropWidth(), cropHeight(), true, 0x00ffffff);
+		var croppedBitmap:BitmapData = new BitmapData(rect.width, rect.height, true, 0x00ffffff);
 		croppedBitmap.setPixels(croppedBitmap.rect, croppedData);
 		var scaledBitmap:BitmapData = new BitmapData(croppedBitmap.width * .5, croppedBitmap.height * .5, true, 0x00ffffff);
 		var m:Matrix = new Matrix();
 		m.scale(SCALE_FACTOR, SCALE_FACTOR);
 		scaledBitmap.draw(croppedBitmap, m);
 		return scaledBitmap;
-	}
-
-	private function cropWidth():int{
-		return cropX() + (segmentationState.xMax - segmentationState.xMin)*1.2 < workingBitmap.width ?
-			(segmentationState.xMax - segmentationState.xMin) *1.2 : workingBitmap.width - segmentationState.xMin;
-	}
-
-	private function cropHeight():int{
-		return cropY() + (segmentationState.yMax - segmentationState.yMin) *1.2 < workingBitmap.height ?
-		(segmentationState.yMax - segmentationState.yMin) *1.2 : workingBitmap.height - segmentationState.yMin;
-	}
-
-	private function cropX():int{
-		return Math.max(segmentationState.xMin - 10, 0);
-	}
-
-	private function cropY():int{
-		return Math.max(segmentationState.yMin - 10, 0);
 	}
 
 	private function argbToRgba(argbBytes:ByteArray):void{
@@ -321,6 +393,9 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 		}
 	}
 
+
+	//The actual segmentation methods.  Get and format the data, pass it to the grabCut algorithm, do the post-processing, and display your results.
+
 	private function getObjectMask():void {
 		//Get a scaled down working bitmap and extract bytes
 		var scaledWorkingBM:BitmapData = cropAndScale(segmentationState.unmarkedBitmap);
@@ -347,7 +422,7 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 		var result:int = CModule.callI(func, args);
 		//Start post processing, free our malloc'd memory
 		function didGetObjectMask():void {
-			var bmData:ByteArray= new ByteArray();
+			var bmData:ByteArray = new ByteArray();
 			//Extract mask bytes from the modified image buffer, convert to flash ARGB bytes
 			CModule.readBytes(imgPtr, workingData.length, bmData);
 			bmData.position=0;
@@ -359,13 +434,14 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
         	var smoothedMask:BitmapData = removeIslands(scaledMaskBitmap, 2);
 			var m:Matrix = new Matrix();
 			m.scale(1./SCALE_FACTOR,1./SCALE_FACTOR);
-			m.tx = cropX();
-			m.ty = cropY();
-			var maskBitmap:BitmapData = new BitmapData(workingBitmap.width, workingBitmap.height, true, 0x00ffffff);
+			var finalRect:Rectangle = cropRect();
+			m.tx = finalRect.x;
+			m.ty = finalRect.y;
+			var maskBitmap:BitmapData = new BitmapData(bitmapLayerData.width, bitmapLayerData.height, true, 0x00ffffff);
 			//Scale to original size
 			maskBitmap.draw(smoothedMask, m);
 			bmData.position = 0;
-			segmentationState.recordForUndo(maskBitmap);
+			segmentationState.lastMask = maskBitmap;
 			//Show our hard earned results
 			setGreyscale();
 			function resetCursor():void{
@@ -374,7 +450,7 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 				}
 			}
 			setTimeout(resetCursor, 0);
-			applyMask(segmentationState.lastMask, workingBitmap);
+			applyMask(segmentationState.lastMask, bitmapLayerData);
 			editor.saveContent(new SegmentationEvent());
 			dispatchEvent(new Event(BitmapBackgroundTool.UPDATE_REQUIRED));
 	}
@@ -382,8 +458,6 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 		CModule.free(imgPtr);
 		CModule.free(scribblePtr);
 	}
-
-
 
     private function removeIslands(maskBitmap:BitmapData, iterations:int):BitmapData{
 		//Look for small pieces of object or background, tag them, reassign them as necessary, and create
@@ -449,27 +523,5 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 		maskBitmap.floodFill(x, y, tagColor);
 		return resultBitmap.threshold(maskBitmap, maskBitmap.rect, new Point(0,0), "==", tagColor, tagColor, 0xFFFFFFFF);
 	}
-
-	private function setGreyscale():void{
-        bitmapLayer.visible = false;
-        segmentationLayer.visible = true;
-		applyPreviewMask(segmentationState.lastMask, workingScribble);
-        previewFrameTimer.start();
-	}
-
-	public function refreshSegmentation():void{
-        previewFrameTimer.stop();
-		if(segmentationState.lastMask){
-			setGreyscale();
-			applyMask(segmentationState.lastMask, workingBitmap);
-		}
-		else{
-			workingScribble.fillRect(workingScribble.rect, 0);
-			workingBitmap.copyPixels(segmentationState.unmarkedBitmap, segmentationState.unmarkedBitmap.rect, new Point(0,0));
-			bitmapLayer.visible = true;
-		}
-		editor.saveContent(new SegmentationEvent());
-	}
-
 }
 }

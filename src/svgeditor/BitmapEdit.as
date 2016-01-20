@@ -33,8 +33,9 @@ package svgeditor {
 	import flash.display.*;
 	import flash.events.*;
 	import flash.geom.*;
+import flash.geom.Rectangle;
 
-	import scratch.ScratchCostume;
+import scratch.ScratchCostume;
 
 	import svgeditor.objs.*;
 	import svgeditor.tools.*;
@@ -178,14 +179,10 @@ public class BitmapEdit extends ImageEdit {
 	protected override function loadCostume(c:ScratchCostume):void {
 		var bm:BitmapData = workArea.getBitmap().bitmapData;
 		bm.fillRect(bm.rect, bgColor()); // clear
-		c.scaleAndCenter(bm, isScene); //draw on this bm
+		var costumeRect:Rectangle = c.scaleAndCenter(bm, isScene); //draw on this bm
 		c.segmentationState.unmarkedBitmap = bm.clone();
+		c.segmentationState.costumeRect = costumeRect;
 		var scale:Number = 2 / c.bitmapResolution;
-//		var costumeBM:BitmapData = c.bitmapForEditor(isScene);
-//		var destP:Point = isScene ?
-//			new Point(0, 0) :
-//			new Point(480 - (scale * c.rotationCenterX), 360 - (scale * c.rotationCenterY));
-//		bm.copyPixels(costumeBM, costumeBM.rect, destP);
 		if (c.undoList.length == 0) {
 			recordForUndo(c.bitmapForEditor(isScene), (scale * c.rotationCenterX), (scale * c.rotationCenterY));
 		}

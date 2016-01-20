@@ -134,6 +134,14 @@ public class ScratchCostume {
 		return segmentation;
 	}
 
+	public function nextSegmentationState():void{
+		segmentation = segmentation.next;
+	}
+
+	public function prevSegmentationState():void{
+		segmentation = segmentation.prev;
+	}
+
 	public static function scaleForScratch(bm:BitmapData):BitmapData {
 		if ((bm.width <= 480) && (bm.height <= 360)) return bm;
 		var scale:Number = Math.min(480 / bm.width, 360 / bm.height);
@@ -144,13 +152,17 @@ public class ScratchCostume {
 		return result;
 	}
 
-	public function scaleAndCenter(bm:BitmapData, isScene:Boolean):void{
+	public function scaleAndCenter(bm:BitmapData, isScene:Boolean):Rectangle{
 		var scale:Number = 2 / bitmapResolution;
 		var costumeBM:BitmapData = bitmapForEditor(isScene);
 		var destP:Point = isScene ?
 			new Point(0, 0) :
 			new Point(480 - (scale * rotationCenterX), 360 - (scale * rotationCenterY));
 		bm.copyPixels(costumeBM, costumeBM.rect, destP);
+		var costumeRect:Rectangle = costumeBM.rect;
+		costumeRect.x = destP.x;
+		costumeRect.y = destP.y;
+		return costumeRect;
 	}
 
 	public static function isSVGData(data:ByteArray):Boolean {

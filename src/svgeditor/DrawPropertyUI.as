@@ -73,6 +73,12 @@ public class DrawPropertyUI extends Sprite {
 	// Smoothness UI
 	private var smoothnessUI:Sprite;
 
+	//Segmentation UI
+	private var segmentationUI:Sprite;
+	private var segmentationLabel:TextField;
+	private var segmentationHelpLabel:TextField;
+	private var segmentationHelpBtn:IconButton;
+
 	// Color picker
 	private var colorPicker:ColorPicker;
 
@@ -102,6 +108,7 @@ public class DrawPropertyUI extends Sprite {
 		makeSmoothnessUI();
 		makeZoomButtons();
 		makeModeLabelAndButton();
+		makeSegmentationUI();
 		makeReadouts();
 		addEventListener(ONCHANGE, updateStrokeWidthDisplay);
 		updateStrokeWidthDisplay();
@@ -204,8 +211,9 @@ public class DrawPropertyUI extends Sprite {
 	public function toggleSegmentationUI(enabled:Boolean, tool:BitmapBackgroundTool):void{
 		if(tool && enabled){
 			tool.addEventListener(BitmapBackgroundTool.UPDATE_REQUIRED, updateSegmentationUI, false, 0, true);
-
 		}
+		segmentationUI.visible = enabled;
+		colorPicker.visible = !enabled;
 	}
 
 	public function showSmoothnessUI(flag:Boolean, forDrawing:Boolean = true):void {
@@ -453,6 +461,32 @@ public class DrawPropertyUI extends Sprite {
 		strokeSmoothnessSlider.visible = false;
 		smoothnessUI.addChild(strokeSmoothnessSlider);
 		addChild(smoothnessUI);
+	}
+
+	private function makeSegmentationUI():void {
+		segmentationUI = new Sprite();
+		segmentationUI.visible = false;
+
+		segmentationLabel = Resources.makeLabel("Magic Wand", CSS.titleFormat, 5, 5);
+		segmentationUI.addChild(segmentationLabel);
+
+		function showTip(btn:IconButton):void{
+			editor.app.showTip("magicwand");
+		}
+
+		segmentationHelpLabel = Resources.makeLabel("Need help", CSS.projectInfoFormat, 5, 5);
+		segmentationHelpLabel.x = segmentationLabel.x;
+		segmentationHelpLabel.y = this.height - 15;
+		segmentationUI.addChild(segmentationHelpLabel);
+
+		segmentationHelpBtn = new IconButton(showTip, "moreInfo");
+		segmentationHelpBtn.isMomentary = true;
+		segmentationHelpBtn.x = segmentationHelpLabel.x + segmentationHelpLabel.width + 2;
+		segmentationHelpBtn.y = segmentationHelpLabel.y + segmentationHelpLabel.height/2 - segmentationHelpBtn.height/2;
+
+		segmentationUI.addChild(segmentationHelpBtn);
+
+		addChild(segmentationUI);
 	}
 
 	private function makeStrokeUI():void {

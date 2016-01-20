@@ -4,78 +4,79 @@
 package svgeditor.objs {
 import flash.display.BitmapData;
 import flash.geom.Point;
+import flash.geom.Rectangle;
 import flash.utils.ByteArray;
 
 import svgeditor.ImageEdit;
 
 public class SegmentationState {
-
-	public var mode:String;
+	public static var id:int = 0;
 	public var scribbleBitmap:BitmapData;
 	public var unmarkedBitmap:BitmapData;
-	//Similar to a costume's undo stack, elements are [mask:BitmapData, scribble:BitmapData] pairs
-	private var maskList:Array;
-	private var maskListIndex:int;
-	public function get lastMask():BitmapData{
-		if(maskListIndex < 0){
-			return null;
-		}
-		return maskList[maskListIndex][0];
-	}
+	public var costumeRect:Rectangle;
+	public var lastMask:BitmapData;
+
+	public var next:SegmentationState = null;
+	public var prev:SegmentationState = null;
+
 	public var xMin:int;
 	public var yMin:int;
 	public var xMax:int;
 	public var yMax:int;
-	public var isBlank:Boolean;
+
+	public var myID:int;
 
 	public function SegmentationState() {
-        reset();
+		myID=id;
+		id++;
+		reset();
 	}
 
-	public function recordForUndo(mask:BitmapData):void{
-		while(maskListIndex < maskList.length - 1){
-			maskList.pop();
-		}
-		maskListIndex = maskList.length;
-		maskList.push([mask, scribbleBitmap.clone()]);
+	public function clone():SegmentationState{
+		var clone:SegmentationState = new SegmentationState();
+		if(scribbleBitmap)
+			clone.scribbleBitmap = scribbleBitmap.clone();
+		if(unmarkedBitmap)
+			clone.unmarkedBitmap = unmarkedBitmap.clone();
+		if(costumeRect)
+			clone.costumeRect = costumeRect.clone();
+		if(lastMask)
+			clone.lastMask = lastMask.clone();
+		clone.next = next;
+		clone.prev = prev;
+		clone.xMax = xMax;
+		clone.xMin = xMin;
+		clone.yMax = yMax;
+		clone.yMin = yMin;
+		return clone
+	}
+
+	public function recordForUndo():void{
+		next = clone();
+		next.next = null;
+		next.prev = this;
 	}
 
 	public function canUndo():Boolean{
-		return maskListIndex >= 0;
+		return prev != null;
 	}
 
 	public function canRedo():Boolean{
-		return maskListIndex < maskList.length - 1;
+		return next != null;
 	}
 
 	public function reset():void{
-		mode = 'object';
 		scribbleBitmap = null;
-		maskList = [];
-		maskListIndex = -1;
+		lastMask = null;
         xMin = -1;
         yMin = -1;
         xMax = 0;
         yMax = 0;
-		isBlank = true;
 	}
 
-	public function undo():void{
-		--maskListIndex;
-		if(maskListIndex >= 0){
-			var prevScribble:BitmapData = maskList[maskListIndex][1];
-			scribbleBitmap.copyPixels(prevScribble, prevScribble.rect,new Point(0,0));
-		}
-		else{
-			scribbleBitmap.fillRect(scribbleBitmap.rect, 0x0);
-		}
+	public function eraseUndoHistory():void{
+		prev = next = null;
 	}
-
-	public function redo():void{
-		++maskListIndex;
-		var nextScribble:BitmapData = maskList[maskListIndex][1];
-		scribbleBitmap.copyPixels(nextScribble, nextScribble.rect, new Point(0,0));
-		}
 
 }
 }

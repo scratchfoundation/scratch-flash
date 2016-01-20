@@ -69,6 +69,10 @@ package svgeditor {
 			return currentTool as BitmapBackgroundTool;
 		}
 
+		public function clickedOutsideBitmap(evt:MouseEvent):Boolean{
+			return evt.target == imagesPart;
+		}
+
 		public function ImageEdit(app:Scratch, imagesPart:ImagesPart) {
 			this.app = app;
 			this.imagesPart = imagesPart;
@@ -127,6 +131,7 @@ package svgeditor {
 		public function getStrokeSmoothness():Number { return drawPropsUI.getStrokeSmoothness() }
 		public function getToolsLayer():Sprite { return toolsLayer }
 		public function getWorkArea():ImageCanvas { return workArea }
+
 
 		public function handleDrop(obj:*):Boolean {
 			function insertCostume(c:ScratchCostume):void { addCostume(c, dropPoint) }
@@ -845,7 +850,6 @@ package svgeditor {
 				undoSegmentation();
 				return;
 			}
-
 			clearSelection();
 			if (canUndo()) {
 				var undoRec:Array = targetCostume.undoList[--targetCostume.undoListIndex];
@@ -859,7 +863,6 @@ package svgeditor {
 				redoSegmentation();
 				return;
 			}
-
 			clearSelection();
 			if (canRedo()) {
 				var undoRec:Array = targetCostume.undoList[++targetCostume.undoListIndex];
@@ -943,16 +946,26 @@ package svgeditor {
 
 		public function undoSegmentation():void{
             if(segmentationTool){
-                targetCostume.segmentationState.undo();
-                segmentationTool.refreshSegmentation();
+                targetCostume.prevSegmentationState();
+				if(targetCostume.segmentationState.lastMask){
+	                segmentationTool.refreshSegmentation();
+				}
+				else{
+					segmentationTool.restoreUnmarkedBitmap();
+				}
 				imagesPart.refreshUndoButtons();
             }
 		}
 
 		public function redoSegmentation():void{
             if(segmentationTool){
-                targetCostume.segmentationState.redo();
-                segmentationTool.refreshSegmentation();
+                targetCostume.nextSegmentationState();
+				if(targetCostume.segmentationState.lastMask) {
+					segmentationTool.refreshSegmentation();
+				}
+				else{
+					segmentationTool.commitMask(new SegmentationEvent());
+				}
 				imagesPart.refreshUndoButtons();
             }
 		}

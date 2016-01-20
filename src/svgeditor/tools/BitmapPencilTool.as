@@ -149,7 +149,7 @@ public class BitmapPencilTool extends SVGTool {
 		setFeedbackVisibility()
 	}
 
-	private function penPoint():Point {
+	protected function penPoint():Point {
 		// Return the position of the top-left corner of the brush relative to the bitmap.
 		var p:Point = editor.getWorkArea().bitmapMousePoint();
 		var gridX:int = Math.round(p.x - brushSize / 2);

@@ -316,7 +316,6 @@ public class Resources {
 	[Embed(source='UI/paint/bitmapRectOn.png')] private static const bitmapRectOn:Class;
 	[Embed(source='UI/paint/bitmapSelectOff.png')] private static const bitmapSelectOff:Class;
 	[Embed(source='UI/paint/bitmapSelectOn.png')] private static const bitmapSelectOn:Class;
-	[Embed(source='UI/paint/magicEraserIcon.png')] private static const magicEraserIcon:Class;
 	[Embed(source='UI/paint/magicEraserOn.png')] private static const magicEraserOn:Class;
 	[Embed(source='UI/paint/magicEraserOff.png')] private static const magicEraserOff:Class;
 	[Embed(source='UI/paint/bitmapStampOff.png')] private static const bitmapStampOff:Class;
@@ -328,15 +327,6 @@ public class Resources {
 	[Embed(source='StopArrow.png')] private static const stopArrow:Class;
 	[Embed(source='VideoShare.svg')] private static const videoShare:Class;
 
-	[Embed(source='UI/paint/magicRemoveOn.png')] private static const bgMarkerOn:Class;
-	[Embed(source='UI/paint/magicRemoveOff.png')] private static const bgMarkerOff:Class;
-	[Embed(source='UI/paint/magicKeepOn.png')] private static const objectMarkerOn:Class;
-	[Embed(source='UI/paint/magicKeepOff.png')] private static const objectMarkerOff:Class;
-	[Embed(source='UI/paint/confirmOn.png')] private static const applyMaskOn:Class;
-	[Embed(source='UI/paint/confirmOff.png')] private static const applyMaskOff:Class;
-	[Embed(source='UI/paint/confirmDisabled.png')] private static const applyMaskDisabled:Class;
-	[Embed(source='UI/paint/startOverOn.png')] private static const bgResetOn:Class;
-	[Embed(source='UI/paint/startOverOff.png')] private static const bgResetOff:Class;
 	[Embed(source='UI/paint/moreInfoOff.png')] private static const moreInfoOff:Class;
 	[Embed(source='UI/paint/moreInfoOn.png')] private static const moreInfoOn:Class;
 }}
