@@ -3,14 +3,9 @@
  */
 package svgeditor.objs {
 import flash.display.BitmapData;
-import flash.geom.Point;
 import flash.geom.Rectangle;
-import flash.utils.ByteArray;
-
-import svgeditor.ImageEdit;
 
 public class SegmentationState {
-	public static var id:int = 0;
 	public var scribbleBitmap:BitmapData;
 	public var unmarkedBitmap:BitmapData;
 	public var costumeRect:Rectangle;
@@ -24,20 +19,19 @@ public class SegmentationState {
 	public var xMax:int;
 	public var yMax:int;
 
-	public var myID:int;
-
 	public function SegmentationState() {
-		myID=id;
-		id++;
 		reset();
 	}
 
 	public function clone():SegmentationState{
 		var clone:SegmentationState = new SegmentationState();
+		//Scribble, mask, and bounding rect must be cloned as a snapshot of the current state.
+		//We can get away with storing a reference to unmarked bitmap and only updating
+		//on mask commits
 		if(scribbleBitmap)
 			clone.scribbleBitmap = scribbleBitmap.clone();
 		if(unmarkedBitmap)
-			clone.unmarkedBitmap = unmarkedBitmap.clone();
+			clone.unmarkedBitmap = unmarkedBitmap;
 		if(costumeRect)
 			clone.costumeRect = costumeRect.clone();
 		if(lastMask)

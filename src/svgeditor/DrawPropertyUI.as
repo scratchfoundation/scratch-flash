@@ -25,7 +25,6 @@ package svgeditor {
 	import flash.text.TextField;
 	import assets.Resources;
 
-import mx.resources.ResourceBundle;
 
 import svgeditor.tools.BitmapBackgroundTool;
 
@@ -75,9 +74,7 @@ public class DrawPropertyUI extends Sprite {
 
 	//Segmentation UI
 	private var segmentationUI:Sprite;
-	private var segmentationLabel:TextField;
-	private var segmentationHelpLabel:TextField;
-	private var segmentationHelpBtn:IconButton;
+
 
 	// Color picker
 	private var colorPicker:ColorPicker;
@@ -210,7 +207,11 @@ public class DrawPropertyUI extends Sprite {
 
 	public function toggleSegmentationUI(enabled:Boolean, tool:BitmapBackgroundTool):void{
 		if(tool && enabled){
+			tool.removeEventListener(BitmapBackgroundTool.UPDATE_REQUIRED, updateSegmentationUI);
 			tool.addEventListener(BitmapBackgroundTool.UPDATE_REQUIRED, updateSegmentationUI, false, 0, true);
+		}
+		if(tool && !enabled){
+			tool.removeEventListener(BitmapBackgroundTool.UPDATE_REQUIRED, updateSegmentationUI);
 		}
 		segmentationUI.visible = enabled;
 		colorPicker.visible = !enabled;
@@ -418,7 +419,7 @@ public class DrawPropertyUI extends Sprite {
 		if ('hollow' == fill) g.lineStyle(lineW, currentValues.color);
 		else g.beginFill(currentValues.color);
 
-		var inset:Number = ('hollow' == fill) ? lineW / 2 : 0
+		var inset:Number = ('hollow' == fill) ? lineW / 2 : 0;
 
 		if (isEllipse) g.drawEllipse(inset, inset, iconW, iconH);
 		else g.drawRect(inset, inset, iconW, iconH);
@@ -464,6 +465,10 @@ public class DrawPropertyUI extends Sprite {
 	}
 
 	private function makeSegmentationUI():void {
+		var segmentationLabel:TextField;
+	 	var segmentationHelpLabel:TextField;
+		var segmentationHelpBtn:IconButton;
+
 		segmentationUI = new Sprite();
 		segmentationUI.visible = false;
 

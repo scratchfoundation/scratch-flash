@@ -765,7 +765,7 @@ package svgeditor {
 		public function addCostume(c:ScratchCostume, where:Point):void {} // add costume to existing contents
 
 		// MUST call app.setSaveNeeded();
-		public function saveContent(E:Event = null):void {}
+		public function saveContent(E:Event = null, undoable:Boolean=true):void {}
 
 		public function shutdown():void {
 			// Called before switching costumes. Should commit any operations that were in
@@ -964,7 +964,7 @@ package svgeditor {
 					segmentationTool.refreshSegmentation();
 				}
 				else{
-					segmentationTool.commitMask(new SegmentationEvent());
+					segmentationTool.commitMask(false);
 				}
 				imagesPart.refreshUndoButtons();
             }

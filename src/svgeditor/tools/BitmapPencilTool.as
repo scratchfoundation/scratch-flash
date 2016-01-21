@@ -140,7 +140,7 @@ public class BitmapPencilTool extends SVGTool {
 		brushColor = (props.alpha > 0) ? (0xFF000000 | props.color) : 0;
 	}
 
-	private function moveFeedback():void {
+	protected function moveFeedback():void {
 		// Update the position of the brush/eraser feedback object.
 		if (!feedbackObj) return;
 		var p:Point = penPoint();

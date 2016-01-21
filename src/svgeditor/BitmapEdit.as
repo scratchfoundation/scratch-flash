@@ -200,12 +200,12 @@ public class BitmapEdit extends ImageEdit {
 		(currentTool as ObjectTransformer).select(new Selection([sel]));
 	}
 
-	public override function saveContent(evt:Event = null):void {
+	public override function saveContent(evt:Event = null, undoable:Boolean=true):void {
 		// Note: Don't save when there is an active selection or in text entry mode.
 		if (currentTool is ObjectTransformer) return;
 		if (currentTool is TextTool) return; // should select the text so it can be manipulated
 		bakeIntoBitmap();
-		saveToCostume(!(evt is SegmentationEvent));
+		saveToCostume(undoable);
 	}
 
 	private function saveToCostume(undoable:Boolean=true):void {
@@ -243,7 +243,6 @@ public class BitmapEdit extends ImageEdit {
 		if ((bForce || newMode != toolMode) && currentTool is SVGEditTool)
 			obj = (currentTool as SVGEditTool).getObject();
 
-		var prevToolMode:String = toolMode;
 		super.setToolMode(newMode, bForce, fromButton);
 
 		if (obj) {
@@ -283,8 +282,7 @@ public class BitmapEdit extends ImageEdit {
 		if (content.numChildren == 0) return; // nothing to bake in
 		var bm:BitmapData = workArea.getBitmap().bitmapData;
 		if (bm && (content.numChildren > 0)) {
-			var m:Matrix = new Matrix();
-			m = content.getChildAt(0).transform.matrix.clone();
+			var m:Matrix = content.getChildAt(0).transform.matrix.clone();
 			m.scale(2, 2);
 			var oldQuality:String = stage.quality;
 			if (!Scratch.app.runtime.shiftIsDown) stage.quality = StageQuality.LOW;
