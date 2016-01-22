@@ -33,8 +33,9 @@ package svgeditor {
 	import flash.display.*;
 	import flash.events.*;
 	import flash.geom.*;
+import flash.geom.Rectangle;
 
-	import scratch.ScratchCostume;
+import scratch.ScratchCostume;
 
 	import svgeditor.objs.*;
 	import svgeditor.tools.*;
@@ -58,6 +59,7 @@ public class BitmapEdit extends ImageEdit {
 		{ name: 'paintbucket',		desc: 'Fill with color' },
 		{ name: 'bitmapEraser',		desc: 'Erase' },
 		{ name: 'bitmapSelect',		desc: 'Select' },
+		{ name: 'magicEraser',    desc: 'Remove Background'}
 	];
 
 	private var offscreenBM:BitmapData;
@@ -177,15 +179,12 @@ public class BitmapEdit extends ImageEdit {
 	protected override function loadCostume(c:ScratchCostume):void {
 		var bm:BitmapData = workArea.getBitmap().bitmapData;
 		bm.fillRect(bm.rect, bgColor()); // clear
-
+		var costumeRect:Rectangle = c.scaleAndCenter(bm, isScene); //draw on this bm
+		c.segmentationState.unmarkedBitmap = bm.clone();
+		c.segmentationState.costumeRect = costumeRect;
 		var scale:Number = 2 / c.bitmapResolution;
-		var costumeBM:BitmapData = c.bitmapForEditor(isScene);
-		var destP:Point = isScene ?
-			new Point(0, 0) :
-			new Point(480 - (scale * c.rotationCenterX), 360 - (scale * c.rotationCenterY));
-		bm.copyPixels(costumeBM, costumeBM.rect, destP);
 		if (c.undoList.length == 0) {
-			recordForUndo(costumeBM, (scale * c.rotationCenterX), (scale * c.rotationCenterY));
+			recordForUndo(c.bitmapForEditor(isScene), (scale * c.rotationCenterX), (scale * c.rotationCenterY));
 		}
 	}
 
@@ -201,15 +200,15 @@ public class BitmapEdit extends ImageEdit {
 		(currentTool as ObjectTransformer).select(new Selection([sel]));
 	}
 
-	public override function saveContent(evt:Event = null):void {
+	public override function saveContent(evt:Event = null, undoable:Boolean=true):void {
 		// Note: Don't save when there is an active selection or in text entry mode.
 		if (currentTool is ObjectTransformer) return;
 		if (currentTool is TextTool) return; // should select the text so it can be manipulated
 		bakeIntoBitmap();
-		saveToCostume();
+		saveToCostume(undoable);
 	}
 
-	private function saveToCostume():void {
+	private function saveToCostume(undoable:Boolean=true):void {
 		// Note: Although the bitmap is double resolution, the rotation center is not doubled,
 		// since it is applied to the costume after the bitmap has been scaled down.
 		var c:ScratchCostume = targetCostume;
@@ -228,8 +227,13 @@ public class BitmapEdit extends ImageEdit {
 				c.setBitmapData(newBM, 0, 0);
 			}
 		}
-		recordForUndo(c.baseLayerBitmap.clone(), c.rotationCenterX, c.rotationCenterY);
-		Scratch.app.setSaveNeeded();
+		if(undoable){
+			recordForUndo(c.baseLayerBitmap.clone(), c.rotationCenterX, c.rotationCenterY);
+			Scratch.app.setSaveNeeded();
+		}
+		else if (targetCostume.undoListIndex < targetCostume.undoList.length) {
+			targetCostume.undoList = targetCostume.undoList.slice(0, targetCostume.undoListIndex + 1);
+		}
 	}
 
 	override public function setToolMode(newMode:String, bForce:Boolean = false, fromButton:Boolean = false):void {
@@ -239,7 +243,6 @@ public class BitmapEdit extends ImageEdit {
 		if ((bForce || newMode != toolMode) && currentTool is SVGEditTool)
 			obj = (currentTool as SVGEditTool).getObject();
 
-		var prevToolMode:String = toolMode;
 		super.setToolMode(newMode, bForce, fromButton);
 
 		if (obj) {
@@ -279,8 +282,7 @@ public class BitmapEdit extends ImageEdit {
 		if (content.numChildren == 0) return; // nothing to bake in
 		var bm:BitmapData = workArea.getBitmap().bitmapData;
 		if (bm && (content.numChildren > 0)) {
-			var m:Matrix = new Matrix();
-			m = content.getChildAt(0).transform.matrix.clone();
+			var m:Matrix = content.getChildAt(0).transform.matrix.clone();
 			m.scale(2, 2);
 			var oldQuality:String = stage.quality;
 			if (!Scratch.app.runtime.shiftIsDown) stage.quality = StageQuality.LOW;

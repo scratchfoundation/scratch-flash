@@ -65,6 +65,14 @@ package svgeditor {
 		private var svgEditorMask:Shape;
 		private var currentCursor:String;
 
+		private function get segmentationTool():BitmapBackgroundTool{
+			return currentTool as BitmapBackgroundTool;
+		}
+
+		public function clickedOutsideBitmap(evt:MouseEvent):Boolean{
+			return evt.target == imagesPart;
+		}
+
 		public function ImageEdit(app:Scratch, imagesPart:ImagesPart) {
 			this.app = app;
 			this.imagesPart = imagesPart;
@@ -72,6 +80,7 @@ package svgeditor {
 			// Create the layers from back to front
 			toolsLayer = new Sprite();
 			workArea = new ImageCanvas(100, 100, this);
+
 			addChild(workArea);
 			addChild(toolsLayer);
 			addChild(uiLayer = new Sprite());
@@ -122,6 +131,7 @@ package svgeditor {
 		public function getStrokeSmoothness():Number { return drawPropsUI.getStrokeSmoothness() }
 		public function getToolsLayer():Sprite { return toolsLayer }
 		public function getWorkArea():ImageCanvas { return workArea }
+
 
 		public function handleDrop(obj:*):Boolean {
 			function insertCostume(c:ScratchCostume):void { addCostume(c, dropPoint) }
@@ -352,6 +362,7 @@ package svgeditor {
 					if ('bitmapSelect' == toolName) iconName = 'bitmapSelect';
 					if ('ellipse' == toolName) iconName = 'bitmapEllipse';
 					if ('paintbucket' == toolName) iconName = 'bitmapPaintbucket';
+					if ('magicEraser' == toolName) iconName = 'magicEraser';
 					if ('rect' == toolName) iconName = 'bitmapRect';
 					if ('text' == toolName) iconName = 'bitmapText';
 
@@ -568,6 +579,7 @@ package svgeditor {
 			var toolChanged:Boolean = true;//!currentTool || (immediateTools.indexOf(newMode) == -1);
 			var s:Selection = null;
 			if(currentTool) {
+				var tool:BitmapBackgroundTool = segmentationTool;
 				if(toolMode == 'select' && newMode != 'select')
 					s = (currentTool as ObjectTransformer).getSelection();
 
@@ -608,6 +620,10 @@ package svgeditor {
 				case 'bitmapEraser': currentTool = new BitmapPencilTool(this, true); break;
 				case 'bitmapSelect': currentTool = new ObjectTransformer(this); break;
 				case 'paintbucket': currentTool = new PaintBucketTool(this); break;
+				case 'magicEraser':{
+					currentTool = new BitmapBackgroundTool(this);
+					break;
+				}
 			}
 
 			if(currentTool is SVGEditTool) {
@@ -637,11 +653,13 @@ package svgeditor {
 				// Listen for any changes to the content
 				currentTool.addEventListener(Event.CHANGE, saveContent, false, 0, true);
 			}
+
 			if (lastToolMode != '') highlightTool(lastToolMode);
 
 			// Make sure the tool selected is visible!
 			if(toolButtons.hasOwnProperty(newMode) && currentTool)
 				(toolButtons[newMode] as IconButton).setDisabled(false);
+			imagesPart.refreshUndoButtons();
 		}
 
 		protected function updateDrawPropsForTool(newMode:String):void {
@@ -651,6 +669,9 @@ package svgeditor {
 				drawPropsUI.toggleShapeUI(false);
 
 			drawPropsUI.toggleFillUI(newMode == 'vpaintbrush' || newMode == 'paintbucket');
+			if(! (this is SVGEdit)){
+				drawPropsUI.toggleSegmentationUI(newMode == 'magicEraser', currentTool as BitmapBackgroundTool)
+			}
 			drawPropsUI.showSmoothnessUI(newMode == 'path');
 			if(newMode == 'path') {
 				var strokeWidth:Number = drawPropsUI.settings.strokeWidth;
@@ -722,6 +743,10 @@ package svgeditor {
 			isScene = forStage;
 			if (toolButtons['setCenter']) (toolButtons['setCenter'] as IconButton).setDisabled(isScene);
 			loadCostume(targetCostume);
+			if(segmentationTool){
+				segmentationTool.initState();
+				//refreshSegmentationMode();
+			}
 			if (imagesPart) imagesPart.refreshUndoButtons();
 
 			if(currentTool is SVGEditTool)
@@ -740,12 +765,13 @@ package svgeditor {
 		public function addCostume(c:ScratchCostume, where:Point):void {} // add costume to existing contents
 
 		// MUST call app.setSaveNeeded();
-		public function saveContent(E:Event = null):void {}
+		public function saveContent(E:Event = null, undoable:Boolean=true):void {}
 
 		public function shutdown():void {
 			// Called before switching costumes. Should commit any operations that were in
 			// progress (e.g. entering text). Forcing a re-select of the current tool should work.
 			setToolMode(toolMode, true);
+
 		}
 
 	//---------------------------------
@@ -805,10 +831,25 @@ package svgeditor {
 		public function canRedo():Boolean {
 			return targetCostume &&
 					(targetCostume.undoList.length > 0) &&
-					(targetCostume.undoListIndex < (targetCostume.undoList.length - 1));
+					(targetCostume.undoListIndex < (targetCostume.undoList.length - 1)) && !targetCostume.segmentationState.lastMask;
+		}
+
+		public function canUndoSegmentation():Boolean{
+			return segmentationTool && targetCostume.segmentationState.canUndo();
+		}
+
+		public function canRedoSegmentation():Boolean{
+			return segmentationTool && targetCostume.segmentationState.canRedo() && !canRedo();
 		}
 
 		public function undo(ignore:* = null):void {
+
+			//This is handled as a special case since clearSelection will commit a
+			//segmentation earlier than desired
+			if(canUndoSegmentation()){
+				undoSegmentation();
+				return;
+			}
 			clearSelection();
 			if (canUndo()) {
 				var undoRec:Array = targetCostume.undoList[--targetCostume.undoListIndex];
@@ -817,6 +858,11 @@ package svgeditor {
 		}
 
 		public function redo(ignore:* = null):void {
+
+			if(canRedoSegmentation()){
+				redoSegmentation();
+				return;
+			}
 			clearSelection();
 			if (canRedo()) {
 				var undoRec:Array = targetCostume.undoList[++targetCostume.undoListIndex];
@@ -898,5 +944,30 @@ package svgeditor {
 			return toolsP;
 		}
 
+		public function undoSegmentation():void{
+            if(segmentationTool){
+                targetCostume.prevSegmentationState();
+				if(targetCostume.segmentationState.lastMask){
+	                segmentationTool.refreshSegmentation();
+				}
+				else{
+					segmentationTool.restoreUnmarkedBitmap();
+				}
+				imagesPart.refreshUndoButtons();
+            }
+		}
+
+		public function redoSegmentation():void{
+            if(segmentationTool){
+                targetCostume.nextSegmentationState();
+				if(targetCostume.segmentationState.lastMask) {
+					segmentationTool.refreshSegmentation();
+				}
+				else{
+					segmentationTool.commitMask(false);
+				}
+				imagesPart.refreshUndoButtons();
+            }
+		}
 	}
 }

@@ -403,7 +403,7 @@ package svgeditor {
 			importer.loadAllImages(imagesLoaded);
 		}
 
-		public override function saveContent(E:Event = null):void {
+		public override function saveContent(E:Event = null, undoable:Boolean=true):void {
 			var contentLayer:Sprite = workArea.getContentLayer();
 			var svgData:ByteArray;
 

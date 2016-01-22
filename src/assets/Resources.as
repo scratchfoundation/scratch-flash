@@ -89,6 +89,7 @@ public class Resources {
 	[Embed(source='cursors/helpCursor.png')] private static const helpCursor:Class;
 	[Embed(source='cursors/shrinkCursor.png')] private static const shrinkCursor:Class;
 	[Embed(source='cursors/mouseCircle.png')] private static const mouseCircle:Class;
+	[Embed(source='cursors/segmentationBusyCursor.png')] private static const segmentationBusy:Class;
 	[Embed(source='UI/paint/zoomInCursor.png')] private static const zoomInCursor:Class;
 	
 	[Embed(source='cursors/videoCursor.svg')] private static const videoCursor:Class;
@@ -218,6 +219,14 @@ public class Resources {
 	[Embed(source='UI/paint/hicon.png')] private static const HeightIcon:Class;
 
 	[Embed(source='UI/paint/canvasGrid.gif')] private static const canvasGrid:Class;
+	[Embed(source='UI/paint/segmentationAnimation/first.png')] private static const first:Class;
+	[Embed(source='UI/paint/segmentationAnimation/second.png')] private static const second:Class;
+    [Embed(source='UI/paint/segmentationAnimation/third.png')] private static const third:Class;
+	[Embed(source='UI/paint/segmentationAnimation/fourth.png')] private static const fourth:Class;
+    [Embed(source='UI/paint/segmentationAnimation/fifth.png')] private static const fifth:Class;
+	[Embed(source='UI/paint/segmentationAnimation/sixth.png')] private static const sixth:Class;
+    [Embed(source='UI/paint/segmentationAnimation/seventh.png')] private static const seventh:Class;
+	[Embed(source='UI/paint/segmentationAnimation/eighth.png')] private static const eighth:Class;
 	[Embed(source='UI/paint/colorWheel.png')] private static const colorWheel:Class;
 	[Embed(source='UI/paint/swatchButton.png')] private static const swatchButton:Class;
 	[Embed(source='UI/paint/rainbowButton.png')] private static const rainbowButton:Class;
@@ -307,6 +316,8 @@ public class Resources {
 	[Embed(source='UI/paint/bitmapRectOn.png')] private static const bitmapRectOn:Class;
 	[Embed(source='UI/paint/bitmapSelectOff.png')] private static const bitmapSelectOff:Class;
 	[Embed(source='UI/paint/bitmapSelectOn.png')] private static const bitmapSelectOn:Class;
+	[Embed(source='UI/paint/magicEraserOn.png')] private static const magicEraserOn:Class;
+	[Embed(source='UI/paint/magicEraserOff.png')] private static const magicEraserOff:Class;
 	[Embed(source='UI/paint/bitmapStampOff.png')] private static const bitmapStampOff:Class;
 	[Embed(source='UI/paint/bitmapStampOn.png')] private static const bitmapStampOn:Class;
 	[Embed(source='UI/paint/bitmapTextOff.png')] private static const bitmapTextOff:Class;
@@ -316,4 +327,6 @@ public class Resources {
 	[Embed(source='StopArrow.png')] private static const stopArrow:Class;
 	[Embed(source='VideoShare.svg')] private static const videoShare:Class;
 
+	[Embed(source='UI/paint/moreInfoOff.png')] private static const moreInfoOff:Class;
+	[Embed(source='UI/paint/moreInfoOn.png')] private static const moreInfoOn:Class;
 }}

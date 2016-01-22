@@ -24,7 +24,7 @@ package svgeditor.tools {
 	import flash.ui.Mouse;
 	import svgeditor.*;
 
-public final class BitmapPencilTool extends SVGTool {
+public class BitmapPencilTool extends SVGTool {
 
 	private var eraseMode:Boolean;	// true if this is the eraser tool
 
@@ -40,7 +40,7 @@ public final class BitmapPencilTool extends SVGTool {
 	private var brush:BitmapData;
 	private var eraser:BitmapData;
 	private var tempBM:BitmapData;
-	private var lastPoint:Point;
+	private var _lastPoint:Point;
 
 	public function BitmapPencilTool(editor:ImageEdit, eraseMode:Boolean = false) {
 		super(editor);
@@ -67,12 +67,14 @@ public final class BitmapPencilTool extends SVGTool {
 		super.shutdown();
 	}
 
+	protected function getBrushColor():int{ return brushColor; }
+
 	public function updateProperties():void {
 		updateFeedback();
 		moveFeedback();
 	}
 
-	private function mouseDown(evt:MouseEvent):void {
+	protected function mouseDown(evt:MouseEvent):void {
 		if (!editor) return;
 		if (!editor.isActive()) return;
 		if (!editor.getWorkArea().clickInBitmap(evt.stageX, evt.stageY)) return; // mouse down not over canvas
@@ -103,8 +105,18 @@ public final class BitmapPencilTool extends SVGTool {
 		}
 	}
 
-	private function mouseUp(evt:MouseEvent):void {
+	protected function set lastPoint(p:Point):void{
+		_lastPoint = p;
+	}
+
+	protected function get lastPoint():Point{return _lastPoint;}
+
+	protected function mouseUp(evt:MouseEvent):void {
 		if (brush) editor.saveContent();
+		resetBrushes();
+	}
+
+	protected function resetBrushes():void{
 		brush = eraser = tempBM = null;
 	}
 
@@ -128,7 +140,7 @@ public final class BitmapPencilTool extends SVGTool {
 		brushColor = (props.alpha > 0) ? (0xFF000000 | props.color) : 0;
 	}
 
-	private function moveFeedback():void {
+	protected function moveFeedback():void {
 		// Update the position of the brush/eraser feedback object.
 		if (!feedbackObj) return;
 		var p:Point = penPoint();
@@ -137,7 +149,7 @@ public final class BitmapPencilTool extends SVGTool {
 		setFeedbackVisibility()
 	}
 
-	private function penPoint():Point {
+	protected function penPoint():Point {
 		// Return the position of the top-left corner of the brush relative to the bitmap.
 		var p:Point = editor.getWorkArea().bitmapMousePoint();
 		var gridX:int = Math.round(p.x - brushSize / 2);
@@ -189,20 +201,22 @@ public final class BitmapPencilTool extends SVGTool {
 		}
 	}
 
-	private function drawAtPoint(p:Point):void {
+	protected function drawAtPoint(p:Point, targetCanvas:BitmapData=null, altBrush:BitmapData=null):void {
+		var currentBrush:BitmapData = altBrush || brush;
+		targetCanvas = targetCanvas || canvas;
 		// Stamp with the brush or erase with the eraser at the given point.
 		var isErasing:Boolean = eraseMode || (brushColor == 0);
 		if (isErasing && !editor.isScene) {
 			var r:Rectangle = new Rectangle(p.x, p.y, brushSize, brushSize);
 			tempBM.fillRect(tempBM.rect, 0);
-			tempBM.copyPixels(canvas, r, new Point(0, 0), eraser, new Point(0, 0), true);
-			canvas.copyPixels(tempBM, tempBM.rect, p);
+			tempBM.copyPixels(targetCanvas, r, new Point(0, 0), eraser, new Point(0, 0), true);
+			targetCanvas.copyPixels(tempBM, tempBM.rect, p);
 		} else {
-			canvas.copyPixels(brush, brush.rect, p, null, null, true);
+			targetCanvas.copyPixels(currentBrush, currentBrush.rect, p, null, null, true);
 		}
 	}
 
-	private function makeBrush(diameter:int, c:int, bgColor:int = 0, outlineOnly:Boolean = false):BitmapData {
+	protected function makeBrush(diameter:int, c:int, bgColor:int = 0, outlineOnly:Boolean = false):BitmapData {
 		// Return a BitmapData object containing a round brush with the given diameter and colors.
 		if (outlineOnly) c = 0xFF303030;
 		var bm:BitmapData = new BitmapData(diameter, diameter, true, bgColor);

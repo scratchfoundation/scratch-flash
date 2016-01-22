@@ -34,6 +34,7 @@ package svgeditor
 		private var visibleCanvas:Sprite;
 		private var contentLayer:Sprite;
 		private var bitmapLayer:Bitmap;
+		private var segmentationLayer:Bitmap;
 		private var visibleMask:Shape;
 
 		static public const canvasWidth:uint = 480;
@@ -104,45 +105,52 @@ package svgeditor
 			return bitmapLayer;
 		}
 
-		public function bitmapMousePoint():Point {
-			if (!bitmapLayer) return new Point(0, 0);
-			var bm:BitmapData = bitmapLayer.bitmapData;
-			var x:int = Math.min(bm.width, Math.max(0, visibleArea.mouseX / bitmapLayer.scaleX));
-			var y:int = Math.min(bm.height, Math.max(0, visibleArea.mouseY / bitmapLayer.scaleY));
-			return new Point(x, y);
-		}
+        public function getSegmentation():Bitmap {
+				return segmentationLayer;
+			}
 
-		public function clickInBitmap(stageX:int, stageY:int):Boolean {
-			var globalR:Rectangle = visibleMask.getRect(stage);
-			return globalR.contains(stageX, stageY);
-		}
+			public function bitmapMousePoint():Point {
+				if (!bitmapLayer) return new Point(0, 0);
+				var bm:BitmapData = bitmapLayer.bitmapData;
+				var x:int = Math.min(bm.width, Math.max(0, visibleArea.mouseX / bitmapLayer.scaleX));
+				var y:int = Math.min(bm.height, Math.max(0, visibleArea.mouseY / bitmapLayer.scaleY));
+				return new Point(x, y);
+			}
 
-		public function addBitmapFeedback(feedbackObj:DisplayObject):void {
-			visibleArea.addChild(feedbackObj);
-		}
+			public function clickInBitmap(stageX:int, stageY:int):Boolean {
+				var globalR:Rectangle = visibleMask.getRect(stage);
+				return globalR.contains(stageX, stageY);
+			}
 
-		public function getScale():Number { return visibleArea.scaleX }
+			public function addBitmapFeedback(feedbackObj:DisplayObject):void {
+				visibleArea.addChild(feedbackObj);
+			}
 
-		private function createLayers():void {
-			interactiveLayer = new Sprite();
-			addChild(interactiveLayer);
+			public function getScale():Number { return visibleArea.scaleX }
 
-			visibleMask = new Shape();
-			addChild(visibleMask);
+			private function createLayers():void {
+				interactiveLayer = new Sprite();
+				addChild(interactiveLayer);
 
-			visibleArea = new Sprite();
-			addChild(visibleArea);
-			visibleCanvas = new Sprite();
-			visibleCanvas.mouseEnabled = false;
-			visibleArea.addChild(visibleCanvas);
+				visibleMask = new Shape();
+				addChild(visibleMask);
 
-			contentLayer = new Sprite();
+				visibleArea = new Sprite();
+				addChild(visibleArea);
+				visibleCanvas = new Sprite();
+				visibleCanvas.mouseEnabled = false;
+				visibleArea.addChild(visibleCanvas);
 
-			if (editor is BitmapEdit) {
-				// Bitmap editor works at double resolution.
+				contentLayer = new Sprite();
+
+				if (editor is BitmapEdit) {
+					// Bitmap editor works at double resolution.
 				var bm:BitmapData = new BitmapData(960, 720, true, 0);
 				visibleArea.addChild(bitmapLayer = new Bitmap(bm));
 				bitmapLayer.scaleX = bitmapLayer.scaleY = 0.5;
+                visibleArea.addChild(segmentationLayer = new Bitmap(bm.clone()));
+                segmentationLayer.scaleX = segmentationLayer.scaleY = 0.5;
+
 			}
 
 			visibleArea.mask = visibleMask;

@@ -18,6 +18,8 @@
  */
 
 package svgeditor {
+import svgeditor.objs.SegmentationState;
+
 public class DrawProperties {
 
 	// colors

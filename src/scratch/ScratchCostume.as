@@ -42,7 +42,13 @@ package scratch {
 	import flash.geom.*;
 	import flash.text.TextField;
 	import flash.utils.*;
-	import svgutils.*;
+
+import svgeditor.DrawProperties;
+import svgeditor.objs.SegmentationState;
+
+import svgeditor.tools.BitmapBackgroundTool;
+
+import svgutils.*;
 	import util.*;
 	import by.blooddy.crypto.MD5;
 	import by.blooddy.crypto.image.PNG24Encoder;
@@ -86,6 +92,8 @@ public class ScratchCostume {
 	public var undoList:Array = [];
 	public var undoListIndex:int;
 
+	private var segmentation:SegmentationState = new SegmentationState();
+
 	public function ScratchCostume(name:String, data:*, centerX:int = 99999, centerY:int = 99999, bmRes:int = 1) {
 		costumeName = name;
 		rotationCenterX = centerX;
@@ -122,6 +130,18 @@ public class ScratchCostume {
 		textLayerMD5 = null;
 	}
 
+	public function get segmentationState():SegmentationState{
+		return segmentation;
+	}
+
+	public function nextSegmentationState():void{
+		segmentation = segmentation.next;
+	}
+
+	public function prevSegmentationState():void{
+		segmentation = segmentation.prev;
+	}
+
 	public static function scaleForScratch(bm:BitmapData):BitmapData {
 		if ((bm.width <= 480) && (bm.height <= 360)) return bm;
 		var scale:Number = Math.min(480 / bm.width, 360 / bm.height);
@@ -130,6 +150,19 @@ public class ScratchCostume {
 		m.scale(scale, scale);
 		result.draw(bm, m);
 		return result;
+	}
+
+	public function scaleAndCenter(bm:BitmapData, isScene:Boolean):Rectangle{
+		var scale:Number = 2 / bitmapResolution;
+		var costumeBM:BitmapData = bitmapForEditor(isScene);
+		var destP:Point = isScene ?
+			new Point(0, 0) :
+			new Point(480 - (scale * rotationCenterX), 360 - (scale * rotationCenterY));
+		bm.copyPixels(costumeBM, costumeBM.rect, destP);
+		var costumeRect:Rectangle = costumeBM.rect;
+		costumeRect.x = destP.x;
+		costumeRect.y = destP.y;
+		return costumeRect;
 	}
 
 	public static function isSVGData(data:ByteArray):Boolean {
@@ -588,7 +621,8 @@ public class ScratchCostume {
 		// the text layer bitmap only, rather than the entire composite image.)
 
 		if (oldComposite == null || baseLayerBitmap == null) return; // nothing to do
-		var diff:* = oldComposite.compare(baseLayerBitmap); // diff is 0 if oldComposite and baseLayerBitmap are identical
+		var diff:* = oldComposite.compare(baseLayerBitmap); // diff is 0 if oldComposite and baseLayerBitmap are
+                                                            // identical
 		if (diff is BitmapData) {
 			var stencil:BitmapData = new BitmapData(diff.width, diff.height, true, 0);
 			stencil.threshold(diff, diff.rect, new Point(0, 0), '!=', 0, 0xFF000000);

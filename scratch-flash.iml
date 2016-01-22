@@ -3,7 +3,7 @@
   <component name="FlexBuildConfigurationManager" active="Debug">
     <configurations>
       <configuration name="Debug" pure-as="true" main-class="Scratch" output-file="Scratch.swf" output-folder="$MODULE_DIR$/bin-debug">
-        <dependencies target-player="11.6">
+        <dependencies target-player="16.0">
           <entries>
             <entry library-name="blooddy_crypto" library-level="project">
               <dependency linkage="Merged" />
@@ -11,8 +11,11 @@
             <entry library-name="as3corelib" library-level="project">
               <dependency linkage="Merged" />
             </entry>
+            <entry library-name="grabcut" library-level="application">
+              <dependency linkage="Merged" />
+            </entry>
           </entries>
-          <sdk name="flex_sdk_4.11" />
+          <sdk name="apache-flex-4.14.1" />
         </dependencies>
         <compiler-options>
           <map>
@@ -24,7 +27,7 @@
         <packaging-ios />
       </configuration>
       <configuration name="Release" pure-as="true" main-class="Scratch" output-file="Release.swf" output-folder="$MODULE_DIR$/bin-release">
-        <dependencies target-player="11.6">
+        <dependencies target-player="16.0">
           <entries>
             <entry library-name="blooddy_crypto" library-level="project">
               <dependency linkage="Merged" />
@@ -32,8 +35,11 @@
             <entry library-name="as3corelib" library-level="project">
               <dependency linkage="Merged" />
             </entry>
+            <entry library-name="grabcut" library-level="application">
+              <dependency linkage="Merged" />
+            </entry>
           </entries>
-          <sdk name="flex_sdk_4.11" />
+          <sdk name="apache-flex-4.14.1" />
         </dependencies>
         <compiler-options>
           <map>
@@ -57,9 +63,10 @@
       <excludeFolder url="file://$MODULE_DIR$/.gradle" />
       <excludeFolder url="file://$MODULE_DIR$/build" />
     </content>
-    <orderEntry type="jdk" jdkName="flex_sdk_4.11" jdkType="Flex SDK Type (new)" />
+    <orderEntry type="jdk" jdkName="apache-flex-4.14.1" jdkType="Flex SDK Type (new)" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="blooddy_crypto" level="project" />
     <orderEntry type="library" exported="" name="as3corelib" level="project" />
+    <orderEntry type="library" exported="" name="grabcut" level="application" />
   </component>
 </module>

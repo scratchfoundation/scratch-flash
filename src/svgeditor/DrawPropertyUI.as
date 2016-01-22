@@ -24,10 +24,16 @@ package svgeditor {
 	import flash.geom.*;
 	import flash.text.TextField;
 	import assets.Resources;
-	import translation.Translator;
+
+
+import svgeditor.tools.BitmapBackgroundTool;
+
+import translation.Translator;
 	import ui.parts.UIPart;
 	import uiwidgets.*;
 	import flash.text.TextFormat;
+
+import uiwidgets.IconButton;
 
 public class DrawPropertyUI extends Sprite {
 
@@ -66,6 +72,10 @@ public class DrawPropertyUI extends Sprite {
 	// Smoothness UI
 	private var smoothnessUI:Sprite;
 
+	//Segmentation UI
+	private var segmentationUI:Sprite;
+
+
 	// Color picker
 	private var colorPicker:ColorPicker;
 
@@ -95,8 +105,8 @@ public class DrawPropertyUI extends Sprite {
 		makeSmoothnessUI();
 		makeZoomButtons();
 		makeModeLabelAndButton();
+		makeSegmentationUI();
 		makeReadouts();
-
 		addEventListener(ONCHANGE, updateStrokeWidthDisplay);
 		updateStrokeWidthDisplay();
 	}
@@ -110,26 +120,28 @@ public class DrawPropertyUI extends Sprite {
 	}
 
 	public var w:int, h:int;
-	public function setWidthHeight(w:int, h:int):void {
+	public function setWidthHeight(w:int, h:int, sx:int=0, sy:int=0):void {
 		this.w = w;
 		this.h = h;
 		var g:Graphics = bg.graphics;
 		g.clear();
 		g.lineStyle(1, CSS.borderColor);
 		g.beginFill(0xF6F6F6);
-		g.drawRect(0, 0, w - 1, h);
-		fixLayout(w, h);
+		g.drawRect(sx, sy, w - 1, h);
+		fixLayout(w, h, sx, sy);
 	}
 
-	private function fixLayout(w:int, h:int):void {
-		colorPicker.x = 105 + Math.max(0, Math.floor((w - 390) / 2));
-		colorPicker.y = 6;
-		zoomButtons.x = w - zoomButtons.width - 5;
-		zoomButtons.y = 5;
+	private function fixLayout(w:int, h:int, sx:int=0, sy:int=0):void {
+		colorPicker.x = sx + 105 + Math.max(0, Math.floor((w - 390) / 2));
+		colorPicker.y = sy + 6;
 
-		var modeX:int = w - 5 - Math.max(modeLabel.width, modeButton.width) / 2;
+
+		zoomButtons.x = sx + w - zoomButtons.width - 5;
+		zoomButtons.y = sy + 5;
+
+		var modeX:int = sx + w - 5 - Math.max(modeLabel.width, modeButton.width) / 2;
 		modeLabel.x = modeX - modeLabel.width / 2;
-		modeLabel.y = h - 47;
+		modeLabel.y = sy + h - 47;
 		modeButton.x = modeX - modeButton.width / 2;
 		modeButton.y = modeLabel.y + 22;
 
@@ -191,6 +203,18 @@ public class DrawPropertyUI extends Sprite {
 		updateShapeUI();
 		shapeBtnFill.setOn(currentValues.filledShape);
 		shapeBtnHollow.setOn(!currentValues.filledShape);
+	}
+
+	public function toggleSegmentationUI(enabled:Boolean, tool:BitmapBackgroundTool):void{
+		if(tool && enabled){
+			tool.removeEventListener(BitmapBackgroundTool.UPDATE_REQUIRED, updateSegmentationUI);
+			tool.addEventListener(BitmapBackgroundTool.UPDATE_REQUIRED, updateSegmentationUI, false, 0, true);
+		}
+		if(tool && !enabled){
+			tool.removeEventListener(BitmapBackgroundTool.UPDATE_REQUIRED, updateSegmentationUI);
+		}
+		segmentationUI.visible = enabled;
+		colorPicker.visible = !enabled;
 	}
 
 	public function showSmoothnessUI(flag:Boolean, forDrawing:Boolean = true):void {
@@ -395,7 +419,7 @@ public class DrawPropertyUI extends Sprite {
 		if ('hollow' == fill) g.lineStyle(lineW, currentValues.color);
 		else g.beginFill(currentValues.color);
 
-		var inset:Number = ('hollow' == fill) ? lineW / 2 : 0
+		var inset:Number = ('hollow' == fill) ? lineW / 2 : 0;
 
 		if (isEllipse) g.drawEllipse(inset, inset, iconW, iconH);
 		else g.drawRect(inset, inset, iconW, iconH);
@@ -440,6 +464,36 @@ public class DrawPropertyUI extends Sprite {
 		addChild(smoothnessUI);
 	}
 
+	private function makeSegmentationUI():void {
+		var segmentationLabel:TextField;
+	 	var segmentationHelpLabel:TextField;
+		var segmentationHelpBtn:IconButton;
+
+		segmentationUI = new Sprite();
+		segmentationUI.visible = false;
+
+		segmentationLabel = Resources.makeLabel("Magic Wand", CSS.titleFormat, 5, 5);
+		segmentationUI.addChild(segmentationLabel);
+
+		function showTip(btn:IconButton):void{
+			editor.app.showTip("magicwand");
+		}
+
+		segmentationHelpLabel = Resources.makeLabel("Need help", CSS.projectInfoFormat, 5, 5);
+		segmentationHelpLabel.x = segmentationLabel.x;
+		segmentationHelpLabel.y = this.height - 15;
+		segmentationUI.addChild(segmentationHelpLabel);
+
+		segmentationHelpBtn = new IconButton(showTip, "moreInfo");
+		segmentationHelpBtn.isMomentary = true;
+		segmentationHelpBtn.x = segmentationHelpLabel.x + segmentationHelpLabel.width + 2;
+		segmentationHelpBtn.y = segmentationHelpLabel.y + segmentationHelpLabel.height/2 - segmentationHelpBtn.height/2;
+
+		segmentationUI.addChild(segmentationHelpBtn);
+
+		addChild(segmentationUI);
+	}
+
 	private function makeStrokeUI():void {
 		function updateStrokeWidth(w:Number):void {
 			if (eraserStrokeMode) {
@@ -480,6 +534,13 @@ public class DrawPropertyUI extends Sprite {
 		ttBg.graphics.beginFill(0xFF0000, 0);
 		ttBg.graphics.drawRect(r.x, r.y, r.width, r.height);
 		ttBg.graphics.endFill();
+	}
+
+
+	private function updateSegmentationUI(e:Event=null):void{
+		if(editor && editor.imagesPart){
+			editor.imagesPart.refreshUndoButtons();
+		}
 	}
 
 	private function updateStrokeWidthDisplay(ignore:* = null):void {
