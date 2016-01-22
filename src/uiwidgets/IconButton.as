@@ -28,15 +28,17 @@
 // is called when the user clicks on the IconButton.
 
 package uiwidgets {
-	import flash.display.*;
-	import flash.events.MouseEvent;
-	import flash.text.*;
-	import assets.Resources;
+import assets.Resources;
+
+import flash.display.*;
+import flash.events.MouseEvent;
+import flash.text.*;
 
 public class IconButton extends Sprite {
 
 	public var clickFunction:Function;
-	public var isRadioButton:Boolean; // if true then other button children of my parent will be turned off when I'm turned on
+	public var isRadioButton:Boolean; // if true then other button children of my parent will be turned off when I'm
+                                      // turned on
 	public var isMomentary:Boolean; // if true then button does not remain on when clicked
 	public var lastEvent:MouseEvent;
 	public var clientData:*;
@@ -46,7 +48,8 @@ public class IconButton extends Sprite {
 	private var onImage:DisplayObject;
 	private var offImage:DisplayObject;
 
-	public function IconButton(clickFunction:Function, onImageOrName:*, offImageObj:DisplayObject = null, isRadioButton:Boolean = false) {
+	public function IconButton(clickFunction:Function, onImageOrName:*, offImageObj:DisplayObject = null,
+	                           isRadioButton:Boolean = false) {
 		this.clickFunction = clickFunction;
 		this.isRadioButton = isRadioButton;
 		useDefaultImages();
@@ -73,7 +76,8 @@ public class IconButton extends Sprite {
 			var assetName:String = onImageObjOrName;
 			onImage = Resources.createBmp(assetName + 'On');
 			offImage = Resources.createBmp(assetName + 'Off');
-		} else if (onImageObjOrName is DisplayObject) {
+		}
+		else if (onImageObjOrName is DisplayObject) {
 			// on/off images are supplied
 			onImage = onImageObjOrName as DisplayObject;
 			offImage = (offImageObj == null) ? onImage : offImageObj; // offImage is optional
@@ -94,7 +98,8 @@ public class IconButton extends Sprite {
 	}
 
 	public function setOn(flag:Boolean):void {
-		if (flag) turnOn(); else turnOff();
+		if (flag) turnOn();
+		else turnOff();
 	}
 
 	public function isOn():Boolean { return buttonIsOn }
@@ -102,13 +107,14 @@ public class IconButton extends Sprite {
 	public function bottom():int { return y + height }
 
 	public function isDisabled():Boolean { return alpha < 1 };
-	public function setDisabled(disabledFlag:Boolean, disabledAlpha:Number = 0.0, disabledImg:DisplayObject=null):void {
+	public function setDisabled(disabledFlag:Boolean, disabledAlpha:Number = 0.0,
+	                            disabledImg:DisplayObject = null):void {
 		alpha = disabledFlag ? disabledAlpha : 1;
 		if (disabledFlag) {
 			mouseIsOver = false;
 			turnOff();
 		}
-		if(disabledImg){
+		if (disabledImg) {
 			offImage = disabledImg;
 			redraw();
 		}
@@ -119,8 +125,7 @@ public class IconButton extends Sprite {
 		// Set my off/on images to the given string and colors.
 		// If dropDownArrow, add a drop-down arrow after the label.
 		setImage(
-			makeLabelSprite(s, offColor, dropDownArrow),
-			makeLabelSprite(s, onColor, dropDownArrow));
+				makeLabelSprite(s, offColor, dropDownArrow), makeLabelSprite(s, onColor, dropDownArrow));
 		isMomentary = true;
 	}
 
@@ -147,20 +152,21 @@ public class IconButton extends Sprite {
 	}
 
 	private function redraw():void {
-			var img:DisplayObject = buttonIsOn ? onImage : offImage;
-			if (mouseIsOver && !buttonIsOn) img = onImage;
-			while (numChildren > 0) removeChildAt(0);
-			addChild(img);
-			// Make the entire button rectangle be mouse-sensitive:
-			graphics.clear();
-			graphics.beginFill(0xA0, 0); // invisible but mouse-sensitive; min size 10x10
-			graphics.drawRect(0, 0, Math.max(10, img.width), Math.max(10, img.height));
-			graphics.endFill();
+		var img:DisplayObject = buttonIsOn ? onImage : offImage;
+		if (mouseIsOver && !buttonIsOn) img = onImage;
+		while (numChildren > 0) removeChildAt(0);
+		addChild(img);
+		// Make the entire button rectangle be mouse-sensitive:
+		graphics.clear();
+		graphics.beginFill(0xA0, 0); // invisible but mouse-sensitive; min size 10x10
+		graphics.drawRect(0, 0, Math.max(10, img.width), Math.max(10, img.height));
+		graphics.endFill();
 	}
 
 	private function mouseDown(e:MouseEvent):void {
 		if (isDisabled()) return;
-		if (CursorTool.tool == 'help') return; // ignore mouseDown events with help tool (this doesn't apply to 'actOnMouseUp' buttons)
+		if (CursorTool.tool == 'help') return; // ignore mouseDown events with help tool (this doesn't apply to
+	                                           // 'actOnMouseUp' buttons)
 		if (isRadioButton) {
 			if (buttonIsOn) return;  // user must click on another radio button to turn this button off
 			turnOffOtherRadioButtons();
@@ -177,8 +183,18 @@ public class IconButton extends Sprite {
 		redraw();
 	}
 
-	private function mouseOver(evt:MouseEvent):void { if (!isDisabled()) { mouseIsOver = true; redraw() }}
-	private function mouseOut(evt:MouseEvent):void  { if (!isDisabled()) { mouseIsOver = false; redraw() }}
+	private function mouseOver(evt:MouseEvent):void {
+		if (!isDisabled()) {
+			mouseIsOver = true;
+			redraw()
+		}
+	}
+	private function mouseOut(evt:MouseEvent):void {
+		if (!isDisabled()) {
+			mouseIsOver = false;
+			redraw()
+		}
+	}
 
 	private function turnOffOtherRadioButtons():void {
 		if (parent == null) return;
@@ -206,4 +222,5 @@ public class IconButton extends Sprite {
 		g.endFill();
 	}
 
-}}
+}
+}

@@ -221,11 +221,11 @@ public class Resources {
 	[Embed(source='UI/paint/canvasGrid.gif')] private static const canvasGrid:Class;
 	[Embed(source='UI/paint/segmentationAnimation/first.png')] private static const first:Class;
 	[Embed(source='UI/paint/segmentationAnimation/second.png')] private static const second:Class;
-    [Embed(source='UI/paint/segmentationAnimation/third.png')] private static const third:Class;
+	[Embed(source='UI/paint/segmentationAnimation/third.png')] private static const third:Class;
 	[Embed(source='UI/paint/segmentationAnimation/fourth.png')] private static const fourth:Class;
-    [Embed(source='UI/paint/segmentationAnimation/fifth.png')] private static const fifth:Class;
+	[Embed(source='UI/paint/segmentationAnimation/fifth.png')] private static const fifth:Class;
 	[Embed(source='UI/paint/segmentationAnimation/sixth.png')] private static const sixth:Class;
-    [Embed(source='UI/paint/segmentationAnimation/seventh.png')] private static const seventh:Class;
+	[Embed(source='UI/paint/segmentationAnimation/seventh.png')] private static const seventh:Class;
 	[Embed(source='UI/paint/segmentationAnimation/eighth.png')] private static const eighth:Class;
 	[Embed(source='UI/paint/colorWheel.png')] private static const colorWheel:Class;
 	[Embed(source='UI/paint/swatchButton.png')] private static const swatchButton:Class;
