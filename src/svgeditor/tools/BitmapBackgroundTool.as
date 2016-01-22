@@ -57,6 +57,8 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 
 	private var cursor:MouseCursorData = new MouseCursorData();
 
+	private var firstPoint:Point;
+
 
     private function get bitmapLayerData():BitmapData
     {
@@ -140,21 +142,25 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 	override protected function mouseDown(evt:MouseEvent):void{
         if (editor.getWorkArea().clickInBitmap(evt.stageX, evt.stageY)){
             previewFrameTimer.stop();
-			segmentationState.recordForUndo();
-			editor.targetCostume.nextSegmentationState();
-			segmentationRequired = true;
+			firstPoint = penPoint();
+			if(segmentationState.costumeRect.contains(firstPoint.x, firstPoint.y)){
+				segmentationState.recordForUndo();
+				editor.targetCostume.nextSegmentationState();
+				segmentationRequired = true;
+			}
         }
         super.mouseDown(evt);
     }
 
 	private function mouseClick(evt:MouseEvent):void{
 		var p:Point = penPoint();
-		if((editor.getWorkArea().clickInBitmap(evt.stageX, evt.stageY) && p && !segmentationState.costumeRect.contains(p.x, p.y) && segmentationState.lastMask)
+		if((firstPoint && !segmentationState.costumeRect.contains(firstPoint.x, firstPoint.y) && editor.getWorkArea().clickInBitmap(evt.stageX, evt.stageY) && p && !segmentationState.costumeRect.contains(p.x, p.y) && segmentationState.lastMask)
 		|| (editor.clickedOutsideBitmap(evt) && segmentationState.lastMask)) {
-			if (segmentationState.next == null && editor.clickedOutsideBitmap(evt)) {
+			firstPoint = null;
+			if (segmentationState.next == null) {
 				segmentationState.recordForUndo();
-				editor.targetCostume.nextSegmentationState();
 			}
+			editor.targetCostume.nextSegmentationState();
 			commitMask(false);
 			if(Mouse.supportsNativeCursor){
 				Mouse.cursor = "arrow";
@@ -265,6 +271,7 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 		segmentationState.unmarkedBitmap = bitmapLayerData.clone();
 		editor.saveContent(null, undoable);
 		initState();
+		dispatchEvent(new Event(BitmapBackgroundTool.UPDATE_REQUIRED));
 	}
 
 	public function refreshSegmentation():void{
@@ -316,8 +323,7 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 		return new Rectangle(finalX, finalY, finalWidth, finalHeight);
 	}
 
-	private function cropAndScale(targetBitmap:BitmapData):BitmapData{
-		var rect:Rectangle = cropRect();
+	private function cropAndScale(targetBitmap:BitmapData, rect:Rectangle):BitmapData{
 		var croppedData:ByteArray = targetBitmap.getPixels(rect);
 		croppedData.position = 0;
 		var croppedBitmap:BitmapData = new BitmapData(rect.width, rect.height, true, 0x00ffffff);
@@ -364,11 +370,15 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 
 	private function getObjectMask():void {
 		//Get a scaled down working bitmap and extract bytes
-		var scaledWorkingBM:BitmapData = cropAndScale(segmentationState.unmarkedBitmap);
+		var costumeRect:Rectangle = cropRect();
+		if(costumeRect.x < 0 || costumeRect.y < 0 || costumeRect.width < 0 || costumeRect.height < 0){
+			return;
+		}
+		var scaledWorkingBM:BitmapData = cropAndScale(segmentationState.unmarkedBitmap, costumeRect);
 		var workingData:ByteArray= scaledWorkingBM.getPixels(scaledWorkingBM.rect);
 		workingData.position = 0;
 		//Scale the user's annotations in the same way, get the bytes
-		var scaledScribbleBM:BitmapData = cropAndScale(segmentationState.scribbleBitmap);
+		var scaledScribbleBM:BitmapData = cropAndScale(segmentationState.scribbleBitmap, costumeRect);
 		var scribbleData:ByteArray = scaledScribbleBM.getPixels(scaledScribbleBM.rect);
 		scribbleData.position = 0;
 		//Make pointers to arrays that the c++ code can use
