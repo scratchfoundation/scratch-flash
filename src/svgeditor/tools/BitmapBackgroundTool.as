@@ -161,7 +161,7 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 				segmentationState.recordForUndo();
 			}
 			editor.targetCostume.nextSegmentationState();
-			commitMask(false);
+			commitMask();
 			if(Mouse.supportsNativeCursor){
 				Mouse.cursor = "arrow";
 			}
