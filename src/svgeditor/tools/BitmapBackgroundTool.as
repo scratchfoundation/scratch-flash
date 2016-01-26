@@ -162,6 +162,7 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 			}
 			editor.targetCostume.nextSegmentationState();
 			commitMask(false);
+			Scratch.app.setSaveNeeded()
 			if(Mouse.supportsNativeCursor){
 				Mouse.cursor = "arrow";
 			}
