@@ -321,7 +321,10 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 		var finalY:int = Math.max(drawRect.y, segmentationState.costumeRect.y);
 		var finalWidth:int = Math.min(drawRect.width, segmentationState.costumeRect.width);
 		var finalHeight:int = Math.min(drawRect.height, segmentationState.costumeRect.height);
-		return new Rectangle(finalX, finalY, finalWidth, finalHeight);
+		var boundingRect:Rectangle = new Rectangle(finalX, finalY, finalWidth, finalHeight);
+		boundingRect.bottom = Math.min(boundingRect.bottom, bitmapLayerData.height);
+		boundingRect.right = Math.min(boundingRect.right, bitmapLayerData.width);
+		return boundingRect;
 	}
 
 	private function cropAndScale(targetBitmap:BitmapData, rect:Rectangle):BitmapData{
