@@ -467,16 +467,16 @@ public class DrawPropertyUI extends Sprite {
 		segmentationUI = new Sprite();
 		segmentationUI.visible = false;
 
-		segmentationLabel = Resources.makeLabel("Magic Wand", CSS.titleFormat, 5, 5);
+		segmentationLabel = Resources.makeLabel("Magic Wand - Remove background from a photo", CSS.titleFormat, 10, 10);
 		segmentationUI.addChild(segmentationLabel);
 
 		function showTip(btn:IconButton):void {
 			editor.app.showTip("magicwand");
 		}
 
-		segmentationHelpLabel = Resources.makeLabel("Need help", CSS.projectInfoFormat, 5, 5);
+		segmentationHelpLabel = Resources.makeLabel("Find out more", CSS.projectInfoFormat, 5, 5);
 		segmentationHelpLabel.x = segmentationLabel.x;
-		segmentationHelpLabel.y = this.height - 15;
+		segmentationHelpLabel.y = this.height/2 - segmentationHelpLabel.height/2 ;
 		segmentationUI.addChild(segmentationHelpLabel);
 
 		segmentationHelpBtn = new IconButton(showTip, "moreInfo");
