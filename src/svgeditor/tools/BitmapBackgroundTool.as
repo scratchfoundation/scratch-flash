@@ -302,7 +302,7 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 	private function applyMask(maskBitmap:BitmapData, dest:BitmapData):void{
 		dest.copyPixels(segmentationState.unmarkedBitmap, segmentationState.unmarkedBitmap.rect, new Point(0,0));
 		if(maskBitmap){
-			dest.threshold(maskBitmap, maskBitmap.rect, new Point(0,0), "==", 0x0, 0x0, 0xFF000000, false);
+			dest.threshold(maskBitmap, maskBitmap.rect, new Point(0,0), "==", 0x0, editor.isScene ? 0xFFFFFFFF : 0x0, 0xFF000000, false);
 		}
 	}
 
@@ -317,10 +317,10 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 		var dx:int = Math.round(drawRect.width * .1);
 		var dy:int = Math.round(drawRect.height * .1);
 		drawRect.inflate(dx, dy);
-		var finalX:int = Math.max(drawRect.x, segmentationState.costumeRect.x);
-		var finalY:int = Math.max(drawRect.y, segmentationState.costumeRect.y);
-		var finalWidth:int = Math.min(drawRect.width, segmentationState.costumeRect.width);
-		var finalHeight:int = Math.min(drawRect.height, segmentationState.costumeRect.height);
+		var finalX:int = Math.min(Math.max(drawRect.x, segmentationState.costumeRect.x), bitmapLayerData.width - SEGMENT_STROKE_WIDTH);
+		var finalY:int = Math.min(Math.max(drawRect.y, segmentationState.costumeRect.y), bitmapLayerData.height- SEGMENT_STROKE_WIDTH);
+		var finalWidth:int = Math.max(Math.min(drawRect.width, segmentationState.costumeRect.width), SEGMENT_STROKE_WIDTH);
+		var finalHeight:int = Math.max(Math.min(drawRect.height, segmentationState.costumeRect.height), SEGMENT_STROKE_WIDTH);
 		var boundingRect:Rectangle = new Rectangle(finalX, finalY, finalWidth, finalHeight);
 		boundingRect.bottom = Math.min(boundingRect.bottom, bitmapLayerData.height);
 		boundingRect.right = Math.min(boundingRect.right, bitmapLayerData.width);
