@@ -197,17 +197,21 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 			if(super.lastPoint == null){
 				dispatchEvent(new Event(BitmapBackgroundTool.UPDATE_REQUIRED));
 			}
-			if(p.x + SEGMENT_STROKE_WIDTH > segmentationState.xMax){
-				segmentationState.xMax = Math.min(p.x + SEGMENT_STROKE_WIDTH, bitmapLayerData.width);
+			var px_left:int = Math.max(p.x, 0);
+			var px_right:int = px_left + SEGMENT_STROKE_WIDTH;
+			var py_top:int = Math.max(p.y, 0);
+			var py_bottom:int = py_top + SEGMENT_STROKE_WIDTH;
+			if( px_right > segmentationState.xMax){
+				segmentationState.xMax = Math.min(px_right, bitmapLayerData.width);
 			}
-			if(p.y + SEGMENT_STROKE_WIDTH > segmentationState.yMax){
-				segmentationState.yMax = Math.min(p.y + SEGMENT_STROKE_WIDTH, bitmapLayerData.height);
+			if(py_bottom > segmentationState.yMax){
+				segmentationState.yMax = Math.min(py_bottom, bitmapLayerData.height);
 			}
-			if(p.x < segmentationState.xMin){
-				segmentationState.xMin = Math.min(p.x, bitmapLayerData.width - SEGMENT_STROKE_WIDTH);
+			if(px_left < segmentationState.xMin){
+				segmentationState.xMin = Math.min(px_left, bitmapLayerData.width - SEGMENT_STROKE_WIDTH);
 			}
-			if(p.y < segmentationState.yMin){
-				segmentationState.yMin = Math.min(p.y, bitmapLayerData.height- SEGMENT_STROKE_WIDTH);
+			if(py_top < segmentationState.yMin){
+				segmentationState.yMin = Math.min(py_top, bitmapLayerData.height- SEGMENT_STROKE_WIDTH);
 			}
 		}
 		super.lastPoint = p;
