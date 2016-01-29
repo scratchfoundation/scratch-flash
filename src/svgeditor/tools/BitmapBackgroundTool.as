@@ -154,20 +154,26 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 
 	private function mouseClick(evt:MouseEvent):void{
 		var p:Point = penPoint();
-		if((firstPoint && !segmentationState.costumeRect.contains(firstPoint.x, firstPoint.y) && editor.getWorkArea().clickInBitmap(evt.stageX, evt.stageY) && p && !segmentationState.costumeRect.contains(p.x, p.y) && segmentationState.lastMask)
-		|| (editor.clickedOutsideBitmap(evt) && segmentationState.lastMask)) {
-			firstPoint = null;
-			if (segmentationState.next == null) {
-				segmentationState.recordForUndo();
+		if((firstPoint && !segmentationState.costumeRect.contains(firstPoint.x, firstPoint.y) && editor.getWorkArea().clickInBitmap(evt.stageX, evt.stageY) && p && !segmentationState.costumeRect.contains(p.x, p.y))
+		|| editor.clickedOutsideBitmap(evt)){
+			if(segmentationState.lastMask){
+				firstPoint = null;
+				if (segmentationState.next == null) {
+					segmentationState.recordForUndo();
+				}
+				editor.targetCostume.nextSegmentationState();
+				commitMask(false);
+				Scratch.app.setSaveNeeded()
+				if(Mouse.supportsNativeCursor){
+					Mouse.cursor = "arrow";
+				}
+				resetBrushes();
+				moveFeedback();
 			}
-			editor.targetCostume.nextSegmentationState();
-			commitMask(false);
-			Scratch.app.setSaveNeeded()
-			if(Mouse.supportsNativeCursor){
-				Mouse.cursor = "arrow";
+			else{
+				segmentationState.reset();
+				initState()
 			}
-			resetBrushes();
-			moveFeedback();
 		}
 	}
 
@@ -191,17 +197,17 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 			if(super.lastPoint == null){
 				dispatchEvent(new Event(BitmapBackgroundTool.UPDATE_REQUIRED));
 			}
-			if(p.x > segmentationState.xMax){
-				segmentationState.xMax = p.x
+			if(p.x + SEGMENT_STROKE_WIDTH > segmentationState.xMax){
+				segmentationState.xMax = Math.min(p.x + SEGMENT_STROKE_WIDTH, bitmapLayerData.width);
 			}
-			if(p.y > segmentationState.yMax){
-				segmentationState.yMax = p.y
+			if(p.y + SEGMENT_STROKE_WIDTH > segmentationState.yMax){
+				segmentationState.yMax = Math.min(p.y + SEGMENT_STROKE_WIDTH, bitmapLayerData.height);
 			}
 			if(p.x < segmentationState.xMin){
-				segmentationState.xMin = p.x
+				segmentationState.xMin = Math.min(p.x, bitmapLayerData.width - SEGMENT_STROKE_WIDTH);
 			}
 			if(p.y < segmentationState.yMin){
-				segmentationState.yMin = p.y
+				segmentationState.yMin = Math.min(p.y, bitmapLayerData.height- SEGMENT_STROKE_WIDTH);
 			}
 		}
 		super.lastPoint = p;
@@ -317,14 +323,7 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 		var dx:int = Math.round(drawRect.width * .1);
 		var dy:int = Math.round(drawRect.height * .1);
 		drawRect.inflate(dx, dy);
-		var finalX:int = Math.min(Math.max(drawRect.x, segmentationState.costumeRect.x), bitmapLayerData.width - SEGMENT_STROKE_WIDTH);
-		var finalY:int = Math.min(Math.max(drawRect.y, segmentationState.costumeRect.y), bitmapLayerData.height- SEGMENT_STROKE_WIDTH);
-		var finalWidth:int = Math.max(Math.min(drawRect.width, segmentationState.costumeRect.width), SEGMENT_STROKE_WIDTH);
-		var finalHeight:int = Math.max(Math.min(drawRect.height, segmentationState.costumeRect.height), SEGMENT_STROKE_WIDTH);
-		var boundingRect:Rectangle = new Rectangle(finalX, finalY, finalWidth, finalHeight);
-		boundingRect.bottom = Math.min(boundingRect.bottom, bitmapLayerData.height);
-		boundingRect.right = Math.min(boundingRect.right, bitmapLayerData.width);
-		return boundingRect;
+		return bitmapLayerData.rect.intersection(drawRect.intersection(segmentationState.costumeRect));
 	}
 
 	private function cropAndScale(targetBitmap:BitmapData, rect:Rectangle):BitmapData{
@@ -375,7 +374,7 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 	private function getObjectMask():void {
 		//Get a scaled down working bitmap and extract bytes
 		var costumeRect:Rectangle = cropRect();
-		if(costumeRect.x < 0 || costumeRect.y < 0 || costumeRect.width < 0 || costumeRect.height < 0){
+		if(costumeRect.x < 0 || costumeRect.y < 0 || costumeRect.width <= 0 || costumeRect.height <= 0){
 			return;
 		}
 		var scaledWorkingBM:BitmapData = cropAndScale(segmentationState.unmarkedBitmap, costumeRect);
