@@ -21,8 +21,9 @@ repositories {
 apply plugin: org.gradlefx.plugins.GradleFxPlugin
 
 ext.getCommitID = { repository ->
-    def gitProc = "git describe --dirty --long --always".execute(null, file(repository))
-    return gitProc.text.trim() ?: 'unknown'
+    def dirty = "git status --porcelain --ignore-submodules=dirty".execute(null, file(repository)).text.trim() ? "-dirty" : ""
+    def revision = "git rev-parse --short HEAD".execute(null, file(repository)).text.trim()
+    return revision ? revision + dirty : 'unknown'
 }
 
 def commonDir = ext.commonDir
