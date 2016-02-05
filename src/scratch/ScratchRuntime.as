@@ -820,9 +820,10 @@ public class ScratchRuntime {
 			if (spr) spr.setDirection(spr.direction);
 		}
 
-		app.resetPlugin();
-		app.extensionManager.clearImportedExtensions();
-		app.extensionManager.loadSavedExtensions(project.info.savedExtensions);
+		app.resetPlugin(function() {
+			app.extensionManager.clearImportedExtensions();
+			app.extensionManager.loadSavedExtensions(project.info.savedExtensions);
+		});
 		app.installStage(project);
 		app.updateSpriteLibrary(true);
 		// set the active sprite
