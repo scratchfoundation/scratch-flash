@@ -136,10 +136,11 @@ public class BitmapEdit extends ImageEdit {
 	}
 
 	protected override function selectHandler(evt:Event = null):void {
-		if ((currentTool is ObjectTransformer && !(currentTool as ObjectTransformer).getSelection())) {
+		if ((currentTool is ObjectTransformer && !(currentTool as ObjectTransformer).getSelection() && (currentTool as ObjectTransformer).isChanged)) {
 			// User clicked away from the object transformer, so bake it in.
 			bakeIntoBitmap();
 			saveToCostume();
+			(currentTool as ObjectTransformer).reset();
 		}
 
 		var cropToolEnabled:Boolean = (currentTool is ObjectTransformer &&
