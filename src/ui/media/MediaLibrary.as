@@ -697,7 +697,13 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 					sound.loadCompressedDataFromByteArray(data, data.length);
 					MP3Loader.extractSamples(origName, sound, sound.length * 44.1, function (out:ScratchSound):void {
 						snd = out;
-						startSoundUpload(out, origName, uploadComplete);
+						if(snd && snd.sampleCount > 0) {
+							startSoundUpload(out, origName, uploadComplete);
+						}
+						else{
+							app.removeLoadProgressBox();
+							DialogBox.notify('Error decoding sound', 'Sorry, Scratch was unable to load the sound '+sndName+'.', Scratch.app.stage);
+						}
 					});
 				}
 				catch(e:Error) {
@@ -710,7 +716,13 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 				setTimeout(function():void {
 					MP3Loader.convertToScratchSound(sndName, data, function(s:ScratchSound):void {
 						snd = s;
-						startSoundUpload(s, origName, uploadComplete);
+						if(snd && snd.sampleCount > 0) {
+							startSoundUpload(s, origName, uploadComplete);
+						}
+						else{
+							app.removeLoadProgressBox();
+							DialogBox.notify('Error decoding sound', 'Sorry, Scratch was unable to load the sound '+sndName+'.', Scratch.app.stage);
+						}
 					});
 				}, 1);
 		}
