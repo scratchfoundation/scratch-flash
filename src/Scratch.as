@@ -716,7 +716,7 @@ public class Scratch extends Sprite {
 		if (jsEnabled) {
 			externalCall('ScratchExtensions.resetPlugin');
 		}
-		if (whenDone) {
+		if (whenDone != null) {
 			whenDone();
 		}
 	}

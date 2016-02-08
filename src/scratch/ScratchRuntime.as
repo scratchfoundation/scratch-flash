@@ -820,7 +820,7 @@ public class ScratchRuntime {
 			if (spr) spr.setDirection(spr.direction);
 		}
 
-		app.resetPlugin(function() {
+		app.resetPlugin(function():void {
 			app.extensionManager.clearImportedExtensions();
 			app.extensionManager.loadSavedExtensions(project.info.savedExtensions);
 		});
