@@ -586,7 +586,6 @@ public class ImageEdit extends Sprite {
 		var toolChanged:Boolean = true;//!currentTool || (immediateTools.indexOf(newMode) == -1);
 		var s:Selection = null;
 		if (currentTool) {
-			var tool:BitmapBackgroundTool = segmentationTool;
 			if (toolMode == 'select' && newMode != 'select')
 				s = (currentTool as ObjectTransformer).getSelection();
 

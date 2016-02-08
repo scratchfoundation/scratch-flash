@@ -247,6 +247,7 @@ public class BitmapEdit extends ImageEdit {
 				// User was editing an object and switched tools, bake the object
 				bakeIntoBitmap();
 				saveToCostume();
+				targetCostume.segmentationState.unmarkedBitmap = workArea.getBitmap().bitmapData.clone();
 			}
 		}
 	}
