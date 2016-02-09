@@ -164,14 +164,24 @@ public class ImageEdit extends Sprite {
 		}
 
 		// Capture mouse down before anyone else in case there is a global tool running
-		if (event.type == MouseEvent.MOUSE_OVER && CursorTool.tool)
-			workArea.getContentLayer().addEventListener(MouseEvent.MOUSE_DOWN, workAreaMouseDown, true, 1, true);
-		else
+		if (event.type == MouseEvent.MOUSE_OVER && CursorTool.tool){
+			var editable:ISVGEditable = SVGTool.staticGetEditableUnderMouse(this);
+			var clickedSelection:Selection = new Selection([editable]);
+			if(!clickedSelection.isGroup()){
+				workArea.getContentLayer().addEventListener(MouseEvent.MOUSE_DOWN, workAreaMouseDown, false, 1, true);
+			}
+			else{
+				workArea.getContentLayer().addEventListener(MouseEvent.MOUSE_DOWN, workAreaMouseDown, true, 1, true);
+			}
+		}
+		else{
 			workArea.getContentLayer().removeEventListener(MouseEvent.MOUSE_DOWN, workAreaMouseDown);
+		}
 	}
 
 	private var globalToolObject:ISVGEditable;
 	private function workAreaMouseDown(event:MouseEvent):void {
+
 		if (!CursorTool.tool) {
 			globalToolObject = null;
 			return;
