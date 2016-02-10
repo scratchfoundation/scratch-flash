@@ -64,7 +64,7 @@ public class ImageEdit extends Sprite {
 	private var svgEditorMask:Shape;
 	private var currentCursor:String;
 
-	private function get segmentationTool():BitmapBackgroundTool {
+	protected function get segmentationTool():BitmapBackgroundTool {
 		return currentTool as BitmapBackgroundTool;
 	}
 

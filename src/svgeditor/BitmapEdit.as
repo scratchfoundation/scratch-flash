@@ -247,7 +247,9 @@ public class BitmapEdit extends ImageEdit {
 				// User was editing an object and switched tools, bake the object
 				bakeIntoBitmap();
 				saveToCostume();
-				targetCostume.segmentationState.unmarkedBitmap = workArea.getBitmap().bitmapData.clone();
+				if(segmentationTool){
+					segmentationTool.refresh();
+				}
 			}
 		}
 	}
@@ -372,6 +374,9 @@ public class BitmapEdit extends ImageEdit {
 		newBM.draw(oldBM, m);
 		workArea.getBitmap().bitmapData = newBM;
 		saveToCostume();
+		if(segmentationTool){
+			segmentationTool.refresh();
+		}
 	}
 
 	private function getBitmapSelection():SVGBitmap {
