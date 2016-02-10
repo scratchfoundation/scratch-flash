@@ -78,6 +78,11 @@ package svgeditor.tools  {
 		private var isRefreshing:Boolean;
 		private var isTransforming:Boolean;
 		private var handleMoveCursor:Function;
+		private var _isChanged:Boolean = false;
+
+		public function get isChanged():Boolean{
+			return _isChanged;
+		}
 
 		public function ObjectTransformer(ed:ImageEdit) {
 			super(ed);
@@ -124,9 +129,17 @@ package svgeditor.tools  {
 				cursorBMName = null;
 			}
 			super.init();
+			function wasChanged():void{
+				_isChanged = true;
+			}
+			addEventListener(Event.CHANGE, wasChanged, false, 0, true);
 			editor.getWorkArea().addEventListener(MouseEvent.MOUSE_DOWN, selectionBoxHandler, false, 0, true);
 			toggleHandles(false);
 			alpha = 0.65;
+		}
+
+		public function reset():void{
+			_isChanged=false;
 		}
 
 		override protected function shutdown():void {
