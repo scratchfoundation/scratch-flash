@@ -189,9 +189,10 @@ public class BitmapEdit extends ImageEdit {
 		sel.redraw();
 		sel.x = destP.x - c.width() / 2;
 		sel.y = destP.y - c.height() / 2;
-		workArea.getContentLayer().addChild(sel);
 
 		setToolMode('bitmapSelect');
+		workArea.getContentLayer().addChild(sel);
+
 		(currentTool as ObjectTransformer).select(new Selection([sel]));
 	}
 
@@ -360,7 +361,19 @@ public class BitmapEdit extends ImageEdit {
 	}
 
 	protected override function flipAll(vertical:Boolean):void {
-		var oldBM:BitmapData = workArea.getBitmap().bitmapData;
+		workArea.getBitmap().bitmapData = flipBitmap(vertical, workArea.getBitmap().bitmapData);
+		if(segmentationTool && targetCostume.segmentationState.lastMask){
+			targetCostume.segmentationState.recordForUndo();
+			targetCostume.nextSegmentationState();
+			targetCostume.segmentationState.flip(vertical);
+			segmentationTool.refreshSegmentation();
+		}
+		else{
+			saveToCostume();
+		}
+	}
+
+	public static function flipBitmap(vertical:Boolean, oldBM:BitmapData):BitmapData{
 		var newBM:BitmapData = new BitmapData(oldBM.width, oldBM.height, true, 0);
 		var m:Matrix = new Matrix();
 		if (vertical) {
@@ -372,11 +385,7 @@ public class BitmapEdit extends ImageEdit {
 			m.translate(oldBM.width, 0);
 		}
 		newBM.draw(oldBM, m);
-		workArea.getBitmap().bitmapData = newBM;
-		saveToCostume();
-		if(segmentationTool){
-			segmentationTool.refresh();
-		}
+		return newBM;
 	}
 
 	private function getBitmapSelection():SVGBitmap {
@@ -416,7 +425,9 @@ public class BitmapEdit extends ImageEdit {
 	override protected function clearSelection():void {
 		// Re-activate the tool that (looks like) it's currently active
 		// If there's an uncommitted action, this will commit it in the same way that changing the tool would.
-		setToolMode(lastToolMode ? lastToolMode : toolMode, true);
+		if(!segmentationTool){
+			setToolMode(lastToolMode ? lastToolMode : toolMode, true);
+		}
 	}
 
 	public override function canClearCanvas():Boolean {
