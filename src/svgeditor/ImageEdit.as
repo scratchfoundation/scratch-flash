@@ -68,6 +68,10 @@ public class ImageEdit extends Sprite {
 		return currentTool as BitmapBackgroundTool;
 	}
 
+	private function get objectTransformer():ObjectTransformer {
+		return currentTool as ObjectTransformer;
+	}
+
 	public function clickedOutsideBitmap(evt:MouseEvent):Boolean {
 		return evt.target == imagesPart;
 	}
@@ -298,8 +302,8 @@ public class ImageEdit extends Sprite {
 		}
 		else if (event.keyCode == 67 && event.ctrlKey) {
 			var s:Selection = null;
-			if (currentTool is ObjectTransformer) {
-				s = (currentTool as ObjectTransformer).getSelection();
+			if (objectTransformer) {
+				s = objectTransformer.getSelection();
 			}
 			else if (currentTool is SVGEditTool) {
 				var obj:ISVGEditable = (currentTool as SVGEditTool).getObject();
@@ -423,7 +427,7 @@ public class ImageEdit extends Sprite {
 		var s:Selection = null;
 		if (currentTool) {
 			if (toolMode == 'select')
-				s = (currentTool as ObjectTransformer).getSelection();
+				s = objectTransformer.getSelection();
 			else if (currentTool is SVGEditTool && (currentTool as SVGEditTool).getObject())
 				s = new Selection([(currentTool as SVGEditTool).getObject()]);
 		}
@@ -476,7 +480,7 @@ public class ImageEdit extends Sprite {
 	protected function onColorChange(e:Event):void {
 		var sel:Selection;
 		if (toolMode == 'select') {
-			sel = (currentTool as ObjectTransformer).getSelection();
+			sel = objectTransformer.getSelection();
 			if (sel) {
 				sel.setShapeProperties(drawPropsUI.settings);
 				currentTool.refresh();
@@ -487,8 +491,8 @@ public class ImageEdit extends Sprite {
 		if (toolMode == 'eraser' && (currentTool is EraserTool)) {
 			(currentTool as EraserTool).updateIcon();
 		}
-		if (currentTool is ObjectTransformer) {
-			sel = (currentTool as ObjectTransformer).getSelection();
+		if (objectTransformer) {
+			sel = objectTransformer.getSelection();
 			if (sel) sel.setShapeProperties(drawPropsUI.settings);
 		}
 		if (currentTool is TextTool) {
@@ -505,7 +509,7 @@ public class ImageEdit extends Sprite {
 		var obj:ISVGEditable;
 		var fontName:String = drawPropsUI.settings.fontName;
 		if (toolMode == 'select') {
-			sel = (currentTool as ObjectTransformer).getSelection();
+			sel = objectTransformer.getSelection();
 			if (sel) {
 				for each (obj in sel.getObjs()) {
 					if (obj is SVGTextField) obj.getElement().setFont(fontName);
@@ -588,7 +592,7 @@ public class ImageEdit extends Sprite {
 		if (currentTool) {
 			var tool:BitmapBackgroundTool = segmentationTool;
 			if (toolMode == 'select' && newMode != 'select')
-				s = (currentTool as ObjectTransformer).getSelection();
+				s = objectTransformer.getSelection();
 
 			// If the next mode is not immediate, shut down the current tool
 			if (toolChanged) {
@@ -668,7 +672,7 @@ public class ImageEdit extends Sprite {
 
 		if (currentTool is SVGEditTool) {
 			currentTool.addEventListener('select', selectHandler, false, 0, true);
-			if (currentTool is ObjectTransformer && s) (currentTool as ObjectTransformer).select(s);
+			if (objectTransformer && s) objectTransformer.select(s);
 		}
 
 		// Setup the drawing properties for the next tool
@@ -743,7 +747,7 @@ public class ImageEdit extends Sprite {
 		// If the tool wasn't canceled and an object was created then select it
 		if (nextObject && (nextObject is Selection || nextObject.parent)) {
 			var s:Selection = (nextObject is Selection ? nextObject : new Selection([nextObject]));
-			(currentTool as ObjectTransformer).select(s);
+			objectTransformer.select(s);
 		}
 		saveContent();
 	}
@@ -831,8 +835,8 @@ public class ImageEdit extends Sprite {
 
 	public function flipContent(vertical:Boolean):void {
 		var sel:Selection;
-		if (currentTool is ObjectTransformer) {
-			sel = (currentTool as ObjectTransformer).getSelection();
+		if (objectTransformer) {
+			sel = objectTransformer.getSelection();
 		}
 		if (sel) {
 			sel.flip(vertical);
