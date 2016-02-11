@@ -85,7 +85,7 @@ public class ScratchExtension {
 		var result:ScratchExtension = new ScratchExtension(ExtensionManager.wedoExt, 0);
 		result.isInternal = true;
 		result.javascriptURL = Scratch.app.server.getOfficialExtensionURL('wedoExtension.js');
-		result.thumbnailMD5 = 'c323d815dee53ca545d71fdc107af708.png';
+		result.thumbnailMD5 = '9e5933c3b8b76596d1f889d44d3715a1.png';
 		result.url = 'http://wiki.scratch.mit.edu/wiki/LEGO_WeDo_Blocks';
 		result.tags = ['hardware'];
 		return result;
@@ -96,7 +96,7 @@ public class ScratchExtension {
 		var result:ScratchExtension = new ScratchExtension(ExtensionManager.wedo2Ext, 0);
 		result.isInternal = true;
 		result.javascriptURL = Scratch.app.server.getOfficialExtensionURL('wedo2Extension.js');
-		result.thumbnailMD5 = 'f20bd801dbeb1359f6f384fd942d9314.png';
+		result.thumbnailMD5 = 'c14047e09787cd75a2bc6aba68ceb0de.png';
 		result.url = 'http://wiki.scratch.mit.edu/wiki/LEGO_WeDo2_Blocks'; // TODO
 		result.tags = ['hardware'];
 		return result;
