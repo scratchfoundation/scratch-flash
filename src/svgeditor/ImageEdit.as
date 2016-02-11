@@ -419,8 +419,9 @@ public class ImageEdit extends Sprite {
 		drawPropsUI = new DrawPropertyUI(this);
 		drawPropsUI.x = 200;
 		drawPropsUI.y = h - drawPropsUI.height - 40;
-		drawPropsUI.addEventListener(DrawPropertyUI.ONCHANGE, onColorChange);
+		drawPropsUI.addEventListener(DrawPropertyUI.ONCHANGE, onDrawPropsChange);
 		drawPropsUI.addEventListener(DrawPropertyUI.ONFONTCHANGE, onFontChange);
+		drawPropsUI.addEventListener(DrawPropertyUI.ONCOLORCHANGE, onColorChange);
 		uiLayer.addChild(drawPropsUI);
 	}
 
@@ -487,7 +488,7 @@ public class ImageEdit extends Sprite {
 	protected function runImmediateTool(name:String, shiftKey:Boolean, s:Selection):void {}
 
 	// Override in SVGEdit to add more logic
-	protected function onColorChange(e:Event):void {
+	protected function onDrawPropsChange(e:Event):void {
 		var sel:Selection;
 		if (toolMode == 'select') {
 			sel = objectTransformer.getSelection();
@@ -536,6 +537,12 @@ public class ImageEdit extends Sprite {
 		}
 		currentTool.refresh();
 		saveContent();
+	}
+
+	private function onColorChange(e:Event):void{
+		if(selectionTools.indexOf(toolMode) != -1 && repeatedTools.indexOf(lastToolMode) != -1){
+			setToolMode(lastToolMode);
+		}
 	}
 
 	protected function fromHex(s:String):uint {
@@ -744,6 +751,11 @@ public class ImageEdit extends Sprite {
 		var eraserModes:Array = ['bitmapEraser', 'eraser'];
 		drawPropsUI.showStrokeUI(
 				strokeModes.indexOf(newMode) > -1, eraserModes.indexOf(newMode) > -1);
+		var colorModes:Array = ['text', 'vpaintbrush', 'paintbucket', 'bitmapSelect','eyedropper',
+			'bitmapBrush', 'line', 'rect', 'ellipse', 'select', 'path', 'vectorLine', 'vectorRect',
+			'vectorEllipse'
+		];
+		drawPropsUI.showColorUI(colorModes.indexOf(newMode) > -1);
 	}
 
 	public function setCurrentColor(col:uint, alpha:Number):void {
@@ -751,12 +763,19 @@ public class ImageEdit extends Sprite {
 	}
 
 	public function endCurrentTool(nextObject:* = null):void {
-		setToolMode((this is SVGEdit) ? 'select' : 'bitmapSelect');
-
+		if(this is SVGEdit){
+			setToolMode("select");
+		}
 		// If the tool wasn't canceled and an object was created then select it
-		if (nextObject && (nextObject is Selection || nextObject.parent)) {
+		if (nextObject && nextObject.width > 0 && nextObject.height > 0 && (nextObject is Selection || nextObject.parent)) {
+			if(!(this is SVGEdit)){
+				setToolMode("bitmapSelect");
+			}
 			var s:Selection = (nextObject is Selection ? nextObject : new Selection([nextObject]));
 			objectTransformer.select(s);
+		}
+		else if((this is SVGEdit) && repeatedTools.indexOf(lastToolMode) > -1){
+			setToolMode(lastToolMode);
 		}
 		saveContent();
 	}

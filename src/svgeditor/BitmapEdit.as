@@ -67,10 +67,10 @@ public class BitmapEdit extends ImageEdit {
 
 	protected override function getToolDefs():Array { return bitmapTools }
 
-	protected override function onColorChange(e:Event):void {
+	protected override function onDrawPropsChange(e:Event):void {
 		var pencilTool:BitmapPencilTool = currentTool as BitmapPencilTool;
 		if (pencilTool) pencilTool.updateProperties();
-		super.onColorChange(e);
+		super.onDrawPropsChange(e);
 	}
 
 	public override function shutdown():void {
