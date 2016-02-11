@@ -126,6 +126,11 @@ public class BitmapBackgroundTool extends BitmapPencilTool{
 		super.init();
 	}
 
+	public override function refresh():void{
+		segmentationState.unmarkedBitmap = bitmapLayerData.clone();
+		segmentationState.costumeRect = bitmapLayerData.getColorBoundsRect(0xFF000000, 0x0, false)
+	}
+
 
     protected override function shutdown():void{
 		if(segmentationState != initialState)
