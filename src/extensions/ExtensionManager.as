@@ -50,7 +50,7 @@ public class ExtensionManager {
 	private var justStartedWait:Boolean;
 	private var pollInProgress:Dictionary = new Dictionary(true);
 	static public const picoBoardExt:String = 'PicoBoard';
-	static public const wedoExt:String = 'LEGO WeDo 1.0';
+	static public const wedoExt:String = 'LEGO WeDo';
 	static public const wedo2Ext:String = 'LEGO WeDo 2.0';
 
 	public function ExtensionManager(app:Scratch) {
