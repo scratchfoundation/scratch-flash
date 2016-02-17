@@ -28,7 +28,8 @@ package svgeditor {
 	import scratch.ScratchCostume;
 
 	import svgeditor.*;
-	import svgeditor.objs.*;
+import svgeditor.ColorPicker;
+import svgeditor.objs.*;
 	import svgeditor.tools.*;
 
 	import svgutils.*;
@@ -182,7 +183,7 @@ package svgeditor {
 			if(bSave) saveContent();
 		}
 
-		override protected function onColorChange(e:Event):void {
+		override protected function onDrawPropsChange(e:Event):void {
 			if(currentTool is SVGEditTool && (toolMode != 'select') && (toolMode != 'text')) {
 				var obj:ISVGEditable = (currentTool as SVGEditTool).getObject();
 				if(obj) {
@@ -194,9 +195,10 @@ package svgeditor {
 				}
 			}
 			else {
-				super.onColorChange(e);
+				super.onDrawPropsChange(e);
 			}
 		}
+
 
 		override protected function stageKeyDownHandler(event:KeyboardEvent):Boolean {
 			if(!super.stageKeyDownHandler(event)) {

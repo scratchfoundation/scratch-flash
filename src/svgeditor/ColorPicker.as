@@ -120,7 +120,7 @@ public class ColorPicker extends Sprite {
 			var tmp:int = props.rawColor;
 			props.rawColor = props.rawSecondColor;
 			props.rawSecondColor = tmp;
-			drawPropsUI.sendChangeEvent();
+			drawPropsUI.onColorChange();
 			updateSwatches();
 		}
 		primaryColorSwatch = new Sprite();
@@ -227,7 +227,7 @@ public class ColorPicker extends Sprite {
 			alpha = 0;
 		}
 		setCurrentColor(color, alpha);
-		drawPropsUI.sendChangeEvent();
+		drawPropsUI.onColorChange();
 		//pickWheelColor();
 	}
 
@@ -302,7 +302,7 @@ public class ColorPicker extends Sprite {
 				m.translate(-pos.x, -pos.y);
 				b.draw(hsvColorPicker, m);
 				setCurrentColor(b.getPixel32(0, 0), 1, false);
-				drawPropsUI.sendChangeEvent();
+				drawPropsUI.onColorChange();
 			}
 		}
 	}
