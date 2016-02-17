@@ -49,6 +49,7 @@ public class TopBarPart extends UIPart {
 	private var growTool:IconButton;
 	private var shrinkTool:IconButton;
 	private var helpTool:IconButton;
+	private var toolButtons:Array = [];
 	private var toolOnMouseDown:String;
 
 	private var offlineNotice:TextField;
@@ -226,12 +227,16 @@ public class TopBarPart extends UIPart {
 			}
 		}
 
-		addChild(copyTool = makeToolButton('copyTool', selectTool));
-		addChild(cutTool = makeToolButton('cutTool', selectTool));
-		addChild(growTool = makeToolButton('growTool', selectTool));
-		addChild(shrinkTool = makeToolButton('shrinkTool', selectTool));
-		addChild(helpTool = makeToolButton('helpTool', selectTool));
-
+		toolButtons.push(copyTool = makeToolButton('copyTool', selectTool));
+		toolButtons.push(cutTool = makeToolButton('cutTool', selectTool));
+		toolButtons.push(growTool = makeToolButton('growTool', selectTool));
+		toolButtons.push(shrinkTool = makeToolButton('shrinkTool', selectTool));
+		toolButtons.push(helpTool = makeToolButton('helpTool', selectTool));
+		if(!app.isMicroworld){
+			for each (var b:IconButton in toolButtons) {
+				addChild(b);
+			}
+		}
 		SimpleTooltips.add(copyTool, {text: 'Duplicate', direction: 'bottom'});
 		SimpleTooltips.add(cutTool, {text: 'Delete', direction: 'bottom'});
 		SimpleTooltips.add(growTool, {text: 'Grow', direction: 'bottom'});
@@ -244,7 +249,7 @@ public class TopBarPart extends UIPart {
 	}
 
 	private function clearToolButtonsExcept(activeButton:IconButton):void {
-		for each (var b:IconButton in [copyTool, cutTool, growTool, shrinkTool, helpTool]) {
+		for each (var b:IconButton in toolButtons) {
 			if (b != activeButton) b.turnOff();
 		}
 	}
