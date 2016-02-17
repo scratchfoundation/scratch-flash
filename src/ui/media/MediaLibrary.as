@@ -335,7 +335,7 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 		for each (var ext:ScratchExtension in extList) {
 			allItems.push(new MediaLibraryItem({
 				extension: ext,
-				name: ext.name,
+				name: ext.displayName,
 				md5: ext.thumbnailMD5,
 				tags: ext.tags
 			}));

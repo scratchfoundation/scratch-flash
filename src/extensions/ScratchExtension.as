@@ -42,6 +42,15 @@ import flash.utils.Dictionary;
 public class ScratchExtension {
 
 	public var name:String = '';
+
+	private var _displayName:String = '';
+	public function get displayName():String{
+		return _displayName ? _displayName : name;
+	}
+	public function set displayName(val:String):void{
+		_displayName = val;
+	}
+
 	public var host:String = '127.0.0.1'; // most extensions run on the local host
 	public var port:int = 0;
 	public var id:uint = 0;
@@ -88,6 +97,7 @@ public class ScratchExtension {
 		result.thumbnailMD5 = '9e5933c3b8b76596d1f889d44d3715a1.png';
 		result.url = 'http://wiki.scratch.mit.edu/wiki/LEGO_WeDo_Blocks';
 		result.tags = ['hardware'];
+		result.displayName = "LEGO WeDo 1.0";
 		return result;
 	}
 
