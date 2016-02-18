@@ -1074,7 +1074,7 @@ public class ScratchRuntime {
 		var obj:ScratchObj = app.viewedObj();
 		var oldName:String = obj.objName;
 		obj.objName = '';
-		newName = app.stagePane.unusedSpriteName(newName || 'Sprite1');
+		newName = app.stagePane.unusedSpriteName(newName || Translator.map('Sprite1'));
 		obj.objName = newName;
 		for each (var lw:ListWatcher in app.viewedObj().lists) {
 			lw.updateTitle();
