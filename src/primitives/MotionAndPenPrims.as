@@ -167,7 +167,11 @@ public class MotionAndPenPrims {
 		if (arg == "_mouse_") {
 			var w:ScratchStage = app.stagePane;
 			return new Point(w.scratchMouseX(), w.scratchMouseY());
-		} else {
+		}
+		else if (arg == "_random_"){
+			return new Point(Math.round((Math.random()*480) - 240), Math.round((Math.random()*360) - 180));
+		}
+		else {
 			var s:ScratchSprite = app.stagePane.spriteNamed(arg);
 			if (s == null) return null;
 			return new Point(s.scratchX, s.scratchY);

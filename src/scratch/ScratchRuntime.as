@@ -1212,7 +1212,7 @@ public class ScratchRuntime {
 	}
 
 	public function allUsesOfSprite(spriteName:String):Array {
-		var spriteMenus:Array = ["spriteOnly", "spriteOrMouse", "spriteOrStage", "touching"];
+		var spriteMenus:Array = ["spriteOnly", "spriteOrMouse", "spriteOrStage", "touching", "location"];
 		var result:Array = [];
 		for each (var stack:Block in allStacks()) {
 			// for each block in stack
