@@ -565,6 +565,7 @@ public class ScratchRuntime {
 		allStacksAndOwnersDo(startMatchingKeyHats);
 	}
 
+	// Returns a sorted array of all messages in use, or a single-element array containing the default message name.
 	public function collectBroadcasts():Array {
 		function addBlock(b:Block):void {
 			if ((b.op == 'broadcast:') ||
@@ -585,8 +586,11 @@ public class ScratchRuntime {
 			var b:Block = palette.getChildAt(i) as Block;
 			if (b) addBlock(b);
 		}
-		result.sort();
-		return result;
+		if (result.length > 0) {
+			result.sort();
+			return result;
+		}
+		return [Translator.map('message1')];
 	}
 
 	public function hasUnofficialExtensions():Boolean {

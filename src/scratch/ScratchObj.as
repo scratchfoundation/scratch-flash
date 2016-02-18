@@ -314,7 +314,7 @@ public class ScratchObj extends Sprite {
 
 		if ((['broadcast:', 'doBroadcastAndWait', 'whenIReceive'].indexOf(op)) > -1) {
 			var msgs:Array = Scratch.app.runtime.collectBroadcasts();
-			return (msgs.length > 0) ? [msgs[0]] : ['message1'];
+			return [msgs[0]];
 		}
 		if ((['lookLike:', 'startScene', 'startSceneAndWait', 'whenSceneStarts'].indexOf(op)) > -1) {
 			return [costumes[costumes.length - 1].costumeName];

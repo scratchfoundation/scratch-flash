@@ -780,8 +780,6 @@ public class BlockMenus implements DragClient {
 			else setBlockArg(selection);
 		}
 		var msgNames:Array = app.runtime.collectBroadcasts();
-		if (msgNames.indexOf('message1') <= -1) msgNames.push('message1');
-		msgNames.sort();
 
 		var m:Menu = new Menu(broadcastMenuSelection, 'broadcast');
 		for each (var msg:String in msgNames) m.addItem(msg);
