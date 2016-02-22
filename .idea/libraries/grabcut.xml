@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="grabcut" type="flex">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/libs/grabcut.swc!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
