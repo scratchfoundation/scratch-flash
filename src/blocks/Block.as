@@ -622,6 +622,10 @@ public class Block extends Sprite {
 	private function collectArgs():void {
 		var i:int;
 		args = [];
+		if (isRequester && requestState == 2) {
+			// Assume this means that our args have changed. See https://github.com/LLK/scratchx/issues/61
+			requestState = 0;
+		}
 		for (i = 0; i < labelsAndArgs.length; i++) {
 			var a:* = labelsAndArgs[i];
 			if ((a is Block) || (a is BlockArg)) args.push(a);
