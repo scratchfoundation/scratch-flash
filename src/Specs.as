@@ -120,7 +120,7 @@ public class Specs {
 		["point towards %m.spriteOrMouse",		" ", 1, "pointTowards:",			""],
 		["--"],
 		["go to x:%n y:%n",						" ", 1, "gotoX:y:"],
-		["go to %m.spriteOrMouse",				" ", 1, "gotoSpriteOrMouse:",		"mouse-pointer"],
+		["go to %m.location",				" ", 1, "gotoSpriteOrMouse:",		"mouse-pointer"],
 		["glide %n secs to x:%n y:%n",			" ", 1, "glideSecs:toX:y:elapsed:from:"],
 		["--"],
 		["change x by %n",						" ", 1, "changeXposBy:",			10],

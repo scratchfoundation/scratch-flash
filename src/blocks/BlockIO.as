@@ -303,6 +303,7 @@ public class BlockIO {
 			if (oldVal == 'mouse' || oldVal == '_mouse_') arg.setArgValue('_mouse_', Translator.map('mouse-pointer'));
 			if (oldVal == '_myself_') arg.setArgValue('_myself_', Translator.map('myself'));
 			if (oldVal == '_stage_') arg.setArgValue('_stage_', Translator.map('Stage'));
+			if (oldVal == '_random_') arg.setArgValue('_random_', Translator.map('random position'));
 		}
 	}
 
