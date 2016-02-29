@@ -71,8 +71,8 @@ public class ScratchSprite extends ScratchObj {
 	public var spriteInfo:Object = {};
 	private var geomShape:Shape;
 
-	public function ScratchSprite(name:String = 'Sprite1') {
-		objName = name;
+	public function ScratchSprite(name:String = null) {
+		objName = Scratch.app.stagePane.unusedSpriteName(name || Translator.map('Sprite1'));
 		filterPack = new FilterPack(this);
 		initMedia();
 		img = new Sprite();
