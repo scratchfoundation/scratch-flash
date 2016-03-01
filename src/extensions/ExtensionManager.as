@@ -358,11 +358,11 @@ public class ExtensionManager {
 				request(extName, primOrVarName, args, b);
 				return null;
 			}
-			else if(b.requestState == 2 && b.response as Object){
+			else if(b.requestState == 2){
 				var responseObj:Object = b.response as Object;
 				args.push(responseObj);
 				b.requestState = 0;
-				if(responseObj.hasOwnProperty('predicate')){
+				if(responseObj && responseObj.hasOwnProperty('predicate')){
 					app.externalCall('ScratchExtensions.getReporter', function(v:*):void {
 						value = v;
 					}, ext.name, responseObj.predicate, args);
