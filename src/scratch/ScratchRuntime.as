@@ -643,6 +643,7 @@ public class ScratchRuntime {
 
 	// hats whose triggering condition is currently true
 	protected var activeHats:Array = [];
+	protected var waitingHats:Array = []
 	protected function startEdgeTriggeredHats(hat:Block, target:ScratchObj):void {
 		if (!hat.isHat || !hat.nextBlock) return; // skip disconnected hats
 
@@ -685,15 +686,45 @@ public class ScratchRuntime {
 
 	private function processExtensionReporter(hat:Block, target:ScratchObj, extName:String, op:String, finalArgs:Array):void {
 		// TODO: Is it safe to do this in a callback, or must it happen before we return from startEdgeTriggeredHats?
-		app.externalCall('ScratchExtensions.getReporter', function(triggerCondition:Boolean):void {
+		function triggerHatBlock(triggerCondition:Boolean):void {
 			if (triggerCondition) {
 				if (triggeredHats.indexOf(hat) == -1) { // not already trigged
 					// only start the stack if it is not already running
+
 					if (!interp.isRunning(hat, target)) interp.toggleThread(hat, target);
 				}
 				activeHats.push(hat);
 			}
-		}, extName, op, finalArgs);
+		}
+		if(!hat.hasPredicate){
+			app.externalCall('ScratchExtensions.getReporter', triggerHatBlock, extName, op, finalArgs);
+		}
+		else{
+			//Tell the block to wait like a reporter, fire if true
+			if(triggeredHats.indexOf(hat) == -1 && waitingHats.indexOf(hat) < 0 && !interp.isRunning(hat, target)){
+				interp.toggleThread(hat, target, 0, true);
+				waitingHats.push(hat);
+				app.extensionManager.primExtensionOp(hat);
+			}
+		}
+	}
+
+	public function waitingHatFired(hat:Block, willExec:Boolean):void{
+		if(isWaitingHat(hat)){
+			waitingHats.splice(waitingHats.indexOf(hat), 1);
+		}
+		if(willExec){
+			hat.showRunFeedback();
+			activeHats.push(hat);
+		}
+		else{
+			//if it didn't fire, the thread is over!
+			interp.activeThread.stop();
+		}
+	}
+
+	public function isWaitingHat(hat:Block):Boolean{
+		return hat.isHat && hat.hasPredicate && waitingHats.indexOf(hat) >= 0;
 	}
 
 	private function processEdgeTriggeredHats():void {
