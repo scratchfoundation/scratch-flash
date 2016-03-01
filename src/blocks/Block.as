@@ -77,6 +77,7 @@ public class Block extends Sprite {
 	public var rightToLeft:Boolean;
 
 	public var isHat:Boolean = false;
+	public var hasPredicate:Boolean = false;
 	public var isReporter:Boolean = false;
 	public var isTerminal:Boolean = false;	// blocks that end a stack like "stop" or "forever"
 
@@ -149,7 +150,13 @@ public class Block extends Sprite {
 			base = new BlockShape(BlockShape.HatShape, color);
 			isHat = true;
 			indentTop = 12;
-		} else if (type == "c") {
+		} else if (type =="H"){
+			base = new BlockShape(BlockShape.HatShape, color);
+			isHat = true;
+			hasPredicate = true;
+			indentTop = 12;
+		}
+		else if (type == "c") {
 			base = new BlockShape(BlockShape.LoopShape, color);
 		} else if (type == "cf") {
 			base = new BlockShape(BlockShape.FinalLoopShape, color);

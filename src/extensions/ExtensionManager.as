@@ -382,7 +382,34 @@ public class ExtensionManager {
 		}
 
 		var value:*;
-		if (b.isReporter) {
+		if(b.isHat && b.hasPredicate){
+			if(b.requestState == 0){
+				request(extName, primOrVarName, args, b);
+				return null;
+			}
+			else if(b.requestState == 2 && b.response as Object){
+				var responseObj:Object = b.response as Object;
+				args.push(responseObj);
+				b.requestState = 0;
+				if(responseObj.hasOwnProperty('predicate')){
+					app.externalCall('ScratchExtensions.getReporter', function(v:*):void {
+						value = v;
+					}, ext.name, responseObj.predicate, args);
+				}
+				if(value){
+					app.runtime.waitingHatFired(b, true);
+				}
+				else{
+					app.interp.doYield();
+					app.runtime.waitingHatFired(b, false);
+				}
+			}
+			else{
+				app.interp.doYield();
+			}
+			return;
+		}
+		else if (b.isReporter) {
 			if(b.isRequester) {
 				if(b.requestState == 2) {
 					b.requestState = 0;
