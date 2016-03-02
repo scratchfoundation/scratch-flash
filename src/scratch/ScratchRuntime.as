@@ -705,7 +705,7 @@ public class ScratchRuntime {
 				activeHats.push(hat);
 			}
 		}
-		if(!hat.hasPredicate){
+		if(!hat.isAsyncHat){
 			app.externalCall('ScratchExtensions.getReporter', triggerHatBlock, extName, op, finalArgs);
 		}
 		else{
@@ -733,7 +733,7 @@ public class ScratchRuntime {
 	}
 
 	public function isWaitingHat(hat:Block):Boolean{
-		return hat.isHat && hat.hasPredicate && waitingHats.indexOf(hat) >= 0;
+		return hat.isHat && hat.isAsyncHat && waitingHats.indexOf(hat) >= 0;
 	}
 
 	private function processEdgeTriggeredHats():void {
