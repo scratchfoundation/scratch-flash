@@ -715,7 +715,9 @@ public class ScratchRuntime {
 		if(willExec){
 			if(activeHats.indexOf(hat) < 0){
 				hat.showRunFeedback();
-				activeHats.push(hat);
+				if(hat.forcedRequester){
+					activeHats.push(hat);
+				}
 				return true;
 			}
 		}
