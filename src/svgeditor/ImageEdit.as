@@ -770,7 +770,7 @@ public class ImageEdit extends Sprite {
 		// If the tool wasn't canceled and an object was created then select it
 		var displayObject:DisplayObject = nextObject as DisplayObject;
 		if (nextObject &&
-				((displayObject  && displayObject.width > 0 && displayObject.height > 0 ) || (nextObject is Selection))) {
+				((displayObject && displayObject.parent && displayObject.width > 0 && displayObject.height > 0 ) || (nextObject is Selection))) {
 				if(!(this is SVGEdit)){
 					setToolMode("bitmapSelect");
 				}
