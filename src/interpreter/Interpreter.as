@@ -299,7 +299,7 @@ public class Interpreter {
 		if (!b) return 0; // arg() and friends can pass null if arg index is out of range
 		var op:String = b.op;
 		if (b.opFunction == null) {
-			if (op.indexOf('.') > -1) b.opFunction = app.extensionManager.primExtensionOp;
+			if (op.lastIndexOf('.') > -1) b.opFunction = app.extensionManager.primExtensionOp;
 			else b.opFunction = (primTable[op] == undefined) ? primNoop : primTable[op];
 		}
 

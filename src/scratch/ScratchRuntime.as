@@ -607,7 +607,7 @@ public class ScratchRuntime {
 	}
 
 	private function isUnofficialExtensionBlock(b:Block):Boolean {
-		var i:int = b.op.indexOf('.');
+		var i:int = b.op.lastIndexOf('.');
 		if(i == -1) return false;
 		var extName:String = b.op.substr(0, i);
 		return !app.extensionManager.isInternal(extName);
@@ -667,7 +667,7 @@ public class ScratchRuntime {
 				activeHats.push(hat);
 			}
 		} else if (app.jsEnabled) {
-			var dotIndex:int = hat.op.indexOf('.');
+			var dotIndex:int = hat.op.lastIndexOf('.');
 			if (dotIndex > -1) {
 				var extName:String = hat.op.substr(0, dotIndex);
 				if (app.extensionManager.extensionActive(extName)) {
@@ -824,9 +824,10 @@ public class ScratchRuntime {
 			if (spr) spr.setDirection(spr.direction);
 		}
 
-		app.resetPlugin();
-		app.extensionManager.clearImportedExtensions();
-		app.extensionManager.loadSavedExtensions(project.info.savedExtensions);
+		app.resetPlugin(function():void {
+			app.extensionManager.clearImportedExtensions();
+			app.extensionManager.loadSavedExtensions(project.info.savedExtensions);
+		});
 		app.installStage(project);
 		app.updateSpriteLibrary(true);
 		// set the active sprite

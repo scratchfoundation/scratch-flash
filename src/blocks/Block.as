@@ -815,7 +815,7 @@ public class Block extends Sprite {
 
 	public function showHelp():void {
 		var i:int = -1;
-		if((i = op.indexOf('.')) > -1) {
+		if((i = op.lastIndexOf('.')) > -1) {
 			var extName:String = op.substr(0, i);
 			if(Scratch.app.extensionManager.isInternal(extName))
 				Scratch.app.showTip('ext:'+extName);

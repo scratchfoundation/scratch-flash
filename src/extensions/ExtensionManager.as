@@ -49,7 +49,9 @@ public class ExtensionManager {
 	protected var extensionDict:Object = new Object(); // extension name -> extension record
 	private var justStartedWait:Boolean;
 	private var pollInProgress:Dictionary = new Dictionary(true);
+	static public const picoBoardExt:String = 'PicoBoard';
 	static public const wedoExt:String = 'LEGO WeDo';
+	static public const wedo2Ext:String = 'LEGO WeDo 2.0';
 
 	public function ExtensionManager(app:Scratch) {
 		this.app = app;
@@ -72,8 +74,9 @@ public class ExtensionManager {
 
 		// Clear imported extensions before loading a new project.
 		extensionDict = {};
-		extensionDict['PicoBoard'] = ScratchExtension.PicoBoard();
+		extensionDict[picoBoardExt] = ScratchExtension.PicoBoard();
 		extensionDict[wedoExt] = ScratchExtension.WeDo();
+		extensionDict[wedo2Ext] = ScratchExtension.WeDo2();
 	}
 
 	// -----------------------------
@@ -295,7 +298,7 @@ public class ExtensionManager {
 
 	public function menuItemsFor(op:String, menuName:String):Array {
 		// Return a list of menu items for the given menu of the extension associated with op or null.
-		var i:int = op.indexOf('.');
+		var i:int = op.lastIndexOf('.');
 		if (i < 0) return null;
 		var ext:ScratchExtension = extensionDict[op.slice(0, i)];
 		if (!ext || !ext.menus) return null; // unknown extension
@@ -342,7 +345,7 @@ public class ExtensionManager {
 	//------------------------------
 
 	public function primExtensionOp(b:Block):* {
-		var i:int = b.op.indexOf('.');
+		var i:int = b.op.lastIndexOf('.');
 		var extName:String = b.op.slice(0, i);
 		var ext:ScratchExtension = extensionDict[extName];
 		if (ext == null) return 0; // unknown extension

@@ -380,7 +380,7 @@ public class PaletteBuilder {
 				// Open in the tips window if the URL starts with /info/ and another tab otherwise
 				if (ext.url.indexOf('/info/') === 0) app.showTip(ext.url);
 				else if (ext.url.indexOf('http') === 0) navigateToURL(new URLRequest(ext.url));
-				else DialogBox.notify('Extensions', 'Unable to load about page: the URL given for extension "' + ext.name + '" is not formatted correctly.');
+				else DialogBox.notify('Extensions', 'Unable to load about page: the URL given for extension "' + ext.displayName + '" is not formatted correctly.');
 			}
 		}
 
@@ -390,7 +390,7 @@ public class PaletteBuilder {
 		}
 
 		var m:Menu = new Menu();
-		m.addItem(Translator.map('About') + ' ' + ext.name + ' ' + Translator.map('extension') + '...', showAbout, !!ext.url);
+		m.addItem(Translator.map('About') + ' ' + ext.displayName + ' ' + Translator.map('extension') + '...', showAbout, !!ext.url);
 		m.addItem('Remove extension blocks', hideExtension);
 
 		var extensionDevManager:ExtensionDevManager = Scratch.app.extensionManager as ExtensionDevManager;
@@ -423,7 +423,7 @@ public class PaletteBuilder {
 
 		nextY += 7;
 
-		var titleButton:IconButton = UIPart.makeMenuButton(ext.name, extensionMenu, true, CSS.textColor);
+		var titleButton:IconButton = UIPart.makeMenuButton(ext.displayName, extensionMenu, true, CSS.textColor);
 		titleButton.x = 5;
 		titleButton.y = nextY;
 		app.palette.addChild(titleButton);

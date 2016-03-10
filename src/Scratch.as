@@ -712,9 +712,13 @@ public class Scratch extends Sprite {
 		}
 	}
 
-	public function resetPlugin():void {
-		if (jsEnabled)
+	public function resetPlugin(whenDone:Function):void {
+		if (jsEnabled) {
 			externalCall('ScratchExtensions.resetPlugin');
+		}
+		if (whenDone != null) {
+			whenDone();
+		}
 	}
 
 	protected function step(e:Event):void {
