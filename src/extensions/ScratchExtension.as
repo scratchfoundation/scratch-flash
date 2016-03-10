@@ -107,7 +107,7 @@ public class ScratchExtension {
 		result.isInternal = true;
 		result.javascriptURL = Scratch.app.server.getOfficialExtensionURL('wedo2Extension.js');
 		result.thumbnailMD5 = 'c14047e09787cd75a2bc6aba68ceb0de.png';
-		result.url = 'http://wiki.scratch.mit.edu/wiki/LEGO_WeDo2_Blocks'; // TODO
+		result.url = 'howto/wedo2setup-intro.html';
 		result.tags = ['hardware'];
 		return result;
 	}
