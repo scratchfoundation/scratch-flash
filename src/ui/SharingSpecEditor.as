@@ -50,7 +50,7 @@ public class SharingSpecEditor extends Sprite {
 
 		addChild(playLabel = makeLabel('To play your video, download and install the',14));
 		addChild(linkLabel = makeLinkLabel('VLC media player.',14,"http://www.videolan.org/vlc/index.html"));
-		addChild(faqLabel = makeLinkLabel('Questions?',14,"https://scratch.mit.edu/info/faq/"));
+		addChild(faqLabel = makeLinkLabel('Questions?',14,"https://scratch.mit.edu/info/faq#video"));
 		addChild(shareLabel = makeLabel('You can also share your video with others to let them see it!',14));
 		addChild(shareImage = Resources.createDO("videoShare"));
 		var h:Number = 160/shareImage.width*shareImage.height;
