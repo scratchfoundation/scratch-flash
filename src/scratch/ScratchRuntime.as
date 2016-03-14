@@ -21,33 +21,46 @@
 // John Maloney, September 2010
 
 package scratch {
+import assets.Resources;
+
+import blocks.Block;
+import blocks.BlockArg;
+
+import extensions.ExtensionManager;
+
 import flash.display.*;
 import flash.events.*;
-import flash.geom.Rectangle;
-import flash.geom.Point;
 import flash.geom.Matrix;
+import flash.geom.Point;
+import flash.geom.Rectangle;
 import flash.media.*;
 import flash.net.*;
 import flash.system.System;
 import flash.text.TextField;
 import flash.utils.*;
-import blocks.Block;
-import blocks.BlockArg;
+
 import interpreter.*;
+
+import leelib.util.flvEncoder.*;
+
+import logging.LogLevel;
+
 import primitives.VideoMotionPrims;
+
 import sound.ScratchSoundPlayer;
+
 import translation.*;
-import assets.Resources;
-import ui.media.MediaInfo;
+
 import ui.BlockPalette;
-import uiwidgets.DialogBox;
 import ui.RecordingSpecEditor;
 import ui.SharingSpecEditor;
+import ui.media.MediaInfo;
+
+import uiwidgets.DialogBox;
+
 import util.*;
+
 import watchers.*;
-import logging.LogLevel;
-import scratch.ReadyLabel;
-import leelib.util.flvEncoder.*;
 
 public class ScratchRuntime {
 
@@ -607,10 +620,8 @@ public class ScratchRuntime {
 	}
 
 	private function isUnofficialExtensionBlock(b:Block):Boolean {
-		var i:int = b.op.lastIndexOf('.');
-		if(i == -1) return false;
-		var extName:String = b.op.substr(0, i);
-		return !app.extensionManager.isInternal(extName);
+		var extName:String = ExtensionManager.unpackExtensionName(b.op);
+		return !(extName && app.extensionManager.isInternal(extName));
 	}
 
 	SCRATCH::allow3d
@@ -667,18 +678,16 @@ public class ScratchRuntime {
 				activeHats.push(hat);
 			}
 		} else if (app.jsEnabled) {
-			var dotIndex:int = hat.op.lastIndexOf('.');
-			if (dotIndex > -1) {
-				var extName:String = hat.op.substr(0, dotIndex);
-				if (app.extensionManager.extensionActive(extName)) {
-					var op:String = hat.op.substr(dotIndex+1);
-					var args:Array = hat.args;
-					var finalArgs:Array = new Array(args.length);
-					for (var i:uint=0; i<args.length; ++i)
-						finalArgs[i] = interp.arg(hat, i);
+			var unpackedOp:Array = ExtensionManager.unpackExtensionAndOp(hat.op);
+			var extName:String = unpackedOp[0];
+			if (extName && app.extensionManager.extensionActive(extName)) {
+				var op:String = unpackedOp[1];
+				var numArgs:uint = hat.args.length;
+				var finalArgs:Array = new Array(numArgs);
+				for (var i:uint = 0; i < numArgs; ++i)
+					finalArgs[i] = interp.arg(hat, i);
 
-					processExtensionReporter(hat, target, extName, op, finalArgs);
-				}
+				processExtensionReporter(hat, target, extName, op, finalArgs);
 			}
 		}
 	}

@@ -56,13 +56,19 @@
 // Delay times are rounded to milliseconds, and the minimum delay is a millisecond.
 
 package interpreter {
-	import flash.utils.Dictionary;
-	import flash.utils.getTimer;
-	import flash.geom.Point;
-	import blocks.*;
-	import primitives.*;
-	import scratch.*;
-	import sound.*;
+import blocks.*;
+
+import extensions.ExtensionManager;
+
+import flash.geom.Point;
+import flash.utils.Dictionary;
+import flash.utils.getTimer;
+
+import primitives.*;
+
+import scratch.*;
+
+import sound.*;
 
 public class Interpreter {
 
@@ -299,7 +305,7 @@ public class Interpreter {
 		if (!b) return 0; // arg() and friends can pass null if arg index is out of range
 		var op:String = b.op;
 		if (b.opFunction == null) {
-			if (op.lastIndexOf('.') > -1) b.opFunction = app.extensionManager.primExtensionOp;
+			if (ExtensionManager.hasExtensionPrefix(op)) b.opFunction = app.extensionManager.primExtensionOp;
 			else b.opFunction = (primTable[op] == undefined) ? primNoop : primTable[op];
 		}
 
