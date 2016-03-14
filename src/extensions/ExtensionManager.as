@@ -105,7 +105,7 @@ public class ExtensionManager {
 	// Retrieve the extension name from `prefixedOp`.
 	// If `prefixedOp` doesn't have an extension prefix, return `null`.
 	public static function unpackExtensionName(prefixedOp:String):String {
-		var separatorPosition:int = prefixedOp.lastIndexOf(extensionSeparator);
+		var separatorPosition:int = prefixedOp.indexOf(extensionSeparator);
 		if (separatorPosition < 0) {
 			return null;
 		}
@@ -117,7 +117,7 @@ public class ExtensionManager {
 	// Unpack `prefixedOp` into `[extensionName, op]`
 	// If `prefixedOp` doesn't have an extension prefix, return `[null, prefixedOp]`
 	public static function unpackExtensionAndOp(prefixedOp:String):Array {
-		var separatorPosition:int = prefixedOp.lastIndexOf(extensionSeparator);
+		var separatorPosition:int = prefixedOp.indexOf(extensionSeparator);
 		if (separatorPosition < 0) {
 			return [null, prefixedOp];
 		}
