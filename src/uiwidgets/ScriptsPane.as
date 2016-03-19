@@ -85,6 +85,8 @@ public class ScriptsPane extends ScrollFrameContents {
 	}
 
 	public function viewScriptsFor(obj:ScratchObj):void {
+		if (obj == viewedObj) return;
+
 		// View the blocks for the given object.
 		saveScripts(false);
 		while (numChildren > 0) {
@@ -96,8 +98,11 @@ public class ScriptsPane extends ScrollFrameContents {
 		if (viewedObj != null) {
 			var blockList:Array = viewedObj.allBlocks();
 			for each (var b:Block in viewedObj.scripts) {
-				b.cacheAsBitmap = true;
-				addChild(b);
+				var stack:BlockStack = b.parent as BlockStack;
+				if (!stack)
+					stack =  new BlockStack(b);
+				stack.cacheAsBitmap = true;
+				addChild(stack);
 			}
 			for each (var c:ScratchComment in viewedObj.scriptComments) {
 				c.updateBlockRef(blockList);
@@ -117,7 +122,7 @@ public class ScriptsPane extends ScrollFrameContents {
 		viewedObj.scriptComments.splice(0); // remove all
 		for (var i:int = 0; i < numChildren; i++) {
 			var o:* = getChildAt(i);
-			if (o is Block) viewedObj.scripts.push(o);
+			if (o is BlockStack) viewedObj.scripts.push(o.firstBlock);
 			if (o is ScratchComment) viewedObj.scriptComments.push(o);
 		}
 		var blockList:Array = viewedObj.allBlocks();
@@ -128,8 +133,8 @@ public class ScriptsPane extends ScrollFrameContents {
 		fixCommentLayout();
 	}
 
-	public function prepareToDrag(b:Block):void {
-		findTargetsFor(b);
+	public function prepareToDrag(b:BlockStack):void {
+		findTargetsFor(b.firstBlock);
 		nearestTarget = null;
 		b.scaleX = b.scaleY = scaleX;
 		addFeedbackShape();
@@ -169,6 +174,8 @@ public class ScriptsPane extends ScrollFrameContents {
 				if (o) {
 					h = o.height;
 					if (!o.bottomBlock().isTerminal) h -= BlockShape.NotchDepth;
+					while (o = o.nextBlock)
+						h += o.height;
 				}
 			}
 			b.previewSubstack1Height(h);
@@ -185,7 +192,12 @@ public class ScriptsPane extends ScrollFrameContents {
 				if (t is BlockArg) feedbackShape.copyFeedbackShapeFrom(t, true);
 			} else {
 				var insertionType:int = nearestTarget[2];
-				var wrapH:int = (insertionType == INSERT_WRAP) ? t.getRect(t).height : 0;
+				var wrapH:int = 0;
+				if (insertionType == INSERT_WRAP) {
+					wrapH = t.height;
+					while (t = t.nextBlock)
+						wrapH += t.height;
+				}
 				var isInsertion:Boolean = (insertionType != INSERT_ABOVE) && (insertionType != INSERT_WRAP);
 				feedbackShape.copyFeedbackShapeFrom(b, false, isInsertion, wrapH);
 			}
@@ -214,17 +226,18 @@ public class ScriptsPane extends ScrollFrameContents {
 		var result:Array = [];
 		for (var i:int = 0; i < numChildren; i++) {
 			var child:DisplayObject = getChildAt(i);
-			if (child is Block) result.push(child);
+			if (child is BlockStack) result.push((child as BlockStack).firstBlock);
 		}
 		return result;
 	}
 
-	private function blockDropped(b:Block):void {
+	private function blockDropped(bs:BlockStack):void {
+		var b:Block = bs.firstBlock;
 		if (nearestTarget == null) {
-			b.cacheAsBitmap = true;
+			bs.cacheAsBitmap = true;
 		} else {
-			if(app.editMode) b.hideRunFeedback();
-			b.cacheAsBitmap = false;
+			if(app.editMode) bs.hideRunFeedback();
+			bs.cacheAsBitmap = false;
 			if (b.isReporter) {
 				Block(nearestTarget[1].parent).replaceArgWithBlock(nearestTarget[1], b, this);
 			} else {
@@ -250,6 +263,8 @@ public class ScriptsPane extends ScrollFrameContents {
 		}
 		if (b.op == Specs.PROCEDURE_DEF) app.updatePalette();
 		app.runtime.blockDropped(b);
+		if (b.parent != bs)
+			removeChild(bs);
 	}
 
 	public function findTargetsFor(b:Block):void {
@@ -258,9 +273,9 @@ public class ScriptsPane extends ScrollFrameContents {
 		var bCanWrap:Boolean = b.base.canHaveSubstack1() && !b.subStack1; // empty C or E block
 		var p:Point;
 		for (var i:int = 0; i < numChildren; i++) {
-			var child:DisplayObject = getChildAt(i);
-			if (child is Block) {
-				var target:Block = Block(child);
+			var child:BlockStack = getChildAt(i) as BlockStack;
+			if (child) {
+				var target:Block = child.firstBlock;
 				if (b.isReporter) {
 					if (reporterAllowedInStack(b, target)) findReporterTargetsIn(target);
 				} else {
@@ -268,7 +283,7 @@ public class ScriptsPane extends ScrollFrameContents {
 						if (!bEndWithTerminal && !target.isHat) {
 							// b is a stack ending with a non-terminal command block and target
 							// is not a hat so the bottom block of b can connect to top of target
-							p = target.localToGlobal(new Point(0, -(b.height - BlockShape.NotchDepth)));
+							p = target.localToGlobal(new Point(0, -(b.parent.height - BlockShape.NotchDepth)));
 							possibleTargets.push([p, target, INSERT_ABOVE]);
 						}
 						if (bCanWrap && !target.isHat) {
@@ -350,8 +365,8 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 		var threshold:int = b.isReporter ? 15 : 30;
 		var i:int, minDist:int = 100000;
 		var nearest:Array;
-		var bTopLeft:Point = new Point(b.x, b.y);
-		var bBottomLeft:Point = new Point(b.x, b.y + b.height - 3);
+		var bTopLeft:Point = b.parent is BlockStack ? new Point(b.parent.x, b.parent.y) : new Point(b.x, b.y);
+		var bBottomLeft:Point = new Point(b.x, b.y + b.parent.height - 3);
 
 		for (i = 0; i < targets.length; i++) {
 			var item:Array = targets[i];
@@ -398,15 +413,15 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 			return true;
 		}
 
-		var b:Block = obj as Block;
+		var bs:BlockStack = obj as BlockStack;
 		var c:ScratchComment = obj as ScratchComment;
-		if (!b && !c) return false;
+		if (!bs && !c) return false;
 
 		obj.x = Math.max(5, localP.x);
 		obj.y = Math.max(5, localP.y);
 		obj.scaleX = obj.scaleY = 1;
 		addChild(obj);
-		if (b) blockDropped(b);
+		if (bs) blockDropped(bs);
 		if (c) {
 			c.blockRef = blockAtPoint(localP); // link to the block under comment top-left corner, or unlink if none
 		}
@@ -500,7 +515,7 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 
 		// update comment position
 		var blockP:Point = globalToLocal(c.blockRef.localToGlobal(new Point(0, 0)));
-		var top:Block = c.blockRef.topBlock();
+		var top:BlockStack = c.blockRef.topBlock().parent as BlockStack;
 		var topP:Point = globalToLocal(top.localToGlobal(new Point(0, 0)));
 		c.x = c.isExpanded() ?
 			topP.x + top.width + 15 :
@@ -524,15 +539,15 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 		//	3. Compute the column widths
 		//	4. Move stacks into place
 
-		var stacks:Array = stacksSortedByX();
-		var columns:Array = assignStacksToColumns(stacks);
-		var columnWidths:Array = computeColumnWidths(columns);
+		var stacks:Vector.<BlockStack> = stacksSortedByX();
+		var columns:Vector.<Vector.<BlockStack>> = assignStacksToColumns(stacks);
+		var columnWidths:Vector.<Number> = computeColumnWidths(columns);
 
 		var nextX:int = padding;
 		for (var i:int = 0; i < columns.length; i++) {
-			var col:Array = columns[i];
+			var col:Vector.<BlockStack> = columns[i];
 			var nextY:int = padding;
-			for each (var b:Block in col) {
+			for each (var b:BlockStack in col) {
 				b.x = nextX;
 				b.y = nextY;
 				nextY += b.height + padding;
@@ -542,51 +557,51 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 		saveScripts();
 	}
 
-	private function stacksSortedByX():Array {
+	private function stacksSortedByX():Vector.<BlockStack> {
 		// Get all stacks and sorted by x.
-		var stacks:Array = [];
+		var stacks:Vector.<BlockStack> = new Vector.<BlockStack>();
 		for (var i:int = 0; i < numChildren; i++) {
 			var o:* = getChildAt(i);
-			if (o is Block) stacks.push(o);
+			if (o is BlockStack) stacks.push(o);
 		}
-		stacks.sort(function (b1:Block, b2:Block):int {return b1.x - b2.x }); // sort by increasing x
+		stacks.sort(function (b1:BlockStack, b2:BlockStack):int {return b1.x - b2.x }); // sort by increasing x
 		return stacks;
 	}
 
-	private function assignStacksToColumns(stacks:Array):Array {
+	private function assignStacksToColumns(stacks:Vector.<BlockStack>):Vector.<Vector.<BlockStack>> {
 		// Assign stacks to columns. Assume stacks is sorted by increasing x.
 		// A stack is placed in the first column where it does not overlap vertically with
 		// another stack in that column. New columns are created as needed.
-		var columns:Array = [];
-		for each (var b:Block in stacks) {
+		var columns:Vector.<Vector.<BlockStack>> = new Vector.<Vector.<BlockStack>>;
+		for each (var b:BlockStack in stacks) {
 			var assigned:Boolean = false;
-			for each (var c:Array in columns) {
+			for each (var c:Vector.<BlockStack> in columns) {
 				if (fitsInColumn(b, c)) {
 					assigned = true;
 					c.push(b);
 					break;
 				}
 			}
-			if (!assigned) columns.push([b]); // create a new column for this stack
+			if (!assigned) columns.push(Vector.<BlockStack>([b])); // create a new column for this stack
 		}
 		return columns;
 	}
 
-	private function fitsInColumn(b:Block, c:Array):Boolean {
+	private function fitsInColumn(b:BlockStack, c:Vector.<BlockStack>):Boolean {
 		var bTop:int = b.y;
 		var bBottom:int = bTop + b.height;
-		for each (var other:Block in c) {
+		for each (var other:BlockStack in c) {
 			if (!((other.y > bBottom) || ((other.y + other.height) < bTop))) return false;
 		}
 		return true;
 	}
 
-	private function computeColumnWidths(columns:Array):Array {
-		var widths:Array = [];
-		for each (var c:Array in columns) {
-			c.sort(function (b1:Block, b2:Block):int {return b1.y - b2.y }); // sort by increasing y
+	private function computeColumnWidths(columns:Vector.<Vector.<BlockStack>>):Vector.<Number> {
+		var widths:Vector.<Number> = new Vector.<Number>;
+		for each (var c:Vector.<BlockStack> in columns) {
+			c.sort(function (b1:BlockStack, b2:BlockStack):int {return b1.y - b2.y }); // sort by increasing y
 			var w:int = 0;
-			for each (var b:Block in c) w = Math.max(w, b.width);
+			for each (var b:BlockStack in c) w = Math.max(w, b.width);
 			widths.push(w);
 		}
 		return widths;

@@ -174,7 +174,7 @@ public class OldProjectReader {
 			// stack is of form: [[x y] [blocks]]
 			var a:Array = stack[1][0];
 			if (a && (a[0] == 'scratchComment')) continue; // skip comments
-			var topBlock:Block = BlockIO.arrayToStack(stack[1]);
+			var topBlock:BlockStack = new BlockStack(BlockIO.arrayToStack(stack[1]));
 			topBlock.x = stack[0][0];
 			topBlock.y = stack[0][1];
 			result.push(topBlock);

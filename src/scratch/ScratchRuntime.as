@@ -21,6 +21,8 @@
 // John Maloney, September 2010
 
 package scratch {
+import blocks.BlockStack;
+
 import flash.display.*;
 import flash.events.*;
 import flash.geom.Rectangle;
@@ -715,7 +717,7 @@ public class ScratchRuntime {
 
 			SCRATCH::allow3d {
 				// Should we go 3D?
-				if(isGraphicEffectBlock(b))
+				if(!app.isIn3D && isGraphicEffectBlock(b))
 					app.go3D();
 			}
 		});
@@ -1109,9 +1111,8 @@ public class ScratchRuntime {
 	public function clearRunFeedback():void {
 		if(app.editMode) {
 			for each (var stack:Block in allStacks()) {
-				stack.allBlocksDo(function(b:Block):void {
-					b.hideRunFeedback();
-				});
+				if (stack.parent is BlockStack)
+					(stack.parent as BlockStack).hideRunFeedback();
 			}
 		}
 		app.updatePalette();

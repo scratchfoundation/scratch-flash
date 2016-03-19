@@ -82,6 +82,7 @@ public class Block extends Sprite {
 	public var response:* = null;
 	public var requestLoader:URLLoader = null;
 
+	public var prevBlock:Block;
 	public var nextBlock:Block;
 	public var subStack1:Block;
 	public var subStack2:Block;
@@ -95,15 +96,6 @@ public class Block extends Sprite {
 
 	private var indentTop:int = 2, indentBottom:int = 3;
 	private var indentLeft:int = 4, indentRight:int = 3;
-
-	private static var ROLE_NONE:int = 0;
-	private static var ROLE_ABSOLUTE:int = 1;
-	private static var ROLE_EMBEDDED:int = 2;
-	private static var ROLE_NEXT:int = 3;
-	private static var ROLE_SUBSTACK1:int = 4;
-	private static var ROLE_SUBSTACK2:int = 5;
-
-	private var originalParent:DisplayObjectContainer, originalRole:int, originalIndex:int, originalPosition:Point;
 
 	public function Block(spec:String, type:String = " ", color:int = 0xD00000, op:* = 0, defaultArgs:Array = null) {
 		this.spec = Translator.map(spec);
@@ -331,89 +323,6 @@ public class Block extends Sprite {
 		if (nextBlock != null) nextBlock.allBlocksDo(f);
 	}
 
-	public function showRunFeedback():void {
-		if (filters && filters.length > 0) {
-			for each (var f:* in filters) {
-				if (f is GlowFilter) return;
-			}
-		}
-		filters = runFeedbackFilters().concat(filters || []);
-	}
-
-	public function hideRunFeedback():void {
-		if (filters && filters.length > 0) {
-			var newFilters:Array = [];
-			for each (var f:* in filters) {
-				if (!(f is GlowFilter)) newFilters.push(f);
-			}
-			filters = newFilters;
-		}
-	}
-
-	private function runFeedbackFilters():Array {
-		// filters for showing that a stack is running
-		var f:GlowFilter = new GlowFilter(0xfeffa0);
-		f.strength = 2;
-		f.blurX = f.blurY = 12;
-		f.quality = 3;
-		return [f];
-	}
-
-	public function saveOriginalState():void {
-		originalParent = parent;
-		if (parent) {
-			var b:Block = parent as Block;
-			if (b == null) {
-				originalRole = ROLE_ABSOLUTE;
-			} else if (isReporter) {
-				originalRole = ROLE_EMBEDDED;
-				originalIndex = b.args.indexOf(this);
-			} else if (b.nextBlock == this) {
-				originalRole = ROLE_NEXT;
-			} else if (b.subStack1 == this) {
-				originalRole = ROLE_SUBSTACK1;
-			} else if (b.subStack2 == this) {
-				originalRole = ROLE_SUBSTACK2;
-			}
-			originalPosition = localToGlobal(new Point(0, 0));
-		} else {
-			originalRole = ROLE_NONE;
-			originalPosition = null;
-		}
-	}
-
-	public function restoreOriginalState():void {
-		var b:Block = originalParent as Block;
-		scaleX = scaleY = 1;
-		switch (originalRole) {
-		case ROLE_NONE:
-			if (parent) parent.removeChild(this);
-			break;
-		case ROLE_ABSOLUTE:
-			originalParent.addChild(this);
-			var p:Point = originalParent.globalToLocal(originalPosition);
-			x = p.x;
-			y = p.y;
-			break;
-		case ROLE_EMBEDDED:
-			b.replaceArgWithBlock(b.args[originalIndex], this, Scratch.app.scriptsPane);
-			break;
-		case ROLE_NEXT:
-			b.insertBlock(this);
-			break;
-		case ROLE_SUBSTACK1:
-			b.insertBlockSub1(this);
-			break;
-		case ROLE_SUBSTACK2:
-			b.insertBlockSub2(this);
-			break;
-		}
-	}
-
-	public function originalPositionIn(p:DisplayObject):Point {
-		return originalPosition && p.globalToLocal(originalPosition);
-	}
-
 	private function setDefaultArgs(defaults:Array):void {
 		collectArgs();
 		for (var i:int = 0; i < Math.min(args.length, defaults.length); i++) {
@@ -451,7 +360,7 @@ public class Block extends Sprite {
 		var b:Block = this;
 		while (b.isReporter) {
 			b.fixArgLayout();
-			if (b.parent is Block) b = Block(b.parent)
+			if (b.parent is Block) b = Block(b.parent);
 			else return;
 		}
 		if (b is Block) b.fixArgLayout();
@@ -501,24 +410,28 @@ public class Block extends Sprite {
 	}
 
 	public function fixStackLayout():void {
+//		trace('fixStackLayout:');
 		var b:Block = this;
+//		trace('    '+b.op+' @ ('+b.x+', '+b.y+')');
 		while (b != null) {
 			if (b.base.canHaveSubstack1()) {
 				var substackH:int = BlockShape.EmptySubstackH;
 				if (b.subStack1) {
+					b.subStack1.x = b.x + BlockShape.SubstackInset;
+					b.subStack1.y = b.y + b.base.substack1y();
 					b.subStack1.fixStackLayout();
-					b.subStack1.x = BlockShape.SubstackInset;
-					b.subStack1.y = b.base.substack1y();
-					substackH = b.subStack1.getRect(b).height;
+					var sb1:Block = b.subStack1.bottomBlock();
+					substackH = sb1.y + sb1.height - b.subStack1.y;
 					if (b.subStack1.bottomBlock().isTerminal) substackH += BlockShape.NotchDepth;
 				}
 				b.base.setSubstack1Height(substackH);
 				substackH = BlockShape.EmptySubstackH;
 				if (b.subStack2) {
+					b.subStack2.x = b.x + BlockShape.SubstackInset;
+					b.subStack2.y = b.y + b.base.substack2y();
 					b.subStack2.fixStackLayout();
-					b.subStack2.x = BlockShape.SubstackInset;
-					b.subStack2.y = b.base.substack2y();
-					substackH = b.subStack2.getRect(b).height;
+					var sb2:Block = b.subStack2.bottomBlock();
+					substackH = sb2.y + sb2.height - b.subStack2.y;
 					if (b.subStack2.bottomBlock().isTerminal) substackH += BlockShape.NotchDepth;
 				}
 				b.base.setSubstack2Height(substackH);
@@ -526,8 +439,9 @@ public class Block extends Sprite {
 				b.fixElseLabel();
 			}
 			if (b.nextBlock != null) {
-				b.nextBlock.x = 0;
-				b.nextBlock.y = b.base.nextBlockY();
+				b.nextBlock.x = b.x;
+				b.nextBlock.y = b.y + b.base.nextBlockY();
+//				trace('    '+b.nextBlock.op+' @ ('+b.nextBlock.x+', '+b.nextBlock.y+') ['+DebugUtils.getObjAddr(b.nextBlock)+']');
 			}
 			b = b.nextBlock;
 		}
@@ -569,9 +483,18 @@ public class Block extends Sprite {
 				}
 			}
 		}
-		if (nextBlock != null) dup.addChild(dup.nextBlock = nextBlock.duplicate(forClone, forStage));
-		if (subStack1 != null) dup.addChild(dup.subStack1 = subStack1.duplicate(forClone, forStage));
-		if (subStack2 != null) dup.addChild(dup.subStack2 = subStack2.duplicate(forClone, forStage));
+		if (nextBlock != null) {
+			dup.nextBlock = nextBlock.duplicate(forClone, forStage);
+			dup.nextBlock.prevBlock = dup;
+		}
+		if (subStack1 != null) {
+			dup.subStack1 = subStack1.duplicate(forClone, forStage);
+			dup.subStack1.prevBlock = dup;
+		}
+		if (subStack2 != null) {
+			dup.subStack2 = subStack2.duplicate(forClone, forStage);
+			dup.subStack2.prevBlock = dup;
+		}
 		if (!forClone) {
 			dup.x = x;
 			dup.y = y;
@@ -630,10 +553,9 @@ public class Block extends Sprite {
 	}
 
 	public function removeBlock(b:Block):void {
-		if (b.parent == this) removeChild(b);
-		if (b == nextBlock) {
-			nextBlock = null;
-		}
+		if (b.parent is BlockStack) (b.parent as BlockStack).removeBlocks(b);
+		else if (b.parent == this) removeChild(b);
+		if (b == nextBlock) nextBlock = null;
 		if (b == subStack1) subStack1 = null;
 		if (b == subStack2) subStack2 = null;
 		if (b.isReporter) {
@@ -654,50 +576,63 @@ public class Block extends Sprite {
 
 	public function insertBlock(b:Block):void {
 		var oldNext:Block = nextBlock;
+		if (oldNext != null && oldNext.parent == parent)
+			parent.removeChild(oldNext);
 
-		if (oldNext != null) removeChild(oldNext);
-
-		addChild(b);
+		b.prevBlock = this;
 		nextBlock = b;
 		if (oldNext != null) b.appendBlock(oldNext);
 
+		if (parent is BlockStack)
+			(parent as BlockStack).setFirstBlock(topBlock());
 		topBlock().fixStackLayout();
 	}
 
 	public function insertBlockAbove(b:Block):void {
 		b.x = this.x;
-		b.y = this.y - b.height + BlockShape.NotchDepth;
-		parent.addChild(b);
+		b.y = this.y - b.parent.height + BlockShape.NotchDepth;
+		(parent as BlockStack).setFirstBlock(b);
 		b.bottomBlock().insertBlock(this);
 	}
 
 	public function insertBlockAround(b:Block):void {
 		b.x = this.x - BlockShape.SubstackInset;
 		b.y = this.y - b.base.substack1y(); //  + BlockShape.NotchDepth;
-		parent.addChild(b);
-		parent.removeChild(this);
-		b.addChild(this);
 		b.subStack1 = this;
-		b.fixStackLayout();
+		if (prevBlock) {
+			prevBlock.nextBlock = b;
+			b.prevBlock = prevBlock;
+		}
+		else if (parent is BlockStack)
+			(parent as BlockStack).firstBlock = b;
+
+		prevBlock = b;
+		if (parent is BlockStack)
+			(parent as BlockStack).setFirstBlock(topBlock());
+		topBlock().fixStackLayout();
 	}
 
 	public function insertBlockSub1(b:Block):void {
 		var old:Block = subStack1;
 		if (old != null) old.parent.removeChild(old);
 
-		addChild(b);
 		subStack1 = b;
+		b.prevBlock = this;
 		if (old != null) b.appendBlock(old);
+		if (parent is BlockStack)
+			(parent as BlockStack).setFirstBlock(topBlock());
 		topBlock().fixStackLayout();
 	}
 
 	public function insertBlockSub2(b:Block):void {
 		var old:Block = subStack2;
-		if (old != null) removeChild(old);
+		if (old != null) old.parent.removeChild(old);
 
-		addChild(b);
 		subStack2 = b;
+		b.prevBlock = this;
 		if (old != null) b.appendBlock(old);
+		if (parent is BlockStack)
+			(parent as BlockStack).setFirstBlock(topBlock());
 		topBlock().fixStackLayout();
 	}
 
@@ -727,8 +662,9 @@ public class Block extends Sprite {
 			insertBlockSub1(b);
 		} else {
 			var bottom:Block = bottomBlock();
-			bottom.addChild(b);
+			parent.addChild(b);
 			bottom.nextBlock = b;
+			b.prevBlock = bottom;
 		}
 	}
 
@@ -746,14 +682,18 @@ public class Block extends Sprite {
 	}
 
 	public function topBlock():Block {
-		var result:DisplayObject = this;
-		while (result.parent is Block) result = result.parent;
-		return Block(result);
+		var result:Block = this;
+		while (result.parent is Block)
+			result = result.parent as Block;
+
+		if (result.parent is BlockStack)
+			result = (result.parent as BlockStack).firstBlock;
+		return result;
 	}
 
 	public function bottomBlock():Block {
 		var result:Block = this;
-		while (result.nextBlock!= null) result = result.nextBlock;
+		while (result.nextBlock != null) result = result.nextBlock;
 		return result;
 	}
 
@@ -791,6 +731,7 @@ public class Block extends Sprite {
 			text.embedFonts = true;
 		}
 		text.mouseEnabled = false;
+		text.cacheAsBitmap = true;
 		return text;
 	}
 
@@ -830,7 +771,7 @@ public class Block extends Sprite {
 	public function duplicateStack(deltaX:Number, deltaY:Number):void {
 		if (isProcDef() || op == 'proc_declaration') return; // don't duplicate procedure definition
 		var forStage:Boolean = Scratch.app.viewedObj() && Scratch.app.viewedObj().isStage;
-		var newStack:Block = BlockIO.stringToStack(BlockIO.stackToString(this), forStage);
+		var newStack:BlockStack = new BlockStack(BlockIO.stringToStack(BlockIO.stackToString(this), forStage));
 		var p:Point = localToGlobal(new Point(0, 0));
 		newStack.x = p.x + deltaX;
 		newStack.y = p.y + deltaY;
@@ -852,7 +793,13 @@ public class Block extends Sprite {
 		}
 		// TODO: Remove any waiting reporter data in the Scratch.app.extensionManager
 		if (parent is Block) Block(parent).removeBlock(this);
-		else if (parent) parent.removeChild(this);
+		else if (prevBlock) prevBlock.removeBlock(this);
+		else if (parent) {
+			var bs:BlockStack = parent as BlockStack;
+			parent.removeChild(this);
+			if (bs && !bs.firstBlock && bs.parent)
+				bs.parent.removeChild(bs);
+		}
 		this.cacheAsBitmap = false;
 		// set position for undelete
 		x = top.x;
@@ -882,14 +829,16 @@ public class Block extends Sprite {
 	}
 
 	public function addComment():void {
-		var scriptsPane:ScriptsPane = topBlock().parent as ScriptsPane;
+		var scriptsPane:ScriptsPane = topBlock().parent.parent as ScriptsPane;
 		if (scriptsPane) scriptsPane.addComment(this);
 	}
 
 	/* Dragging */
 
-	public function objToGrab(evt:MouseEvent):Block {
-		if (isEmbeddedParameter() || isInPalette()) return duplicate(false, Scratch.app.viewedObj() is ScratchStage);
+	public function objToGrab(evt:MouseEvent):* {
+		if (isEmbeddedParameter() || isInPalette()) return new BlockStack(duplicate(false, Scratch.app.viewedObj() is ScratchStage));
+		// TODO: Implement grabbing blocks from within a stack and support canceling the drag (reverting to original position, parent, etc)
+		if (parent is BlockStack && (parent as BlockStack).firstBlock == this) return parent;
 		return this;
 	}
 

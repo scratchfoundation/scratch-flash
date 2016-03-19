@@ -47,7 +47,9 @@
 // understand the nesting of UI objects.
 
 package util {
-	import flash.display.*;
+import blocks.BlockStack;
+
+import flash.display.*;
 	import flash.events.MouseEvent;
 	import flash.filters.*;
 	import flash.geom.*;
@@ -137,10 +139,10 @@ public class GestureHandler {
 			scrollTarget.contents.y = Math.min(0, Math.max(-scrollTarget.maxScrollV(), scrollTarget.contents.y + scrollYVelocity));
 			scrollTarget.constrainScroll();
 			scrollTarget.updateScrollbars();
-			var b:Block = carriedObj as Block;
-			if (b) {
-				app.scriptsPane.findTargetsFor(b);
-				app.scriptsPane.updateFeedbackFor(b);
+			var bs:BlockStack = carriedObj as BlockStack;
+			if (bs) {
+				app.scriptsPane.findTargetsFor(bs.firstBlock);
+				app.scriptsPane.updateFeedbackFor(bs.firstBlock);
 			}
 		}
 	}
@@ -156,7 +158,7 @@ public class GestureHandler {
 		Menu.removeMenusFrom(stage);
 		var menuTarget:* = findTargetFor('menu', app, x, y);
 		if (!menuTarget) return;
-		try { var menu:Menu = menuTarget.menu(new MouseEvent('right click')) } catch (e:Error) {}
+		try { var menu:Menu = menuTarget.menu(new MouseEvent('right click')); } catch (e:Error) {}
 		if (menu) menu.showOnStage(stage, x, y);
 		if (!isChrome) Menu.removeMenusFrom(stage); // hack: clear menuJustCreated because there's no rightMouseUp
 	}
@@ -238,8 +240,8 @@ public class GestureHandler {
 			if (mouseTarget != null) handleDrag(evt);
 			return;
 		}
-		if ((gesture == "drag") && (carriedObj is Block)) {
-			app.scriptsPane.updateFeedbackFor(Block(carriedObj));
+		if ((gesture == "drag") && (carriedObj is BlockStack)) {
+			app.scriptsPane.updateFeedbackFor((carriedObj as BlockStack).firstBlock);
 		}
 		if ((gesture == "drag") && (carriedObj is ScratchSprite)) {
 			var stageP:Point = app.stagePane.globalToLocal(carriedObj.localToGlobal(new Point(0, 0)));
@@ -411,13 +413,16 @@ public class GestureHandler {
 		if (!('objToGrab' in mouseTarget)) return;
 		if (!app.editMode) {
 			if (app.loadInProgress) return;
-			if ((mouseTarget is ScratchSprite) && !ScratchSprite(mouseTarget).isDraggable) return; // don't drag locked sprites in presentation mode
-			if ((mouseTarget is Watcher) || (mouseTarget is ListWatcher)) return; // don't drag watchers in presentation mode
+			if ((mouseTarget is ScratchSprite) && !ScratchSprite(mouseTarget).isDraggable) return; // don't drag locked
+                                                                                                   // sprites in
+                                                                                                   // presentation mode
+			if ((mouseTarget is Watcher) || (mouseTarget is ListWatcher)) return; // don't drag watchers in
+                                                                                  // presentation mode
 		}
 		grab(mouseTarget, evt);
 		gesture = 'drag';
-		if (carriedObj is Block) {
-			app.scriptsPane.updateFeedbackFor(Block(carriedObj));
+		if (carriedObj is BlockStack) {
+			app.scriptsPane.updateFeedbackFor((carriedObj as BlockStack).firstBlock);
 		}
 	}
 
@@ -464,7 +469,8 @@ public class GestureHandler {
 			return;
 		}
 		if (t && 'handleTool' in t) t.handleTool(CursorTool.tool, evt);
-		if (isGrowShrink && (t is Block && t.isInPalette || t is ImageCanvas)) return; // grow/shrink sticky for scripting area
+		if (isGrowShrink && (t is Block && t.isInPalette || t is ImageCanvas)) return; // grow/shrink sticky for
+                                                                                       // scripting area
 
 		if (!evt.shiftKey) app.clearTool(); // don't clear if shift pressed
 	}
@@ -482,12 +488,19 @@ public class GestureHandler {
 		originalPosition = new Point(obj.x, obj.y);
 		originalScale = obj.scaleX;
 
-		if (obj is Block) {
-			var b:Block = Block(obj);
-			b.saveOriginalState();
-			if (b.parent is Block) Block(b.parent).removeBlock(b);
-			if (b.parent != null) b.parent.removeChild(b);
-			app.scriptsPane.prepareToDrag(b);
+		var b:Block = obj as Block;
+		var wasBlock:Boolean = !!b;
+		if (b) {
+			obj = new BlockStack(b);
+			b.fixStackLayout();
+			originalParent.addChild(obj);
+		}
+
+		if (obj is BlockStack) {
+			var bs:BlockStack = obj as BlockStack;
+			if (!wasBlock) bs.saveOriginalState();
+			if (bs.parent != null) bs.parent.removeChild(bs);
+			app.scriptsPane.prepareToDrag(bs);
 		} else if (obj is ScratchComment) {
 			var c:ScratchComment = ScratchComment(obj);
 			if (c.parent != null) c.parent.removeChild(c);
@@ -551,8 +564,8 @@ public class GestureHandler {
 		carriedObj.parent.removeChild(carriedObj);
 
 		if (!dropHandled(carriedObj, evt)) {
-			if (carriedObj is Block) {
-				Block(carriedObj).restoreOriginalState();
+			if (carriedObj is BlockStack) {
+				(carriedObj as BlockStack).restoreOriginalState();
 			} else if (originalParent) { // put carriedObj back where it came from
 				carriedObj.x = originalPosition.x;
 				carriedObj.y = originalPosition.y;
