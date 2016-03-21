@@ -335,7 +335,12 @@ public class BlockMenus implements DragClient {
 	}
 
 	private function notePicker(evt:MouseEvent):void {
-		var piano:Piano = new Piano(block.base.color, app.viewedObj().instrument, setBlockArg);
+		function pianoCallback(note:int):void{
+			setBlockArg(note);
+			block.demo();
+
+		}
+		var piano:Piano = new Piano(block.base.color, app.viewedObj().instrument, pianoCallback);
 		if (!isNaN(blockArg.argValue)) {
 			piano.selectNote(int(blockArg.argValue));
 		}
