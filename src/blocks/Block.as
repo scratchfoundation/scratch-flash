@@ -900,6 +900,14 @@ public class Block extends Sprite {
 		Scratch.app.runtime.interp.toggleThread(topBlock(), Scratch.app.viewedObj(), 1);
 	}
 
+	public function demo():void{
+		//make a test duplicate and exec
+		var b:Block = this.duplicate(false);
+		b.nextBlock = null;
+		b.visible = false;
+		Scratch.app.runtime.interp.toggleThread(b, Scratch.app.viewedObj(), 1);
+	}
+
 	public function doubleClick(evt:MouseEvent):void {
 		if (editArg(evt)) return;
 		Scratch.app.runtime.interp.toggleThread(topBlock(), Scratch.app.viewedObj(), 1);

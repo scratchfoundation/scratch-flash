@@ -114,7 +114,6 @@ public class Piano extends Sprite {
 				}
 				if (isNoteSelected(n)) return;
 				selectNote(n);
-				playSoundForNote(n);
 				return;
 			}
 		}
