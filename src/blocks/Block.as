@@ -904,7 +904,8 @@ public class Block extends Sprite {
 		//make a test duplicate and exec
 		var b:Block = this.duplicate(false);
 		b.nextBlock = null;
-		Scratch.app.runtime.interp.toggleThread(b, Scratch.app.viewedObj(), 1, true);
+		b.visible = false;
+		Scratch.app.runtime.interp.toggleThread(b, Scratch.app.viewedObj(), 1);
 	}
 
 	public function doubleClick(evt:MouseEvent):void {
