@@ -814,13 +814,17 @@ public class Block extends Sprite {
 	}
 
 	public function showHelp():void {
-		var i:int = -1;
-		if((i = op.lastIndexOf('.')) > -1) {
-			var extName:String = op.substr(0, i);
-			if(Scratch.app.extensionManager.isInternal(extName))
-				Scratch.app.showTip('ext:'+extName);
-			else
-				DialogBox.notify('Help Missing', 'There is no documentation available for experimental extension "'+extName+'".', Scratch.app.stage);
+		var extName:String = ExtensionManager.unpackExtensionName(op);
+		if (extName) {
+			if (Scratch.app.extensionManager.isInternal(extName)) {
+				Scratch.app.showTip('ext:' + extName);
+			}
+			else {
+				DialogBox.notify(
+						'Help Missing',
+						'There is no documentation available for experimental extension "' + extName + '".',
+						Scratch.app.stage);
+			}
 		}
 		else {
 			Scratch.app.showTip(op);

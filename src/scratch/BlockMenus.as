@@ -18,17 +18,26 @@
  */
 
 package scratch {
-	import flash.display.*;
-	import flash.events.*;
-	import flash.geom.*;
-	import flash.ui.*;
-	import blocks.*;
-	import filters.*;
-	import sound.*;
-	import translation.Translator;
-	import ui.ProcedureSpecEditor;
-	import uiwidgets.*;
-	import util.*;
+import blocks.*;
+
+import extensions.ExtensionManager;
+
+import filters.*;
+
+import flash.display.*;
+import flash.events.*;
+import flash.geom.*;
+import flash.ui.*;
+
+import sound.*;
+
+import translation.Translator;
+
+import ui.ProcedureSpecEditor;
+
+import uiwidgets.*;
+
+import util.*;
 
 public class BlockMenus implements DragClient {
 
@@ -56,7 +65,7 @@ public class BlockMenus implements DragClient {
 			if ((comparisonOps.indexOf(op)) > -1) { menuHandler.changeOpMenu(evt, comparisonOps); return; }
 			if (menuName == null) { menuHandler.genericBlockMenu(evt); return; }
 		}
-		if (op.lastIndexOf('.') > -1 && menuHandler.extensionMenu(evt, menuName)) return;
+		if (ExtensionManager.hasExtensionPrefix(op) && menuHandler.extensionMenu(evt, menuName)) return;
 		if (menuName == 'attribute') menuHandler.attributeMenu(evt);
 		if (menuName == 'backdrop') menuHandler.backdropMenu(evt);
 		if (menuName == 'booleanSensor') menuHandler.booleanSensorMenu(evt);

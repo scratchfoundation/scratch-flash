@@ -497,7 +497,7 @@ public class PaletteBuilder {
 
 	private function addBlocksForExtension(ext:ScratchExtension):void {
 		var blockColor:int = Specs.extensionsColor;
-		var opPrefix:String = ext.useScratchPrimitives ? '' : ext.name + '.';
+		var opPrefix:String = ext.useScratchPrimitives ? '' : ext.name + ExtensionManager.extensionSeparator;
 		for each (var spec:Array in ext.blockSpecs) {
 			if (spec.length >= 3) {
 				var op:String = opPrefix + spec[2];

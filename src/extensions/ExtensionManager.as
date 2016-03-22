@@ -49,6 +49,7 @@ public class ExtensionManager {
 	protected var extensionDict:Object = new Object(); // extension name -> extension record
 	private var justStartedWait:Boolean;
 	private var pollInProgress:Dictionary = new Dictionary(true);
+	static public const extensionSeparator:String = '\u001F';
 	static public const picoBoardExt:String = 'PicoBoard';
 	static public const wedoExt:String = 'LEGO WeDo';
 	static public const wedo2Ext:String = 'LEGO WeDo 2.0';
@@ -83,10 +84,10 @@ public class ExtensionManager {
 	// Block Specifications
 	//------------------------------
 
+	// Return a command spec array for the given operation or null.
 	public function specForCmd(op:String):Array {
-		// Return a command spec array for the given operation or null.
 		for each (var ext:ScratchExtension in extensionDict) {
-			var prefix:String = ext.useScratchPrimitives ? '' : (ext.name + '.');
+			var prefix:String = ext.useScratchPrimitives ? '' : (ext.name + extensionSeparator);
 			for each (var spec:Array in ext.blockSpecs) {
 				if ((spec.length > 2) && ((prefix + spec[2]) == op)) {
 					return [spec[1], spec[0], Specs.extensionsCategory, op, spec.slice(3)];
@@ -94,6 +95,35 @@ public class ExtensionManager {
 			}
 		}
 		return null;
+	}
+
+	// Check whether `prefixedOp` is prefixed with an extension name.
+	public static function hasExtensionPrefix(prefixedOp:String):Boolean {
+		return prefixedOp.indexOf(extensionSeparator) >= 0;
+	}
+
+	// Retrieve the extension name from `prefixedOp`.
+	// If `prefixedOp` doesn't have an extension prefix, return `null`.
+	public static function unpackExtensionName(prefixedOp:String):String {
+		var separatorPosition:int = prefixedOp.indexOf(extensionSeparator);
+		if (separatorPosition < 0) {
+			return null;
+		}
+		else {
+			return prefixedOp.substr(0, separatorPosition);
+		}
+	}
+
+	// Unpack `prefixedOp` into `[extensionName, op]`
+	// If `prefixedOp` doesn't have an extension prefix, return `[null, prefixedOp]`
+	public static function unpackExtensionAndOp(prefixedOp:String):Array {
+		var separatorPosition:int = prefixedOp.indexOf(extensionSeparator);
+		if (separatorPosition < 0) {
+			return [null, prefixedOp];
+		}
+		else {
+			return [prefixedOp.substr(0, separatorPosition), prefixedOp.substr(separatorPosition+1)];
+		}
 	}
 
 	// -----------------------------
@@ -298,9 +328,9 @@ public class ExtensionManager {
 
 	public function menuItemsFor(op:String, menuName:String):Array {
 		// Return a list of menu items for the given menu of the extension associated with op or null.
-		var i:int = op.lastIndexOf('.');
-		if (i < 0) return null;
-		var ext:ScratchExtension = extensionDict[op.slice(0, i)];
+		var extName:String = unpackExtensionName(op);
+		if (!extName) return null;
+		var ext:ScratchExtension = extensionDict[extName];
 		if (!ext || !ext.menus) return null; // unknown extension
 		return ext.menus[menuName];
 	}
@@ -345,13 +375,13 @@ public class ExtensionManager {
 	//------------------------------
 
 	public function primExtensionOp(b:Block):* {
-		var i:int = b.op.lastIndexOf('.');
-		var extName:String = b.op.slice(0, i);
+		var unpackedOp:Array = unpackExtensionAndOp(b.op);
+		var extName:String = unpackedOp[0];
 		var ext:ScratchExtension = extensionDict[extName];
 		if (ext == null) return 0; // unknown extension
-		var primOrVarName:String = b.op.slice(i + 1);
+		var primOrVarName:String = unpackedOp[1];
 		var args:Array = [];
-		for (i = 0; i < b.args.length; i++) {
+		for (var i:int = 0; i < b.args.length; i++) {
 			args.push(app.interp.arg(b, i));
 		}
 
