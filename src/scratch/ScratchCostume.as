@@ -171,7 +171,14 @@ public class ScratchCostume {
 		data.position = 0;
 		var s:String = data.readUTFBytes(10);
 		data.position = oldPosition;
-		return (s.indexOf('<?xml') >= 0) || (s.indexOf('<svg') >= 0);
+		var validXML:Boolean = true;
+		try{
+			XML(data)
+		}
+		catch (e:*){
+			validXML = false;
+		}
+		return ((s.indexOf('<?xml') >= 0) || (s.indexOf('<svg') >= 0)) && validXML;
 	}
 
 	public static function emptySVG():ByteArray {
