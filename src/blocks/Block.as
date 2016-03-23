@@ -31,19 +31,24 @@
 // sequence from a specification string (e.g. "%n + %n") and type (e.g. reporter).
 
 package blocks {
+import assets.Resources;
+
 import extensions.ExtensionManager;
 
 import flash.display.*;
-	import flash.events.*;
-	import flash.filters.GlowFilter;
-	import flash.geom.*;
-	import flash.net.URLLoader;
-	import flash.text.*;
-	import assets.Resources;
-	import translation.Translator;
-	import util.*;
-	import uiwidgets.*;
-	import scratch.*;
+import flash.events.*;
+import flash.filters.GlowFilter;
+import flash.geom.*;
+import flash.net.URLLoader;
+import flash.text.*;
+
+import scratch.*;
+
+import translation.Translator;
+
+import uiwidgets.*;
+
+import util.*;
 
 public class Block extends Sprite {
 
@@ -77,7 +82,7 @@ public class Block extends Sprite {
 
 	// Blocking operations
 	public var isRequester:Boolean = false;
-	public var forcedRequester:Boolean = false;	// We've forced requester-like treatment on a non-requester block.
+	public var forceAsync:Boolean = false;	// We've forced requester-like treatment on a non-requester block.
 	public var requestState:int = 0;		// 0 - no request made, 1 - awaiting response, 2 - data ready
 	public var response:* = null;
 	public var requestLoader:URLLoader = null;
@@ -130,12 +135,12 @@ public class Block extends Sprite {
 			isReporter = true;
 			indentLeft = 9;
 			indentRight = 7;
-		} else if (type == "r" || type == "R" || type == "rR") {
+		} else if (type == "r" || type == "R") {
 			this.type = 'r';
 			base = new BlockShape(BlockShape.NumberShape, color);
 			isReporter = true;
-			isRequester = ((type == 'R') || (type == 'rR'));
-			forcedRequester = (type == 'rR');
+			forceAsync = (type == 'r') && Scratch.app.extensionManager.shouldForceAsync();
+			isRequester = (type == 'R') || forceAsync;
 			indentTop = 2;
 			indentBottom = 2;
 			indentLeft = 6;
@@ -554,7 +559,7 @@ public class Block extends Sprite {
 		if (op == 'whenClicked') newSpec = forStage ? 'when Stage clicked' : 'when this sprite clicked';
 		var dup:Block = new Block(newSpec, type, (int)(forClone ? -1 : base.color), op);
 		dup.isRequester = isRequester;
-		dup.forcedRequester = forcedRequester;
+		dup.forceAsync = forceAsync;
 		dup.parameterNames = parameterNames;
 		dup.defaultArgValues = defaultArgValues;
 		dup.warpProcFlag = warpProcFlag;

@@ -80,6 +80,12 @@ public class ExtensionManager {
 		extensionDict[wedo2Ext] = ScratchExtension.WeDo2();
 	}
 
+	// Should the interpreter force async communication with extensions?
+	// For example, should 'r' be treated as 'R'?
+	public function shouldForceAsync():Boolean {
+		return app.isOffline;
+	}
+
 	// -----------------------------
 	// Block Specifications
 	//------------------------------
@@ -237,16 +243,6 @@ public class ExtensionManager {
 			ext = new ScratchExtension(extObj.extensionName, extObj.extensionPort);
 		ext.port = extObj.extensionPort;
 		ext.blockSpecs = extObj.blockSpecs;
-		if (app.isOffline && (ext.port == 0)) {
-			// Fix up block specs to force reporters to be treated as requesters.
-			// This is because the offline JS interface doesn't support returning values directly.
-			for each(var spec:Object in ext.blockSpecs) {
-				if(spec[0] == 'r') {
-					// 'r' is reporter, 'R' is requester, and 'rR' is a reporter forced to act as a requester.
-					spec[0] = 'rR';
-				}
-			}
-		}
 		if(extObj.url) ext.url = extObj.url;
 		ext.showBlocks = true;
 		ext.menus = extObj.menus;
@@ -504,7 +500,7 @@ public class ExtensionManager {
 			ext.busy.push(ext.nextID);
 			ext.waiting[b] = ext.nextID;
 
-			if (b.forcedRequester) {
+			if (b.forceAsync) {
 				// We're forcing a non-requester to be treated as a requester
 				app.externalCall('ScratchExtensions.getReporterForceAsync', null, ext.name, op, args, ext.nextID);
 			} else {
