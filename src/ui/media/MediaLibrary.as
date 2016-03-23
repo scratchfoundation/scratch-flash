@@ -47,7 +47,7 @@ public class MediaLibrary extends Sprite {
 		'Music Loops', 'Musical Notes', 'Percussion', 'Vocals'];
 
 	private static const backdropThemes:Array = [
-		'Castle', 'City', 'Dance', 'Dress-Up', 'Flying', 'Holiday', 'Music', 'Nature', 'Space', 'Sports', 'Underwater'];
+		'Castle', 'City', 'Flying', 'Holiday', 'Music and Dance', 'Nature', 'Space', 'Sports', 'Underwater'];
 	private static const costumeThemes:Array = [
 		'Castle', 'City', 'Dance', 'Dress-Up', 'Flying', 'Holiday', 'Music', 'Space', 'Sports', 'Underwater', 'Walking'];
 
