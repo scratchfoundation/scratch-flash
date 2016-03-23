@@ -43,7 +43,11 @@ public class PaletteSelector extends Sprite {
 		initCategories();
 	}
 
-	public static function strings():Array { return categories }
+	public static function strings():Array {
+		return categories.concat([
+			'when Stage clicked'
+		]);
+	}
 	public function updateTranslation():void { initCategories() }
 
 	public function select(id:int, shiftKey:Boolean = false):void {
