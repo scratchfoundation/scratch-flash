@@ -401,6 +401,9 @@ public class ExtensionManager {
 							value = v;
 						}, ext.name, responseObj.predicate, args);
 					}
+					else{
+						value = true;
+					}
 				}
 				if(value){
 					if(!app.runtime.waitingHatFired(b, true)){
