@@ -389,7 +389,7 @@ public class ExtensionManager {
 			}
 			else if(b.requestState == 2){
 				b.requestState = 0;
-				if(b.forcedRequester){
+				if(b.forceAsync){
 					value = b.response as Boolean;
 				}
 				else{

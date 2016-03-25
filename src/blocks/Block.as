@@ -146,11 +146,11 @@ public class Block extends Sprite {
 			indentBottom = 2;
 			indentLeft = 6;
 			indentRight = 4;
-		} else if (type == "h" || type == 'hH' || type == 'H') {
+		} else if (type == "h" || type == 'H') {
 			base = new BlockShape(BlockShape.HatShape, color);
 			isHat = true;
-			isAsyncHat = (type == 'H' || type == 'hH');
-			forcedRequester = (type == 'hH');
+			forceAsync = (type == 'h') && Scratch.app.extensionManager.shouldForceAsync();
+			isAsyncHat = (type == 'H') || forceAsync;
 			indentTop = 12;
 		}
 		else if (type == "c") {
