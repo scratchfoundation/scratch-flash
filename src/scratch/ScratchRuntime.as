@@ -654,6 +654,7 @@ public class ScratchRuntime {
 
 	// hats whose triggering condition is currently true
 	protected var activeHats:Array = [];
+	protected var waitingHats:Array = []
 	protected function startEdgeTriggeredHats(hat:Block, target:ScratchObj):void {
 		if (!hat.isHat || !hat.nextBlock) return; // skip disconnected hats
 
@@ -694,15 +695,47 @@ public class ScratchRuntime {
 
 	private function processExtensionReporter(hat:Block, target:ScratchObj, extName:String, op:String, finalArgs:Array):void {
 		// TODO: Is it safe to do this in a callback, or must it happen before we return from startEdgeTriggeredHats?
-		app.externalCall('ScratchExtensions.getReporter', function(triggerCondition:Boolean):void {
+		function triggerHatBlock(triggerCondition:Boolean):void {
 			if (triggerCondition) {
 				if (triggeredHats.indexOf(hat) == -1) { // not already trigged
 					// only start the stack if it is not already running
+
 					if (!interp.isRunning(hat, target)) interp.toggleThread(hat, target);
 				}
 				activeHats.push(hat);
 			}
-		}, extName, op, finalArgs);
+		}
+		if(!hat.isAsyncHat){
+			app.externalCall('ScratchExtensions.getReporter', triggerHatBlock, extName, op, finalArgs);
+		}
+		else{
+			//Tell the block to wait like a reporter, fire if true
+			if(hat.requestState == 0){
+				if(!interp.isRunning(hat, target)){
+					interp.toggleThread(hat, target, 0, true);
+				}
+			}
+			if(triggeredHats.indexOf(hat) >= 0){
+				activeHats.push(hat);
+			}
+		}
+	}
+
+	public function waitingHatFired(hat:Block, willExec:Boolean):Boolean{
+		if(willExec){
+			if(activeHats.indexOf(hat) < 0){
+				hat.showRunFeedback();
+				if(hat.forceAsync){
+					activeHats.push(hat);
+				}
+				return true;
+			}
+		}
+		else{
+			activeHats.splice(activeHats.indexOf(hat), 1);
+			triggeredHats.splice(triggeredHats.indexOf(hat), 1);
+		}
+		return false;
 	}
 
 	private function processEdgeTriggeredHats():void {

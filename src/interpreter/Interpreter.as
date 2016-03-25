@@ -120,7 +120,7 @@ public class Interpreter {
 
 	public function threadCount():int { return threads.length }
 
-	public function toggleThread(b:Block, targetObj:*, startupDelay:int = 0):void {
+	public function toggleThread(b:Block, targetObj:*, startupDelay:int = 0, isBackground:Boolean = false):void {
 		var i:int, newThreads:Array = [], wasRunning:Boolean = false;
 		for (i = 0; i < threads.length; i++) {
 			if ((threads[i].topBlock == b) && (threads[i].target == targetObj)) {
@@ -149,7 +149,7 @@ public class Interpreter {
 				};
 				b.args[0] = reporter;
 			}
-			if (app.editMode) topBlock.showRunFeedback();
+			if (app.editMode && ! isBackground) topBlock.showRunFeedback();
 			var t:Thread = new Thread(b, targetObj, startupDelay);
 			if (topBlock.isReporter) bubbleThread = t;
 			t.topBlock = topBlock;
