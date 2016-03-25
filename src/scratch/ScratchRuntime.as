@@ -710,30 +710,32 @@ public class ScratchRuntime {
 		}
 		else{
 			//Tell the block to wait like a reporter, fire if true
-			if(triggeredHats.indexOf(hat) == -1 && waitingHats.indexOf(hat) < 0 && !interp.isRunning(hat, target)){
-				interp.toggleThread(hat, target, 0, true);
-				waitingHats.push(hat);
-				app.extensionManager.primExtensionOp(hat);
+			if(hat.requestState == 0){
+				if(!interp.isRunning(hat, target)){
+					interp.toggleThread(hat, target, 0, true);
+				}
+			}
+			if(triggeredHats.indexOf(hat) >= 0){
+				activeHats.push(hat);
 			}
 		}
 	}
 
-	public function waitingHatFired(hat:Block, willExec:Boolean):void{
-		if(isWaitingHat(hat)){
-			waitingHats.splice(waitingHats.indexOf(hat), 1);
-		}
+	public function waitingHatFired(hat:Block, willExec:Boolean):Boolean{
 		if(willExec){
-			hat.showRunFeedback();
-			activeHats.push(hat);
+			if(activeHats.indexOf(hat) < 0){
+				hat.showRunFeedback();
+				if(hat.forceAsync){
+					activeHats.push(hat);
+				}
+				return true;
+			}
 		}
 		else{
-			//if it didn't fire, the thread is over!
-			interp.activeThread.stop();
+			activeHats.splice(activeHats.indexOf(hat), 1);
+			triggeredHats.splice(triggeredHats.indexOf(hat), 1);
 		}
-	}
-
-	public function isWaitingHat(hat:Block):Boolean{
-		return hat.isHat && hat.isAsyncHat && waitingHats.indexOf(hat) >= 0;
+		return false;
 	}
 
 	private function processEdgeTriggeredHats():void {

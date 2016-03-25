@@ -385,6 +385,7 @@ public class ExtensionManager {
 		if(b.isHat && b.isAsyncHat){
 			if(b.requestState == 0){
 				request(extName, primOrVarName, args, b);
+				app.interp.doYield();
 				return null;
 			}
 			else if(b.requestState == 2){
@@ -402,7 +403,9 @@ public class ExtensionManager {
 					}
 				}
 				if(value){
-					app.runtime.waitingHatFired(b, true);
+					if(!app.runtime.waitingHatFired(b, true)){
+						app.interp.doYield();
+					}
 				}
 				else{
 					app.interp.doYield();
