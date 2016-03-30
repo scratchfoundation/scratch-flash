@@ -316,6 +316,7 @@ public class ExtensionManager {
 			setEnabled(extObj.extensionName, true);
 		}
 		Scratch.app.updatePalette();
+		Scratch.app.translationChanged();
 	}
 
 	// -----------------------------
