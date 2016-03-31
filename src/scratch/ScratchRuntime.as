@@ -621,7 +621,7 @@ public class ScratchRuntime {
 
 	private function isUnofficialExtensionBlock(b:Block):Boolean {
 		var extName:String = ExtensionManager.unpackExtensionName(b.op);
-		return !(extName && app.extensionManager.isInternal(extName));
+		return extName && !app.extensionManager.isInternal(extName);
 	}
 
 	SCRATCH::allow3d
