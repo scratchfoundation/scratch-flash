@@ -41,7 +41,7 @@ public class Translator {
 	public static var rightToLeft:Boolean;
 	public static var rightToLeftMath:Boolean; // true only for Arabic
 
-	private static const font12:Array = ['fa', 'he','ja','ja_HIRA', 'zh_CN'];
+	private static const font12:Array = ['fa', 'he','ja','ja_HIRA', 'zh_CN', 'zh-cn', 'zh_TW', 'zh-tw'];
 	private static const font13:Array = ['ar'];
 
 	private static var dictionary:Object = {};
@@ -124,7 +124,7 @@ public class Translator {
 		rightToLeft = rtlLanguages.indexOf(lang) > -1;
 		rightToLeftMath = ('ar' == lang);
 		Block.setFonts(10, 9, true, 0); // default font settings
-		if (font12.indexOf(lang) > -1) Block.setFonts(11, 10, false, 0);
+		if (font12.indexOf(lang) > -1) Block.setFonts(12, 11, false, 0);
 		if (font13.indexOf(lang) > -1) Block.setFonts(13, 12, false, 0);
 	}
 
