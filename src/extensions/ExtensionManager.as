@@ -82,8 +82,21 @@ public class ExtensionManager {
 
 	// Should the interpreter force async communication with extensions?
 	// For example, should 'r' be treated as 'R'?
-	public function shouldForceAsync():Boolean {
-		return app.isOffline;
+	public function shouldForceAsync(op:String):Boolean {
+		// Non-extension blocks shouldn't be forceAsync
+		var extensionName:String = unpackExtensionName(op);
+		if (!extensionName) return false;
+
+		var extension:ScratchExtension = extensionDict[extensionName];
+		if (extension && extension.port != 0) {
+			// HTTP extensions should never be forceAsync
+			return false;
+		}
+		else {
+			// JS extensions should be forceAsync in the offline editor.
+			// If the extension is not loaded, guess that it's JS. Really that shouldn't ever happen...
+			return app.isOffline;
+		}
 	}
 
 	// -----------------------------

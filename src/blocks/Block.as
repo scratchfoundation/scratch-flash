@@ -140,7 +140,7 @@ public class Block extends Sprite {
 			this.type = 'r';
 			base = new BlockShape(BlockShape.NumberShape, color);
 			isReporter = true;
-			forceAsync = (type == 'r') && Scratch.app.extensionManager.shouldForceAsync();
+			forceAsync = (type == 'r') && Scratch.app.extensionManager.shouldForceAsync(op);
 			isRequester = (type == 'R') || forceAsync;
 			indentTop = 2;
 			indentBottom = 2;
@@ -149,7 +149,7 @@ public class Block extends Sprite {
 		} else if (type == "h" || type == 'H') {
 			base = new BlockShape(BlockShape.HatShape, color);
 			isHat = true;
-			forceAsync = (type == 'h') && Scratch.app.extensionManager.shouldForceAsync();
+			forceAsync = (type == 'h') && Scratch.app.extensionManager.shouldForceAsync(op);
 			isAsyncHat = (type == 'H') || forceAsync;
 			indentTop = 12;
 		}
