@@ -109,12 +109,13 @@ public class ExtensionManager {
 		for each (var ext:ScratchExtension in extensionDict) {
 			for each (var spec:Array in ext.blockSpecs) {
 				if (spec.length > 2) {
-					var opMatch:Boolean = ext.useScratchPrimitives ?
-							spec[2] == op :
-							(ext.name + extensionSeparator + spec[2] == op) ||
-							(ext.name + extensionSeparatorLegacy + spec[2] == op);
-					if (opMatch) {
-						return [spec[1], spec[0], Specs.extensionsCategory, op, spec.slice(3)];
+					var compareOp:String = ext.useScratchPrimitives ?
+							spec[2] : (ext.name + extensionSeparator + spec[2]);
+					var legacyOp:String = ext.useScratchPrimitives ?
+							spec[2] : (ext.name + extensionSeparatorLegacy + spec[2]);
+					if (op == compareOp || op == legacyOp) {
+						// return using compareOp to upgrade from legacy separator
+						return [spec[1], spec[0], Specs.extensionsCategory, compareOp, spec.slice(3)];
 					}
 				}
 			}
