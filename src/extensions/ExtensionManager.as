@@ -50,6 +50,7 @@ public class ExtensionManager {
 	private var justStartedWait:Boolean;
 	private var pollInProgress:Dictionary = new Dictionary(true);
 	static public const extensionSeparator:String = '\u001F';
+	static public const extensionSeparatorLegacy:String = '.';
 	static public const picoBoardExt:String = 'PicoBoard';
 	static public const wedoExt:String = 'LEGO WeDo';
 	static public const wedo2Ext:String = 'LEGO WeDo 2.0';
@@ -106,10 +107,16 @@ public class ExtensionManager {
 	// Return a command spec array for the given operation or null.
 	public function specForCmd(op:String):Array {
 		for each (var ext:ScratchExtension in extensionDict) {
-			var prefix:String = ext.useScratchPrimitives ? '' : (ext.name + extensionSeparator);
 			for each (var spec:Array in ext.blockSpecs) {
-				if ((spec.length > 2) && ((prefix + spec[2]) == op)) {
-					return [spec[1], spec[0], Specs.extensionsCategory, op, spec.slice(3)];
+				if (spec.length > 2) {
+					var compareOp:String = ext.useScratchPrimitives ?
+							spec[2] : (ext.name + extensionSeparator + spec[2]);
+					var legacyOp:String = ext.useScratchPrimitives ?
+							spec[2] : (ext.name + extensionSeparatorLegacy + spec[2]);
+					if (op == compareOp || op == legacyOp) {
+						// return using compareOp to upgrade from legacy separator
+						return [spec[1], spec[0], Specs.extensionsCategory, compareOp, spec.slice(3)];
+					}
 				}
 			}
 		}
