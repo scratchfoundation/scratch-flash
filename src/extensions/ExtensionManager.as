@@ -316,7 +316,7 @@ public class ExtensionManager {
 
 			var ext:ScratchExtension = new ScratchExtension(extObj.extensionName, extObj.extensionPort || 0);
 			ext.blockSpecs = extObj.blockSpecs;
-		    if (extObj.url) ext.url = extObj.url;
+			if (extObj.url) ext.url = extObj.url;
 			ext.showBlocks = true;
 			ext.isInternal = false;
 			ext.menus = extObj.menus;
