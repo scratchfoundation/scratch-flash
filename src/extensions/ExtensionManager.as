@@ -207,6 +207,7 @@ public class ExtensionManager {
 			descriptor.extensionName = ext.name;
 			descriptor.blockSpecs = ext.blockSpecs;
 			descriptor.menus = ext.menus;
+			if (ext.url) descriptor.url = ext.url;
 			if(ext.port) descriptor.extensionPort = ext.port;
 			else if(ext.javascriptURL) descriptor.javascriptURL = ext.javascriptURL;
 			result.push(descriptor);
@@ -263,7 +264,7 @@ public class ExtensionManager {
 			ext = new ScratchExtension(extObj.extensionName, extObj.extensionPort);
 		ext.port = extObj.extensionPort;
 		ext.blockSpecs = extObj.blockSpecs;
-		if(extObj.url) ext.url = extObj.url;
+		if (extObj.url) ext.url = extObj.url;
 		ext.showBlocks = true;
 		ext.menus = extObj.menus;
 		ext.javascriptURL = extObj.javascriptURL;
@@ -315,6 +316,7 @@ public class ExtensionManager {
 
 			var ext:ScratchExtension = new ScratchExtension(extObj.extensionName, extObj.extensionPort || 0);
 			ext.blockSpecs = extObj.blockSpecs;
+		    if (extObj.url) ext.url = extObj.url;
 			ext.showBlocks = true;
 			ext.isInternal = false;
 			ext.menus = extObj.menus;
