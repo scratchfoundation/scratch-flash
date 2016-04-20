@@ -240,6 +240,19 @@ public class Block extends Sprite {
 		}
 	}
 
+	// Convert a left-to-right argument index into a current argument index:
+	// - If the block is LTR, then return the index as it is,
+	// - Otherwise count back from the end to return the new index.
+	public function getNormalizedArgIndex(ltrIndex:int):int {
+		return rightToLeft ? args.length - 1 - ltrIndex : ltrIndex;
+	}
+
+	// Retrieve the argument which would have the given index in LTR mode,
+	// regardless of whether this block is currently LTR or RTL.
+	public function getNormalizedArg(ltrIndex:int):* {
+		return args[getNormalizedArgIndex(ltrIndex)];
+	}
+
 	public function normalizedArgs():Array {
 		return rightToLeft ? args.concat().reverse() : args;
 	}
