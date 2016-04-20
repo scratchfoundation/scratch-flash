@@ -1609,7 +1609,15 @@ public class Scratch extends Sprite {
 
 	public function externalCall(functionName:String, returnValueCallback:Function = null, ...args):void {
 		args.unshift(functionName);
-		var retVal:* = ExternalInterface.call.apply(ExternalInterface, args);
+		var retVal:*;
+		try {
+			retVal = ExternalInterface.call.apply(ExternalInterface, args);
+		}
+		catch (e:Error)
+		{
+			logException(e);
+			// fall through to below
+		}
 		if (returnValueCallback != null) {
 			returnValueCallback(retVal);
 		}
