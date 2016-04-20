@@ -431,7 +431,7 @@ public class BlockMenus implements DragClient {
 		if (includeEdge) m.addItem(Translator.map('edge'), 'edge');
 		m.addLine();
 		if (includeStage) {
-			m.addItem(app.stagePane.objName, 'Stage');
+			m.addItem(Translator.map('Stage'), 'Stage');
 			m.addLine();
 		}
 		if (includeSelf && !app.viewedObj().isStage) {
