@@ -675,7 +675,6 @@ public class ScratchRuntime {
 
 		var v:ListWatcher = owner.lookupList(oldName);
 		if (v != null) {
-			v.listName = newName;
 			v.changeName(newName);
 		}
 
