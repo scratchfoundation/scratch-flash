@@ -658,7 +658,7 @@ public class ScratchCostume {
 		return '.dat'; // generic data; should not happen
 	}
 
-	public function generateOrFindComposite(allCostumes:Array):void {
+	public function generateOrFindComposite(allCostumes:Vector.<ScratchCostume>):void {
 		// If this costume has a text layer bitmap, compute or find a composite bitmap.
 		// Since there can be multiple copies of the same costume, first try to find a
 		// costume with the same base and text layer bitmaps and share its composite

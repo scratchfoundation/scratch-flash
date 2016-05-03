@@ -207,48 +207,113 @@ public class ProjectIO {
 		}
 	}
 
+	// Load all images in all costumes from their image data, then call whenDone.
 	public function decodeAllImages(objList:Array, whenDone:Function, fail:Function = null):void {
-		// Load all images in all costumes from their image data, then call whenDone.
-		function imageDecoded():void {
-			for each (var o:* in imageDict) {
-				if (o == 'loading...') return; // not yet finished loading
+		// This should be called on success or failure of each image
+		function imageDone():void {
+			if (--numImagesToDecode == 0) {
+				allImagesLoaded(objList, imageDict, whenDone, fail);
 			}
-			allImagesLoaded();
-		}
-		var error:Boolean = false;
-		function decodeError():void {
-			if (error) return;
-			error = true;
-			if (fail != null) fail();
-		}
-		function allImagesLoaded():void {
-			if (error) return;
-			for each (c in allCostumes) {
-				if ((c.baseLayerData != null) && (c.baseLayerBitmap == null)) {
-					var img:* = imageDict[c.baseLayerData];
-					if (img is BitmapData) c.baseLayerBitmap = img;
-					if (img is SVGElement) c.setSVGRoot(img, false);
-				}
-				if ((c.textLayerData != null) && (c.textLayerBitmap == null)) c.textLayerBitmap = imageDict[c.textLayerData];
-			}
-			for each (c in allCostumes) c.generateOrFindComposite(allCostumes);
-			whenDone();
 		}
 
-		var c:ScratchCostume;
-		var allCostumes:Array = [];
-		for each (var o:ScratchObj in objList) {
-			for each (c in o.costumes) allCostumes.push(c);
-		}
+		var numImagesToDecode:int = 1; // start at 1 to prevent early finish
 		var imageDict:Dictionary = new Dictionary(); // maps image data to BitmapData
-		for each (c in allCostumes) {
-			if ((c.baseLayerData != null) && (c.baseLayerBitmap == null)) {
-				if (ScratchCostume.isSVGData(c.baseLayerData)) decodeSVG(c.baseLayerData, imageDict, imageDecoded);
-				else decodeImage(c.baseLayerData, imageDict, imageDecoded, decodeError);
+		for each (var obj:ScratchObj in objList) {
+			for each (var c:ScratchCostume in obj.costumes) {
+				if ((c.baseLayerData != null) && (c.baseLayerBitmap == null)) {
+					++numImagesToDecode;
+					if (ScratchCostume.isSVGData(c.baseLayerData)) {
+						decodeSVG(c.baseLayerData, imageDict, imageDone);
+					}
+					else {
+						decodeImage(c.baseLayerData, imageDict, imageDone, imageDone);
+					}
+				}
+				if ((c.textLayerData != null) && (c.textLayerBitmap == null)) {
+					++numImagesToDecode;
+					decodeImage(c.textLayerData, imageDict, imageDone, imageDone);
+				}
 			}
-			if ((c.textLayerData != null) && (c.textLayerBitmap == null)) decodeImage(c.textLayerData, imageDict, imageDecoded, decodeError);
 		}
-		imageDecoded(); // handles case when there were no images to load
+		// decrement the artificial 1 and also handle the case where no images are present.
+		imageDone();
+	}
+
+	private function allImagesLoaded(objList:Array, imageDict:Dictionary, whenDone:Function, fail:Function):void {
+		var errorCostumes:Vector.<ScratchCostume> = new Vector.<ScratchCostume>(2);
+
+		function makeErrorImage(obj:ScratchObj, c:ScratchCostume):* {
+			// TODO: translation?
+			if (!errorDialog) {
+				errorDialog = new DialogBox();
+				errorDialog.addTitle('Image loading error');
+				errorDialog.addText('At least one backdrop or costume failed to load:\n');
+			}
+			if (obj.isStage) {
+				errorDialog.addText('Backdrop: ' + c.costumeName + '\n');
+			}
+			else {
+				errorDialog.addText('Sprite: ' + obj.objName + '\nCostume: ' + c.costumeName + '\n');
+			}
+
+			var errorCostumeIndex:int = 0 + obj.isStage;
+			var errorCostume:ScratchCostume = errorCostumes[errorCostumeIndex] =
+					errorCostumes[errorCostumeIndex] || ScratchCostume.emptyBitmapCostume('', obj.isStage);
+			return errorCostume.baseLayerBitmap;
+		}
+
+		var allCostumes:Vector.<ScratchCostume> = new <ScratchCostume>[];
+		var errorDialog:DialogBox;
+		var img:*; // either BitmapData or SVGElement
+
+		for each (var obj:ScratchObj in objList) {
+			for each (var c:ScratchCostume in obj.costumes) {
+				allCostumes.push(c);
+				if ((c.baseLayerData != null) && (c.baseLayerBitmap == null)) {
+					img = imageDict[c.baseLayerData];
+					if (!img) {
+						c.baseLayerBitmap = makeErrorImage(obj, c);
+						c.baseLayerData = null;
+					}
+					else if (img is BitmapData) {
+						c.baseLayerBitmap = img;
+					}
+					else if (img is SVGElement) {
+						c.setSVGRoot(img, false);
+					}
+				}
+				if ((c.textLayerData != null) && (c.textLayerBitmap == null)) {
+					img = imageDict[c.textLayerData];
+					if (img) {
+						c.textLayerBitmap = imageDict[c.textLayerData];
+					}
+					else {
+						c.textLayerBitmap = makeErrorImage(obj, c);
+						c.textLayerData = null;
+					}
+				}
+			}
+		}
+		for each (c in allCostumes) {
+			c.generateOrFindComposite(allCostumes);
+		}
+
+		if (errorDialog) {
+			errorDialog.addButton('OK', errorDialog.accept);
+			errorDialog.showOnStage(Scratch.app.stage);
+
+			if (fail != null) {
+				fail();
+			}
+			else if (whenDone != null) {
+				whenDone();
+			}
+		}
+		else {
+			if (whenDone != null) {
+				whenDone();
+			}
+		}
 	}
 
 	private function decodeImage(imageData:ByteArray, imageDict:Dictionary, doneFunction:Function, fail:Function):void {
@@ -264,7 +329,6 @@ public class ProjectIO {
 			if (fail != null) fail();
 			return;
 		}
-		imageDict[imageData] = 'loading...';
 		var loader:Loader = new Loader();
 		loader.contentLoaderInfo.addEventListener(Event.COMPLETE, loadDone);
 		loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, loadError);
@@ -276,13 +340,16 @@ public class ProjectIO {
 			imageDict[svgData] = svgRoot;
 			doneFunction();
 		}
-		if (imageDict[svgData] != null) return; // already loading or loaded
+		if (imageDict[svgData] != null) {
+			// already loading or loaded
+			doneFunction();
+			return;
+		}
 		var importer:SVGImporter = new SVGImporter(XML(svgData));
 		if (importer.hasUnloadedImages()) {
-			imageDict[svgData] = 'loading...';
 			importer.loadAllImages(loadDone);
 		} else {
-			imageDict[svgData] = importer.root;
+			loadDone(importer.root);
 		}
 	}
 
