@@ -55,8 +55,22 @@ public class ProjectIO {
 		this.app = app;
 	}
 
+	private static var translationStrings:Object = {
+		imageLoadingErrorTitle: 'Image Loading Error',
+		imageLoadingErrorHeader: 'At least one backdrop or costume failed to load:',
+		imageLoadingErrorBackdrop: 'Backdrop: {costumeName}',
+		imageLoadingErrorSprite: 'Sprite: {spriteName}',
+		imageLoadingErrorCostume: 'Costume: {costumeName}'
+	};
+
 	public static function strings():Array {
-		return [];
+		var result:Array = [];
+		for each (var key:String in translationStrings) {
+			if (translationStrings.hasOwnProperty(key)) {
+				result.push(translationStrings[key]);
+			}
+		}
+		return result;
 	}
 
 	//----------------------------
@@ -243,20 +257,28 @@ public class ProjectIO {
 		var errorCostumes:Vector.<ScratchCostume> = new Vector.<ScratchCostume>(2);
 
 		function makeErrorImage(obj:ScratchObj, c:ScratchCostume):* {
-			// TODO: translation?
 			if (!errorDialog) {
 				errorDialog = new DialogBox();
-				errorDialog.addTitle('Image loading error');
-				errorDialog.addText('At least one backdrop or costume failed to load:\n');
-			}
-			if (obj.isStage) {
-				errorDialog.addText('Backdrop: ' + c.costumeName + '\n');
-			}
-			else {
-				errorDialog.addText('Sprite: ' + obj.objName + '\nCostume: ' + c.costumeName + '\n');
+				errorDialog.addTitle(translationStrings.imageLoadingErrorTitle);
+				errorDialog.addText(Translator.map(translationStrings.imageLoadingErrorHeader) +'\n');
 			}
 
-			var errorCostumeIndex:int = 0 + obj.isStage;
+			var itemText:String;
+			if (obj.isStage) {
+				itemText = Translator.map(translationStrings.imageLoadingErrorBackdrop);
+			}
+			else {
+				itemText = Translator.map(translationStrings.imageLoadingErrorSprite) + '\n' +
+						Translator.map(translationStrings.imageLoadingErrorCostume);
+			}
+
+			var context:Dictionary = new Dictionary();
+			context['spriteName'] = obj.objName;
+			context['costumeName'] = c.costumeName;
+			itemText = StringUtils.substitute(itemText, context);
+			errorDialog.addText(itemText + '\n');
+
+			var errorCostumeIndex:int = int(obj.isStage);
 			var errorCostume:ScratchCostume = errorCostumes[errorCostumeIndex] =
 					errorCostumes[errorCostumeIndex] || ScratchCostume.emptyBitmapCostume('', obj.isStage);
 			return errorCostume.baseLayerBitmap;
