@@ -271,7 +271,7 @@ public class SVGImporter {
 			imagesLoaded++;
 			if ((imagesLoaded == imageCount) && (whenDone != null)) whenDone(root);
 		}
-		var imageCount:int, imagesLoaded:int;
+		var imageCount:int = 0, imagesLoaded:int = 0;
 		for each (var el:SVGElement in root.allElements()) {
 			if (('image' == el.tag) && (el.bitmap == null)) {
 				imageCount++;
