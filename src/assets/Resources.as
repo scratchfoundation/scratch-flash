@@ -107,6 +107,7 @@ public class Resources {
 	[Embed(source='UI/topbar/myStuffOff.gif')] private static const myStuffOff:Class;
 	[Embed(source='UI/topbar/myStuffOn.gif')] private static const myStuffOn:Class;
 	[Embed(source='UI/topbar/projectPageFlip.png')] private static const projectPageFlip:Class;
+	[Embed(source='UI/topbar/openInScratch.png')] private static const openInScratch:Class;
 	[Embed(source='UI/topbar/shrinkTool.png')] private static const shrinkTool:Class;
 
 	// Buttons

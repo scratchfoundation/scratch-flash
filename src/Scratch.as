@@ -900,11 +900,9 @@ public class Scratch extends Sprite {
 	}
 
 	protected function updateLayout(w:int, h:int):void {
-		if (!isMicroworld) {
-			topBarPart.x = 0;
-			topBarPart.y = 0;
-			topBarPart.setWidthHeight(w, 28);
-		}
+		topBarPart.x = 0;
+		topBarPart.y = 0;
+		topBarPart.setWidthHeight(w, 28);
 
 		var extraW:int = 2;
 		var extraH:int = stagePart.computeTopBarHeight() + 1;
