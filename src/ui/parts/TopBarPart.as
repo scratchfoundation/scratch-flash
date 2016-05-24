@@ -37,7 +37,7 @@ import uiwidgets.*;
 
 public class TopBarPart extends UIPart {
 
-	protected var shape:Shape;
+	private var shape:Shape;
 	protected var logoButton:IconButton;
 	protected var languageButton:IconButton;
 
