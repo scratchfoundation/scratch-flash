@@ -47,6 +47,8 @@ import flash.geom.*;
 import flash.text.TextField;
 import flash.utils.*;
 
+import render3d.DisplayObjectContainerIn3D;
+
 import svgeditor.objs.SegmentationState;
 
 import svgutils.*;
@@ -344,9 +346,16 @@ public class ScratchCostume {
 		r.left = Math.floor(r.left);
 		r.height += Math.floor(r.top) - r.top;
 		r.top = Math.floor(r.top);
-		var image:BitmapData = new BitmapData(
-				Math.max(1, Math.ceil(r.width) + 1), Math.max(
-						1, Math.ceil(r.height) + 1), true, 0);
+		var desiredWidth: int = Math.max(0, Math.ceil(r.width));
+		var desiredHeight: int = Math.max(0, Math.ceil(r.height));
+		if (desiredWidth >= DisplayObjectContainerIn3D.texSizeMax
+				|| desiredHeight >= DisplayObjectContainerIn3D.texSizeMax) {
+			var factor:Number = (DisplayObjectContainerIn3D.texSizeMax - 1) / Math.max(desiredWidth, desiredHeight);
+			desiredWidth *= factor;
+			desiredHeight *= factor;
+		}
+		// TODO: figure out why we add 1 to each dimension in addition to using Math.ceil above
+		var image:BitmapData = new BitmapData(desiredWidth + 1, desiredHeight + 1, true, 0);
 //trace('bitmap rect: '+image.rect);
 
 		var m:Matrix = new Matrix();
