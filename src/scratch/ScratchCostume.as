@@ -305,7 +305,7 @@ public class ScratchCostume {
 		var s:Shape = shapeDict[id];
 		if (!s) {
 			s = new Shape();
-			var pts:Array = RasterHull();
+			var pts:Vector.<Point> = RasterHull();
 			s.graphics.clear();
 
 			if (pts.length) {
@@ -335,12 +335,14 @@ public class ScratchCostume {
 	 object is composed of
 	 ** a single point
 	 */
-	private function RasterHull():Array {
+	private function RasterHull():Vector.<Point> {
+		var H:Vector.<Point> = new Vector.<Point>();
 		var dispObj:DisplayObject = displayObj();
 		var r:Rectangle = dispObj.getBounds(dispObj);
-//trace('flash bounds: '+r);
-		if (r.width < 1 || r.height < 1)
-			return [new Point()];
+		if (r.width < 1 || r.height < 1) {
+			H.push(new Point());
+			return H;
+		}
 
 		r.width += Math.floor(r.left) - r.left;
 		r.left = Math.floor(r.left);
@@ -356,7 +358,6 @@ public class ScratchCostume {
 		}
 		// TODO: figure out why we add 1 to each dimension in addition to using Math.ceil above
 		var image:BitmapData = new BitmapData(desiredWidth + 1, desiredHeight + 1, true, 0);
-//trace('bitmap rect: '+image.rect);
 
 		var m:Matrix = new Matrix();
 		m.translate(-r.left, -r.top);
@@ -365,16 +366,10 @@ public class ScratchCostume {
 
 		var L:Vector.<Point> = new Vector.<Point>(image.height); //stack of left-side hull;
 		var R:Vector.<Point> = new Vector.<Point>(image.height); //stack of right side hull;
-		//var H:Vector.<Point> = new Vector.<Point>();
-		var H:Array = [];
 		var rr:int = -1, ll:int = -1;
 		var Q:Point = new Point();
 		var w:int = image.width;
 		var h:int = image.height;
-//		var minX:int = image.width;
-//		var minY:int = image.height;
-//		var maxX:int = 0;
-//		var maxY:int = 0;
 		var c:uint;
 		for (var y:int = 0; y < h; ++y) {
 			for (var x:int = 0; x < w; ++x) {
@@ -392,10 +387,6 @@ public class ScratchCostume {
 					--ll;
 			}
 
-//			minX = Math.min(minX, Q.x);
-//			minY = Math.min(minY, Q.y);
-//			maxX = Math.max(maxX, Q.x);
-//			maxY = Math.max(maxY, Q.y);
 			L[++ll] = Q.clone();
 			for (x = w - 1; x >= 0; --x) {//x=-1 never occurs;
 				c = (image.getPixel32(x, y) >> 24) & 0xff;
@@ -403,8 +394,6 @@ public class ScratchCostume {
 			}
 
 			Q.x = x + r.left;
-//			minX = Math.min(minX, Q.x);
-//			maxX = Math.max(maxX, Q.x);
 			while (rr > 0) {
 				if (CCW(R[rr - 1], R[rr], Q) > 0)
 					break;
@@ -424,7 +413,6 @@ public class ScratchCostume {
 		R.length = L.length = 0;
 		image.dispose();
 
-//trace('found bounds: '+new Rectangle(minX, minY, maxX - minX, maxY - minY));
 		return H;
 	}
 
