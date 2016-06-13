@@ -55,6 +55,13 @@ public class ExtensionManager {
 	static public const wedoExt:String = 'LEGO WeDo';
 	static public const wedo2Ext:String = 'LEGO WeDo 2.0';
 
+	// Experimental extensions must be hosted on one of these domains
+	// These should start with '.' to avoid accepting things like 'malicious.not_github.io'
+	static public const allowedDomains:Vector.<String> = new <String>[
+			'.github.io',
+			'.coding.me'
+	];
+
 	public function ExtensionManager(app:Scratch) {
 		this.app = app;
 		clearImportedExtensions();
@@ -323,8 +330,19 @@ public class ExtensionManager {
 					extensionRefused(extObj, 'Experimental extensions are only supported on ScratchX.');
 					continue;
 				}
-				if (!StringUtil.endsWith(URLUtil.getServerName(extObj.javascriptURL).toLowerCase(),'.github.io')) {
-					extensionRefused(extObj, 'Experimental extensions must be hosted on GitHub Pages.');
+				var domainAllowed:Boolean = false;
+				var url:String = URLUtil.getServerName(extObj.javascriptURL).toLowerCase();
+				for (var i:int = 0; i < allowedDomains.length; ++i) {
+					if (StringUtil.endsWith(url, allowedDomains[i])) {
+						domainAllowed = true;
+						break;
+					}
+				}
+				if (!domainAllowed) {
+					extensionRefused(
+							extObj,
+							'Experimental extensions must be hosted on an approved domain. Approved domains are: ' +
+							allowedDomains.join(', '));
 					continue;
 				}
 				ext.javascriptURL = extObj.javascriptURL;
