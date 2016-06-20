@@ -443,9 +443,17 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 					io.fetchImage(md5AndExt, item.dbObj.name, 0, whenDone, obj);
 				} else { // assetType == backdrop
 					if (item.dbObj.info.length == 3) {
-						obj = {centerX: 99999, centerY: 99999, bitmapResolution: item.dbObj.info[2]};
+						obj = {
+							centerX: ScratchCostume.kCalculateCenter,
+							centerY: ScratchCostume.kCalculateCenter,
+							bitmapResolution: item.dbObj.info[2]
+						};
 					} else if (item.dbObj.info.length == 2 && item.dbObj.info[0] == 960 && item.dbObj.info[1] == 720) {
-						obj = {centerX: 99999, centerY: 99999, bitmapResolution: 2};
+						obj = {
+							centerX: ScratchCostume.kCalculateCenter,
+							centerY: ScratchCostume.kCalculateCenter,
+							bitmapResolution: 2
+						};
 					}
 					io.fetchImage(md5AndExt, item.dbObj.name, 0, whenDone, obj);
 				}

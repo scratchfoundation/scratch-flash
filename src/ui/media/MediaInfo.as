@@ -54,6 +54,7 @@ public class MediaInfo extends Sprite {
 	public var objType:String = 'unknown';
 	public var objName:String = '';
 	public var objWidth:int = 0;
+	public var bitmapResolution:int = 1;
 	public var md5:String;
 
 	public var owner:ScratchObj; // object owning a sound or costume in MediaPane; null for other cases
@@ -96,6 +97,7 @@ public class MediaInfo extends Sprite {
 			objType = obj.type ? obj.type : '';
 			objName = obj.name ? obj.name : '';
 			objWidth = obj.width ? obj.width : 0;
+			bitmapResolution = obj.bitmapResolution ? obj.bitmapResolution : 1;
 			scripts = obj.scripts;
 			md5 = ('script' != objType) ? obj.md5 : null;
 		}
@@ -291,6 +293,9 @@ public class MediaInfo extends Sprite {
 		if (mycostume) {
 			result.width = mycostume.width();
 			result.height = mycostume.height();
+			if (mycostume.bitmapResolution != 1) {
+				result.bitmapResolution = mycostume.bitmapResolution;
+			}
 		}
 		if (mysound) {
 			result.seconds = mysound.getLengthInMsec() / 1000;
