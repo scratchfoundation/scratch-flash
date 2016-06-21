@@ -69,6 +69,7 @@ public class ScratchCostume {
 	private var __baseLayerData:ByteArray;
 
 	public static const WasEdited:int = -10; // special baseLayerID used to indicate costumes that have been edited
+	public static const kCalculateCenter:int = 99999; // calculate a default rotation center
 
 	public var svgRoot:SVGElement; // non-null for an SVG costume
 	public var svgLoading:Boolean; // true while loading bitmaps embedded in an SVG
@@ -95,7 +96,8 @@ public class ScratchCostume {
 
 	private var segmentation:SegmentationState = new SegmentationState();
 
-	public function ScratchCostume(name:String, data:*, centerX:int = 99999, centerY:int = 99999, bmRes:int = 1) {
+	public function ScratchCostume(
+			name:String, data:*, centerX:int = kCalculateCenter, centerY:int = kCalculateCenter, bmRes:int = 1) {
 		costumeName = name;
 		rotationCenterX = centerX;
 		rotationCenterY = centerY;
@@ -105,12 +107,12 @@ public class ScratchCostume {
 		else if (data is BitmapData) {
 			bitmap = baseLayerBitmap = data;
 			bitmapResolution = bmRes;
-			if (centerX == 99999) rotationCenterX = bitmap.rect.width / 2;
-			if (centerY == 99999) rotationCenterY = bitmap.rect.height / 2;
+			if (centerX == kCalculateCenter) rotationCenterX = bitmap.rect.width / 2;
+			if (centerY == kCalculateCenter) rotationCenterY = bitmap.rect.height / 2;
 			prepareToSave();
 		}
 		else if (data is ByteArray) {
-			setSVGData(data, (centerX == 99999));
+			setSVGData(data, (centerX == kCalculateCenter));
 			prepareToSave();
 		}
 	}
