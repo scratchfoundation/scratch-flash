@@ -63,7 +63,7 @@ public class Specs {
 		[1,  "Motion",		0x4a6cd4],
 		[2,  "Looks",		0x8a55d7],
 		[3,  "Sound",		0xbb42c3],
-		[4,  "Pen",			0x0e9a6c], // Scratch 1.4: 0x009870
+		[4,  "Pen",		0x0e9a6c], // Scratch 1.4: 0x009870
 		[5,  "Events",		0xc88330],
 		[6,  "Control",		0xe1a91a],
 		[7,  "Sensing",		0x2ca5e2],
