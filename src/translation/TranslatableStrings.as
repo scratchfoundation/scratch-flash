@@ -133,11 +133,11 @@ public class TranslatableStrings {
 		export('uiStrings');
 	}
 
-	public static function addAll(list:Array, removeParens:Boolean = true):void {
+	public static function addAll(list:Array, removeParens:Boolean = false):void {
 		for each (var s:String in list) add(s, removeParens);
 	}
 
-	public static function add(s:String, removeParens:Boolean = true):void {
+	public static function add(s:String, removeParens:Boolean = false):void {
 		if (removeParens) s = removeParentheticals(s);
 		s = removeWhitespace(s);
 		if ((s.length < 2) || (exclude.indexOf(s) > -1)) return;
