@@ -263,10 +263,10 @@ public class Specs {
 		["create clone of %m.spriteOnly",		" ", 106, "createCloneOf"],
 
 		// sensing
-		["touching %m.touching?",				"b", 7, "touching:",			""],
+		["touching %m.touching?",				"b", 7, "touching:",			"_mouse_"],
 		["touching color %c?",					"b", 7, "touchingColor:"],
 		["color %c is touching %c?",			"b", 7, "color:sees:"],
-		["distance to %m.spriteOrMouse",		"r", 7, "distanceTo:",			""],
+		["distance to %m.spriteOrMouse",		"r", 7, "distanceTo:",			"_mouse_"],
 		["-"],
 		["ask %s and wait",						" ", 7, "doAsk", 				"What's your name?"],
 		["answer",								"r", 7, "answer"],
