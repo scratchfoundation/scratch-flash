@@ -447,7 +447,6 @@ public class ScratchSprite extends ScratchObj {
 	}
 
 	public override function defaultArgsFor(op:String, specDefaults:Array):Array {
-		if ('gotoSpriteOrMouse:' == op) return ['_mouse_'];
 		if ('gotoX:y:' == op) return [Math.round(scratchX), Math.round(scratchY)];
 		if ('glideSecs:toX:y:elapsed:from:' == op) return [1, Math.round(scratchX), Math.round(scratchY)];
 		if ('setSizeTo:' == op) return [Math.round(getSize() * 10) / 10];
