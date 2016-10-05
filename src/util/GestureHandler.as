@@ -133,9 +133,13 @@ public class GestureHandler {
 			}
 		}
 		if (carriedObj && scrollTarget && (getTimer() - scrollStartTime) > SCROLL_MSECS && (scrollXVelocity || scrollYVelocity)) {
-			if (!scrollTarget is ScriptsPane) {
+			if (scrollTarget.allowHorizontalScrollbar) {
 				scrollTarget.contents.x = Math.min(0, Math.max(-scrollTarget.maxScrollH(), scrollTarget.contents.x + scrollXVelocity));
+			}
+			if (scrollTarget.allowVerticalScrollbar) {
 				scrollTarget.contents.y = Math.min(0, Math.max(-scrollTarget.maxScrollV(), scrollTarget.contents.y + scrollYVelocity));
+			}
+			if (scrollTarget.allowHorizontalScrollbar || scrollTarget.allowVerticalScrollbar) {
 				scrollTarget.constrainScroll();
 				scrollTarget.updateScrollbars();
 			}
