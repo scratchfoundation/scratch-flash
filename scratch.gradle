@@ -42,7 +42,7 @@ def scratchFlashCommitID = getCommitID(commonDir)
 println "Commit ID for scratch-flash is: ${scratchFlashCommitID}"
 
 dependencies {
-    flexSDK group: 'org.apache', name: 'apache-flex-sdk', version: '4.10.0', ext: 'zip'
+    flexSDK group: 'org.apache', name: 'apache-flex-sdk', version: '4.15.0', ext: 'zip'
     external group: 'macromedia.com', name: 'playerglobal', version: playerVersion.replace('.', '_'), ext: 'swc'
     merged files(
             "${commonDir}/libs/as3corelib.swc",
