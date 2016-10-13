@@ -31,7 +31,6 @@
 package scratch {
 import by.blooddy.crypto.MD5;
 
-import flash.media.Sound;
 import flash.utils.*;
 
 import logging.LogLevel;
@@ -39,14 +38,11 @@ import logging.LogLevel;
 import sound.*;
 import sound.mp3.MP3Loader;
 
-import util.*;
-
 public class ScratchSound {
 
 	public var soundName:String = '';
 	public var soundID:int;
 	public var md5:String;
-	private var __soundData:ByteArray = new ByteArray();
 	public var format:String = '';
 	public var rate:int = 44100;
 	public var sampleCount:int;
@@ -55,20 +51,28 @@ public class ScratchSound {
 
 	public var editorData:Object; // cache of data used by sound editor; not saved
 	public var channels:uint = 1;
-	private const WasEdited:int = -10; // special soundID used to indicate sounds that have been edited
-	SCRATCH::allow3d
-	public var nativeSound:Sound;
 
-	// Undo support; not saved
-	public var undoList:Array = [];
-	public var undoListIndex:int;
+	public function get soundData():ByteArray {
+		return __soundData;
+	}
+
+	public function set soundData(data:ByteArray):void {
+		__soundData = data;
+		md5 = null;
+	}
+
+	private const WasEdited:int = -10; // special soundID used to indicate sounds that have been edited
+
+	private var __soundData:ByteArray = new ByteArray();
 
 	public function ScratchSound(name:String, sndData:ByteArray) {
 		this.soundName = name;
 		if (sndData != null) {
 			try {
 				var info:Object = WAVFile.decode(sndData);
-				if ([1, 3, 17].indexOf(info.encoding) == -1) throw Error('Unsupported WAV format');
+				if ([1, 3, 17].indexOf(info.encoding) == -1) {
+					throw Error('Unsupported WAV format');
+				}
 				soundData = sndData;
 				if (info.encoding == 17)
 					format = 'adpcm';
@@ -86,15 +90,6 @@ public class ScratchSound {
 		}
 	}
 
-	public function get soundData():ByteArray {
-		return __soundData;
-	}
-
-	public function set soundData(data:ByteArray):void {
-		__soundData = data;
-		md5 = null;
-	}
-
 	private function reduceSizeIfNeeded(channels:int):void {
 		// Convert stereo to mono, downsample if rate > 32000, or both.
 		// Compress if data is over threshold and not already compressed.
@@ -102,19 +97,19 @@ public class ScratchSound {
 		if (rate > 32000 || channels == 2 || format == 'float') {
 			var newRate:int = (rate > 32000) ? rate / 2 : rate;
 			var samples:Vector.<int> = WAVFile.extractSamples(soundData);
-			if (rate > 32000 || channels == 2)
-				samples = (channels == 2) ?
-					stereoToMono(samples, (newRate < rate)) :
-					downsample(samples);
+			if (rate > 32000 || channels == 2) {
+				samples = (channels == 2) ? stereoToMono(samples, (newRate < rate)) : downsample(samples);
+			}
 			setSamples(samples, newRate, true);
 			soundID = 0;
-		} else if ((soundData.length > compressionThreshold) && ('' == format)) {
+		}
+		else if ((soundData.length > compressionThreshold) && ('' == format)) {
 			// Compress large, uncompressed sounds
 			setSamples(WAVFile.extractSamples(soundData), rate, true);
 		}
 	}
 
-	private function stereoToMono(stereo:Vector.<int>, downsample:Boolean):Vector.<int> {
+	private static function stereoToMono(stereo:Vector.<int>, downsample:Boolean):Vector.<int> {
 		var mono:Vector.<int> = new Vector.<int>();
 		var skip:int = downsample ? 4 : 2;
 		var i:int = 0, end:int = stereo.length - 1;
@@ -125,7 +120,7 @@ public class ScratchSound {
 		return mono;
 	}
 
-	private function downsample(samples:Vector.<int>):Vector.<int> {
+	private static function downsample(samples:Vector.<int>):Vector.<int> {
 		var result:Vector.<int> = new Vector.<int>();
 		for (var i:int = 0; i < samples.length; i += 2) result.push(samples[i]);
 		return result;
@@ -182,7 +177,9 @@ public class ScratchSound {
 		return new Vector.<int>(0); // dummy data
 	}
 
-	public function getLengthInMsec():Number { return (1000.0 * sampleCount) / rate};
+	public function getLengthInMsec():Number {
+		return (1000.0 * sampleCount) / rate;
+	}
 
 	public function toString():String {
 		var secs:Number = Math.ceil(getLengthInMsec() / 1000);
@@ -195,9 +192,14 @@ public class ScratchSound {
 	public function prepareToSave():void {
 		if (format == 'squeak') { // convert Squeak ADPCM to WAV ADPCM
 			var uncompressedData:ByteArray = new SqueakSoundDecoder(bitsPerSample).decode(soundData);
-			if (uncompressedData.length == 0) uncompressedData.writeShort(0); // a WAV file must have at least one sample
-			Scratch.app.log(LogLevel.INFO, 'Converting squeak sound to WAV ADPCM',
-				{oldSampleCount: sampleCount, newSampleCount: (uncompressedData.length / 2)});
+			if (uncompressedData.length == 0) {
+				// a WAV file must have at least one sample
+				uncompressedData.writeShort(0);
+			}
+			Scratch.app.log(LogLevel.INFO, 'Converting squeak sound to WAV ADPCM', {
+				oldSampleCount: sampleCount,
+				newSampleCount: (uncompressedData.length / 2)
+			});
 			sampleCount = uncompressedData.length / 2;
 			soundData = WAVFile.encode(uncompressedData, sampleCount, rate, true);
 			format = 'adpcm';
@@ -205,8 +207,14 @@ public class ScratchSound {
 			md5 = null;
 		}
 		reduceSizeIfNeeded(1); // downsample or compress to reduce size before saving
-		if (soundID == WasEdited) { md5 = null; soundID = -1 } // sound was edited; force md5 to be recomputed
-		if (!md5) md5 = MD5.hashBytes(soundData) + '.wav';
+		if (soundID == WasEdited) {
+			// sound was edited; force md5 to be recomputed
+			md5 = null;
+			soundID = -1
+		}
+		if (!md5) {
+			md5 = MD5.hashBytes(soundData) + '.wav';
+		}
 	}
 
 	public static function isWAV(data:ByteArray):Boolean {
@@ -216,23 +224,5 @@ public class ScratchSound {
 		data.readInt();
 		return (data.readUTFBytes(4) == 'WAVE');
 	}
-
-	public function writeJSON(json:util.JSON):void {
-		json.writeKeyValue('soundName', soundName);
-		json.writeKeyValue('soundID', soundID);
-		json.writeKeyValue('md5', md5);
-		json.writeKeyValue('sampleCount', sampleCount);
-		json.writeKeyValue('rate', rate);
-		json.writeKeyValue('format', format);
-	}
-
-	public function readJSON(jsonObj:Object):void {
-		soundName = jsonObj.soundName;
-		soundID = jsonObj.soundID;
-		md5 = jsonObj.md5;
-		sampleCount = jsonObj.sampleCount;
-		rate = jsonObj.rate;
-		format = jsonObj.format;
-	}
-
-}}
+}
+}
