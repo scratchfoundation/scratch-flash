@@ -118,7 +118,6 @@ public class ScratchSound {
 				samples = (channels == 2) ? stereoToMono(samples, (newRate < rate)) : downsample(samples);
 			}
 			setSamples(samples, newRate, true);
-			soundID = 0;
 		}
 		else if ((soundData.length > compressionThreshold) && ('' == format)) {
 			// Compress large, uncompressed sounds
