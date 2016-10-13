@@ -457,7 +457,6 @@ public class ProjectIO {
 				snd = new ScratchSound(sndName, sndData); // try reading data as WAV file
 			} catch (e:*) { }
 			if (snd && (snd.sampleCount > 0)) { // WAV data
-				snd.md5 = id;
 				whenDone(snd);
 			} else { // try to read data as an MP3 file
 				MP3Loader.convertToScratchSound(sndName, sndData, whenDone);
