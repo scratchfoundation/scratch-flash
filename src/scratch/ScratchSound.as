@@ -38,6 +38,8 @@ import logging.LogLevel;
 import sound.*;
 import sound.mp3.MP3Loader;
 
+import util.*;
+
 public class ScratchSound {
 
 	public var soundName:String = '';
@@ -253,6 +255,23 @@ public class ScratchSound {
 		if (data.readUTFBytes(4) != 'RIFF') return false;
 		data.readInt();
 		return (data.readUTFBytes(4) == 'WAVE');
+	}
+
+	public function writeJSON(json:util.JSON):void {
+		json.writeKeyValue('soundName', soundName);
+		json.writeKeyValue('soundID', soundID);
+		json.writeKeyValue('md5', md5);
+		json.writeKeyValue('sampleCount', sampleCount);
+		json.writeKeyValue('rate', rate);
+		json.writeKeyValue('format', format);
+	}
+
+	public function readJSON(jsonObj:Object):void {
+		soundName = jsonObj.soundName;
+		soundID = jsonObj.soundID;
+		sampleCount = jsonObj.sampleCount;
+		rate = jsonObj.rate;
+		format = jsonObj.format;
 	}
 }
 }
