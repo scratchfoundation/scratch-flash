@@ -627,8 +627,8 @@ public class Scratch extends Sprite {
 
 	protected var wasEditing:Boolean;
 
-	public function setPresentationMode(enterPresentation:Boolean):void {
-		if (enterPresentation) {
+	public function setFullScreenMode(enterFullScreen:Boolean):void {
+		if (enterFullScreen) {
 			wasEditing = editMode;
 			if (wasEditing) {
 				setEditMode(false);
@@ -641,7 +641,7 @@ public class Scratch extends Sprite {
 			}
 		}
 		if (isOffline) {
-			stage.displayState = enterPresentation ? StageDisplayState.FULL_SCREEN_INTERACTIVE : StageDisplayState.NORMAL;
+			stage.displayState = enterFullScreen ? StageDisplayState.FULL_SCREEN_INTERACTIVE : StageDisplayState.NORMAL;
 		}
 		for each (var o:ScratchObj in stagePane.allObjects()) o.applyFilters();
 
@@ -657,10 +657,14 @@ public class Scratch extends Sprite {
 		if (!evt.shiftKey && evt.charCode == 27) {
 			gh.escKeyDown();
 		}
-		// Escape exists presentation mode.
-		else if ((evt.charCode == 27) && stagePart.isInPresentationMode()) {
-			setPresentationMode(false);
-			stagePart.exitPresentationMode();
+		// Escape exists full screen mode.
+		if ((evt.charCode == 27) && stagePart.isInFullScreenMode()) {
+			setFullScreenMode(false);
+			stagePart.exitFullScreenMode();
+
+
+
+
 		}
 		// Handle enter key
 //		else if(evt.keyCode == 13 && !stage.focus) {
