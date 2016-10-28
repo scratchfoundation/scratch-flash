@@ -76,6 +76,7 @@ public class ScratchSound {
 
 	public function ScratchSound(name:String, sndData:ByteArray) {
 		this.soundName = name;
+		this.soundID = WasEdited;
 		if (sndData != null) {
 			try {
 				var info:Object = WAVFile.decode(sndData);
@@ -242,11 +243,7 @@ public class ScratchSound {
 			bitsPerSample = 4;
 		}
 		reduceSizeIfNeeded(1); // downsample or compress to reduce size before saving
-		if (soundID == WasEdited) {
-			// sound was edited; force md5 to be recomputed
-			__md5 = null;
-			soundID = -1;
-		}
+		soundID = -1;
 	}
 
 	public static function isWAV(data:ByteArray):Boolean {
@@ -269,6 +266,7 @@ public class ScratchSound {
 	public function readJSON(jsonObj:Object):void {
 		soundName = jsonObj.soundName;
 		soundID = jsonObj.soundID;
+		__md5 = jsonObj.md5; // Project load uses this value to fetch sound data
 		sampleCount = jsonObj.sampleCount;
 		rate = jsonObj.rate;
 		format = jsonObj.format;

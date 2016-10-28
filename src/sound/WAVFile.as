@@ -21,6 +21,8 @@ package sound {
 	import flash.utils.ByteArray;
 	import flash.utils.Endian;
 
+	import logging.LogLevel;
+
 public class WAVFile {
 
 	public static function empty():ByteArray {
@@ -119,7 +121,15 @@ public class WAVFile {
 
 	public static function extractSamples(waveData:ByteArray):Vector.<int> {
 		var result:Vector.<int> = new Vector.<int>();
-		var info:Object = WAVFile.decode(waveData);
+		var info:Object;
+		try {
+			info = WAVFile.decode(waveData);
+		}
+		catch (e:*) {
+			Scratch.app.log(LogLevel.WARNING, 'Error extracting samples from WAV file', {error: e});
+			result.push(0); // a WAV file must have at least one sample
+			return result;
+		}
 		var i:int;
 		var v:int;
 		if (info.encoding == 1) {
