@@ -225,6 +225,16 @@ public class Server implements IServer {
 			if (csrfCookie && (csrfCookie.length > 0)) {
 				request.requestHeaders.push(new URLRequestHeader('X-CSRFToken', csrfCookie));
 			}
+
+			if (data.length == 0) {
+				// Flash's URLLoader will convert a POST with a zero-length body into a GET; apparently there's no way
+				// to avoid that behavior.
+				// Most Scratch servers will respond to this with error 403, leading to other problems down the road.
+				// Since this situation likely means the asset is broken anyway, complain about it and skip the upload.
+				// It's better to, for example, save a project with one missing asset than to fail the save altogether.
+				onCallServerError(url, data, new ErrorEvent("Refusing to POST with empty body"));
+				return loader;
+			}
 		}
 
 		try {
