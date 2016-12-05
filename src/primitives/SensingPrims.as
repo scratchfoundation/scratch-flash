@@ -92,10 +92,9 @@ public class SensingPrims {
 		}
 		if (!s.visible) return false;
 
-		;
 		var sBM:BitmapData = s.bitmap(true);
 		for each (var s2:ScratchSprite in app.stagePane.spritesAndClonesNamed(arg))
-			if (s2.visible && sBM.hitTest(s.bounds().topLeft, 1, s2.bitmap(true), s2.bounds().topLeft, 1))
+			if (s != s2 && s2.visible && sBM.hitTest(s.bounds().topLeft, 1, s2.bitmap(true), s2.bounds().topLeft, 1))
 				return true;
 
 		return false;
