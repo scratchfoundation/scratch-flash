@@ -122,6 +122,7 @@ public class Scratch extends Sprite {
 	public var mediaLibrary:MediaLibrary;
 	public var lp:LoadProgress;
 	public var cameraDialog:CameraDialog;
+	public var scriptBrowserDialog:ScriptBrowserDialog;
 
 	// UI Parts
 	public var libraryPart:LibraryPart;
@@ -1064,6 +1065,8 @@ public class Scratch extends Sprite {
 	}
 
 	protected function addFileMenuItems(b:*, m:Menu):void {
+		m.addItem('Browse Scripts', openScriptBrowserDialog);
+		m.addLine();
 		m.addItem('Load Project', runtime.selectProjectFile);
 		m.addItem('Save Project', exportProjectToFile);
 		if (runtime.recording || runtime.ready==ReadyLabel.COUNTDOWN || runtime.ready==ReadyLabel.READY) {
@@ -1601,6 +1604,30 @@ public class Scratch extends Sprite {
 			fileList.browse(filter != null ? [filter] : null);
 		} catch (e:*) {
 		}
+	}
+
+	// -----------------------------
+	// Browse Scripts
+	//------------------------------
+
+	public function openScriptBrowserDialog():void {
+		closeScriptBrowserDialog();
+		scriptBrowserDialog = new ScriptBrowserDialog(this);
+		scriptBrowserDialog.fixLayout();
+		scriptBrowserDialog.x = (stage.stageWidth - scriptBrowserDialog.width) / 2;
+		scriptBrowserDialog.y = (stage.stageHeight - scriptBrowserDialog.height) / 2;
+		addChild(scriptBrowserDialog);
+	}
+
+	public function closeScriptBrowserDialog():void {
+		if (scriptBrowserDialog) {
+			scriptBrowserDialog.closeDialog();
+			scriptBrowserDialog = null;
+		}
+	}
+
+	public function selectScript(script:Block):void {
+		// TODO
 	}
 
 	// -----------------------------

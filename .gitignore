@@ -11,3 +11,5 @@
 .flexLibProperties
 .project
 local.properties
+*.sublime-workspace
+*.sublime-project
