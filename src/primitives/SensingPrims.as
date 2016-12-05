@@ -250,7 +250,9 @@ public class SensingPrims {
 
 	private function primGetAttribute(b:Block):* {
 		var attribute:String = interp.arg(b, 0);
-		var obj:ScratchObj = app.stagePane.objNamed(String(interp.arg(b, 1)));
+		var objName:String = interp.arg(b, 1);
+		var obj:ScratchObj = app.stagePane.objNamed(objName);
+		if ('_myself_' == objName) obj = interp.activeThread.target;
 		if (!(obj is ScratchObj)) return 0;
 		if (obj is ScratchSprite) {
 			var s:ScratchSprite = ScratchSprite(obj);
