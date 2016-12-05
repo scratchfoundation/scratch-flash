@@ -436,7 +436,7 @@ public class BlockMenus implements DragClient {
 		m.addLine();
 
 		for each (var sprite:ScratchSprite in app.stagePane.sprites()) {
-			if (includeSelf || sprite != app.viewedObj()) spriteNames.push(sprite.objName);
+			spriteNames.push(sprite.objName);
 		}
 		spriteNames.sort(Array.CASEINSENSITIVE);
 		for each (var spriteName:String in spriteNames) {
