@@ -162,16 +162,24 @@ public class PaletteBuilder {
 	}
 
 	private function showDataCategory():void {
+		// variables
 		var catColor:int = Specs.variableColor;
-
-		// variable buttons, reporters, and set/change blocks
 		addItem(new Button(Translator.map('Make a Variable'), makeVariable));
-		var varNames:Array = app.runtime.allVarNames().sort();
-		if (varNames.length > 0) {
-			for each (var n:String in varNames) {
-				addVariableCheckbox(n, false);
-				addItem(new Block(n, 'r', catColor, Specs.GET_VAR), true);
-			}
+
+		var stageProps:Array = app.runtime.VarNames(true, false).sort();
+		var spriteProps:Array = app.runtime.VarNames(false, true).sort();
+		for each (var n:String in stageProps) {
+			addVariableCheckbox(n, false);
+			addItem(new Block(n, 'r', catColor, Specs.GET_VAR), true);
+		}
+		if (stageProps.length && spriteProps.length) addItem(separator(100));
+		for each (var n:String in spriteProps) {
+			addVariableCheckbox(n, false);
+			addItem(new Block(n, 'r', catColor, Specs.GET_VAR), true);
+		}
+
+		// show variable related blocks only when variables exist
+		if (stageProps.length || spriteProps.length) {
 			nextY += 10;
 			addBlocksForCategory(Specs.dataCategory, catColor);
 			nextY += 15;
@@ -181,16 +189,40 @@ public class PaletteBuilder {
 		catColor = Specs.listColor;
 		addItem(new Button(Translator.map('Make a List'), makeList));
 
-		var listNames:Array = app.runtime.allListNames().sort();
-		if (listNames.length > 0) {
-			for each (n in listNames) {
-				addVariableCheckbox(n, true);
-				addItem(new Block(n, 'r', catColor, Specs.GET_LIST), true);
-			}
+		var stageLists:Array = app.runtime.ListNames(true, false).sort();
+		var spriteLists:Array = app.runtime.ListNames(false, true).sort();
+		for each (n in stageLists) {
+			addVariableCheckbox(n, true);
+			addItem(new Block(n, 'r', catColor, Specs.GET_LIST), true);
+		}
+		if (stageLists.length && spriteLists.length) addItem(separator(100));
+		for each (n in spriteLists) {
+			addVariableCheckbox(n, true);
+			addItem(new Block(n, 'r', catColor, Specs.GET_LIST), true);
+		}
+
+		// show list related blocks only when variables exist
+		if (stageLists.length || spriteLists.length) {
 			nextY += 10;
 			addBlocksForCategory(Specs.listCategory, catColor);
 		}
+
 		updateCheckboxes();
+	}
+
+	private function separator(w:int):Shape {
+		var line:Shape = new Shape();
+		var g:Graphics = line.graphics;
+
+		g.lineStyle(1, CSS.borderColor - 0x141414, 1, true);
+		g.moveTo(app.palette.x, 1);
+		g.lineTo(app.palette.x + w, 1);
+
+		g.lineStyle(1, 0xF2F2F2, 1, true);
+		g.moveTo(app.palette.x, 2);
+		g.lineTo(app.palette.x + w, 2);
+
+		return line;
 	}
 
 	protected function createVar(name:String, varSettings:VariableSettings):* {
