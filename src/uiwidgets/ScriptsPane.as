@@ -110,15 +110,44 @@ public class ScriptsPane extends ScrollFrameContents {
 		(parent as ScrollFrame).updateScrollbars();
 	}
 
+	public function viewOneScript(block:Block):void {
+		saveScripts(false);
+		while (numChildren > 0) {
+			var child:DisplayObject = removeChildAt(0);
+			child.cacheAsBitmap = false;
+		}
+
+		// No comments for now
+
+		// Viewed script not saved for now
+
+		// Script should be positioned at whatever the padding value that's used
+		// in clean-up is
+		block.x = block.y = padding;
+
+		block.cacheAsBitmap = true;
+		addChild(block);
+
+		// Reset scroll offset
+		updateSize();
+		x = y = 0;
+		(parent as ScrollFrame).updateScrollbars();
+	}
+
 	public function saveScripts(saveNeeded:Boolean = true):void {
 		// Save the blocks in this pane in the viewed objects scripts list.
 		if (viewedObj == null) return;
-		viewedObj.scripts.splice(0); // remove all
-		viewedObj.scriptComments.splice(0); // remove all
+
+		// We don't want to remove all scripts...
+		//viewedObj.scripts.splice(0); // remove all
+
+		// Probably not doing comments.
+		//viewedObj.scriptComments.splice(0); // remove all
+
 		for (var i:int = 0; i < numChildren; i++) {
 			var o:* = getChildAt(i);
-			if (o is Block) viewedObj.scripts.push(o);
-			if (o is ScratchComment) viewedObj.scriptComments.push(o);
+			if (o is Block && viewedObj.scripts.indexOf(o) < 0) viewedObj.scripts.push(o);
+			//if (o is ScratchComment) viewedObj.scriptComments.push(o);
 		}
 		var blockList:Array = viewedObj.allBlocks();
 		for each (var c:ScratchComment in viewedObj.scriptComments) {

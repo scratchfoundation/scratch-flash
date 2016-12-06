@@ -388,7 +388,8 @@ public class Scratch extends Sprite {
 	}
 
 	protected function startInEditMode():Boolean {
-		return isOffline || isExtensionDevMode;
+		//return isOffline || isExtensionDevMode;
+		return true; // Running the SWF directly from a server is handy
 	}
 
 	public function getMediaLibrary(type:String, whenDone:Function):MediaLibrary {
@@ -1627,7 +1628,7 @@ public class Scratch extends Sprite {
 	}
 
 	public function selectScript(script:Block):void {
-		// TODO
+		scriptsPane.viewOneScript(script);
 	}
 
 	// -----------------------------

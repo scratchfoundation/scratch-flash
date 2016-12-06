@@ -20,6 +20,7 @@ public class ScriptBrowserDialog extends DialogBox {
     addWidget(container);
 
     listFrame = new ScrollFrame();
+    listFrame.setWidthHeight(300, 300);
     listFrame.setContents(new ScriptsBrowserListPart(this.app));
     listFrame.allowHorizontalScrollbar = false;
     container.addChild(listFrame);

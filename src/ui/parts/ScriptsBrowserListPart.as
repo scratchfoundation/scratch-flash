@@ -36,7 +36,6 @@ public class ScriptsBrowserListPart extends ScrollFrameContents {
   }
 
   public function selectScript(script:Block) {
-    app.runtime.showAskPrompt(script.op);
     app.selectScript(script);
   }
 
