@@ -75,6 +75,7 @@ public class Block extends Sprite {
 	public var parameterNames:Array;	// used by procedure definition hats; null for other blocks
 	public var warpProcFlag:Boolean;	// used by procedure definition hats to indicate warp speed
 	public var rightToLeft:Boolean;
+	public var draggable:Boolean;
 
 	public var isHat:Boolean = false;
 	public var isAsyncHat:Boolean = false;
@@ -179,6 +180,7 @@ public class Block extends Sprite {
 		}
 		addChildAt(base, 0);
 		setSpec(this.spec, defaultArgs);
+		draggable = true;
 
 		addEventListener(FocusEvent.KEY_FOCUS_CHANGE, focusChange);
 	}
@@ -921,6 +923,7 @@ public class Block extends Sprite {
 	/* Dragging */
 
 	public function objToGrab(evt:MouseEvent):Block {
+		if (!draggable) return null;
 		if (isEmbeddedParameter() || isInPalette()) return duplicate(false, Scratch.app.viewedObj() is ScratchStage);
 		return this;
 	}

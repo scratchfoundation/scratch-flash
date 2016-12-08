@@ -81,6 +81,7 @@ public class ScriptBrowserPart extends UIPart {
         topBlockDup.removeBlock(topBlockDup.nextBlock);
       }
 
+      topBlockDup.draggable = false;
       topBlockDup.clickOverride = listener;
 
       if (topBlockDup.height > rowHeight) {
