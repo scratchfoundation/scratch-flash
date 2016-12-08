@@ -1629,26 +1629,6 @@ public class Scratch extends Sprite {
 	// Browse Scripts
 	//------------------------------
 
-/*
-	public function openScriptBrowser():void {
-		closeScriptBrowser();
-		scriptBrowser = new ScriptBrowser(this);
-		scriptBrowser.positionFunc = (function():void {
-			scriptBrowser.x = (stage.stageWidth - scriptBrowser.width) / 2;
-			scriptBrowser.y = (stage.stageHeight - scriptBrowser.height) / 2;
-		});
-		addChild(scriptBrowser);
-		scriptBrowser.fixLayout();
-	}
-
-	public function closeScriptBrowser():void {
-		if (scriptBrowser) {
-			scriptBrowser.close();
-			scriptBrowser = null;
-		}
-	}
-*/
-
 	public function selectScript(script:Block):void {
 		scriptsPane.viewOneScript(script);
 	}

@@ -568,14 +568,8 @@ public class BlockMenus implements DragClient {
 		if (block.op != Specs.CALL) return;
 		var def:Block = app.viewedObj().lookupProcedure(block.spec);
 		if (!def) return;
-		var pane:ScriptsPane = def.parent as ScriptsPane;
-		if (!pane) return;
-		if (pane.parent is ScrollFrame) {
-		   pane.x = 5 - def.x*pane.scaleX;
-		   pane.y = 5 - def.y*pane.scaleX;
-		   (pane.parent as ScrollFrame).constrainScroll();
-		   (pane.parent as ScrollFrame).updateScrollbars();
-		}
+
+		app.selectScript(def);
 	}
 
 	private function editProcSpec():void {
