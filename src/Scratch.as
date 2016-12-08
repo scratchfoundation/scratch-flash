@@ -970,14 +970,22 @@ public class Scratch extends Sprite {
 	}
 
 	protected function updateContentArea(contentX:int, contentY:int, contentW:int, contentH:int, fullH:int):void {
+		var scriptBrowserH = contentH / 4;
+		if (scriptBrowserH > 200) {
+			scriptBrowserH = 200;
+		} else if (scriptBrowserH < 100) {
+			scriptBrowserH = 100;
+		}
+		scriptBrowserH -= 10;
+
 		imagesPart.x = soundsPart.x = scriptsPart.x = contentX;
 		imagesPart.y = soundsPart.y = scriptsPart.y = contentY;
 		imagesPart.setWidthHeight(contentW, contentH);
 		soundsPart.setWidthHeight(contentW, contentH);
-		scriptsPart.setWidthHeight(contentW, contentH - 130);
+		scriptsPart.setWidthHeight(contentW, contentH - (scriptBrowserH + 5));
 		scriptBrowserPart.x = contentX;
 		scriptBrowserPart.y = scriptsPart.bottom() + 5;
-		scriptBrowserPart.setWidthHeight(contentW, 125);
+		scriptBrowserPart.setWidthHeight(contentW, scriptBrowserH);
 
 		if (mediaLibrary) mediaLibrary.setWidthHeight(topBarPart.w, fullH);
 		if (frameRateGraph) {

@@ -2,16 +2,20 @@ package ui.parts {
   import scratch.*;
   import blocks.*;
   import flash.display.*;
+  import flash.text.*;
   import uiwidgets.*;
 
 public class ScriptBrowserPart extends UIPart {
 
+  private var shape:Shape;
   private var listFrame:ScrollFrame;
   private var listPane:ScrollFrameContents;
   private var closeButton:Button;
 
   public function ScriptBrowserPart(app:Scratch) {
     this.app = app;
+
+    addChild(shape = new Shape());
 
     addListFrame();
 
@@ -20,7 +24,7 @@ public class ScriptBrowserPart extends UIPart {
 
   private function addListFrame():void {
     listPane = new ScrollFrameContents();
-    listPane.color = 0xEEEEEE;
+    listPane.color = CSS.tabColor;
     listFrame = new ScrollFrame();
     listFrame.setContents(listPane);
     addChild(listFrame);
@@ -30,6 +34,7 @@ public class ScriptBrowserPart extends UIPart {
     this.w = w;
     this.h = h;
     fixLayout();
+    redraw();
   }
 
   public function fixLayout():void {
@@ -38,7 +43,17 @@ public class ScriptBrowserPart extends UIPart {
     listFrame.setWidthHeight(w, h);
   }
 
+  private function redraw():void {
+    var g:Graphics = shape.graphics;
+    g.clear();
+    g.lineStyle(1, CSS.borderColor, 1, true);
+    g.beginFill(CSS.tabColor);
+    g.drawRect(0, 0, w, h);
+    g.endFill();
+  }
+
   public function selectedSpriteUpdated():void {
+    listPane.y = 0; // Reset scroll
     updateContents();
   }
 
@@ -54,7 +69,7 @@ public class ScriptBrowserPart extends UIPart {
     var nextY:int = 5;
     var nextX:int = 5;
     var rowHeight:int = 0;
-    for each (var script:Block in obj.scripts) {
+    for each (var script:Block in getSortedScriptsFromObj(obj)) {
       var listener:Function = (function(block:Block):Function {
         return function():void {
           selectScript(block);
@@ -75,6 +90,7 @@ public class ScriptBrowserPart extends UIPart {
       if (nextX + topBlockDup.width + 5 > w) {
         nextY += rowHeight + 5;
         nextX = 5;
+        rowHeight = 0;
       }
 
       topBlockDup.x = nextX;
@@ -89,6 +105,22 @@ public class ScriptBrowserPart extends UIPart {
 
   public function selectScript(script:Block):void {
     app.selectScript(script);
+  }
+
+  public function getSortedScriptsFromObj(obj:ScratchObj):Array {
+    var scripts:Array = obj.scripts.slice(0);
+
+    return scripts.sort(function(a:Block, b:Block) {
+      var aStr = a.getSummary();
+      var bStr = b.getSummary();
+      if (aStr < bStr) {
+        return -1;
+      } else if (aStr > bStr) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
   }
 
 }}
