@@ -927,7 +927,14 @@ public class Block extends Sprite {
 
 	/* Events */
 
+	public var clickOverride:Function;
+
 	public function click(evt:MouseEvent):void {
+		if (clickOverride) {
+			clickOverride();
+			return;
+		}
+
 		if (editArg(evt)) return;
 		Scratch.app.runtime.interp.toggleThread(topBlock(), Scratch.app.viewedObj(), 1);
 	}

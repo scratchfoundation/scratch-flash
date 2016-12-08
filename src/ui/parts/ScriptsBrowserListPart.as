@@ -32,11 +32,17 @@ public class ScriptsBrowserListPart extends ScrollFrameContents {
         };
       }(script));
 
-      var b:Button = new Button(script.op, listener);
-      b.x = 7;
-      b.y = nextY;
-      nextY += b.height + 3;
-      addChild(b);
+      var topBlockDup = script.duplicate(obj.isClone, obj.isStage);
+      while (topBlockDup.nextBlock) {
+        topBlockDup.removeBlock(topBlockDup.nextBlock);
+      }
+
+      topBlockDup.clickOverride = listener;
+
+      topBlockDup.x = 7;
+      topBlockDup.y = nextY;
+      nextY += topBlockDup.height + 3;
+      addChild(topBlockDup);
     }
   }
 
