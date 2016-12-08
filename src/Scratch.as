@@ -122,7 +122,6 @@ public class Scratch extends Sprite {
 	public var mediaLibrary:MediaLibrary;
 	public var lp:LoadProgress;
 	public var cameraDialog:CameraDialog;
-	public var scriptBrowserDialog:ScriptBrowserDialog;
 
 	// UI Parts
 	public var libraryPart:LibraryPart;
@@ -130,6 +129,7 @@ public class Scratch extends Sprite {
 	protected var stagePart:StagePart;
 	private var tabsPart:TabsPart;
 	protected var scriptsPart:ScriptsPart;
+	protected var scriptBrowserPart:ScriptBrowserPart;
 	public var imagesPart:ImagesPart;
 	public var soundsPart:SoundsPart;
 	public const tipsBarClosedWidth:int = 17;
@@ -351,6 +351,10 @@ public class Scratch extends Sprite {
 
 	protected function initImagesPart():void {
 		imagesPart = new ImagesPart(this);
+	}
+
+	protected function initScriptBrowserPart():void {
+		scriptBrowserPart = new ScriptBrowserPart(this);
 	}
 
 	protected function initInterpreter():void {
@@ -770,6 +774,9 @@ public class Scratch extends Sprite {
 			scriptsPane.viewScriptsFor(obj);
 			scriptsPart.updateSpriteWatermark();
 		}
+		if (isShowing(scriptBrowserPart)) {
+			scriptBrowserPart.selectedSpriteUpdated();
+		}
 	}
 
 	public function setTab(tabName:String):void {
@@ -819,12 +826,14 @@ public class Scratch extends Sprite {
 		libraryPart = getLibraryPart();
 		tabsPart = new TabsPart(this);
 		initScriptsPart();
+		initScriptBrowserPart();
 		initImagesPart();
 		soundsPart = new SoundsPart(this);
 		addChild(topBarPart);
 		addChild(stagePart);
 		addChild(libraryPart);
 		addChild(tabsPart);
+		addChild(scriptBrowserPart);
 	}
 
 	protected function getStagePart():StagePart {
@@ -965,7 +974,10 @@ public class Scratch extends Sprite {
 		imagesPart.y = soundsPart.y = scriptsPart.y = contentY;
 		imagesPart.setWidthHeight(contentW, contentH);
 		soundsPart.setWidthHeight(contentW, contentH);
-		scriptsPart.setWidthHeight(contentW, contentH);
+		scriptsPart.setWidthHeight(contentW, contentH - 130);
+		scriptBrowserPart.x = contentX;
+		scriptBrowserPart.y = scriptsPart.bottom() + 5;
+		scriptBrowserPart.setWidthHeight(contentW, 125);
 
 		if (mediaLibrary) mediaLibrary.setWidthHeight(topBarPart.w, fullH);
 		if (frameRateGraph) {
@@ -1066,8 +1078,6 @@ public class Scratch extends Sprite {
 	}
 
 	protected function addFileMenuItems(b:*, m:Menu):void {
-		m.addItem('Browse Scripts', openScriptBrowserDialog);
-		m.addLine();
 		m.addItem('Load Project', runtime.selectProjectFile);
 		m.addItem('Save Project', exportProjectToFile);
 		if (runtime.recording || runtime.ready==ReadyLabel.COUNTDOWN || runtime.ready==ReadyLabel.READY) {
@@ -1611,21 +1621,25 @@ public class Scratch extends Sprite {
 	// Browse Scripts
 	//------------------------------
 
-	public function openScriptBrowserDialog():void {
-		closeScriptBrowserDialog();
-		scriptBrowserDialog = new ScriptBrowserDialog(this);
-		scriptBrowserDialog.fixLayout();
-		scriptBrowserDialog.x = (stage.stageWidth - scriptBrowserDialog.width) / 2;
-		scriptBrowserDialog.y = (stage.stageHeight - scriptBrowserDialog.height) / 2;
-		addChild(scriptBrowserDialog);
+/*
+	public function openScriptBrowser():void {
+		closeScriptBrowser();
+		scriptBrowser = new ScriptBrowser(this);
+		scriptBrowser.positionFunc = (function():void {
+			scriptBrowser.x = (stage.stageWidth - scriptBrowser.width) / 2;
+			scriptBrowser.y = (stage.stageHeight - scriptBrowser.height) / 2;
+		});
+		addChild(scriptBrowser);
+		scriptBrowser.fixLayout();
 	}
 
-	public function closeScriptBrowserDialog():void {
-		if (scriptBrowserDialog) {
-			scriptBrowserDialog.closeDialog();
-			scriptBrowserDialog = null;
+	public function closeScriptBrowser():void {
+		if (scriptBrowser) {
+			scriptBrowser.close();
+			scriptBrowser = null;
 		}
 	}
+*/
 
 	public function selectScript(script:Block):void {
 		scriptsPane.viewOneScript(script);

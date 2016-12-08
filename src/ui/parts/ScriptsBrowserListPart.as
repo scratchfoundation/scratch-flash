@@ -19,9 +19,14 @@ public class ScriptsBrowserListPart extends ScrollFrameContents {
     while (numChildren > 0) removeChildAt(0);
 
     var obj:ScratchObj = app.viewedObj();
+
+    if (!obj) {
+      return;
+    }
+
     var nextY:int = 3;
     for each (var script:Block in obj.scripts) {
-      var listener = (function(block:Block):Function {
+      var listener:Function = (function(block:Block):Function {
         return function():void {
           selectScript(block);
         };
@@ -35,7 +40,7 @@ public class ScriptsBrowserListPart extends ScrollFrameContents {
     }
   }
 
-  public function selectScript(script:Block) {
+  public function selectScript(script:Block):void {
     app.selectScript(script);
   }
 
