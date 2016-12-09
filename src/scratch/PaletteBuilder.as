@@ -163,15 +163,36 @@ public class PaletteBuilder {
 
 	private function showDataCategory():void {
 		var catColor:int = Specs.variableColor;
+		var getSpec:String = Specs.GET_VAR;
 
 		// variable buttons, reporters, and set/change blocks
 		addItem(new Button(Translator.map('Make a Variable'), makeVariable));
-		var varNames:Array = app.runtime.allVarNames();
-		if (varNames.length > 0) {
-			for each (var n:String in varNames) {
-				addVariableCheckbox(n, false);
-				addItem(new Block(n, 'r', catColor, Specs.GET_VAR), true);
+
+		function addBlocks(names:Array):void {
+			for each (var n:String in names) {
+				addVariableCheckbox(n, getSpec === Specs.GET_LIST);
+				addItem(new Block(n, 'r', catColor, getSpec), true);
 			}
+		}
+
+		var anyVars:Boolean = false;
+
+		if (!(app.viewedObj().isStage)) {
+			var localVarNames:Array = app.viewedObj().varNames();
+			if (localVarNames.length > 0) {
+				addBlocks(localVarNames);
+				addSeparator();
+				anyVars = true;
+			}
+		}
+
+		var stageVarNames:Array = app.stageObj().varNames();
+		if (stageVarNames.length > 0) {
+			addBlocks(stageVarNames);
+			anyVars = true;
+		}
+
+		if (anyVars) {
 			nextY += 10;
 			addBlocksForCategory(Specs.dataCategory, catColor);
 			nextY += 15;
@@ -179,17 +200,31 @@ public class PaletteBuilder {
 
 		// lists
 		catColor = Specs.listColor;
+		getSpec = Specs.GET_LIST;
 		addItem(new Button(Translator.map('Make a List'), makeList));
 
-		var listNames:Array = app.runtime.allListNames();
-		if (listNames.length > 0) {
-			for each (n in listNames) {
-				addVariableCheckbox(n, true);
-				addItem(new Block(n, 'r', catColor, Specs.GET_LIST), true);
+		var anyLists:Boolean = false;
+
+		if (!(app.viewedObj().isStage)) {
+			var localListNames:Array = app.viewedObj().listNames();
+			if (localListNames.length > 0) {
+				addBlocks(localListNames);
+				addSeparator();
+				anyLists = true;
 			}
+		}
+
+		var stageListNames:Array = app.stageObj().listNames();
+		if (stageListNames.length > 0) {
+			addBlocks(stageListNames);
 			nextY += 10;
+			anyLists = true;
+		}
+
+		if (anyLists) {
 			addBlocksForCategory(Specs.listCategory, catColor);
 		}
+
 		updateCheckboxes();
 	}
 
@@ -528,6 +563,12 @@ public class PaletteBuilder {
 		line.x = x;
 		line.y = y;
 		app.palette.addChild(line);
+	}
+
+	private function addSeparator():void {
+		nextY += 4;
+		addLine(6, nextY, pwidth - 30);
+		nextY += 8;
 	}
 
 }

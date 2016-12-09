@@ -649,14 +649,14 @@ public class BlockMenus implements DragClient {
 			if (isGetter) addGenericBlockItems(m);
 			var myName:String = blockVarOrListName();
 			var vName:String;
-			for each (vName in app.stageObj().varNames()) {
-				if (!isGetter || (vName != myName)) m.addItem(vName);
-			}
 			if (!app.viewedObj().isStage) {
-				m.addLine();
 				for each (vName in app.viewedObj().varNames()) {
 					if (!isGetter || (vName != myName)) m.addItem(vName);
 				}
+				m.addLine();
+			}
+			for each (vName in app.stageObj().varNames()) {
+				if (!isGetter || (vName != myName)) m.addItem(vName);
 			}
 		}
 		showMenu(m);
