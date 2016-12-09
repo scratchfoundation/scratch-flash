@@ -166,7 +166,7 @@ public class PaletteBuilder {
 
 		// variable buttons, reporters, and set/change blocks
 		addItem(new Button(Translator.map('Make a Variable'), makeVariable));
-		var varNames:Array = app.runtime.allVarNames().sort();
+		var varNames:Array = app.runtime.allVarNames();
 		if (varNames.length > 0) {
 			for each (var n:String in varNames) {
 				addVariableCheckbox(n, false);
@@ -181,7 +181,7 @@ public class PaletteBuilder {
 		catColor = Specs.listColor;
 		addItem(new Button(Translator.map('Make a List'), makeList));
 
-		var listNames:Array = app.runtime.allListNames().sort();
+		var listNames:Array = app.runtime.allListNames();
 		if (listNames.length > 0) {
 			for each (n in listNames) {
 				addVariableCheckbox(n, true);

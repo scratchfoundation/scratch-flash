@@ -424,7 +424,7 @@ public class ScratchObj extends Sprite {
 	public function varNames():Array {
 		var varList:Array = [];
 		for each (var v:Variable in variables) varList.push(v.name);
-		return varList;
+		return varList.sort();
 	}
 
 	public function setVarTo(varName:String, value:*):void {
@@ -489,7 +489,7 @@ public class ScratchObj extends Sprite {
 	public function listNames():Array {
 		var result:Array = [];
 		for each (var list:ListWatcher in lists) result.push(list.listName);
-		return result;
+		return result.sort();
 	}
 
 	public function ownsList(listName:String):Boolean {
