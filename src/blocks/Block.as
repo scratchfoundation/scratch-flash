@@ -896,6 +896,15 @@ public class Block extends Sprite {
 		app.scriptsPane.saveScripts();
 		SCRATCH::allow3d { app.runtime.checkForGraphicEffects(); }
 		app.updatePalette();
+
+		// Remove from the Scratch object that holds the block, if it's in the
+		// object's script array
+		var obj:ScratchObj = app.viewedObj();
+		var index:int = obj.scripts.indexOf(this);
+		if (index >= 0) {
+			obj.scripts.splice(index, 1);
+		}
+
 		return true;
 	}
 
