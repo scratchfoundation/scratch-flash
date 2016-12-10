@@ -622,6 +622,7 @@ public class Scratch extends Sprite {
 		// Note: updatePalette() is called after changing variable, list, or procedure
 		// definitions, so this is a convenient place to clear the interpreter's caches.
 		if (isShowing(scriptsPart)) scriptsPart.updatePalette();
+		if (isShowing(scriptBrowserPart)) scriptBrowserPart.updateContents();
 		if (clearCaches) runtime.clearAllCaches();
 	}
 

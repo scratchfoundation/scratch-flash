@@ -57,7 +57,7 @@ public class ScriptBrowserPart extends UIPart {
     updateContents();
   }
 
-  private function updateContents():void {
+  public function updateContents():void {
     while (listPane.numChildren > 0) listPane.removeChildAt(0);
 
     var obj:ScratchObj = app.viewedObj();

@@ -441,6 +441,7 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 		}
 		saveScripts();
 		updateSize();
+		app.updatePalette();
 		if (c) fixCommentLayout();
 		return true;
 	}
