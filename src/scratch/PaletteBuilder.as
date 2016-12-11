@@ -295,6 +295,7 @@ public class PaletteBuilder {
 			app.scriptsPane.saveScripts();
 			app.runtime.updateCalls();
 			app.updatePalette();
+			app.selectScript(newHat);
 			app.setSaveNeeded();
 		}
 

@@ -578,6 +578,7 @@ public class BlockMenus implements DragClient {
 			if (!def) return;
 			block = def;
 		}
+		app.selectScript(block);
 		var d:DialogBox = new DialogBox(editSpec2);
 		d.addTitle('Edit Block');
 		d.addWidget(new ProcedureSpecEditor(block.spec, block.parameterNames, block.warpProcFlag));
