@@ -887,14 +887,7 @@ public class Block extends Sprite {
 		// TODO: Remove any waiting reporter data in the Scratch.app.extensionManager
 		if (parent is Block) Block(parent).removeBlock(this);
 		else if (parent) parent.removeChild(this);
-
-		// Remove from the Scratch object that holds the block, if it's in the
-		// object's script array
-		var obj:ScratchObj = app.viewedObj();
-		var index:int = obj.scripts.indexOf(this);
-		if (index >= 0) {
-			obj.scripts.splice(index, 1);
-		}
+		removeFromParentObjScriptList();
 
 		this.cacheAsBitmap = false;
 		// set position for undelete
@@ -906,6 +899,16 @@ public class Block extends Sprite {
 		SCRATCH::allow3d { app.runtime.checkForGraphicEffects(); }
 		app.updatePalette();
 		return true;
+	}
+
+	public function removeFromParentObjScriptList():void {
+		// Remove from the Scratch object that holds the block, if it's in the
+		// object's script array
+		var obj:ScratchObj = Scratch.app.viewedObj();
+		var index:int = obj.scripts.indexOf(this);
+		if (index >= 0) {
+			obj.scripts.splice(index, 1);
+		}
 	}
 
 	public function attachedCommentsIn(scriptsPane:ScriptsPane):Array {

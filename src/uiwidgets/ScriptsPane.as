@@ -254,6 +254,7 @@ public class ScriptsPane extends ScrollFrameContents {
 		} else {
 			if(app.editMode) b.hideRunFeedback();
 			b.cacheAsBitmap = false;
+			b.removeFromParentObjScriptList();
 			if (b.isReporter) {
 				Block(nearestTarget[1].parent).replaceArgWithBlock(nearestTarget[1], b, this);
 			} else {
@@ -277,7 +278,7 @@ public class ScriptsPane extends ScrollFrameContents {
 				}
 			}
 		}
-		if (b.op == Specs.PROCEDURE_DEF) app.updatePalette();
+		app.updatePalette();
 		app.runtime.blockDropped(b);
 	}
 
