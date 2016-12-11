@@ -76,12 +76,12 @@ public class ScriptBrowserPart extends UIPart {
         };
       }(script));
 
-      var topBlockDup = script.duplicate(obj.isClone, obj.isStage);
+      var topBlockDup:Block = script.duplicate(obj.isClone, obj.isStage);
       while (topBlockDup.nextBlock) {
         topBlockDup.removeBlock(topBlockDup.nextBlock);
       }
 
-      topBlockDup.draggable = false;
+      topBlockDup.scriptBrowserBlock = true;
       topBlockDup.clickOverride = listener;
 
       if (topBlockDup.height > rowHeight) {

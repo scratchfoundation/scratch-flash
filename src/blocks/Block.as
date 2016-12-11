@@ -75,7 +75,7 @@ public class Block extends Sprite {
 	public var parameterNames:Array;	// used by procedure definition hats; null for other blocks
 	public var warpProcFlag:Boolean;	// used by procedure definition hats to indicate warp speed
 	public var rightToLeft:Boolean;
-	public var draggable:Boolean;
+	public var scriptBrowserBlock:Boolean;
 
 	public var isHat:Boolean = false;
 	public var isAsyncHat:Boolean = false;
@@ -180,7 +180,7 @@ public class Block extends Sprite {
 		}
 		addChildAt(base, 0);
 		setSpec(this.spec, defaultArgs);
-		draggable = true;
+		scriptBrowserBlock = false;
 
 		addEventListener(FocusEvent.KEY_FOCUS_CHANGE, focusChange);
 	}
@@ -935,9 +935,27 @@ public class Block extends Sprite {
 	/* Dragging */
 
 	public function objToGrab(evt:MouseEvent):Block {
-		if (!draggable) return null;
+		if (scriptBrowserBlock) return makeSenderBlock();
 		if (isEmbeddedParameter() || isInPalette()) return duplicate(false, Scratch.app.viewedObj() is ScratchStage);
 		return this;
+	}
+
+	private static const eventsColor:int = Specs.blockColor(Specs.eventsCategory);
+
+	public function makeSenderBlock():Block {
+		// Make a new block that would call this (hat) block, if such a block
+		// exists. Otherwise just return a duplicate of this block. Used when
+		// dragging a script browser block.
+
+		var b:Block;
+
+		if (op === 'whenIReceive') {
+			b = new Block('broadcast %m.broadcast', ' ', eventsColor, 'broadcast:');
+			b.setArg(0, getNormalizedArg(0).argValue);
+			return b;
+		}
+
+		return this.duplicate(false, Scratch.app.viewedObj() is ScratchStage);
 	}
 
 	/* Events */
