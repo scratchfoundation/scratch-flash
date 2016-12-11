@@ -949,6 +949,11 @@ public class Block extends Sprite {
 
 		var b:Block;
 
+		if (op === Specs.PROCEDURE_DEF) {
+			b = new Block(spec, ' ', Specs.procedureColor, Specs.CALL, defaultArgValues);
+			return b;
+		}
+
 		if (op === 'whenIReceive') {
 			b = new Block('broadcast %m.broadcast', ' ', eventsColor, 'broadcast:');
 			b.setArg(0, getNormalizedArg(0).argValue);
