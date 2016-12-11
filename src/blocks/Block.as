@@ -941,6 +941,8 @@ public class Block extends Sprite {
 	}
 
 	private static const eventsColor:int = Specs.blockColor(Specs.eventsCategory);
+	private static const controlColor:int = Specs.blockColor(Specs.controlCategory);
+	private static const looksColor:int = Specs.blockColor(Specs.looksCategory);
 
 	public function makeSenderBlock():Block {
 		// Make a new block that would call this (hat) block, if such a block
@@ -956,6 +958,18 @@ public class Block extends Sprite {
 
 		if (op === 'whenIReceive') {
 			b = new Block('broadcast %m.broadcast', ' ', eventsColor, 'broadcast:');
+			b.setArg(0, getNormalizedArg(0).argValue);
+			return b;
+		}
+
+		if (op === 'whenCloned') {
+			b = new Block('create clone of %m.spriteOnly', ' ', controlColor, 'createCloneOf');
+			b.setArg(0, 'myself');
+			return b;
+		}
+
+		if (op === 'whenSceneStarts') {
+			b = new Block('switch backdrop to %m.backdrop', ' ', looksColor, 'startScene');
 			b.setArg(0, getNormalizedArg(0).argValue);
 			return b;
 		}
