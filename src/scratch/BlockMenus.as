@@ -848,7 +848,7 @@ public class BlockMenus implements DragClient {
 			m.addItem('clear senders/receivers');
 
 			if (block.op === 'broadcast:') m.addItem('..and wait');
-			else m.addItem('..no wait');
+			else if (block.op === 'doBroadcastAndWait') m.addItem('..no wait');
 		}
 		showMenu(m);
 	}
