@@ -248,9 +248,11 @@ public class ScriptsPane extends ScrollFrameContents {
 		return result;
 	}
 
-	private function blockDropped(b:Block):void {
+	private function blockDropped(b:Block):Boolean {
+		var shouldUpdatePalette:Boolean = false;
 		if (nearestTarget == null) {
 			b.cacheAsBitmap = true;
+			shouldUpdatePalette = true;
 		} else {
 			if(app.editMode) b.hideRunFeedback();
 			b.cacheAsBitmap = false;
@@ -278,8 +280,8 @@ public class ScriptsPane extends ScrollFrameContents {
 				}
 			}
 		}
-		app.updatePalette();
 		app.runtime.blockDropped(b);
+		return shouldUpdatePalette;
 	}
 
 	public function findTargetsFor(b:Block):void {
@@ -436,14 +438,16 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 		obj.y = Math.max(5, localP.y);
 		obj.scaleX = obj.scaleY = 1;
 		addChild(obj);
-		if (b) blockDropped(b);
+
+		var shouldUpdatePalette:Boolean = false;
+		if (b) shouldUpdatePalette = blockDropped(b);
 		if (c) {
 			c.blockRef = blockAtPoint(localP); // link to the block under comment top-left corner, or unlink if none
 		}
 		saveScripts();
 		updateSize();
-		app.updatePalette();
 		if (c) fixCommentLayout();
+		if (shouldUpdatePalette) app.updatePalette();
 		return true;
 	}
 
