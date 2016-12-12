@@ -261,14 +261,24 @@ public class Block extends Sprite {
 		return rightToLeft ? args.concat().reverse() : args;
 	}
 
-	public function changeOperator(newOp:String):void {
-		// Used to switch among a family of related operators (e.g. +, -, *, and /).
-		// Note: This does not deal with translation, so it only works for symbolic operators.
-		for each (var item:* in labelsAndArgs) {
-			if ((item is TextField) && (item.text == op)) item.text = newOp;
-		}
-		op = newOp;
+	public function relabel(newSpec:String, newOp:String):void {
+		// Used to "relabel" a block to have a new spec and operator, but without
+		// changing its inputs.
+		var oldArgs:Array = args.slice(0);
+
 		opFunction = null;
+
+		op = newOp;
+		setSpec(newSpec, []);
+
+		for (var i:int = 0; i < oldArgs.length; i++) {
+			if (oldArgs[i] is BlockArg) {
+				setArg(i, oldArgs[i].argValue);
+			} else {
+				// For block inputs
+				setArg(i, oldArgs[i]);
+			}
+		}
 		fixArgLayout();
 	}
 
@@ -859,6 +869,10 @@ public class Block extends Sprite {
 		else {
 			Scratch.app.showTip(op);
 		}
+	}
+
+	public function showSpec():void {
+		DialogBox.notify('spec/op', 'Spec: ' + spec + '\nOp: ' + op);
 	}
 
 	public function duplicateStack(deltaX:Number, deltaY:Number):void {

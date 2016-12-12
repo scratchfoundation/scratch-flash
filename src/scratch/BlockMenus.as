@@ -532,6 +532,7 @@ public class BlockMenus implements DragClient {
 			m.addItem('add comment', block.addComment);
 		}
 		m.addItem('help', block.showHelp);
+		//m.addItem('show spec', block.showSpec);
 		m.addLine();
 	}
 
@@ -542,7 +543,8 @@ public class BlockMenus implements DragClient {
 	private function changeOpMenu(evt:MouseEvent, opList:Array):void {
 		function opMenu(selection:*):void {
 			if (selection is Function) { selection(); return; }
-			block.changeOperator(selection);
+			var op:String = selection;
+			block.relabel('%n ' + op + ' %n', op);
 		}
 		if (!block) return;
 		var m:Menu = new Menu(opMenu, 'changeOp');
@@ -829,8 +831,11 @@ public class BlockMenus implements DragClient {
 				if (selection == 'show receivers') sprites = app.runtime.allReceiversOfBroadcast(msg);
 			}
 			if (selection == 'clear senders/receivers') sprites = [];
+			if (selection == '..and wait') block.relabel('broadcast %m.broadcast and wait', 'doBroadcastAndWait');
+			if (selection == '..no wait') block.relabel('broadcast %m.broadcast', 'broadcast:');
 			if (sprites!=null) app.highlightSprites(sprites);
 		}
+
 		var m:Menu = new Menu(showBroadcasts, 'broadcastInfo');
 		addGenericBlockItems(m);
 		if (!isInPalette(block)) {
@@ -841,6 +846,9 @@ public class BlockMenus implements DragClient {
 				m.addItem('show receivers');
 			}
 			m.addItem('clear senders/receivers');
+
+			if (block.op === 'broadcast:') m.addItem('..and wait');
+			else m.addItem('..no wait');
 		}
 		showMenu(m);
 	}
