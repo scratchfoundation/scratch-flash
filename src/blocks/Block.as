@@ -996,7 +996,7 @@ public class Block extends Sprite {
 	public var clickOverride:Function;
 
 	public function click(evt:MouseEvent):void {
-		if (clickOverride) {
+		if (clickOverride !== null) {
 			clickOverride();
 			return;
 		}
