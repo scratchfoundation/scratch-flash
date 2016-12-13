@@ -408,9 +408,13 @@ public class ScratchObj extends Sprite {
 			var b:Block = scripts[i] as Block;
 			if (b && (b.op == Specs.PROCEDURE_DEF)) result.push(b);
 		}
-		return result.sort(function(a:Block, b:Block) {
-      var aStr = a.getSummary();
-      var bStr = b.getSummary();
+		return sortScriptsArray(result);
+	}
+
+	public function sortScriptsArray(arr:Array):Array {
+		return arr.sort(function(a:Block, b:Block):int {
+      var aStr:String = a.getSummary();
+      var bStr:String = b.getSummary();
       if (aStr < bStr) {
         return -1;
       } else if (aStr > bStr) {
