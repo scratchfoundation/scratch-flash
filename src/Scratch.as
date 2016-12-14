@@ -859,6 +859,7 @@ public class Scratch extends Sprite {
 		if (editMode) {
 			interp.showAllRunFeedback();
 			hide(playerBG);
+			show(scriptBrowserPart);
 			show(topBarPart);
 			show(libraryPart);
 			show(tabsPart);
@@ -868,6 +869,7 @@ public class Scratch extends Sprite {
 		} else {
 			addChildAt(playerBG, 0); // behind everything
 			playerBG.visible = false;
+			hide(scriptBrowserPart);
 			hide(topBarPart);
 			hide(libraryPart);
 			hide(tabsPart);
