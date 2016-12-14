@@ -74,7 +74,7 @@ import watchers.ListWatcher;
 
 public class Scratch extends Sprite {
 	// Version
-	public static const versionString:String = 'v452.1';
+	public static const versionString:String = 'v453';
 	public static var app:Scratch; // static reference to the app, used for debugging
 
 	// Display modes
