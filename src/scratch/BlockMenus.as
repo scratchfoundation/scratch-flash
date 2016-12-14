@@ -61,8 +61,8 @@ public class BlockMenus implements DragClient {
 			if (op == Specs.GET_VAR) menuName = 'var';
 			if ((op == Specs.PROCEDURE_DEF) || (op == Specs.CALL)) menuName = 'procMenu';
 			if ((op == 'broadcast:') || (op == 'doBroadcastAndWait') || (op == 'whenIReceive')) menuName = 'broadcastInfoMenu';
-			if ((basicMathOps.indexOf(op)) > -1) { menuHandler.changeOpMenu(evt, basicMathOps); return; }
-			if ((comparisonOps.indexOf(op)) > -1) { menuHandler.changeOpMenu(evt, comparisonOps); return; }
+			if ((basicMathOps.indexOf(op)) > -1) { menuHandler.changeOpMenu(evt, basicMathOps, '%n'); return; }
+			if ((comparisonOps.indexOf(op)) > -1) { menuHandler.changeOpMenu(evt, comparisonOps, '%s'); return; }
 			if (menuName == null) { menuHandler.genericBlockMenu(evt); return; }
 		}
 		if (ExtensionManager.hasExtensionPrefix(op) && menuHandler.extensionMenu(evt, menuName)) return;
@@ -540,11 +540,11 @@ public class BlockMenus implements DragClient {
 		block.duplicateStack(app.mouseX - startX, app.mouseY - startY);
 	}
 
-	private function changeOpMenu(evt:MouseEvent, opList:Array):void {
+	private function changeOpMenu(evt:MouseEvent, opList:Array, inputType:String):void {
 		function opMenu(selection:*):void {
 			if (selection is Function) { selection(); return; }
 			var op:String = selection;
-			block.relabel('%n ' + op + ' %n', op);
+			block.relabel(inputType + ' ' + op + ' ' + inputType, op);
 		}
 		if (!block) return;
 		var m:Menu = new Menu(opMenu, 'changeOp');
