@@ -1093,6 +1093,38 @@ public class ScratchRuntime {
 		clearAllCaches();
 	}
 
+	public function renameList(oldName:String, newName:String):void {
+		if (oldName == newName) return;
+		var owner:ScratchObj = app.viewedObj();
+		if (!owner.ownsList(oldName)) owner = app.stagePane;
+		if (owner.hasName(newName)) {
+			DialogBox.notify("Cannot Rename", "That name is already in use.");
+			return;
+		}
+
+		var v:ListWatcher = owner.lookupList(oldName);
+		if (v != null) {
+			v.changeName(newName);
+		}
+
+		updateListRefs(oldName, newName, owner);
+		app.updatePalette();
+	}
+
+	private function updateListRefs(oldName:String, newName:String, owner:ScratchObj):void {
+		// Change the list name in all blocks that use it.
+		for each (var b:Block in allUsesOfList(oldName, owner)) {
+			if (b.op == Specs.GET_LIST) {
+				b.setSpec(newName);
+				b.fixExpressionLayout();
+			} else {
+				b.listName = newName;
+/*				b.args[0].setArgValue(newName);*/
+			}
+		}
+	}
+
+
 	// -----------------------------
 	// Sensing
 	//------------------------------
@@ -1295,15 +1327,42 @@ public class ScratchRuntime {
 		return result;
 	}
 
-	public function allUsesOfSoundDo(soundName:String, f:Function):void {
-		for each (var stack:Block in app.viewedObj().scripts) {
-			stack.allBlocksDo(function (b:Block):void {
-				for each (var a:* in b.args) {
-					if (a is BlockArg && a.menuName == 'sound' && a.argValue == soundName) f(a);
-				}
-			});
+	public function allUsesOfList(listName:String, owner:ScratchObj):Array {
+		var listBlocks:Array =
+		[
+			"append:toList:",
+			"deleteLine:ofList:",
+			"insert:at:ofList:",
+			"setLine:ofList:to:",
+			"getLine:ofList:",
+			"lineCountOfList:",
+			"list:contains:",
+			"showList:",
+			"hideList:"];
+
+		var result:Array = [];
+		var stacks:Array = owner.isStage ? allStacks() : owner.scripts;
+		for each (var stack:Block in stacks) {
+			// for each block in stack
+			if (stack.op == Specs.GET_LIST && stack.spec == listName) result.push(stack);
+			else {
+				stack.allBlocksDo(function (b:Block):void {
+					if (listBlocks.indexOf(b.op) != -1 && b.listName == listName) result.push(b);
+				});
+			}
 		}
+		return result;
 	}
+
+    public function allUsesOfSoundDo(soundName:String, f:Function):void {
+        for each (var stack:Block in app.viewedObj().scripts) {
+            stack.allBlocksDo(function (b:Block):void {
+                for each (var a:* in b.args) {
+                    if (a is BlockArg && a.menuName == 'sound' && a.argValue == soundName) f(a);
+                }
+            });
+        }
+    }
 
 	public function allCallsOf(callee:String, owner:ScratchObj, includeRecursive:Boolean = true):Array {
 		var result:Array = [];

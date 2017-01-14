@@ -626,7 +626,10 @@ public class BlockMenus implements DragClient {
 		var m:Menu = new Menu(varOrListSelection, 'list');
 		var isGetter:Boolean = block.op == Specs.GET_LIST;
 		if (isGetter) {
-			if (isInPalette(block)) m.addItem('delete list', deleteVarOrList); // list reporter in palette
+			if (isInPalette(block)) {
+				m.addItem('rename list', renameList); // list reporter in palette
+				m.addItem('delete list', deleteVarOrList);
+			}
 			addGenericBlockItems(m);
 			m.addLine()
 		}
@@ -693,6 +696,21 @@ public class BlockMenus implements DragClient {
 			}
 
 			app.runtime.renameVariable(oldName, newName);
+		}
+		var d:DialogBox = new DialogBox(doVarRename);
+		d.addTitle(Translator.map('Rename') + ' ' + blockVarOrListName());
+		d.addField('New name', 120, oldName);
+		d.addAcceptCancelButtons('OK');
+		d.showOnStage(app.stage);
+	}
+
+	private function renameList():void {
+		var oldName:String = blockVarOrListName();
+		function doVarRename(dialog:DialogBox):void {
+			var newName:String = dialog.getField('New name').replace(/^\s+|\s+$/g, '');
+			if (newName.length == 0 || block.op != Specs.GET_LIST) return;
+
+			app.runtime.renameList(oldName, newName);
 		}
 		var d:DialogBox = new DialogBox(doVarRename);
 		d.addTitle(Translator.map('Rename') + ' ' + blockVarOrListName());
