@@ -324,8 +324,11 @@ public class Specs {
 		["pick random %n to %n",		"r", 8, "randomFrom:to:",		1, 10],
 		["-"],
 		["%s < %s",								"b", 8, "<",					"", ""],
+		["%s ≤ %s",								"b", 8, "<=",					"", ""],
 		["%s = %s",								"b", 8, "=",					"", ""],
+		["%s ≠ %s",								"b", 8, "!=",					"", ""],
 		["%s > %s",								"b", 8, ">",					"", ""],
+		["%s ≥ %s",								"b", 8, ">=",					"", ""],
 		["-"],
 		["%b and %b",							"b", 8, "&"],
 		["%b or %b",							"b", 8, "|"],
@@ -395,6 +398,15 @@ public class Specs {
 		["user id",								"r", 99, "getUserId"],
 
 	];
+
+	public static function commandForOp(op:String):Command {
+		for each(var array:Array in commands) {
+			if (array[3] == op)
+				return new Command(array);
+		}
+
+		return null;
+	}
 
 	public static var extensionSpecs:Array = ["when %m.booleanSensor", "when %m.sensor %m.lessMore %n", "sensor %m.booleanSensor?", "%m.sensor sensor value", "turn %m.motor on for %n secs", "turn %m.motor on", "turn %m.motor off", "set %m.motor power to %n", "set %m.motor2 direction to %m.motorDirection", "when distance %m.lessMore %n", "when tilt %m.eNe %n", "distance", "tilt"];
 

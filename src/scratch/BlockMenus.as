@@ -48,7 +48,7 @@ public class BlockMenus implements DragClient {
 	private var blockArg:BlockArg; // null if menu is invoked on a block
 
 	private static const basicMathOps:Array = ['+', '-', '*', '/'];
-	private static const comparisonOps:Array = ['<', '=', '>'];
+	private static const comparisonOps:Array = ['<', '<=', '=', '!=', '>', '>='];
 
 	private static const spriteAttributes:Array = ['x position', 'y position', 'direction', 'costume #', 'costume name', 'size', 'volume'];
 	private static const stageAttributes:Array = ['backdrop #', 'backdrop name', 'volume'];
@@ -544,10 +544,18 @@ public class BlockMenus implements DragClient {
 			if (selection is Function) { selection(); return; }
 			block.changeOperator(selection);
 		}
+
+		function addItem(m: Menu, op: String):void {
+			var command:Command = Specs.commandForOp(op);
+			m.addItem(command.text, function():void {
+				block.changeTextAndOperator(command.text, op);
+			});
+		}
+
 		if (!block) return;
 		var m:Menu = new Menu(opMenu, 'changeOp');
 		addGenericBlockItems(m);
-		if (!isInPalette(block)) for each (var op:String in opList) m.addItem(op);
+		if (!isInPalette(block)) for each (var op:String in opList) addItem(m, op);
 		showMenu(m);
 	}
 
