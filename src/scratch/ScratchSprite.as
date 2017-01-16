@@ -188,40 +188,6 @@ public class ScratchSprite extends ScratchObj {
 	static private var stageRect:Rectangle = new Rectangle(0, 0, 480, 360);
 	static private var emptyRect:Rectangle = new Rectangle(0, 0, 0, 0);
 	static private var edgeBox:Rectangle = new Rectangle(0, 0, 480, 360);
-	public function keepOnStage():void {
-		var myBox:Rectangle;
-		if(width == 0 && height == 0) {
-			emptyRect.x = x;
-			emptyRect.y = y;
-			myBox = emptyRect;
-		}
-		else {
-			myBox = geomShape.getRect(parent);
-			if(myBox.width == 0 || myBox.height == 0) {
-				myBox.x = x;
-				myBox.y = y;
-			}
-			myBox.inflate(3, 3);
-		}
-
-		if(stageRect.containsRect(myBox)) return;
-
-		var inset:int = Math.min(18, Math.min(myBox.width, myBox.height) / 2);
-		edgeBox.x = edgeBox.y = inset;
-		inset += inset;
-		edgeBox.width = 480 - inset;
-		edgeBox.height = 360 - inset;
-		if (myBox.intersects(edgeBox)) return; // sprite is sufficiently on stage
-		if (myBox.right < edgeBox.left)
-			scratchX = Math.ceil(scratchX + (edgeBox.left - myBox.right));
-		if (myBox.left > edgeBox.right)
-			scratchX = Math.floor(scratchX + (edgeBox.right - myBox.left));
-		if (myBox.bottom < edgeBox.top)
-			scratchY = Math.floor(scratchY + (myBox.bottom - edgeBox.top));
-		if (myBox.top > edgeBox.bottom)
-			scratchY = Math.ceil(scratchY + (myBox.top - edgeBox.bottom));
-		setScratchXY(scratchX, scratchY);
-	}
 
 	public function setDirection(d:Number):void {
 		if ((d * 0) != 0) return; // d is +/-Infinity or NaN
