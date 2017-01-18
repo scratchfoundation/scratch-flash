@@ -46,18 +46,24 @@ public class Translator {
 
 	private static var dictionary:Object = {};
 
+	// Get a list of language names for the languages menu from the server.
 	public static function initializeLanguageList():void {
-		// Get a list of language names for the languages menu from the server.
 		function saveLanguageList(data:String):void {
-			if (!data) return;
-			for each (var line:String in data.split('\n')) {
-				var fields:Array = line.split(',');
-				if (fields.length >= 2) {
-					languages.push([StringUtil.trim(fields[0]), StringUtil.trim(fields[1])]);
+			var newLanguages:Array = [];
+			if (data) {
+				for each (var line:String in data.split('\n')) {
+					var fields:Array = line.split(',');
+					if (fields.length >= 2) {
+						newLanguages.push([StringUtil.trim(fields[0]), StringUtil.trim(fields[1])]);
+					}
 				}
 			}
+			else {
+				// Use English as fallback if we can't get the language list
+				newLanguages.push(['en', 'English']);
+			}
+			languages = newLanguages;
 		}
-		languages = [['en', 'English']]; // English is always the first entry
 		Scratch.app.server.getLanguageList(saveLanguageList);
 	}
 

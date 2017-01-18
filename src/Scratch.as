@@ -620,8 +620,12 @@ public class Scratch extends Sprite {
 	}
 
 	public function setProjectName(s:String):void {
-		if (s.slice(-3) == '.sb') s = s.slice(0, -3);
-		if (s.slice(-4) == '.sb2') s = s.slice(0, -4);
+		for (;;) {
+			if (StringUtil.endsWith(s, '.sb')) s = s.slice(0, -3);
+			else if (StringUtil.endsWith(s, '.sb2')) s = s.slice(0, -4);
+			else if (StringUtil.endsWith(s, '.sbx')) s = s.slice(0, -4);
+			else break;
+		}
 		stagePart.setProjectName(s);
 	}
 
