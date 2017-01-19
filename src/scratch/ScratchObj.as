@@ -54,6 +54,7 @@ public class ScratchObj extends Sprite {
 	public var objName:String = 'no name';
 	public var isStage:Boolean = false;
 	public var variables:Array = [];
+	public var varDict:Object = {}; // lookup 'dictionary' for variables
 	public var lists:Array = [];
 	public var scripts:Array = [];
 	public var scriptComments:Array = [];
@@ -435,10 +436,7 @@ public class ScratchObj extends Sprite {
 
 	public function ownsVar(varName:String):Boolean {
 		// Return true if this object owns a variable of the given name.
-		for each (var v:Variable in variables) {
-			if (v.name == varName) return true;
-		}
-		return false;
+		return varDict["var_"+varName]!=null;
 	}
 
 	public function hasName(varName:String):Boolean {
@@ -452,6 +450,7 @@ public class ScratchObj extends Sprite {
 		if (v == null) { // not found; create it
 			v = new Variable(varName, 0);
 			variables.push(v);
+			varDict["var_"+varName] = v;
 			Scratch.app.updatePalette(false);
 		}
 		return v;
@@ -460,14 +459,8 @@ public class ScratchObj extends Sprite {
 	public function lookupVar(varName:String):Variable {
 		// Look for variable first in sprite (local), then stage (global).
 		// Return null if not found.
-		var v:Variable;
-		for each (v in variables) {
-			if (v.name == varName) return v;
-		}
-		for each (v in Scratch.app.stagePane.variables) {
-			if (v.name == varName) return v;
-		}
-		return null;
+		var v:Variable = varDict["var_"+varName];
+		return v ? v : Scratch.app.stagePane.varDict["var_"+varName];
 	}
 
 	public function deleteVar(varToDelete:String):void {
@@ -478,6 +471,7 @@ public class ScratchObj extends Sprite {
 					v.watcher.parent.removeChild(v.watcher);
 				}
 				v.watcher = v.value = null;
+				delete varDict["var_"+v.name];
 			}
 			else newVars.push(v);
 		}
@@ -604,6 +598,7 @@ public class ScratchObj extends Sprite {
 		for (var i:int = 0; i < variables.length; i++) {
 			var varObj:Object = variables[i];
 			variables[i] = Scratch.app.runtime.makeVariable(varObj);
+			varDict["var_"+variables[i].name] = variables[i];
 		}
 		lists = jsonObj.lists || [];
 		scripts = jsonObj.scripts || [];

@@ -121,6 +121,7 @@ public class ScratchSprite extends ScratchObj {
 		for (i = 0; i < spr.variables.length; i++) {
 			var v:Variable = spr.variables[i];
 			variables.push(new Variable(v.name, v.value));
+			varDict["var_"+v.name] = variables[i];
 		}
 		for (i = 0; i < spr.lists.length; i++) {
 			var lw:ListWatcher = spr.lists[i];
