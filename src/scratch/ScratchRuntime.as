@@ -1027,10 +1027,12 @@ public class ScratchRuntime {
 		clearAllCaches();
 	}
 
-	public function allVarNames():Array {
+	public function VarNames(stage:Boolean, sprite:Boolean):Array {
 		var result:Array = [], v:Variable;
-		for each (v in app.stageObj().variables) result.push(v.name);
-		if (!app.viewedObj().isStage) {
+		if (stage) {
+			for each (v in app.stageObj().variables) result.push(v.name);
+		}
+		if (sprite && !app.viewedObj().isStage) {
 			for each (v in app.viewedObj().variables) result.push(v.name);
 		}
 		return result;
@@ -1076,9 +1078,12 @@ public class ScratchRuntime {
 	// Lists
 	//------------------------------
 
-	public function allListNames():Array {
-		var result:Array = app.stageObj().listNames();
-		if (!app.viewedObj().isStage) {
+	public function ListNames(stage:Boolean, sprite:Boolean):Array {
+		var result:Array = [];
+		if (stage) {
+			result = app.stageObj().listNames();
+		}
+		if (sprite && !app.viewedObj().isStage) {
 			result = result.concat(app.viewedObj().listNames());
 		}
 		return result;

@@ -632,12 +632,12 @@ public class BlockMenus implements DragClient {
 		}
 		var myName:String = isGetter ? blockVarOrListName() : null;
 		var listName:String;
-		for each (listName in app.stageObj().listNames()) {
+		for each (listName in app.stageObj().listNames().sort()) {
 			if (listName != myName) m.addItem(listName);
 		}
 		if (!app.viewedObj().isStage) {
 			m.addLine();
-			for each (listName in app.viewedObj().listNames()) {
+			for each (listName in app.viewedObj().listNames().sort()) {
 				if (listName != myName) m.addItem(listName);
 			}
 		}
@@ -655,12 +655,12 @@ public class BlockMenus implements DragClient {
 			if (isGetter) addGenericBlockItems(m);
 			var myName:String = blockVarOrListName();
 			var vName:String;
-			for each (vName in app.stageObj().varNames()) {
+			for each (vName in app.stageObj().varNames().sort()) {
 				if (!isGetter || (vName != myName)) m.addItem(vName);
 			}
 			if (!app.viewedObj().isStage) {
 				m.addLine();
-				for each (vName in app.viewedObj().varNames()) {
+				for each (vName in app.viewedObj().varNames().sort()) {
 					if (!isGetter || (vName != myName)) m.addItem(vName);
 				}
 			}
