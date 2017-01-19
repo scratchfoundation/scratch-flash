@@ -311,8 +311,9 @@ public class Interpreter {
 			else b.opFunction = (primTable[op] == undefined) ? primNoop : primTable[op];
 		}
 
-		// TODO: Optimize this into a cached check if the args *could* block at all
-		if(b.args.length && checkBlockingArgs(b)) {
+		// TLF: blockingCount value is propagated up through blocks, so only
+		// need to yield if it finds a non-zero blockingCount
+		if(b.blockingCount) {
 			doYield();
 			return null;
 		}
@@ -325,7 +326,7 @@ public class Interpreter {
 	}
 
 	// Returns true if the thread needs to yield while data is requested
-	public function checkBlockingArgs(b:Block):Boolean {
+/*	public function checkBlockingArgs(b:Block):Boolean {
 		// Do any of the arguments request data?  If so, start any requests and yield.
 		var shouldYield:Boolean = false;
 		var args:Array = b.args;
@@ -344,7 +345,7 @@ public class Interpreter {
 		}
 
 		return shouldYield;
-	}
+	}*/
 
 	public function arg(b:Block, i:int):* {
 		var args:Array = b.args;

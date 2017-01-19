@@ -87,6 +87,7 @@ public class Block extends Sprite {
 	public var requestState:int = 0;		// 0 - no request made, 1 - awaiting response, 2 - data ready
 	public var response:* = null;
 	public var requestLoader:URLLoader = null;
+	public var blockingCount:int = 0;
 
 	public var nextBlock:Block;
 	public var subStack1:Block;
@@ -1075,5 +1076,50 @@ public class Block extends Sprite {
 	protected static function indent(s:String):String {
 		return s.replace(/^/gm, "    ");
 	}
+
+	/* Blocking */
+
+	public function resetBlockingCount():void {
+		// should be called for a top stack block - resets all blocks in stack
+		resetArgsBlockingCount();
+		if(subStack1) subStack1.resetBlockingCount();
+		if(subStack2) subStack2.resetBlockingCount();
+		if(nextBlock) nextBlock.resetBlockingCount();
+	}
+
+	public function resetArgsBlockingCount():void {
+		// descend through all block's args, resetting to zero
+		blockingCount = 0;
+		var args:Array = this.args;
+		for(var i:uint=0; i<args.length; ++i) {
+			var barg:Block = args[i] as Block;
+			if(barg) barg.resetArgsBlockingCount();
+		}
+	}
+
+	public function increaseBlockingCount():void {
+		// increase blockingCount up the chain
+		// TLF: is it only the top level block that needs changing?
+		var b:Block = this;
+		while (true) {
+			b.blockingCount++;
+			if (b.parent is Block) b = Block(b.parent)
+			else return;
+		}
+		return; // never gets here
+	}
+
+	public function decreaseBlockingCount():void {
+		// decrease blockingCount up the chain
+		// TLF: is it only the top level block that needs changing?
+		var b:Block = this;
+		while (true) {
+			if(b.blockingCount>0) b.blockingCount--; // TLF: just in case...
+			if (b.parent is Block) b = Block(b.parent)
+			else return;
+		}
+		return; // never gets here
+	}
+
 
 }}

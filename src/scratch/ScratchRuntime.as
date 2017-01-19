@@ -525,6 +525,8 @@ public class ScratchRuntime {
 		}
 		app.removeLoadProgressBox();
 		motionDetector = null;
+		// TLF: should a clicked stack also clear its blockingCounts before running?
+		resetAllBlockingCounts();
 	}
 
 	// -----------------------------
@@ -1328,6 +1330,14 @@ public class ScratchRuntime {
 			}
 		});
 		clearAllCaches();
+	}
+
+	public function resetAllBlockingCounts():void {
+		// reset blockingCount for all blocks in each stack
+		var stackList:Array = allStacks();
+		for each (var stack:Block in stackList) {
+			if(stack) stack.resetBlockingCount(); // TLF: can it ever give null stack...?
+		}
 	}
 
 	public function allStacks():Array {
