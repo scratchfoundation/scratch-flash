@@ -92,7 +92,7 @@ public class BlockMenus implements DragClient {
 		if (menuName == 'spriteOnly') menuHandler.spriteMenu(evt, false, false, false, true, false);
 		if (menuName == 'spriteOrMouse') menuHandler.spriteMenu(evt, true, false, false, false, false);
 		if (menuName == 'location') menuHandler.spriteMenu(evt, true, false, false, false, true);
-		if (menuName == 'spriteOrStage') menuHandler.spriteMenu(evt, false, false, true, false, false);
+		if (menuName == 'spriteOrStage') menuHandler.spriteMenu(evt, false, false, true, true, false);
 		if (menuName == 'touching') menuHandler.spriteMenu(evt, true, true, false, false, false);
 		if (menuName == 'stageOrThis') menuHandler.stageOrThisSpriteMenu(evt);
 		if (menuName == 'stop') menuHandler.stopMenu(evt);
@@ -430,17 +430,13 @@ public class BlockMenus implements DragClient {
 		if (includeRandom) m.addItem(Translator.map('random position'), 'random position');
 		if (includeEdge) m.addItem(Translator.map('edge'), 'edge');
 		m.addLine();
-		if (includeStage) {
-			m.addItem(Translator.map('Stage'), 'Stage');
-			m.addLine();
-		}
-		if (includeSelf && !app.viewedObj().isStage) {
-			m.addItem(Translator.map('myself'), 'myself');
-			m.addLine();
-			spriteNames.push(app.viewedObj().objName);
-		}
+
+		if (includeStage) m.addItem(Translator.map('Stage'), 'Stage');
+		if (includeSelf && !app.viewedObj().isStage) m.addItem(Translator.map('myself'), 'myself');
+		m.addLine();
+
 		for each (var sprite:ScratchSprite in app.stagePane.sprites()) {
-			if (sprite != app.viewedObj()) spriteNames.push(sprite.objName);
+			spriteNames.push(sprite.objName);
 		}
 		spriteNames.sort(Array.CASEINSENSITIVE);
 		for each (var spriteName:String in spriteNames) {
