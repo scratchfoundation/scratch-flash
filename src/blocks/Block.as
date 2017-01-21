@@ -75,6 +75,7 @@ public class Block extends Sprite {
 	public var parameterNames:Array;	// used by procedure definition hats; null for other blocks
 	public var warpProcFlag:Boolean;	// used by procedure definition hats to indicate warp speed
 	public var rightToLeft:Boolean;
+	public var scriptBrowserBlock:Boolean;
 
 	public var isHat:Boolean = false;
 	public var isAsyncHat:Boolean = false;
@@ -179,6 +180,7 @@ public class Block extends Sprite {
 		}
 		addChildAt(base, 0);
 		setSpec(this.spec, defaultArgs);
+		scriptBrowserBlock = false;
 
 		addEventListener(FocusEvent.KEY_FOCUS_CHANGE, focusChange);
 	}
@@ -259,14 +261,24 @@ public class Block extends Sprite {
 		return rightToLeft ? args.concat().reverse() : args;
 	}
 
-	public function changeOperator(newOp:String):void {
-		// Used to switch among a family of related operators (e.g. +, -, *, and /).
-		// Note: This does not deal with translation, so it only works for symbolic operators.
-		for each (var item:* in labelsAndArgs) {
-			if ((item is TextField) && (item.text == op)) item.text = newOp;
-		}
-		op = newOp;
+	public function relabel(newSpec:String, newOp:String):void {
+		// Used to "relabel" a block to have a new spec and operator, but without
+		// changing its inputs.
+		var oldArgs:Array = args.slice(0);
+
 		opFunction = null;
+
+		op = newOp;
+		setSpec(newSpec, []);
+
+		for (var i:int = 0; i < oldArgs.length; i++) {
+			if (oldArgs[i] is BlockArg) {
+				setArg(i, oldArgs[i].argValue);
+			} else {
+				// For block inputs
+				setArg(i, oldArgs[i]);
+			}
+		}
 		fixArgLayout();
 	}
 
@@ -859,6 +871,10 @@ public class Block extends Sprite {
 		}
 	}
 
+	public function showSpec():void {
+		DialogBox.notify('spec/op', 'Spec: ' + spec + '\nOp: ' + op);
+	}
+
 	public function duplicateStack(deltaX:Number, deltaY:Number):void {
 		if (isProcDef() || op == 'proc_declaration') return; // don't duplicate procedure definition
 		var forStage:Boolean = Scratch.app.viewedObj() && Scratch.app.viewedObj().isStage;
@@ -885,6 +901,8 @@ public class Block extends Sprite {
 		// TODO: Remove any waiting reporter data in the Scratch.app.extensionManager
 		if (parent is Block) Block(parent).removeBlock(this);
 		else if (parent) parent.removeChild(this);
+		removeFromParentObjScriptList();
+
 		this.cacheAsBitmap = false;
 		// set position for undelete
 		x = top.x;
@@ -895,6 +913,16 @@ public class Block extends Sprite {
 		SCRATCH::allow3d { app.runtime.checkForGraphicEffects(); }
 		app.updatePalette();
 		return true;
+	}
+
+	public function removeFromParentObjScriptList():void {
+		// Remove from the Scratch object that holds the block, if it's in the
+		// object's script array
+		var obj:ScratchObj = Scratch.app.viewedObj();
+		var index:int = obj.scripts.indexOf(this);
+		if (index >= 0) {
+			obj.scripts.splice(index, 1);
+		}
 	}
 
 	public function attachedCommentsIn(scriptsPane:ScriptsPane):Array {
@@ -921,13 +949,58 @@ public class Block extends Sprite {
 	/* Dragging */
 
 	public function objToGrab(evt:MouseEvent):Block {
+		if (scriptBrowserBlock) return makeSenderBlock();
 		if (isEmbeddedParameter() || isInPalette()) return duplicate(false, Scratch.app.viewedObj() is ScratchStage);
 		return this;
 	}
 
+	private static const eventsColor:int = Specs.blockColor(Specs.eventsCategory);
+	private static const controlColor:int = Specs.blockColor(Specs.controlCategory);
+	private static const looksColor:int = Specs.blockColor(Specs.looksCategory);
+
+	public function makeSenderBlock():Block {
+		// Make a new block that would call this (hat) block, if such a block
+		// exists. Otherwise just return a duplicate of this block. Used when
+		// dragging a script browser block.
+
+		var b:Block;
+
+		if (op === Specs.PROCEDURE_DEF) {
+			b = new Block(spec, ' ', Specs.procedureColor, Specs.CALL, defaultArgValues);
+			return b;
+		}
+
+		if (op === 'whenIReceive') {
+			b = new Block('broadcast %m.broadcast', ' ', eventsColor, 'broadcast:');
+			b.setArg(0, getNormalizedArg(0).argValue);
+			return b;
+		}
+
+		if (op === 'whenCloned') {
+			b = new Block('create clone of %m.spriteOnly', ' ', controlColor, 'createCloneOf');
+			b.setArg(0, 'myself');
+			return b;
+		}
+
+		if (op === 'whenSceneStarts') {
+			b = new Block('switch backdrop to %m.backdrop', ' ', looksColor, 'startScene');
+			b.setArg(0, getNormalizedArg(0).argValue);
+			return b;
+		}
+
+		return this.duplicate(false, Scratch.app.viewedObj() is ScratchStage);
+	}
+
 	/* Events */
 
+	public var clickOverride:Function;
+
 	public function click(evt:MouseEvent):void {
+		if (clickOverride !== null) {
+			clickOverride();
+			return;
+		}
+
 		if (editArg(evt)) return;
 		Scratch.app.runtime.interp.toggleThread(topBlock(), Scratch.app.viewedObj(), 1);
 	}

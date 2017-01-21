@@ -61,8 +61,8 @@ public class BlockMenus implements DragClient {
 			if (op == Specs.GET_VAR) menuName = 'var';
 			if ((op == Specs.PROCEDURE_DEF) || (op == Specs.CALL)) menuName = 'procMenu';
 			if ((op == 'broadcast:') || (op == 'doBroadcastAndWait') || (op == 'whenIReceive')) menuName = 'broadcastInfoMenu';
-			if ((basicMathOps.indexOf(op)) > -1) { menuHandler.changeOpMenu(evt, basicMathOps); return; }
-			if ((comparisonOps.indexOf(op)) > -1) { menuHandler.changeOpMenu(evt, comparisonOps); return; }
+			if ((basicMathOps.indexOf(op)) > -1) { menuHandler.changeOpMenu(evt, basicMathOps, '%n'); return; }
+			if ((comparisonOps.indexOf(op)) > -1) { menuHandler.changeOpMenu(evt, comparisonOps, '%s'); return; }
 			if (menuName == null) { menuHandler.genericBlockMenu(evt); return; }
 		}
 		if (ExtensionManager.hasExtensionPrefix(op) && menuHandler.extensionMenu(evt, menuName)) return;
@@ -532,6 +532,7 @@ public class BlockMenus implements DragClient {
 			m.addItem('add comment', block.addComment);
 		}
 		m.addItem('help', block.showHelp);
+		//m.addItem('show spec', block.showSpec);
 		m.addLine();
 	}
 
@@ -539,10 +540,11 @@ public class BlockMenus implements DragClient {
 		block.duplicateStack(app.mouseX - startX, app.mouseY - startY);
 	}
 
-	private function changeOpMenu(evt:MouseEvent, opList:Array):void {
+	private function changeOpMenu(evt:MouseEvent, opList:Array, inputType:String):void {
 		function opMenu(selection:*):void {
 			if (selection is Function) { selection(); return; }
-			block.changeOperator(selection);
+			var op:String = selection;
+			block.relabel(inputType + ' ' + op + ' ' + inputType, op);
 		}
 		if (!block) return;
 		var m:Menu = new Menu(opMenu, 'changeOp');
@@ -568,14 +570,8 @@ public class BlockMenus implements DragClient {
 		if (block.op != Specs.CALL) return;
 		var def:Block = app.viewedObj().lookupProcedure(block.spec);
 		if (!def) return;
-		var pane:ScriptsPane = def.parent as ScriptsPane;
-		if (!pane) return;
-		if (pane.parent is ScrollFrame) {
-		   pane.x = 5 - def.x*pane.scaleX;
-		   pane.y = 5 - def.y*pane.scaleX;
-		   (pane.parent as ScrollFrame).constrainScroll();
-		   (pane.parent as ScrollFrame).updateScrollbars();
-		}
+
+		app.selectScript(def);
 	}
 
 	private function editProcSpec():void {
@@ -584,6 +580,7 @@ public class BlockMenus implements DragClient {
 			if (!def) return;
 			block = def;
 		}
+		app.selectScript(block);
 		var d:DialogBox = new DialogBox(editSpec2);
 		d.addTitle('Edit Block');
 		d.addWidget(new ProcedureSpecEditor(block.spec, block.parameterNames, block.warpProcFlag));
@@ -632,14 +629,14 @@ public class BlockMenus implements DragClient {
 		}
 		var myName:String = isGetter ? blockVarOrListName() : null;
 		var listName:String;
-		for each (listName in app.stageObj().listNames()) {
-			if (listName != myName) m.addItem(listName);
-		}
 		if (!app.viewedObj().isStage) {
-			m.addLine();
 			for each (listName in app.viewedObj().listNames()) {
 				if (listName != myName) m.addItem(listName);
 			}
+			m.addLine();
+		}
+		for each (listName in app.stageObj().listNames()) {
+			if (listName != myName) m.addItem(listName);
 		}
 		showMenu(m);
 	}
@@ -655,14 +652,14 @@ public class BlockMenus implements DragClient {
 			if (isGetter) addGenericBlockItems(m);
 			var myName:String = blockVarOrListName();
 			var vName:String;
-			for each (vName in app.stageObj().varNames()) {
-				if (!isGetter || (vName != myName)) m.addItem(vName);
-			}
 			if (!app.viewedObj().isStage) {
-				m.addLine();
 				for each (vName in app.viewedObj().varNames()) {
 					if (!isGetter || (vName != myName)) m.addItem(vName);
 				}
+				m.addLine();
+			}
+			for each (vName in app.stageObj().varNames()) {
+				if (!isGetter || (vName != myName)) m.addItem(vName);
 			}
 		}
 		showMenu(m);
@@ -834,8 +831,11 @@ public class BlockMenus implements DragClient {
 				if (selection == 'show receivers') sprites = app.runtime.allReceiversOfBroadcast(msg);
 			}
 			if (selection == 'clear senders/receivers') sprites = [];
+			if (selection == '..and wait') block.relabel('broadcast %m.broadcast and wait', 'doBroadcastAndWait');
+			if (selection == '..no wait') block.relabel('broadcast %m.broadcast', 'broadcast:');
 			if (sprites!=null) app.highlightSprites(sprites);
 		}
+
 		var m:Menu = new Menu(showBroadcasts, 'broadcastInfo');
 		addGenericBlockItems(m);
 		if (!isInPalette(block)) {
@@ -846,6 +846,9 @@ public class BlockMenus implements DragClient {
 				m.addItem('show receivers');
 			}
 			m.addItem('clear senders/receivers');
+
+			if (block.op === 'broadcast:') m.addItem('..and wait');
+			else if (block.op === 'doBroadcastAndWait') m.addItem('..no wait');
 		}
 		showMenu(m);
 	}
