@@ -82,6 +82,7 @@ public class BlockMenus implements DragClient {
 		if (menuName == 'listDeleteItem') menuHandler.listItem(evt, true);
 		if (menuName == 'listItem') menuHandler.listItem(evt, false);
 		if (menuName == 'mathOp') menuHandler.mathOpMenu(evt);
+	        if (menuName == 'bitwiseOp') menuHandler.bitwiseOpMenu(evt);
 		if (menuName == 'motorDirection') menuHandler.motorDirectionMenu(evt);
 		if (menuName == 'note') menuHandler.notePicker(evt);
 		if (menuName == 'procMenu') menuHandler.procMenu(evt);
@@ -125,6 +126,7 @@ public class BlockMenus implements DragClient {
 			handler.listItem(evt, true);
 			handler.listItem(evt, false);
 			handler.mathOpMenu(evt);
+			handler.bitwiseOpMenu(evt);
 			handler.motorDirectionMenu(evt);
 			handler.procMenu(evt);
 			handler.rotationStyleMenu(evt);
@@ -338,6 +340,13 @@ public class BlockMenus implements DragClient {
 		for each (var op:String in ops) m.addItem(op);
 		showMenu(m);
 	}
+    
+   	private function bitwiseOpMenu(evt:MouseEvent):void {
+        	var ops:Array = ['and', 'or', 'xor', 'shift left', 'shift right'];
+        	var m:Menu = new Menu(setBlockArg, 'bitwiseOpMenu');
+        	for each (var op:String in ops) m.addItem(op);
+        	showMenu(m);
+    	}
 
 	private function motorDirectionMenu(evt:MouseEvent):void {
 		var ops:Array = ['this way', 'that way', 'reverse'];
