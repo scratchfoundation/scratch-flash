@@ -174,6 +174,9 @@ public class ScratchObj extends Sprite {
 		var change:Boolean = (currChild != currDispObj);
 		if(change) {
 			while (img.numChildren > 0) img.removeChildAt(0);
+			if (!(currDispObj is Bitmap)) {
+				currDispObj.blendMode = BlendMode.LAYER;
+			}
 			img.addChild(currDispObj);
 		}
 		clearCachedBitmap();
