@@ -51,7 +51,6 @@ Scratch.swf
 ```
 
 Please note that the Scratch trademarks (including the Scratch name, logo, Scratch Cat, and Gobo) are property of MIT. For use of these Marks, please see the [Scratch Trademark Policy](http://wiki.scratch.mit.edu/wiki/Scratch_1.4_Source_Code#Scratch_Trademark_Policy).
-
 ### Debugging
 Here are a few integrated development environments available with Flash debugging support:
 * [Intellij IDEA](http://www.jetbrains.com/idea/features/flex_ide.html)
