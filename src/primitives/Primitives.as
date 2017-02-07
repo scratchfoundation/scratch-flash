@@ -53,6 +53,8 @@ public class Primitives {
 		primTable["<"]				= function(b:*):* { return compare(interp.arg(b, 0), interp.arg(b, 1)) < 0 };
 		primTable["="]				= function(b:*):* { return compare(interp.arg(b, 0), interp.arg(b, 1)) == 0 };
 		primTable[">"]				= function(b:*):* { return compare(interp.arg(b, 0), interp.arg(b, 1)) > 0 };
+		primTable["<="]				= function(b:*):* { return compare(interp.arg(b, 0), interp.arg(b, 1)) <= 0 };
+		primTable[">="]				= function(b:*):* { return compare(interp.arg(b, 0), interp.arg(b, 1)) >= 0 };
 		primTable["&"]				= function(b:*):* { return interp.arg(b, 0) && interp.arg(b, 1) };
 		primTable["|"]				= function(b:*):* { return interp.arg(b, 0) || interp.arg(b, 1) };
 		primTable["not"]			= function(b:*):* { return !interp.arg(b, 0) };

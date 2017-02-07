@@ -48,7 +48,7 @@ public class BlockMenus implements DragClient {
 	private var blockArg:BlockArg; // null if menu is invoked on a block
 
 	private static const basicMathOps:Array = ['+', '-', '*', '/'];
-	private static const comparisonOps:Array = ['<', '=', '>'];
+	private static const comparisonOps:Array = ['<', '=', '>', '<=', '>='];
 
 	private static const spriteAttributes:Array = ['x position', 'y position', 'direction', 'costume #', 'costume name', 'size', 'volume'];
 	private static const stageAttributes:Array = ['backdrop #', 'backdrop name', 'volume'];

@@ -211,7 +211,7 @@ public class Block extends Sprite {
 		rightToLeft = Translator.rightToLeft;
 		if (rightToLeft) {
 			if (['+', '-', '*', '/', '%'].indexOf(op) > -1) rightToLeft = Translator.rightToLeftMath;
-			if (['>', '<'].indexOf(op) > -1) rightToLeft = false; // never change order of comparison ops
+			if (['<=', '<', '>','>='].indexOf(op) > -1) rightToLeft = false; // never change order of comparison ops
 		}
 		if (rightToLeft) {
 			// reverse specs that don't start with arg specifier or an ASCII character
