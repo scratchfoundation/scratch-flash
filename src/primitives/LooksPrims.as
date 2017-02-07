@@ -27,6 +27,7 @@ package primitives {
 	import blocks.*;
 	import interpreter.*;
 	import scratch.*;
+	import util.DebugUtils;
 
 public class LooksPrims {
 
@@ -56,6 +57,10 @@ public class LooksPrims {
 		primTable['say:']							= function(b:*):* { showBubble(b, 'talk') };
 		primTable['think:duration:elapsed:from:']	= function(b:*):* { showBubbleAndWait(b, 'think') };
 		primTable['think:']							= function(b:*):* { showBubble(b, 'think') };
+
+		if (DebugUtils.IsDebug) {
+			primTable['trace:'] = function(b:Block):* { trace(interp.arg(b, 0)) };
+		}
 
 		primTable['changeGraphicEffect:by:'] = primChangeEffect;
 		primTable['setGraphicEffect:to:']	= primSetEffect;

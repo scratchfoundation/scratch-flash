@@ -28,6 +28,7 @@
 package {
 	import flash.display.Bitmap;
 	import assets.Resources;
+	import util.DebugUtils;
 
 public class Specs {
 
@@ -48,12 +49,14 @@ public class Specs {
 	public static const myBlocksCategory:int = 10;
 	public static const listCategory:int = 12;
 	public static const extensionsCategory:int = 20;
+	public static const debugCategory:int = 999;
 
 	public static var variableColor:int = 0xEE7D16; // Scratch 1.4: 0xF3761D
 	public static var listColor:int = 0xCC5B22; // Scratch 1.4: 0xD94D11
 	public static var procedureColor:int = 0x632D99; // 0x531E99;
 	public static var parameterColor:int = 0x5947B1;
 	public static var extensionsColor:int = 0x4B4A60; // 0x72228C; // 0x672D79;
+	public static var debugColor:int = 0xA0A0A0;
 
 	private static const undefinedColor:int = 0xD42828;
 
@@ -72,7 +75,7 @@ public class Specs {
 		[10, "More Blocks",	procedureColor],
 		[11, "Parameter",	parameterColor],
 		[12, "List",		listColor],
-		[20, "Extension",	extensionsColor],
+		[20, "Extension",	extensionsColor]
 	];
 
 	public static function blockColor(categoryID:int):int {
@@ -392,9 +395,21 @@ public class Specs {
 
 		// other obsolete blocks from alpha/beta
 		["hide all sprites",					" ", 99, "hideAll"],
-		["user id",								"r", 99, "getUserId"],
+		["user id",								"r", 99, "getUserId"]
 
 	];
+
+	if (DebugUtils.IsDebug) {
+		commands.push(["trace %s", " ", 13, "trace:"]);
+		commands.push(["version", "r", 13, "version"]);
+		commands.push(["os", "r", 13, "os"]);
+		commands.push(["player type", "r", 13, "playertype"]);
+		commands.push(["language", "r", 13, "language"]);
+		commands.push(["manufacturer", "r", 13, "manufacturer"]);
+		commands.push(["has mp3?", "b", 13, "hasmp3"]);
+
+		categories.push([13, "Debug", debugColor]);
+	}
 
 	public static var extensionSpecs:Array = ["when %m.booleanSensor", "when %m.sensor %m.lessMore %n", "sensor %m.booleanSensor?", "%m.sensor sensor value", "turn %m.motor on for %n secs", "turn %m.motor on", "turn %m.motor off", "set %m.motor power to %n", "set %m.motor2 direction to %m.motorDirection", "when distance %m.lessMore %n", "when tilt %m.eNe %n", "distance", "tilt"];
 
