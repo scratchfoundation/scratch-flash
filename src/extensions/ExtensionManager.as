@@ -159,6 +159,31 @@ public class ExtensionManager {
 		}
 	}
 
+	// Retrieve all specs from all loaded extensions. Used by the translation system.
+	// Remember to load all relevant extensions before exporting translation strings!
+	public function getExtensionSpecs():Array {
+		var missingExtensions:Array = [];
+		var specs:Array = [];
+		for (var extName:String in extensionDict) {
+			var ext:ScratchExtension = extensionDict[extName];
+			if (ext.blockSpecs.length > 0) {
+				ext.blockSpecs.forEach(
+						function (fullSpec:Array, ...ignored):void {
+							specs.push(fullSpec[1]);
+						});
+			}
+			else {
+				missingExtensions.push(extName);
+			}
+		}
+		if (missingExtensions.length > 0) {
+			DialogBox.notify(
+					'Missing block specs', 'Block specs were missing for some extensions.\n' +
+					'Please load these extensions and try again:\n' + missingExtensions.join(', '));
+		}
+		return specs;
+	}
+
 	// -----------------------------
 	// Enable/disable/reset
 	//------------------------------
