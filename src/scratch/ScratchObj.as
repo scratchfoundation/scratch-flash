@@ -466,7 +466,7 @@ public class ScratchObj extends Sprite {
 	public function varNames():Array {
 		var varList:Array = [];
 		for each (var v:Variable in variables) {
-			if (v.name.indexOf('$$broadcast') !== 0) {
+			if (v.name.indexOf(Specs.BROADCAST_VAR_PREFIX) !== 0) {
 				varList.push(v.name);
 			}
 		}
@@ -707,12 +707,11 @@ public class ScratchObj extends Sprite {
 	}
 
 	public function addJSONScripts(scriptEntries:Array):void {
-		for (var i = 0; i < scriptEntries.length; i++) {
+		for each (var entry:Array in scriptEntries) {
 			// Entries are of the form [x, y, stack]
-			var entry:Array = scriptEntries[i];
 			var b:Block = BlockIO.arrayToStack(entry[2], isStage);
 			b.x = entry[0];
-			b.y = entry[0];
+			b.y = entry[1];
 			scripts.push(b);
 		}
 	}

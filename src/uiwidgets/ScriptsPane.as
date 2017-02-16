@@ -44,6 +44,8 @@ public class ScriptsPane extends ScrollFrameContents {
 	public var app:Scratch;
 	public var padding:int = 10;
 
+	public var viewedScript:Block;
+
 	private var viewedObj:ScratchObj;
 	private var commentLines:Shape;
 
@@ -86,6 +88,7 @@ public class ScriptsPane extends ScrollFrameContents {
 
 	public function viewScriptsFor(obj:ScratchObj):void {
 		// View the blocks for the given object.
+		viewedScript = null;
 		saveScripts(false);
 		while (numChildren > 0) {
 			var child:DisplayObject = removeChildAt(0);
@@ -116,6 +119,8 @@ public class ScriptsPane extends ScrollFrameContents {
 			var child:DisplayObject = removeChildAt(0);
 			child.cacheAsBitmap = false;
 		}
+
+		viewedScript = block;
 
 		// No comments for now
 

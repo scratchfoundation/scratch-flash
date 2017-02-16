@@ -1634,6 +1634,7 @@ public class Scratch extends Sprite {
 
 	public function selectScript(script:Block):void {
 		scriptsPane.viewOneScript(script);
+		updatePalette();
 	}
 
 	// -----------------------------

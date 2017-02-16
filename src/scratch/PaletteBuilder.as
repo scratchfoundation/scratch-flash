@@ -36,6 +36,7 @@ import flash.net.*;
 import flash.text.*;
 
 import translation.Translator;
+import interpreter.Variable;
 
 import ui.ProcedureSpecEditor;
 import ui.media.MediaLibrary;
@@ -181,6 +182,23 @@ public class PaletteBuilder {
     var catColor:int = Specs.variableColor;
     var getSpec:String = Specs.GET_VAR;
 
+    // Broadcast variables, if a when-I-receive is selected
+    var stg:ScratchStage = app.stagePane;
+    var viewedScript:Block = app.scriptsPane.viewedScript;
+    if (viewedScript && viewedScript.op === 'whenIReceive') {
+      for each (var v:Variable in stg.variables) {
+        var n:String = v.name;
+        if (n.indexOf(Specs.BROADCAST_VAR_PREFIX) === 0) {
+          var msg:String = viewedScript.getNormalizedArg(0).argValue;
+          var len:int = Specs.BROADCAST_VAR_PREFIX.length;
+          if (n.indexOf(msg, len) === len) {
+            addVariableCheckbox(n, false);
+            addItem(new Block(n, 'r', Specs.blockColor(Specs.eventsCategory), getSpec));
+          }
+        }
+      }
+    }
+
     // variable buttons, reporters, and set/change blocks
     addItem(new Button(Translator.map('Make a Variable'), makeVariable));
 
@@ -191,28 +209,22 @@ public class PaletteBuilder {
       }
     }
 
-    var anyVars:Boolean = false;
-
     if (!(app.viewedObj().isStage)) {
       var localVarNames:Array = app.viewedObj().varNames();
       if (localVarNames.length > 0) {
         addBlocks(localVarNames);
         addSeparator();
-        anyVars = true;
       }
     }
 
     var stageVarNames:Array = app.stageObj().varNames();
     if (stageVarNames.length > 0) {
       addBlocks(stageVarNames);
-      anyVars = true;
     }
 
-    if (anyVars) {
-      nextY += 10;
-      addBlocksForCategory(Specs.dataCategory, catColor);
-      nextY += 15;
-    }
+    nextY += 10;
+    addBlocksForCategory(Specs.dataCategory, catColor);
+    nextY += 15;
 
     // lists
     catColor = Specs.listColor;
@@ -358,7 +370,7 @@ public class PaletteBuilder {
          ["bc", "var", "value"], ["", "", ""], false],
         ["setVar:to:",
          ["concatenate:with:",
-          "$$broadcast-",
+          Specs.BROADCAST_VAR_PREFIX,
           ["concatenate:with:",
            ["getParam", "bc", "r"],
            ["concatenate:with:",
@@ -366,6 +378,8 @@ public class PaletteBuilder {
          ["getParam", "value", "r"]]
       ]]
     ]);
+
+    app.updatePalette()
   }
 
   protected function addReporterCheckbox(block:Block):void {
