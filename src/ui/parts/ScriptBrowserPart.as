@@ -109,7 +109,7 @@ public class ScriptBrowserPart extends UIPart {
   }
 
   public function getSortedScriptsFromObj(obj:ScratchObj):Array {
-    var scripts:Array = obj.scripts.slice(0);
+    var scripts:Array = obj.visibleScripts();
 
     return obj.sortScriptsArray(scripts);
   }
