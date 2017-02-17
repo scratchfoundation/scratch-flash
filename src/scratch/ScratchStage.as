@@ -195,6 +195,10 @@ public class ScratchStage extends ScratchObj {
 	public function collectBroadcastVarNames(msg:String):Array {
 		// Gets all global (i.e. stage) variables that have names that follow the
 		// format BROADCAST_VAR_PREFIX + msg + '>' + (some name).
+		//
+		// Returns an array of arrays, in the format [name, actual name], where
+		// name is the (some name) part of the format and actual name is the real
+		// variable name.
 
 		var result:Array = [];
 		for each (var v:Variable in variables) {
@@ -202,7 +206,10 @@ public class ScratchStage extends ScratchObj {
 			if (n.indexOf(Specs.BROADCAST_VAR_PREFIX) === 0) {
 				var len:int = Specs.BROADCAST_VAR_PREFIX.length;
 				if (n.indexOf(msg + '>', len) === len) {
-					result.push(n.slice(len + msg.length + 1));
+					result.push([
+						n.slice(len + msg.length + 1),
+						n
+					]);
 				}
 			}
 		}

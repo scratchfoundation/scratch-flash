@@ -887,9 +887,10 @@ public class BlockMenus implements DragClient {
 		if (arg is BlockArg) {
 			msg = arg.argValue;
 
-			var varNames:Array = app.stagePane.collectBroadcastVarNames(msg);
-			if (varNames.length) {
-				for each (var n:String in varNames) {
+			var entries:Array = app.stagePane.collectBroadcastVarNames(msg);
+			if (entries.length) {
+				for each (var entry:Array in entries) {
+					var n:String = entry[0];
 					m.addItem(n);
 				}
 				m.addLine();

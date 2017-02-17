@@ -184,20 +184,17 @@ public class PaletteBuilder {
     var getSpec:String = Specs.GET_VAR;
 
     // Broadcast variables, if a when-I-receive is selected
-    // TODO: Use collectBroadcastVarNames
     var stg:ScratchStage = app.stagePane;
     var viewedScript:Block = app.scriptsPane.viewedScript;
     if (viewedScript && viewedScript.op === 'whenIReceive') {
-      for each (var v:Variable in stg.variables) {
-        var n:String = v.name;
-        if (n.indexOf(Specs.BROADCAST_VAR_PREFIX) === 0) {
-          var msg:String = viewedScript.getNormalizedArg(0).argValue;
-          var len:int = Specs.BROADCAST_VAR_PREFIX.length;
-          if (n.indexOf(msg, len) === len) {
-            addVariableCheckbox(n, false);
-            addItem(new Block(n, 'r', Specs.blockColor(Specs.eventsCategory), getSpec));
-          }
+      var msg:String = viewedScript.getNormalizedArg(0).argValue;
+      var entries = stg.collectBroadcastVarNames(msg);
+      if (entries.length) {
+        for each (var entry:Array in entries) {
+          var realName:String = entry[1];
+          addItem(new Block(realName, 'r', Specs.blockColor(Specs.eventsCategory), getSpec));
         }
+        nextY += 15;
       }
     }
 
