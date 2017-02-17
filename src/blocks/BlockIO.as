@@ -86,6 +86,11 @@ public class BlockIO {
 					// convert a Scratch sprite/stage reference to a name string
 					argText = scratchObj.objName;
 				}
+				else if (blockArg.argValue is String) {
+					// Preserve drop-down menu values where the field.text is localized. For example:
+					// we want argValue="_mouse_", not field.text which may be "mouse-pointer" or "puntero del ratón"
+					argText = blockArg.argValue;
+				}
 				else {
 					// preserve text as-is
 					argText = blockArg.field.text;
