@@ -126,6 +126,8 @@ public class PaletteBuilder {
   }
 
   private function showMyBlocksPalette(shiftKey:Boolean):void {
+    var b:Block;
+
     // show creation button, hat, and call blocks
     var catColor:int = Specs.blockColor(Specs.procedureColor);
     addItem(new Button(Translator.map('Make a Block'), makeNewBlock, false, '/help/studio/tips/blocks/make-a-block/'));
@@ -133,19 +135,18 @@ public class PaletteBuilder {
     if (definitions.length > 0) {
       nextY += 5;
       for each (var proc:Block in definitions) {
-        var b:Block = new Block(proc.spec, ' ', Specs.procedureColor, Specs.CALL, proc.defaultArgValues);
+        b = new Block(proc.spec, ' ', Specs.procedureColor, Specs.CALL, proc.defaultArgValues);
         addItem(b);
       }
       nextY += 5;
     }
 
     addAddLibraryButton();
-
     var magicDefinitions:Array = app.viewedObj().magicProcedureDefinitions();
     if (magicDefinitions.length > 0) {
       nextY += 5;
       for each (var proc:Block in magicDefinitions) {
-        var b:Block = new Block(proc.spec, ' ', Specs.extensionsColor, Specs.CALL, proc.defaultArgValues);
+        b = new Block(proc.spec, ' ', Specs.extensionsColor, Specs.CALL, proc.defaultArgValues);
         addItem(b);
       }
       nextY += 5;
@@ -183,6 +184,7 @@ public class PaletteBuilder {
     var getSpec:String = Specs.GET_VAR;
 
     // Broadcast variables, if a when-I-receive is selected
+    // TODO: Use collectBroadcastVarNames
     var stg:ScratchStage = app.stagePane;
     var viewedScript:Block = app.scriptsPane.viewedScript;
     if (viewedScript && viewedScript.op === 'whenIReceive') {
@@ -357,7 +359,7 @@ public class PaletteBuilder {
     var newScripts:Array = [];
     for each (var script in targetObj.scripts) {
       if (script.op === Specs.PROCEDURE_DEF && script.spec.indexOf(Specs.MAGIC_PROC_PREFIX) === 0) {
-        continue
+        continue;
       }
       newScripts.push(script);
     }
@@ -366,7 +368,7 @@ public class PaletteBuilder {
     targetObj.addJSONScripts([
       [10, 10, [
         ["procDef",
-         Specs.MAGIC_PROC_PREFIX + "set broadcast %s 's var %s to %s",
+         Specs.MAGIC_PROC_PREFIX + "set broadcast %m.broadcast 's var %m.broadcastVar to %s",
          ["bc", "var", "value"], ["", "", ""], false],
         ["setVar:to:",
          ["concatenate:with:",
