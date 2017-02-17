@@ -872,6 +872,8 @@ public class BlockMenus implements DragClient {
 
 				n = Specs.BROADCAST_VAR_PREFIX + msg + '>' + n;
 				app.stagePane.lookupOrCreateVar(n);
+
+				app.updatePalette();
 			}
 
 			var d:DialogBox = new DialogBox(cb);
