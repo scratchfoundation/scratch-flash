@@ -27,6 +27,7 @@ package ui {
 	import uiwidgets.*;
 	import util.*;
 	import translation.Translator;
+	import util.Color;
 
 public class ProcedureSpecEditor extends Sprite {
 
@@ -157,6 +158,7 @@ public class ProcedureSpecEditor extends Sprite {
 				if (arg.type == 'b') v = false;
 				if (arg.type == 'n') v = 1;
 				if (arg.type == 's') v = '';
+				if (arg.type == 'c') v = Color.random();
 				result.push(v);
 			}
 		}
@@ -207,7 +209,7 @@ public class ProcedureSpecEditor extends Sprite {
 		buttons[2].setIcon(icon);
 
 		icon = new BlockShape(BlockShape.RectShape, lightGray);
-		icon.setWidthAndTopHeight(14, 14, true);
+		icon.setWidthAndTopHeight(16, 16, true);
 		buttons[3].setIcon(icon);
 
 		for each (var label:TextField in buttonLabels) addChild(label);
@@ -289,7 +291,7 @@ public class ProcedureSpecEditor extends Sprite {
 	}
 
 	private function makeColorArg():BlockArg {
-		var result:BlockArg = new BlockArg('c', 0xFFFFFF, true);
+		var result:BlockArg = new BlockArg('c', 0xFFFFFF, true, '', true);
 		result.setArgValue(unusedArgName('color'));
 		return result;
 	}
