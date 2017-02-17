@@ -83,6 +83,7 @@ public class ProcedureSpecEditor extends Sprite {
 			'Add number input:',
 			'Add string input:',
 			'Add boolean input:',
+			'Add color input:',
 			'Add label text:',
 			'text',
 		];
@@ -117,6 +118,7 @@ public class ProcedureSpecEditor extends Sprite {
 				if (argSpec == 'b') arg = makeBooleanArg();
 				if (argSpec == 'n') arg = makeNumberArg();
 				if (argSpec == 's') arg = makeStringArg();
+				if (argSpec == 'c') arg = makeColorArg();
 				if (arg) {
 					arg.setArgValue(inputNames[i++]);
 					addElement(arg);
@@ -179,12 +181,14 @@ public class ProcedureSpecEditor extends Sprite {
 			makeLabel('Add number input:', 14),
 			makeLabel('Add string input:', 14),
 			makeLabel('Add boolean input:', 14),
+			makeLabel('Add color input:', 14),
 			makeLabel('Add label text:', 14)
 		];
 		buttons = [
 			new Button('', function():void { appendObj(makeNumberArg()) }),
 			new Button('', function():void { appendObj(makeStringArg()) }),
 			new Button('', function():void { appendObj(makeBooleanArg()) }),
+			new Button('', function():void { appendObj(makeColorArg()) }),
 			new Button(Translator.map('text'), function():void { appendObj(makeTextField('')) })
 		];
 
@@ -201,6 +205,10 @@ public class ProcedureSpecEditor extends Sprite {
 		var icon:BlockShape = new BlockShape(BlockShape.BooleanShape, lightGray);
 		icon.setWidthAndTopHeight(25, 14, true);
 		buttons[2].setIcon(icon);
+
+		icon = new BlockShape(BlockShape.RectShape, lightGray);
+		icon.setWidthAndTopHeight(14, 14, true);
+		buttons[3].setIcon(icon);
 
 		for each (var label:TextField in buttonLabels) addChild(label);
 		for each (var b:Button in buttons) addChild(b);
@@ -277,6 +285,12 @@ public class ProcedureSpecEditor extends Sprite {
 	private function makeStringArg():BlockArg {
 		var result:BlockArg = new BlockArg('s', 0xFFFFFF, true);
 		result.setArgValue(unusedArgName('string'));
+		return result;
+	}
+
+	private function makeColorArg():BlockArg {
+		var result:BlockArg = new BlockArg('c', 0xFFFFFF, true);
+		result.setArgValue(unusedArgName('color'));
 		return result;
 	}
 
