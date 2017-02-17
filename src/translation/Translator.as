@@ -224,7 +224,7 @@ public class Translator {
 
 	private static function checkBlockTranslations():void {
 		for each (var entry:Array in Specs.commands) checkBlockSpec(entry[0]);
-		for each (var spec:String in Scratch.app.extensionManager.getExtensionSpecs()) checkBlockSpec(spec);
+		for each (var spec:String in Scratch.app.extensionManager.getExtensionSpecs(false)) checkBlockSpec(spec);
 	}
 
 	private static function checkBlockSpec(spec:String):void {

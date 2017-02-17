@@ -63,7 +63,7 @@ public class TranslatableStrings {
 				if ((spec.length > 0) && (spec.charAt(0) != '-')) add(spec, true);
 			}
 		}
-		addAll(Scratch.app.extensionManager.getExtensionSpecs());
+		addAll(Scratch.app.extensionManager.getExtensionSpecs(true));
 		addAll(PaletteSelector.strings());
 		export('commands');
 	}
