@@ -41,10 +41,12 @@ public class ScriptsPane extends ScrollFrameContents {
 	private const INSERT_SUB2:int = 3;
 	private const INSERT_WRAP:int = 4;
 
+	public var viewedScript:Block;
+	private var viewedScriptX:int;
+	private var viewedScriptY:int;
+
 	public var app:Scratch;
 	public var padding:int = 10;
-
-	public var viewedScript:Block;
 
 	private var viewedObj:ScratchObj;
 	private var commentLines:Shape;
@@ -88,6 +90,7 @@ public class ScriptsPane extends ScrollFrameContents {
 
 	public function viewScriptsFor(obj:ScratchObj):void {
 		// View the blocks for the given object.
+		restoreScriptPosition();
 		viewedScript = null;
 		saveScripts(false);
 		while (numChildren > 0) {
@@ -114,6 +117,8 @@ public class ScriptsPane extends ScrollFrameContents {
 	}
 
 	public function viewOneScript(block:Block):void {
+		restoreScriptPosition();
+
 		saveScripts(false);
 		while (numChildren > 0) {
 			var child:DisplayObject = removeChildAt(0);
@@ -121,6 +126,8 @@ public class ScriptsPane extends ScrollFrameContents {
 		}
 
 		viewedScript = block;
+		viewedScriptX = block.x;
+		viewedScriptY = block.y;
 
 		// No comments for now
 
@@ -160,6 +167,13 @@ public class ScriptsPane extends ScrollFrameContents {
 		}
 		if (saveNeeded) app.setSaveNeeded();
 		fixCommentLayout();
+	}
+
+	public function restoreScriptPosition():void {
+		if (viewedScript) {
+			viewedScript.x = viewedScriptX;
+			viewedScript.y = viewedScriptY;
+		}
 	}
 
 	public function prepareToDrag(b:Block):void {

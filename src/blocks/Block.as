@@ -199,10 +199,11 @@ public class Block extends Sprite {
 
 			labelsAndArgs = [];
 			argTypes = [];
-			var label:TextField = makeLabel(Translator.map('define'));
+
+			var b:Block = declarationBlock();
+			var label:TextField = makeLabel(Translator.map((warpProcFlag || b.warpProcFlag) ? 'define (no refresh)' : 'define'));
 			labelsAndArgs.push(label);
-			var b:Block;
-			labelsAndArgs.push(b = declarationBlock());
+			labelsAndArgs.push(b);
 		} else if (op == Specs.GET_VAR || op == Specs.GET_LIST) {
 			labelsAndArgs = [makeLabel(spec)];
 		} else {
@@ -600,6 +601,7 @@ public class Block extends Sprite {
 		dup.parameterNames = parameterNames;
 		dup.defaultArgValues = defaultArgValues;
 		dup.warpProcFlag = warpProcFlag;
+		dup.setSpec(newSpec);
 		if (forClone) {
 			dup.copyArgsForClone(args);
 		} else {
