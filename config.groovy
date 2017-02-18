@@ -1,6 +1,6 @@
 environments {
     '11.6' {
-        output = 'Scratch'
+        output = 'Scrap'
         playerVersion = '11.6'
         additionalCompilerOptions = [
                 "-swf-version=19",
@@ -8,7 +8,7 @@ environments {
         ]
     }
     '10.2' {
-        output = 'ScratchFor10.2'
+        output = 'Scrap'
         playerVersion = '10.2'
         additionalCompilerOptions = [
                 "-swf-version=11",
