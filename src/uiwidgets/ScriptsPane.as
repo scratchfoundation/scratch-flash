@@ -151,8 +151,6 @@ public class ScriptsPane extends ScrollFrameContents {
 		// Save the blocks in this pane in the viewed objects scripts list.
 		if (viewedObj == null) return;
 
-		restoreScriptPosition();
-
 		// We don't want to remove all scripts...
 		//viewedObj.scripts.splice(0); // remove all
 

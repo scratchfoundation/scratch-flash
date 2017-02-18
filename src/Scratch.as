@@ -1220,6 +1220,8 @@ public class Scratch extends Sprite {
 	public function exportProjectToFile(fromJS:Boolean = false, saveCallback:Function = null):void {
 		function squeakSoundsConverted():void {
 			scriptsPane.saveScripts(false);
+			scriptsPane.restoreScriptPosition();
+			scriptsPane.viewScriptsFor(viewedObj());
 			var projectType:String = extensionManager.hasExperimentalExtensions() ? '.sbx' : '.sb2';
 			var defaultName:String = StringUtil.trim(projectName());
 			defaultName = ((defaultName.length > 0) ? defaultName : 'project') + projectType;
