@@ -41,7 +41,6 @@ import flash.filters.GlowFilter;
 import flash.geom.*;
 import flash.net.URLLoader;
 import flash.text.*;
-import flash.external.ExternalInterface;
 
 import scratch.*;
 
