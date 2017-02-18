@@ -66,6 +66,7 @@ public class ProcedureSpecEditor extends Sprite {
 		['Lists', 'list'],
 		['List delete options', 'listDeleteItem'],
 		['List items', 'listItem'],
+		['Locations', 'location'],
 		['Math operations', 'mathOp'],
 		['Motor directions', 'motorDirection'],
 		['Notes', 'note'],
@@ -81,6 +82,7 @@ public class ProcedureSpecEditor extends Sprite {
 		['Stop options', 'stop'],
 		['Time and date', 'timeAndDate'],
 		['Trigger sensors', 'triggerSensor'],
+		['Mouse pointer or edge', 'touching'],
 		['Variables', 'var'],
 		['Video motion types', 'videoMotionType'],
 		['Video states', 'videoState']
