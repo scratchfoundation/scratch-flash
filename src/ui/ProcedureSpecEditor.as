@@ -365,6 +365,7 @@ public class ProcedureSpecEditor extends Sprite {
 
 	private function makeNumberMenuArg(type:String):BlockArg {
 		var result:BlockArg = new BlockArg('d', 0xFFFFFF, true, type);
+		result.field.restrict = null; // allow any string to be entered, not just numbers
 		result.setArgValue(unusedArgName('menu'));
 		return result;
 	}
