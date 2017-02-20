@@ -531,8 +531,8 @@ public class BlockMenus implements DragClient {
 			m.addLine();
 			m.addItem('add comment', block.addComment);
 		}
-		m.addItem('help', block.showHelp);
-		//m.addItem('show spec', block.showSpec);
+		//m.addItem('help', block.showHelp);
+		m.addItem('show spec', block.showSpec);
 		m.addLine();
 	}
 
