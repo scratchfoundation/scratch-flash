@@ -161,7 +161,7 @@ public class ExtensionManager {
 
 	// Retrieve all specs from all loaded extensions. Used by the translation system.
 	// Remember to load all relevant extensions before exporting translation strings!
-	public function getExtensionSpecs():Array {
+	public function getExtensionSpecs(warnIfMissing:Boolean):Array {
 		var missingExtensions:Array = [];
 		var specs:Array = [];
 		for (var extName:String in extensionDict) {
@@ -176,7 +176,7 @@ public class ExtensionManager {
 				missingExtensions.push(extName);
 			}
 		}
-		if (missingExtensions.length > 0) {
+		if (warnIfMissing && missingExtensions.length > 0) {
 			DialogBox.notify(
 					'Missing block specs', 'Block specs were missing for some extensions.\n' +
 					'Please load these extensions and try again:\n' + missingExtensions.join(', '));
