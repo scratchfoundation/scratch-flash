@@ -36,13 +36,17 @@
 // arguments, it should set base to a BlockShape to support drag feedback.
 
 package blocks {
-	import flash.display.*;
-	import flash.events.*;
-	import flash.filters.BevelFilter;
-	import flash.text.*;
-	import scratch.BlockMenus;
-	import translation.Translator;
-	import util.Color;
+import flash.display.*;
+import flash.events.*;
+import flash.filters.BevelFilter;
+import flash.text.*;
+
+import scratch.BlockMenus;
+import scratch.ScratchObj;
+
+import translation.Translator;
+
+import util.Color;
 
 public class BlockArg extends Sprite {
 
@@ -166,6 +170,39 @@ public class BlockArg extends Sprite {
 		}
 		if (type == 'c') base.setColor(int(argValue) & 0xFFFFFF);
 		base.redraw();
+	}
+
+	// Retrieve a text string that can represent this arg's value in JSON.
+	// This is used for project save, backpack, and duplicate.
+	public function getArgText():String {
+		if (argValue is ScratchObj) {
+			var scratchObj:ScratchObj = argValue as ScratchObj;
+			// convert a Scratch sprite/stage reference to a name string
+			return scratchObj.objName;
+		}
+
+		if (field != null) {
+			// This condition is designed to match the one in setArgValue() as closely as possible.
+			// We skip the shouldTranslateItemForMenu() check here because it returns false for a few special cases
+			// where the translation is handled elsewhere in the menu code. This might mean we return argValue in some
+			// cases where we could return field.text but that's generally safe: previous versions of this code always
+			// used argValue and never used field.text for serialization. Returning field.text when we should return
+			// argValue is not necessarily safe: we can end up saving localized text which can make a block like
+			// "point toward" look correct but fail to actually function.
+			if (menuName && (argValue is String) && (argValue != '')) {
+				// Preserve drop-down menu values where the field.text is localized. For example:
+				// we want argValue="_mouse_", not field.text which may be "mouse-pointer" or "puntero del ratón"
+				return argValue;
+			}
+
+			// For a non-menu field, preserve text as-is since it might have been typed by the user.
+			// This preserves "1." in a numeric field, for example, which tells "pick random" to allow decimals.
+			return field.text;
+		}
+
+		// Convert to string implicitly.
+		// The "set pen color to (color)" block is covered by this case since it doesn't have a text field.
+		return argValue;
 	}
 
 	public function startEditing():void {
