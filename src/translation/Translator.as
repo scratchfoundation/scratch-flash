@@ -41,23 +41,29 @@ public class Translator {
 	public static var rightToLeft:Boolean;
 	public static var rightToLeftMath:Boolean; // true only for Arabic
 
-	private static const font12:Array = ['fa', 'he','ja','ja_HIRA', 'zh_CN'];
+	private static const font12:Array = ['fa', 'he','ja','ja_HIRA', 'zh_CN', 'zh-cn', 'zh_TW', 'zh-tw'];
 	private static const font13:Array = ['ar'];
 
 	private static var dictionary:Object = {};
 
+	// Get a list of language names for the languages menu from the server.
 	public static function initializeLanguageList():void {
-		// Get a list of language names for the languages menu from the server.
 		function saveLanguageList(data:String):void {
-			if (!data) return;
-			for each (var line:String in data.split('\n')) {
-				var fields:Array = line.split(',');
-				if (fields.length >= 2) {
-					languages.push([StringUtil.trim(fields[0]), StringUtil.trim(fields[1])]);
+			var newLanguages:Array = [];
+			if (data) {
+				for each (var line:String in data.split('\n')) {
+					var fields:Array = line.split(',');
+					if (fields.length >= 2) {
+						newLanguages.push([StringUtil.trim(fields[0]), StringUtil.trim(fields[1])]);
+					}
 				}
 			}
+			else {
+				// Use English as fallback if we can't get the language list
+				newLanguages.push(['en', 'English']);
+			}
+			languages = newLanguages;
 		}
-		languages = [['en', 'English']]; // English is always the first entry
 		Scratch.app.server.getLanguageList(saveLanguageList);
 	}
 
@@ -124,7 +130,7 @@ public class Translator {
 		rightToLeft = rtlLanguages.indexOf(lang) > -1;
 		rightToLeftMath = ('ar' == lang);
 		Block.setFonts(10, 9, true, 0); // default font settings
-		if (font12.indexOf(lang) > -1) Block.setFonts(11, 10, false, 0);
+		if (font12.indexOf(lang) > -1) Block.setFonts(12, 11, false, 0);
 		if (font13.indexOf(lang) > -1) Block.setFonts(13, 12, false, 0);
 	}
 
@@ -218,7 +224,7 @@ public class Translator {
 
 	private static function checkBlockTranslations():void {
 		for each (var entry:Array in Specs.commands) checkBlockSpec(entry[0]);
-		for each (var spec:String in Specs.extensionSpecs) checkBlockSpec(spec);
+		for each (var spec:String in Scratch.app.extensionManager.getExtensionSpecs(false)) checkBlockSpec(spec);
 	}
 
 	private static function checkBlockSpec(spec:String):void {

@@ -133,10 +133,16 @@ public class GestureHandler {
 			}
 		}
 		if (carriedObj && scrollTarget && (getTimer() - scrollStartTime) > SCROLL_MSECS && (scrollXVelocity || scrollYVelocity)) {
-			scrollTarget.contents.x = Math.min(0, Math.max(-scrollTarget.maxScrollH(), scrollTarget.contents.x + scrollXVelocity));
-			scrollTarget.contents.y = Math.min(0, Math.max(-scrollTarget.maxScrollV(), scrollTarget.contents.y + scrollYVelocity));
-			scrollTarget.constrainScroll();
-			scrollTarget.updateScrollbars();
+			if (scrollTarget.allowHorizontalScrollbar) {
+				scrollTarget.contents.x = Math.min(0, Math.max(-scrollTarget.maxScrollH(), scrollTarget.contents.x + scrollXVelocity));
+			}
+			if (scrollTarget.allowVerticalScrollbar) {
+				scrollTarget.contents.y = Math.min(0, Math.max(-scrollTarget.maxScrollV(), scrollTarget.contents.y + scrollYVelocity));
+			}
+			if (scrollTarget.allowHorizontalScrollbar || scrollTarget.allowVerticalScrollbar) {
+				scrollTarget.constrainScroll();
+				scrollTarget.updateScrollbars();
+			}
 			var b:Block = carriedObj as Block;
 			if (b) {
 				app.scriptsPane.findTargetsFor(b);
@@ -343,6 +349,15 @@ public class GestureHandler {
 		}
 	}
 
+	// Returns true if non-null `ancestor` is `descendant` or one of its ancestors.
+	private static function isAncestor(ancestor:DisplayObject, descendant:DisplayObject):Boolean {
+		while (descendant) {
+			if (ancestor == descendant) return true;
+			descendant = descendant.parent;
+		}
+		return false;
+	}
+
 	private function findMouseTarget(evt:MouseEvent, target:*):DisplayObject {
 		// Find the mouse target for the given event. Return null if no target found.
 
@@ -350,6 +365,19 @@ public class GestureHandler {
 		if ((target is Button) || (target is IconButton)) return null;
 
 		var o:DisplayObject = evt.target as DisplayObject;
+
+		var checkScratchStage:Boolean;
+		if (o == stage) {
+			var rect:Rectangle = app.stageObj().getRect(stage);
+			checkScratchStage = rect.contains(evt.stageX, evt.stageY);
+		}
+		else {
+			checkScratchStage = isAncestor(app.stageObj(), o);
+		}
+		if (checkScratchStage) {
+			return findMouseTargetOnStage(evt.stageX / app.scaleX, evt.stageY / app.scaleY);
+		}
+
 		var mouseTarget:Boolean = false;
 		while (o != null) {
 			if (isMouseTarget(o, evt.stageX / app.scaleX, evt.stageY / app.scaleY)) {
@@ -358,11 +386,7 @@ public class GestureHandler {
 			}
 			o = o.parent;
 		}
-		var rect:Rectangle = app.stageObj().getRect(stage);
-		if(!mouseTarget && rect.contains(evt.stageX, evt.stageY))  return findMouseTargetOnStage(evt.stageX / app.scaleX, evt.stageY / app.scaleY);
-		if (o == null) return null;
 		if ((o is Block) && Block(o).isEmbeddedInProcHat()) return o.parent;
-		if (o is ScratchObj) return findMouseTargetOnStage(evt.stageX / app.scaleX, evt.stageY / app.scaleY);
 		return o;
 	}
 

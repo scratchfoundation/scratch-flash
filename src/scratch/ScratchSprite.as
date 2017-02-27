@@ -71,8 +71,8 @@ public class ScratchSprite extends ScratchObj {
 	public var spriteInfo:Object = {};
 	private var geomShape:Shape;
 
-	public function ScratchSprite(name:String = 'Sprite1') {
-		objName = name;
+	public function ScratchSprite(name:String = null) {
+		objName = Scratch.app.stagePane.unusedSpriteName(name || Translator.map('Sprite1'));
 		filterPack = new FilterPack(this);
 		initMedia();
 		img = new Sprite();
@@ -447,7 +447,6 @@ public class ScratchSprite extends ScratchObj {
 	}
 
 	public override function defaultArgsFor(op:String, specDefaults:Array):Array {
-		if ('gotoSpriteOrMouse:' == op) return ['_mouse_'];
 		if ('gotoX:y:' == op) return [Math.round(scratchX), Math.round(scratchY)];
 		if ('glideSecs:toX:y:elapsed:from:' == op) return [1, Math.round(scratchX), Math.round(scratchY)];
 		if ('setSizeTo:' == op) return [Math.round(getSize() * 10) / 10];

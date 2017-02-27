@@ -26,7 +26,11 @@ package render3d {
 
 import flash.display.Sprite;
 
-public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
+public class DisplayObjectContainerIn3D extends Sprite {
+	public static var texSizeMax:int = 2048;
+	public static var texSize:int = 1024;
+	public static var maxTextures:uint = 15;
+SCRATCH::allow3d{
 	import com.adobe.utils.*;
 
 	import filters.FilterPack;
@@ -86,9 +90,6 @@ public class DisplayObjectContainerIn3D extends Sprite {SCRATCH::allow3d{
 	private var textures:Array;
 	private var testBMs:Array;
 	private var textureIndexByID:Object;
-	private static var texSizeMax:int = 2048;
-	private static var texSize:int = 1024;
-	private static var maxTextures:uint = 15;
 	private var penPacked:Boolean;
 
 	/** Triangle index data */

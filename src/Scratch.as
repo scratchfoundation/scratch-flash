@@ -74,7 +74,7 @@ import watchers.ListWatcher;
 
 public class Scratch extends Sprite {
 	// Version
-	public static const versionString:String = 'v443';
+	public static const versionString:String = 'v455.1';
 	public static var app:Scratch; // static reference to the app, used for debugging
 
 	// Display modes
@@ -620,14 +620,24 @@ public class Scratch extends Sprite {
 	}
 
 	public function setProjectName(s:String):void {
-		if (s.slice(-3) == '.sb') s = s.slice(0, -3);
-		if (s.slice(-4) == '.sb2') s = s.slice(0, -4);
+		for (;;) {
+			if (StringUtil.endsWith(s, '.sb')) s = s.slice(0, -3);
+			else if (StringUtil.endsWith(s, '.sb2')) s = s.slice(0, -4);
+			else if (StringUtil.endsWith(s, '.sbx')) s = s.slice(0, -4);
+			else break;
+		}
 		stagePart.setProjectName(s);
 	}
 
 	protected var wasEditing:Boolean;
 
 	public function setPresentationMode(enterPresentation:Boolean):void {
+		if (stagePart.isInPresentationMode() != enterPresentation) {
+			presentationModeWasChanged(enterPresentation);
+		}
+	}
+
+	public function presentationModeWasChanged(enterPresentation:Boolean):void {
 		if (enterPresentation) {
 			wasEditing = editMode;
 			if (wasEditing) {
@@ -646,6 +656,7 @@ public class Scratch extends Sprite {
 		for each (var o:ScratchObj in stagePane.allObjects()) o.applyFilters();
 
 		if (lp) fixLoadProgressLayout();
+		stagePart.presentationModeWasChanged(enterPresentation);
 		stagePane.updateCostume();
 		SCRATCH::allow3d {
 			if (isIn3D) render3D.onStageResize();
@@ -660,7 +671,6 @@ public class Scratch extends Sprite {
 		// Escape exists presentation mode.
 		else if ((evt.charCode == 27) && stagePart.isInPresentationMode()) {
 			setPresentationMode(false);
-			stagePart.exitPresentationMode();
 		}
 		// Handle enter key
 //		else if(evt.keyCode == 13 && !stage.focus) {
@@ -712,9 +722,13 @@ public class Scratch extends Sprite {
 		}
 	}
 
-	public function resetPlugin():void {
-		if (jsEnabled)
+	public function resetPlugin(whenDone:Function):void {
+		if (jsEnabled) {
 			externalCall('ScratchExtensions.resetPlugin');
+		}
+		if (whenDone != null) {
+			whenDone();
+		}
 	}
 
 	protected function step(e:Event):void {
@@ -896,11 +910,9 @@ public class Scratch extends Sprite {
 	}
 
 	protected function updateLayout(w:int, h:int):void {
-		if (!isMicroworld) {
-			topBarPart.x = 0;
-			topBarPart.y = 0;
-			topBarPart.setWidthHeight(w, 28);
-		}
+		topBarPart.x = 0;
+		topBarPart.y = 0;
+		topBarPart.setWidthHeight(w, 28);
 
 		var extraW:int = 2;
 		var extraH:int = stagePart.computeTopBarHeight() + 1;
@@ -1605,7 +1617,15 @@ public class Scratch extends Sprite {
 
 	public function externalCall(functionName:String, returnValueCallback:Function = null, ...args):void {
 		args.unshift(functionName);
-		var retVal:* = ExternalInterface.call.apply(ExternalInterface, args);
+		var retVal:*;
+		try {
+			retVal = ExternalInterface.call.apply(ExternalInterface, args);
+		}
+		catch (e:Error)
+		{
+			logException(e);
+			// fall through to below
+		}
 		if (returnValueCallback != null) {
 			returnValueCallback(retVal);
 		}

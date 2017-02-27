@@ -24,9 +24,9 @@ package scratch {
 public class TalkBubble extends Sprite {
 
 	public var pointsLeft:Boolean;
+	public var style:String; // 'say' or 'ask' or 'result'
 
 	private var type:String; // 'say' or 'think'
-	private var style:String; // 'say' or 'ask' or 'result'
 	private var shape:Shape;
 	private var text:TextField;
 	private var source:Object;

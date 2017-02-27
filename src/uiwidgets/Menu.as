@@ -77,7 +77,8 @@ public class Menu extends Sprite {
 	public function showOnStage(stage:Stage, x:int = -1, y:int = -1):void {
 		if (stringCollectionMode) {
 			for each (var item:MenuItem in allItems) {
-				TranslatableStrings.add(item.getLabel());
+				// TODO: do we really want to remove parentheticals on all these?
+				TranslatableStrings.add(item.getLabel(), true);
 			}
 			return;
 		}

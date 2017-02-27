@@ -49,7 +49,18 @@ public class ExtensionManager {
 	protected var extensionDict:Object = new Object(); // extension name -> extension record
 	private var justStartedWait:Boolean;
 	private var pollInProgress:Dictionary = new Dictionary(true);
+	static public const extensionSeparator:String = '\u001F';
+	static public const extensionSeparatorLegacy:String = '.';
+	static public const picoBoardExt:String = 'PicoBoard';
 	static public const wedoExt:String = 'LEGO WeDo';
+	static public const wedo2Ext:String = 'LEGO WeDo 2.0';
+
+	// Experimental extensions must be hosted on one of these domains
+	// These should start with '.' to avoid accepting things like 'malicious.not_github.io'
+	static public const allowedDomains:Vector.<String> = new <String>[
+			'.github.io',
+			'.coding.me'
+	];
 
 	public function ExtensionManager(app:Scratch) {
 		this.app = app;
@@ -72,25 +83,105 @@ public class ExtensionManager {
 
 		// Clear imported extensions before loading a new project.
 		extensionDict = {};
-		extensionDict['PicoBoard'] = ScratchExtension.PicoBoard();
+		extensionDict[picoBoardExt] = ScratchExtension.PicoBoard();
 		extensionDict[wedoExt] = ScratchExtension.WeDo();
+		extensionDict[wedo2Ext] = ScratchExtension.WeDo2();
+	}
+
+	// Should the interpreter force async communication with extensions?
+	// For example, should 'r' be treated as 'R'?
+	public function shouldForceAsync(op:String):Boolean {
+		// Non-extension blocks shouldn't be forceAsync
+		var extensionName:String = unpackExtensionName(op);
+		if (!extensionName) return false;
+
+		var extension:ScratchExtension = extensionDict[extensionName];
+		if (extension && extension.port != 0) {
+			// HTTP extensions should never be forceAsync
+			return false;
+		}
+		else {
+			// JS extensions should be forceAsync in the offline editor.
+			// If the extension is not loaded, guess that it's JS. Really that shouldn't ever happen...
+			return app.isOffline;
+		}
 	}
 
 	// -----------------------------
 	// Block Specifications
 	//------------------------------
 
+	// Return a command spec array for the given operation or null.
 	public function specForCmd(op:String):Array {
-		// Return a command spec array for the given operation or null.
 		for each (var ext:ScratchExtension in extensionDict) {
-			var prefix:String = ext.useScratchPrimitives ? '' : (ext.name + '.');
 			for each (var spec:Array in ext.blockSpecs) {
-				if ((spec.length > 2) && ((prefix + spec[2]) == op)) {
-					return [spec[1], spec[0], Specs.extensionsCategory, op, spec.slice(3)];
+				if (spec.length > 2) {
+					var compareOp:String = ext.useScratchPrimitives ?
+							spec[2] : (ext.name + extensionSeparator + spec[2]);
+					var legacyOp:String = ext.useScratchPrimitives ?
+							spec[2] : (ext.name + extensionSeparatorLegacy + spec[2]);
+					if (op == compareOp || op == legacyOp) {
+						// return using compareOp to upgrade from legacy separator
+						return [spec[1], spec[0], Specs.extensionsCategory, compareOp, spec.slice(3)];
+					}
 				}
 			}
 		}
 		return null;
+	}
+
+	// Check whether `prefixedOp` is prefixed with an extension name.
+	public static function hasExtensionPrefix(prefixedOp:String):Boolean {
+		return prefixedOp.indexOf(extensionSeparator) >= 0;
+	}
+
+	// Retrieve the extension name from `prefixedOp`.
+	// If `prefixedOp` doesn't have an extension prefix, return `null`.
+	public static function unpackExtensionName(prefixedOp:String):String {
+		var separatorPosition:int = prefixedOp.indexOf(extensionSeparator);
+		if (separatorPosition < 0) {
+			return null;
+		}
+		else {
+			return prefixedOp.substr(0, separatorPosition);
+		}
+	}
+
+	// Unpack `prefixedOp` into `[extensionName, op]`
+	// If `prefixedOp` doesn't have an extension prefix, return `[null, prefixedOp]`
+	public static function unpackExtensionAndOp(prefixedOp:String):Array {
+		var separatorPosition:int = prefixedOp.indexOf(extensionSeparator);
+		if (separatorPosition < 0) {
+			return [null, prefixedOp];
+		}
+		else {
+			return [prefixedOp.substr(0, separatorPosition), prefixedOp.substr(separatorPosition+1)];
+		}
+	}
+
+	// Retrieve all specs from all loaded extensions. Used by the translation system.
+	// Remember to load all relevant extensions before exporting translation strings!
+	public function getExtensionSpecs(warnIfMissing:Boolean):Array {
+		var missingExtensions:Array = [];
+		var specs:Array = [];
+		for (var extName:String in extensionDict) {
+			var ext:ScratchExtension = extensionDict[extName];
+			if (ext.blockSpecs.length > 0) {
+				ext.blockSpecs.forEach(
+						function (fullSpec:Array, ...ignored):void {
+							specs.push(fullSpec[1]);
+						});
+			}
+			else {
+				missingExtensions.push(extName);
+			}
+		}
+		if (warnIfMissing && missingExtensions.length > 0) {
+			DialogBox.notify(
+					'Missing block specs', 'Block specs were missing for some extensions.\n' +
+					'Please load these extensions and try again:\n' + missingExtensions.join(', '));
+		}
+		return specs;
 	}
 
 	// -----------------------------
@@ -148,6 +239,7 @@ public class ExtensionManager {
 			descriptor.extensionName = ext.name;
 			descriptor.blockSpecs = ext.blockSpecs;
 			descriptor.menus = ext.menus;
+			if (ext.url) descriptor.url = ext.url;
 			if(ext.port) descriptor.extensionPort = ext.port;
 			else if(ext.javascriptURL) descriptor.javascriptURL = ext.javascriptURL;
 			result.push(descriptor);
@@ -204,17 +296,7 @@ public class ExtensionManager {
 			ext = new ScratchExtension(extObj.extensionName, extObj.extensionPort);
 		ext.port = extObj.extensionPort;
 		ext.blockSpecs = extObj.blockSpecs;
-		if (app.isOffline && (ext.port == 0)) {
-			// Fix up block specs to force reporters to be treated as requesters.
-			// This is because the offline JS interface doesn't support returning values directly.
-			for each(var spec:Object in ext.blockSpecs) {
-				if(spec[0] == 'r') {
-					// 'r' is reporter, 'R' is requester, and 'rR' is a reporter forced to act as a requester.
-					spec[0] = 'rR';
-				}
-			}
-		}
-		if(extObj.url) ext.url = extObj.url;
+		if (extObj.url) ext.url = extObj.url;
 		ext.showBlocks = true;
 		ext.menus = extObj.menus;
 		ext.javascriptURL = extObj.javascriptURL;
@@ -266,6 +348,7 @@ public class ExtensionManager {
 
 			var ext:ScratchExtension = new ScratchExtension(extObj.extensionName, extObj.extensionPort || 0);
 			ext.blockSpecs = extObj.blockSpecs;
+			if (extObj.url) ext.url = extObj.url;
 			ext.showBlocks = true;
 			ext.isInternal = false;
 			ext.menus = extObj.menus;
@@ -274,8 +357,19 @@ public class ExtensionManager {
 					extensionRefused(extObj, 'Experimental extensions are only supported on ScratchX.');
 					continue;
 				}
-				if (!StringUtil.endsWith(URLUtil.getServerName(extObj.javascriptURL).toLowerCase(),'.github.io')) {
-					extensionRefused(extObj, 'Experimental extensions must be hosted on GitHub Pages.');
+				var domainAllowed:Boolean = false;
+				var url:String = URLUtil.getServerName(extObj.javascriptURL).toLowerCase();
+				for (var i:int = 0; i < allowedDomains.length; ++i) {
+					if (StringUtil.endsWith(url, allowedDomains[i])) {
+						domainAllowed = true;
+						break;
+					}
+				}
+				if (!domainAllowed) {
+					extensionRefused(
+							extObj,
+							'Experimental extensions must be hosted on an approved domain. Approved domains are: ' +
+							allowedDomains.join(', '));
 					continue;
 				}
 				ext.javascriptURL = extObj.javascriptURL;
@@ -287,6 +381,7 @@ public class ExtensionManager {
 			setEnabled(extObj.extensionName, true);
 		}
 		Scratch.app.updatePalette();
+		Scratch.app.translationChanged();
 	}
 
 	// -----------------------------
@@ -295,9 +390,9 @@ public class ExtensionManager {
 
 	public function menuItemsFor(op:String, menuName:String):Array {
 		// Return a list of menu items for the given menu of the extension associated with op or null.
-		var i:int = op.indexOf('.');
-		if (i < 0) return null;
-		var ext:ScratchExtension = extensionDict[op.slice(0, i)];
+		var extName:String = unpackExtensionName(op);
+		if (!extName) return null;
+		var ext:ScratchExtension = extensionDict[extName];
 		if (!ext || !ext.menus) return null; // unknown extension
 		return ext.menus[menuName];
 	}
@@ -342,18 +437,56 @@ public class ExtensionManager {
 	//------------------------------
 
 	public function primExtensionOp(b:Block):* {
-		var i:int = b.op.indexOf('.');
-		var extName:String = b.op.slice(0, i);
+		var unpackedOp:Array = unpackExtensionAndOp(b.op);
+		var extName:String = unpackedOp[0];
 		var ext:ScratchExtension = extensionDict[extName];
 		if (ext == null) return 0; // unknown extension
-		var primOrVarName:String = b.op.slice(i + 1);
+		var primOrVarName:String = unpackedOp[1];
 		var args:Array = [];
-		for (i = 0; i < b.args.length; i++) {
+		for (var i:int = 0; i < b.args.length; i++) {
 			args.push(app.interp.arg(b, i));
 		}
 
 		var value:*;
-		if (b.isReporter) {
+		if(b.isHat && b.isAsyncHat){
+			if(b.requestState == 0){
+				request(extName, primOrVarName, args, b);
+				app.interp.doYield();
+				return null;
+			}
+			else if(b.requestState == 2){
+				b.requestState = 0;
+				if(b.forceAsync){
+					value = b.response as Boolean;
+				}
+				else{
+					var responseObj:Object = b.response as Object;
+					args.push(responseObj);
+					if(responseObj && responseObj.hasOwnProperty('predicate')){
+						app.externalCall('ScratchExtensions.getReporter', function(v:*):void {
+							value = v;
+						}, ext.name, responseObj.predicate, args);
+					}
+					else{
+						value = true;
+					}
+				}
+				if(value){
+					if(!app.runtime.waitingHatFired(b, true)){
+						app.interp.doYield();
+					}
+				}
+				else{
+					app.interp.doYield();
+					app.runtime.waitingHatFired(b, false);
+				}
+			}
+			else{
+				app.interp.doYield();
+			}
+			return;
+		}
+		else if (b.isReporter) {
 			if(b.isRequester) {
 				if(b.requestState == 2) {
 					b.requestState = 0;
@@ -471,7 +604,7 @@ public class ExtensionManager {
 			ext.busy.push(ext.nextID);
 			ext.waiting[b] = ext.nextID;
 
-			if (b.forcedRequester) {
+			if (b.forceAsync) {
 				// We're forcing a non-requester to be treated as a requester
 				app.externalCall('ScratchExtensions.getReporterForceAsync', null, ext.name, op, args, ext.nextID);
 			} else {

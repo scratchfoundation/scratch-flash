@@ -359,6 +359,14 @@ public class ListWatcher extends Sprite {
 	//------------------------------
 
 	public function setWidthHeight(w:int, h:int):void {
+		// Large (especially tall) list watchers can cause many, many list cells to be allocated, leading to delays.
+		// Bound the size so that updateContents() won't cause long delays for long lists.
+		var boundingObject:Object = this.parent || Scratch.app.stagePane || {width: 480, height: 360};
+		x = Math.max(0, Math.min(x, boundingObject.width - frame.minWidth));
+		y = Math.max(0, Math.min(y, boundingObject.height - frame.minHeight));
+		w = Math.max(frame.minWidth, Math.min(w, boundingObject.width - x));
+		h = Math.max(frame.minHeight, Math.min(h, boundingObject.height - y));
+
 		frame.setWidthHeight(w, h);
 		fixLayout();
 	}

@@ -199,7 +199,10 @@ public class Primitives {
 	private function primDeleteClone(b:Block):void {
 		var clone:ScratchSprite = interp.targetSprite();
 		if ((clone == null) || (!clone.isClone) || (clone.parent == null)) return;
-		if (clone.bubble && clone.bubble.parent) clone.bubble.parent.removeChild(clone.bubble);
+		if (clone.bubble && clone.bubble.parent) {
+			clone.bubble.parent.removeChild(clone.bubble);
+			clone.bubble = null; // prevent potential exception inside hideAskBubble (via clearAskPrompts in stopThreadsFor below)
+		}
 		clone.parent.removeChild(clone);
 		app.interp.stopThreadsFor(clone);
 		app.runtime.cloneCount--;

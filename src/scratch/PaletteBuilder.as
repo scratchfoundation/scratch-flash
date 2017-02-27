@@ -57,7 +57,7 @@ public class PaletteBuilder {
 			'Stage selected:', 'No motion blocks',
 			'Make a Block', 'Make a List', 'Make a Variable',
 			'New List', 'List name', 'New Variable', 'Variable name',
-			'New Block', 'Add an Extension', 'when Stage clicked'];
+			'New Block', 'Add an Extension'];
 	}
 
 	public function showBlocksForCategory(selectedCategory:int, scrollToOrigin:Boolean, shiftKey:Boolean = false):void {
@@ -380,7 +380,7 @@ public class PaletteBuilder {
 				// Open in the tips window if the URL starts with /info/ and another tab otherwise
 				if (ext.url.indexOf('/info/') === 0) app.showTip(ext.url);
 				else if (ext.url.indexOf('http') === 0) navigateToURL(new URLRequest(ext.url));
-				else DialogBox.notify('Extensions', 'Unable to load about page: the URL given for extension "' + ext.name + '" is not formatted correctly.');
+				else DialogBox.notify('Extensions', 'Unable to load about page: the URL given for extension "' + ext.displayName + '" is not formatted correctly.');
 			}
 		}
 
@@ -390,7 +390,7 @@ public class PaletteBuilder {
 		}
 
 		var m:Menu = new Menu();
-		m.addItem(Translator.map('About') + ' ' + ext.name + ' ' + Translator.map('extension') + '...', showAbout, !!ext.url);
+		m.addItem(Translator.map('About') + ' ' + ext.displayName + ' ' + Translator.map('extension') + '...', showAbout, !!ext.url);
 		m.addItem('Remove extension blocks', hideExtension);
 
 		var extensionDevManager:ExtensionDevManager = Scratch.app.extensionManager as ExtensionDevManager;
@@ -423,7 +423,7 @@ public class PaletteBuilder {
 
 		nextY += 7;
 
-		var titleButton:IconButton = UIPart.makeMenuButton(ext.name, extensionMenu, true, CSS.textColor);
+		var titleButton:IconButton = UIPart.makeMenuButton(ext.displayName, extensionMenu, true, CSS.textColor);
 		titleButton.x = 5;
 		titleButton.y = nextY;
 		app.palette.addChild(titleButton);
@@ -497,13 +497,13 @@ public class PaletteBuilder {
 
 	private function addBlocksForExtension(ext:ScratchExtension):void {
 		var blockColor:int = Specs.extensionsColor;
-		var opPrefix:String = ext.useScratchPrimitives ? '' : ext.name + '.';
+		var opPrefix:String = ext.useScratchPrimitives ? '' : ext.name + ExtensionManager.extensionSeparator;
 		for each (var spec:Array in ext.blockSpecs) {
 			if (spec.length >= 3) {
 				var op:String = opPrefix + spec[2];
 				var defaultArgs:Array = spec.slice(3);
 				var block:Block = new Block(spec[1], spec[0], blockColor, op, defaultArgs);
-				var showCheckbox:Boolean = (spec[0] == 'r' && defaultArgs.length == 0);
+				var showCheckbox:Boolean = (block.isReporter && !block.isRequester && defaultArgs.length == 0);
 				if (showCheckbox) addReporterCheckbox(block);
 				addItem(block, showCheckbox);
 			} else {

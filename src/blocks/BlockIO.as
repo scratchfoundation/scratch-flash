@@ -72,16 +72,30 @@ public class BlockIO {
 		if (b.op == Specs.PROCEDURE_DEF)								// procedure definition
 			return [Specs.PROCEDURE_DEF, b.spec, b.parameterNames, b.defaultArgValues, b.warpProcFlag];
 		if (b.op == Specs.CALL) result = [Specs.CALL, b.spec];			// procedure call - arguments follow spec
-		for each (var a:* in b.normalizedArgs()) {
-			// Note: arguments are always saved in normalized (i.e. left-to-right) order
-			if (a is Block) result.push(blockToArray(a));
-			if (a is BlockArg) {
-				var argVal:* = BlockArg(a).argValue;
-				if (argVal is ScratchObj) {
+
+		// Note: arguments are always saved in normalized (i.e. left-to-right) order
+		for each (var arg:* in b.normalizedArgs()) {
+			if (arg is Block) {
+				result.push(blockToArray(arg));
+			}
+			else if (arg is BlockArg) {
+				var blockArg:BlockArg = arg as BlockArg;
+				var argText:String;
+				if (blockArg.argValue is ScratchObj) {
+					var scratchObj:ScratchObj = blockArg.argValue as ScratchObj;
 					// convert a Scratch sprite/stage reference to a name string
-					argVal = ScratchObj(argVal).objName;
+					argText = scratchObj.objName;
 				}
-				result.push(argVal);
+				else if (blockArg.argValue is String) {
+					// Preserve drop-down menu values where the field.text is localized. For example:
+					// we want argValue="_mouse_", not field.text which may be "mouse-pointer" or "puntero del ratón"
+					argText = blockArg.argValue;
+				}
+				else {
+					// preserve text as-is
+					argText = blockArg.field.text;
+				}
+				result.push(argText);
 			}
 		}
 		if (b.base.canHaveSubstack1()) result.push(stackToArray(b.subStack1));
@@ -295,8 +309,8 @@ public class BlockIO {
 			'gotoSpriteOrMouse:', 'pointTowards:', 'touching:'];
 		if (refCmds.indexOf(b.op) < 0) return;
 		var arg:BlockArg;
-		if ((b.args.length == 1) && (b.args[0] is BlockArg)) arg = b.args[0];
-		if ((b.args.length == 2) && (b.args[1] is BlockArg)) arg = b.args[1];
+		if ((b.args.length == 1) && (b.getNormalizedArg(0) is BlockArg)) arg = b.getNormalizedArg(0);
+		if ((b.args.length == 2) && (b.getNormalizedArg(1) is BlockArg)) arg = b.getNormalizedArg(1);
 		if (arg) {
 			var oldVal:String = arg.argValue;
 			if (oldVal == 'edge' || oldVal == '_edge_') arg.setArgValue('_edge_', Translator.map('edge'));

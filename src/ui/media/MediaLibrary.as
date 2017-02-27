@@ -44,12 +44,12 @@ public class MediaLibrary extends Sprite {
 		'All', 'Hardware'];
 	private static const soundCategories:Array = [
 		'All', 'Animal', 'Effects', 'Electronic', 'Human', 'Instruments',
-		'Music Loops', 'Percussion', 'Vocals'];
+		'Music Loops', 'Musical Notes', 'Percussion', 'Vocals'];
 
 	private static const backdropThemes:Array = [
 		'Castle', 'City', 'Flying', 'Holiday', 'Music and Dance', 'Nature', 'Space', 'Sports', 'Underwater'];
 	private static const costumeThemes:Array = [
-		'Castle', 'City', 'Flying', 'Holiday', 'Music and Dance', 'Space', 'Sports', 'Underwater', 'Walking'];
+		'Castle', 'City', 'Dance', 'Dress-Up', 'Flying', 'Holiday', 'Music', 'Space', 'Sports', 'Underwater', 'Walking'];
 
 	private static const imageTypes:Array = ['All', 'Bitmap', 'Vector'];
 
@@ -328,12 +328,14 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 	protected function addScratchExtensions():void {
 		const extList:Array = [
 			ScratchExtension.PicoBoard(),
-			ScratchExtension.WeDo()];
+			ScratchExtension.WeDo(),
+			ScratchExtension.WeDo2()
+		];
 		allItems = [];
 		for each (var ext:ScratchExtension in extList) {
 			allItems.push(new MediaLibraryItem({
 				extension: ext,
-				name: ext.name,
+				name: ext.displayName,
 				md5: ext.thumbnailMD5,
 				tags: ext.tags
 			}));
@@ -441,9 +443,17 @@ spriteFeaturesFilter.visible = false; // disable features filter for now
 					io.fetchImage(md5AndExt, item.dbObj.name, 0, whenDone, obj);
 				} else { // assetType == backdrop
 					if (item.dbObj.info.length == 3) {
-						obj = {centerX: 99999, centerY: 99999, bitmapResolution: item.dbObj.info[2]};
+						obj = {
+							centerX: ScratchCostume.kCalculateCenter,
+							centerY: ScratchCostume.kCalculateCenter,
+							bitmapResolution: item.dbObj.info[2]
+						};
 					} else if (item.dbObj.info.length == 2 && item.dbObj.info[0] == 960 && item.dbObj.info[1] == 720) {
-						obj = {centerX: 99999, centerY: 99999, bitmapResolution: 2};
+						obj = {
+							centerX: ScratchCostume.kCalculateCenter,
+							centerY: ScratchCostume.kCalculateCenter,
+							bitmapResolution: 2
+						};
 					}
 					io.fetchImage(md5AndExt, item.dbObj.name, 0, whenDone, obj);
 				}

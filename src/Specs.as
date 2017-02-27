@@ -117,10 +117,10 @@ public class Specs {
 		["turn @turnLeft %n degrees",			" ", 1, "turnLeft:",				15],
 		["--"],
 		["point in direction %d.direction",		" ", 1, "heading:",					90],
-		["point towards %m.spriteOrMouse",		" ", 1, "pointTowards:",			""],
+		["point towards %m.spriteOrMouse",		" ", 1, "pointTowards:",			"_mouse_"],
 		["--"],
 		["go to x:%n y:%n",						" ", 1, "gotoX:y:"],
-		["go to %m.location",				" ", 1, "gotoSpriteOrMouse:",		"mouse-pointer"],
+		["go to %m.location",					" ", 1, "gotoSpriteOrMouse:",		"_mouse_"],
 		["glide %n secs to x:%n y:%n",			" ", 1, "glideSecs:toX:y:elapsed:from:"],
 		["--"],
 		["change x by %n",						" ", 1, "changeXposBy:",			10],
@@ -263,10 +263,10 @@ public class Specs {
 		["create clone of %m.spriteOnly",		" ", 106, "createCloneOf"],
 
 		// sensing
-		["touching %m.touching?",				"b", 7, "touching:",			""],
+		["touching %m.touching?",				"b", 7, "touching:",			"_mouse_"],
 		["touching color %c?",					"b", 7, "touchingColor:"],
 		["color %c is touching %c?",			"b", 7, "color:sees:"],
-		["distance to %m.spriteOrMouse",		"r", 7, "distanceTo:",			""],
+		["distance to %m.spriteOrMouse",		"r", 7, "distanceTo:",			"_mouse_"],
 		["-"],
 		["ask %s and wait",						" ", 7, "doAsk", 				"What's your name?"],
 		["answer",								"r", 7, "answer"],
@@ -395,7 +395,4 @@ public class Specs {
 		["user id",								"r", 99, "getUserId"],
 
 	];
-
-	public static var extensionSpecs:Array = ["when %m.booleanSensor", "when %m.sensor %m.lessMore %n", "sensor %m.booleanSensor?", "%m.sensor sensor value", "turn %m.motor on for %n secs", "turn %m.motor on", "turn %m.motor off", "set %m.motor power to %n", "set %m.motor2 direction to %m.motorDirection", "when distance %m.lessMore %n", "when tilt %m.eNe %n", "distance", "tilt"];
-
 }}

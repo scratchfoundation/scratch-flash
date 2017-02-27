@@ -56,13 +56,19 @@
 // Delay times are rounded to milliseconds, and the minimum delay is a millisecond.
 
 package interpreter {
-	import flash.utils.Dictionary;
-	import flash.utils.getTimer;
-	import flash.geom.Point;
-	import blocks.*;
-	import primitives.*;
-	import scratch.*;
-	import sound.*;
+import blocks.*;
+
+import extensions.ExtensionManager;
+
+import flash.geom.Point;
+import flash.utils.Dictionary;
+import flash.utils.getTimer;
+
+import primitives.*;
+
+import scratch.*;
+
+import sound.*;
 
 public class Interpreter {
 
@@ -114,7 +120,7 @@ public class Interpreter {
 
 	public function threadCount():int { return threads.length }
 
-	public function toggleThread(b:Block, targetObj:*, startupDelay:int = 0):void {
+	public function toggleThread(b:Block, targetObj:*, startupDelay:int = 0, isBackground:Boolean = false):void {
 		var i:int, newThreads:Array = [], wasRunning:Boolean = false;
 		for (i = 0; i < threads.length; i++) {
 			if ((threads[i].topBlock == b) && (threads[i].target == targetObj)) {
@@ -143,7 +149,7 @@ public class Interpreter {
 				};
 				b.args[0] = reporter;
 			}
-			if (app.editMode) topBlock.showRunFeedback();
+			if (app.editMode && ! isBackground) topBlock.showRunFeedback();
 			var t:Thread = new Thread(b, targetObj, startupDelay);
 			if (topBlock.isReporter) bubbleThread = t;
 			t.topBlock = topBlock;
@@ -177,6 +183,7 @@ public class Interpreter {
 				if (t.tmpObj is ScratchSoundPlayer) {
 					(t.tmpObj as ScratchSoundPlayer).stopPlaying();
 				}
+				if (askThread == t) app.runtime.clearAskPrompts();
 				t.stop();
 			}
 		}
@@ -206,6 +213,7 @@ public class Interpreter {
 	public function stopAllThreads():void {
 		threads = [];
 		if (activeThread != null) activeThread.stop();
+		app.runtime.clearAskPrompts(); // seems sensible this should happen here
 		clearWarpBlock();
 		app.runtime.clearRunFeedback();
 		doRedraw = true;
@@ -299,7 +307,7 @@ public class Interpreter {
 		if (!b) return 0; // arg() and friends can pass null if arg index is out of range
 		var op:String = b.op;
 		if (b.opFunction == null) {
-			if (op.indexOf('.') > -1) b.opFunction = app.extensionManager.primExtensionOp;
+			if (ExtensionManager.hasExtensionPrefix(op)) b.opFunction = app.extensionManager.primExtensionOp;
 			else b.opFunction = (primTable[op] == undefined) ? primNoop : primTable[op];
 		}
 

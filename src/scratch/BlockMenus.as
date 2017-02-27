@@ -18,17 +18,26 @@
  */
 
 package scratch {
-	import flash.display.*;
-	import flash.events.*;
-	import flash.geom.*;
-	import flash.ui.*;
-	import blocks.*;
-	import filters.*;
-	import sound.*;
-	import translation.Translator;
-	import ui.ProcedureSpecEditor;
-	import uiwidgets.*;
-	import util.*;
+import blocks.*;
+
+import extensions.ExtensionManager;
+
+import filters.*;
+
+import flash.display.*;
+import flash.events.*;
+import flash.geom.*;
+import flash.ui.*;
+
+import sound.*;
+
+import translation.Translator;
+
+import ui.ProcedureSpecEditor;
+
+import uiwidgets.*;
+
+import util.*;
 
 public class BlockMenus implements DragClient {
 
@@ -56,7 +65,7 @@ public class BlockMenus implements DragClient {
 			if ((comparisonOps.indexOf(op)) > -1) { menuHandler.changeOpMenu(evt, comparisonOps); return; }
 			if (menuName == null) { menuHandler.genericBlockMenu(evt); return; }
 		}
-		if (op.indexOf('.') > -1 && menuHandler.extensionMenu(evt, menuName)) return;
+		if (ExtensionManager.hasExtensionPrefix(op) && menuHandler.extensionMenu(evt, menuName)) return;
 		if (menuName == 'attribute') menuHandler.attributeMenu(evt);
 		if (menuName == 'backdrop') menuHandler.backdropMenu(evt);
 		if (menuName == 'booleanSensor') menuHandler.booleanSensorMenu(evt);
@@ -207,10 +216,13 @@ public class BlockMenus implements DragClient {
 	}
 
 	private function attributeMenu(evt:MouseEvent):void {
-		var obj:*;
-		if (block && block.args[1]) {
-			if (block.args[1] is BlockArg) obj = app.stagePane.objNamed(block.args[1].argValue);
-			else obj = app.stagePane;  // this gives it the stage menus, but it's better than nothing
+		// If all else fails, fall back to the stage menus (better than nothing?)
+		var obj:* = app.stagePane;
+		if (block) {
+			var targetArg:BlockArg = block.getNormalizedArg(1) as BlockArg;
+			if (targetArg) {
+				obj = app.stagePane.objNamed(targetArg.argValue);
+			}
 		}
 		var attributes:Array = obj is ScratchStage ? stageAttributes : spriteAttributes;
 		var m:Menu = new Menu(setBlockArg, 'attribute');
@@ -335,7 +347,12 @@ public class BlockMenus implements DragClient {
 	}
 
 	private function notePicker(evt:MouseEvent):void {
-		var piano:Piano = new Piano(block.base.color, app.viewedObj().instrument, setBlockArg);
+		function pianoCallback(note:int):void{
+			setBlockArg(note);
+			block.demo();
+
+		}
+		var piano:Piano = new Piano(block.base.color, app.viewedObj().instrument, pianoCallback);
 		if (!isNaN(blockArg.argValue)) {
 			piano.selectNote(int(blockArg.argValue));
 		}
@@ -398,10 +415,11 @@ public class BlockMenus implements DragClient {
 			else blockArg.setArgValue(s);
 			if (block.op == 'getAttribute:of:') {
 				var obj:ScratchObj = app.stagePane.objNamed(s);
-				var attr:String = block.args[0].argValue;
+				var attribArg:BlockArg = block.getNormalizedArg(0);
+				var attr:String = attribArg.argValue;
 				var validAttrs:Array = obj && obj.isStage ? stageAttributes : spriteAttributes;
 				if (validAttrs.indexOf(attr) == -1 && !obj.ownsVar(attr)) {
-					block.args[0].setArgValue(validAttrs[0]);
+					attribArg.setArgValue(validAttrs[0]);
 				}
 			}
 			Scratch.app.setSaveNeeded();
@@ -413,7 +431,7 @@ public class BlockMenus implements DragClient {
 		if (includeEdge) m.addItem(Translator.map('edge'), 'edge');
 		m.addLine();
 		if (includeStage) {
-			m.addItem(app.stagePane.objName, 'Stage');
+			m.addItem(Translator.map('Stage'), 'Stage');
 			m.addLine();
 		}
 		if (includeSelf && !app.viewedObj().isStage) {
@@ -785,8 +803,6 @@ public class BlockMenus implements DragClient {
 			else setBlockArg(selection);
 		}
 		var msgNames:Array = app.runtime.collectBroadcasts();
-		if (msgNames.indexOf('message1') <= -1) msgNames.push('message1');
-		msgNames.sort();
 
 		var m:Menu = new Menu(broadcastMenuSelection, 'broadcast');
 		for each (var msg:String in msgNames) m.addItem(msg);

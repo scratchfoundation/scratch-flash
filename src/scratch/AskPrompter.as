@@ -55,7 +55,10 @@ public class AskPrompter extends Sprite {
 	public function answer():String { return input.text; }
 
 	private function mouseDown(evt:MouseEvent):void {
-		if (doneButton.hitTestPoint(evt.stageX, evt.stageY)) app.runtime.hideAskPrompt(this);
+		if (doneButton.hitTestPoint(evt.stageX, evt.stageY)) {
+			app.runtime.hideAskPrompt(this);
+			evt.stopImmediatePropagation(); // stop click going through
+		}
 	}
 
 	private function keyDown(evt:KeyboardEvent):void {

@@ -47,6 +47,8 @@ import flash.geom.*;
 import flash.text.TextField;
 import flash.utils.*;
 
+import render3d.DisplayObjectContainerIn3D;
+
 import svgeditor.objs.SegmentationState;
 
 import svgutils.*;
@@ -67,6 +69,7 @@ public class ScratchCostume {
 	private var __baseLayerData:ByteArray;
 
 	public static const WasEdited:int = -10; // special baseLayerID used to indicate costumes that have been edited
+	public static const kCalculateCenter:int = 99999; // calculate a default rotation center
 
 	public var svgRoot:SVGElement; // non-null for an SVG costume
 	public var svgLoading:Boolean; // true while loading bitmaps embedded in an SVG
@@ -93,7 +96,8 @@ public class ScratchCostume {
 
 	private var segmentation:SegmentationState = new SegmentationState();
 
-	public function ScratchCostume(name:String, data:*, centerX:int = 99999, centerY:int = 99999, bmRes:int = 1) {
+	public function ScratchCostume(
+			name:String, data:*, centerX:int = kCalculateCenter, centerY:int = kCalculateCenter, bmRes:int = 1) {
 		costumeName = name;
 		rotationCenterX = centerX;
 		rotationCenterY = centerY;
@@ -103,12 +107,12 @@ public class ScratchCostume {
 		else if (data is BitmapData) {
 			bitmap = baseLayerBitmap = data;
 			bitmapResolution = bmRes;
-			if (centerX == 99999) rotationCenterX = bitmap.rect.width / 2;
-			if (centerY == 99999) rotationCenterY = bitmap.rect.height / 2;
+			if (centerX == kCalculateCenter) rotationCenterX = bitmap.rect.width / 2;
+			if (centerY == kCalculateCenter) rotationCenterY = bitmap.rect.height / 2;
 			prepareToSave();
 		}
 		else if (data is ByteArray) {
-			setSVGData(data, (centerX == 99999));
+			setSVGData(data, (centerX == kCalculateCenter));
 			prepareToSave();
 		}
 	}
@@ -171,7 +175,14 @@ public class ScratchCostume {
 		data.position = 0;
 		var s:String = data.readUTFBytes(10);
 		data.position = oldPosition;
-		return (s.indexOf('<?xml') >= 0) || (s.indexOf('<svg') >= 0);
+		var validXML:Boolean = true;
+		try{
+			XML(data)
+		}
+		catch (e:*){
+			validXML = false;
+		}
+		return ((s.indexOf('<?xml') >= 0) || (s.indexOf('<svg') >= 0)) && validXML;
 	}
 
 	public static function emptySVG():ByteArray {
@@ -296,7 +307,7 @@ public class ScratchCostume {
 		var s:Shape = shapeDict[id];
 		if (!s) {
 			s = new Shape();
-			var pts:Array = RasterHull();
+			var pts:Vector.<Point> = RasterHull();
 			s.graphics.clear();
 
 			if (pts.length) {
@@ -326,21 +337,29 @@ public class ScratchCostume {
 	 object is composed of
 	 ** a single point
 	 */
-	private function RasterHull():Array {
+	private function RasterHull():Vector.<Point> {
+		var H:Vector.<Point> = new Vector.<Point>();
 		var dispObj:DisplayObject = displayObj();
 		var r:Rectangle = dispObj.getBounds(dispObj);
-//trace('flash bounds: '+r);
-		if (r.width < 1 || r.height < 1)
-			return [new Point()];
+		if (r.width < 1 || r.height < 1) {
+			H.push(new Point());
+			return H;
+		}
 
 		r.width += Math.floor(r.left) - r.left;
 		r.left = Math.floor(r.left);
 		r.height += Math.floor(r.top) - r.top;
 		r.top = Math.floor(r.top);
-		var image:BitmapData = new BitmapData(
-				Math.max(1, Math.ceil(r.width) + 1), Math.max(
-						1, Math.ceil(r.height) + 1), true, 0);
-//trace('bitmap rect: '+image.rect);
+		var desiredWidth: int = Math.max(0, Math.ceil(r.width));
+		var desiredHeight: int = Math.max(0, Math.ceil(r.height));
+		if (desiredWidth >= DisplayObjectContainerIn3D.texSizeMax
+				|| desiredHeight >= DisplayObjectContainerIn3D.texSizeMax) {
+			var factor:Number = (DisplayObjectContainerIn3D.texSizeMax - 1) / Math.max(desiredWidth, desiredHeight);
+			desiredWidth *= factor;
+			desiredHeight *= factor;
+		}
+		// TODO: figure out why we add 1 to each dimension in addition to using Math.ceil above
+		var image:BitmapData = new BitmapData(desiredWidth + 1, desiredHeight + 1, true, 0);
 
 		var m:Matrix = new Matrix();
 		m.translate(-r.left, -r.top);
@@ -349,16 +368,10 @@ public class ScratchCostume {
 
 		var L:Vector.<Point> = new Vector.<Point>(image.height); //stack of left-side hull;
 		var R:Vector.<Point> = new Vector.<Point>(image.height); //stack of right side hull;
-		//var H:Vector.<Point> = new Vector.<Point>();
-		var H:Array = [];
 		var rr:int = -1, ll:int = -1;
 		var Q:Point = new Point();
 		var w:int = image.width;
 		var h:int = image.height;
-//		var minX:int = image.width;
-//		var minY:int = image.height;
-//		var maxX:int = 0;
-//		var maxY:int = 0;
 		var c:uint;
 		for (var y:int = 0; y < h; ++y) {
 			for (var x:int = 0; x < w; ++x) {
@@ -376,10 +389,6 @@ public class ScratchCostume {
 					--ll;
 			}
 
-//			minX = Math.min(minX, Q.x);
-//			minY = Math.min(minY, Q.y);
-//			maxX = Math.max(maxX, Q.x);
-//			maxY = Math.max(maxY, Q.y);
 			L[++ll] = Q.clone();
 			for (x = w - 1; x >= 0; --x) {//x=-1 never occurs;
 				c = (image.getPixel32(x, y) >> 24) & 0xff;
@@ -387,8 +396,6 @@ public class ScratchCostume {
 			}
 
 			Q.x = x + r.left;
-//			minX = Math.min(minX, Q.x);
-//			maxX = Math.max(maxX, Q.x);
 			while (rr > 0) {
 				if (CCW(R[rr - 1], R[rr], Q) > 0)
 					break;
@@ -408,7 +415,6 @@ public class ScratchCostume {
 		R.length = L.length = 0;
 		image.dispose();
 
-//trace('found bounds: '+new Rectangle(minX, minY, maxX - minX, maxY - minY));
 		return H;
 	}
 
@@ -651,7 +657,7 @@ public class ScratchCostume {
 		return '.dat'; // generic data; should not happen
 	}
 
-	public function generateOrFindComposite(allCostumes:Array):void {
+	public function generateOrFindComposite(allCostumes:Vector.<ScratchCostume>):void {
 		// If this costume has a text layer bitmap, compute or find a composite bitmap.
 		// Since there can be multiple copies of the same costume, first try to find a
 		// costume with the same base and text layer bitmaps and share its composite
