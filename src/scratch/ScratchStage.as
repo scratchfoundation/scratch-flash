@@ -836,7 +836,7 @@ public class ScratchStage extends ScratchObj {
 		for (var i:int = 0; i < numChildren; i++) {
 			var c:DisplayObject = getChildAt(i);
 			if (((c is ScratchSprite) && !ScratchSprite(c).isClone)
-				|| (c is Watcher) || (c is ListWatcher)) {
+				|| (c is Watcher)) {  // no need to include ListWatchers
 				children.push(c);
 			}
 		}
@@ -847,7 +847,7 @@ public class ScratchStage extends ScratchObj {
 			for (i = 0; i < uiLayer.numChildren; i++) {
 				c = uiLayer.getChildAt(i);
 				if (((c is ScratchSprite) && !ScratchSprite(c).isClone)
-						|| (c is Watcher) || (c is ListWatcher)) {
+						|| (c is Watcher)) {  // no need to include ListWatchers
 					children.push(c);
 				}
 			}
