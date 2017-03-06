@@ -72,7 +72,6 @@ public class BlockIO {
 		if (b.op == Specs.PROCEDURE_DEF)								// procedure definition
 			return [Specs.PROCEDURE_DEF, b.spec, b.parameterNames, b.defaultArgValues, b.warpProcFlag];
 		if (b.op == Specs.CALL) result = [Specs.CALL, b.spec];			// procedure call - arguments follow spec
-
 		// Note: arguments are always saved in normalized (i.e. left-to-right) order
 		for each (var arg:* in b.normalizedArgs()) {
 			if (arg is Block) {
@@ -80,22 +79,21 @@ public class BlockIO {
 			}
 			else if (arg is BlockArg) {
 				var blockArg:BlockArg = arg as BlockArg;
-				var argText:String;
-				if (blockArg.argValue is ScratchObj) {
-					var scratchObj:ScratchObj = blockArg.argValue as ScratchObj;
+				var argVal:* = blockArg.argValue;
+				if (argVal is ScratchObj) {
 					// convert a Scratch sprite/stage reference to a name string
-					argText = scratchObj.objName;
+					argVal = ScratchObj(argVal).objName;
 				}
-				else if (blockArg.argValue is String) {
-					// Preserve drop-down menu values where the field.text is localized. For example:
-					// we want argValue="_mouse_", not field.text which may be "mouse-pointer" or "puntero del ratón"
-					argText = blockArg.argValue;
+				else if (argVal is Number && arg.field && (arg.field.text != null)) {
+					var argText:String = arg.field.text;
+					// Preserve user text when it's not just a string conversion of the numeric value.
+					// For example, preserve "1." since String(1) is "1"
+					// If they do match, use argVal: this saves a bit of space in the JSON by omitting quotes.
+					if (String(argVal) != argText) {
+						argVal = argText;
+					}
 				}
-				else {
-					// preserve text as-is
-					argText = blockArg.field.text;
-				}
-				result.push(argText);
+				result.push(argVal);
 			}
 		}
 		if (b.base.canHaveSubstack1()) result.push(stackToArray(b.subStack1));
