@@ -249,6 +249,8 @@ public class ProcedureSpecEditor extends Sprite {
 
 		const lightGray:int = 0xA0A0A0;
 
+		var icon:BlockShape;
+
 		icon = new BlockShape(BlockShape.NumberShape, lightGray);
 		icon.setWidthAndTopHeight(25, 14, true);
 		buttons[0].setIcon(icon);
@@ -257,7 +259,7 @@ public class ProcedureSpecEditor extends Sprite {
 		icon.setWidthAndTopHeight(22, 14, true);
 		buttons[1].setIcon(icon);
 
-		var icon:BlockShape = new BlockShape(BlockShape.BooleanShape, lightGray);
+		icon = new BlockShape(BlockShape.BooleanShape, lightGray);
 		icon.setWidthAndTopHeight(25, 14, true);
 		buttons[2].setIcon(icon);
 
