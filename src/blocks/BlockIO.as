@@ -72,30 +72,16 @@ public class BlockIO {
 		if (b.op == Specs.PROCEDURE_DEF)								// procedure definition
 			return [Specs.PROCEDURE_DEF, b.spec, b.parameterNames, b.defaultArgValues, b.warpProcFlag];
 		if (b.op == Specs.CALL) result = [Specs.CALL, b.spec];			// procedure call - arguments follow spec
-
-		// Note: arguments are always saved in normalized (i.e. left-to-right) order
-		for each (var arg:* in b.normalizedArgs()) {
-			if (arg is Block) {
-				result.push(blockToArray(arg));
-			}
-			else if (arg is BlockArg) {
-				var blockArg:BlockArg = arg as BlockArg;
-				var argText:String;
-				if (blockArg.argValue is ScratchObj) {
-					var scratchObj:ScratchObj = blockArg.argValue as ScratchObj;
+		for each (var a:* in b.normalizedArgs()) {
+			// Note: arguments are always saved in normalized (i.e. left-to-right) order
+			if (a is Block) result.push(blockToArray(a));
+			if (a is BlockArg) {
+				var argVal:* = BlockArg(a).argValue;
+				if (argVal is ScratchObj) {
 					// convert a Scratch sprite/stage reference to a name string
-					argText = scratchObj.objName;
+					argVal = ScratchObj(argVal).objName;
 				}
-				else if (blockArg.argValue is String) {
-					// Preserve drop-down menu values where the field.text is localized. For example:
-					// we want argValue="_mouse_", not field.text which may be "mouse-pointer" or "puntero del ratón"
-					argText = blockArg.argValue;
-				}
-				else {
-					// preserve text as-is
-					argText = blockArg.field.text;
-				}
-				result.push(argText);
+				result.push(argVal);
 			}
 		}
 		if (b.base.canHaveSubstack1()) result.push(stackToArray(b.subStack1));
