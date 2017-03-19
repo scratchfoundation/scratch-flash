@@ -259,7 +259,7 @@ public class MotionAndPenPrims {
 
 	private function primSetPenColor(b:Block):void {
 		var s:ScratchSprite = interp.targetSprite();
-		if (s != null) s.setPenColor(interp.numarg(b, 0));
+		if (s != null) s.setPenColor(0xFFFFFF & interp.numarg(b, 0));
 	}
 
 	private function primSetPenHue(b:Block):void {
