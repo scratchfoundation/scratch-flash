@@ -154,8 +154,6 @@ public class BitmapPencilTool extends SVGTool {
 		var p:Point = editor.getWorkArea().bitmapMousePoint();
 		var gridX:int = Math.round(p.x - brushSize / 2);
 		var gridY:int = Math.round(p.y - brushSize / 2);
-		if (gridX & 1) gridX -= 1;
-		if (gridY & 1) gridY -= 1;
 		return new Point(gridX, gridY);
 	}
 
