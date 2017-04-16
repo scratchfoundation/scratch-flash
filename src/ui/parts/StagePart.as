@@ -51,6 +51,8 @@ public class StagePart extends UIPart {
 	protected var projectInfo:TextField;
 	private var versionInfo:TextField;
 	private var turboIndicator:TextField;
+	private var singleStepFastIndicator:TextField;
+	private var singleStepSlowIndicator:TextField;
 	private var runButton:IconButton;
 	private var stopButton:IconButton;
 	private var fullscreenButton:IconButton;
@@ -81,6 +83,8 @@ public class StagePart extends UIPart {
 		addRunStopButtons();
 		addRecordingTools();
 		addTurboIndicator();
+		addSingleStepFastIndicator();
+		addSingleStepSlowIndicator();
 		addFullScreenButton();
 		addXYReadouts();
 		addStageSizeButton();
@@ -90,7 +94,7 @@ public class StagePart extends UIPart {
 	
 	public static function strings():Array {
 		return [
-			'by', 'shared', 'unshared', 'Turbo Mode',
+			'by', 'shared', 'unshared', 'Turbo Mode', 'Single Stepping Fast', 'Single Stepping Slow', 
 			'This project can detect who is using it, through the “username” block. To hide your identity, sign out before using the project.',
 		];
 	}
@@ -98,6 +102,13 @@ public class StagePart extends UIPart {
 	public function updateTranslation():void {
 		turboIndicator.text = Translator.map('Turbo Mode');
 		turboIndicator.x = w - turboIndicator.width - 73;
+		
+		singleStepFastIndicator.text = Translator.map('Single Stepping Fast');
+		singleStepFastIndicator.x = w - singleStepFastIndicator.width - 73;
+		
+		singleStepSlowIndicator.text = Translator.map('Single Stepping Slow');
+		singleStepSlowIndicator.x = w - singleStepSlowIndicator.width - 73;
+		
 		updateProjectInfo();
 	}
 
@@ -149,6 +160,8 @@ public class StagePart extends UIPart {
 		projectInfo.visible = app.editMode;
 		stageSizeButton.visible = app.editMode;
 		turboIndicator.visible = app.interp.turboMode;
+		singleStepFastIndicator.visible = app.interp.singleSteppingFast;
+		singleStepSlowIndicator.visible = app.interp.singleSteppingSlow;
 		fullscreenButton.visible = !app.isSmallPlayer;
 		stopRecordingButton.visible = (app.runtime.ready==ReadyLabel.COUNTDOWN || app.runtime.recording) && app.editMode;
 		videoProgressBar.visible = (app.runtime.ready==ReadyLabel.COUNTDOWN || app.runtime.recording) && app.editMode;
@@ -194,6 +207,12 @@ public class StagePart extends UIPart {
 
 		turboIndicator.x = w - turboIndicator.width - 73;
 		turboIndicator.y = app.isSmallPlayer ? 5 : (app.editMode ? 22 : 12);
+		
+		singleStepFastIndicator.x = w - singleStepFastIndicator.width - 73;
+		singleStepFastIndicator.y = app.isSmallPlayer ? 5 : (app.editMode ? 22 : 12);
+		
+		singleStepSlowIndicator.x = w - singleStepSlowIndicator.width - 73;
+		singleStepSlowIndicator.y = app.isSmallPlayer ? 5 : (app.editMode ? 22 : 12);
 
 		fullscreenButton.x = 11;
 		fullscreenButton.y = stopButton.y - 1;
@@ -354,7 +373,27 @@ public class StagePart extends UIPart {
 		turboIndicator.visible = false;
 		addChild(turboIndicator);
 	}
-
+	
+	private function addSingleStepFastIndicator():void {
+		singleStepFastIndicator = new TextField();
+		singleStepFastIndicator.defaultTextFormat = new TextFormat(CSS.font, 11, CSS.buttonLabelOverColor, true);
+		singleStepFastIndicator.autoSize = TextFieldAutoSize.LEFT;
+		singleStepFastIndicator.selectable = false;
+		singleStepFastIndicator.text = Translator.map('Single Stepping Fast');
+		singleStepFastIndicator.visible = false;
+		addChild(singleStepFastIndicator);
+	}	
+	
+	private function addSingleStepSlowIndicator():void {
+		singleStepSlowIndicator = new TextField();
+		singleStepSlowIndicator.defaultTextFormat = new TextFormat(CSS.font, 11, CSS.buttonLabelOverColor, true);
+		singleStepSlowIndicator.autoSize = TextFieldAutoSize.LEFT;
+		singleStepSlowIndicator.selectable = false;
+		singleStepSlowIndicator.text = Translator.map('Single Stepping Slow');
+		singleStepSlowIndicator.visible = false;
+		addChild(singleStepSlowIndicator);
+	}	
+		
 	private function addXYReadouts():void {
 		readouts = new Sprite();
 		addChild(readouts);
@@ -387,7 +426,7 @@ public class StagePart extends UIPart {
 	private function updateRunStopButtons():void {
 		// Update the run/stop buttons.
 		// Note: To ensure that the user sees at least a flash of the
-		// on button, it stays on a minimum of two display cycles.
+		// on button, it stays on a minumum of two display cycles.
 		if (app.interp.threadCount() > 0) threadStarted();
 		else { // nothing running
 			if (runButtonOnTicks > 2) {
@@ -401,7 +440,7 @@ public class StagePart extends UIPart {
 	private var lastX:int, lastY:int;
 
 	private function updateMouseReadout():void {
-		// Update the mouse readouts. Do nothing if they are up-to-date (to minimize CPU load).
+		// Update the mouse reaadouts. Do nothing if they are up-to-date (to minimize CPU load).
 		if (stage.mouseX != lastX) {
 			lastX = app.stagePane.scratchMouseX();
 			xReadout.text = String(lastX);
@@ -489,7 +528,7 @@ public class StagePart extends UIPart {
 	private function showPlayButton():void {
 		// The play button is a YouTube-like button the covers the entire stage.
 		// Used by the player to ensure that the user clicks on the SWF to start
-		// the project, which ensures that the SWF gets keyboard focus.
+		// the project, which ensurs that the SWF gets keyboard focus.
 		if (!playButton) {
 			playButton = new Sprite();
 			playButton.graphics.beginFill(0, 0.3);
