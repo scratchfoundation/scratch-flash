@@ -179,6 +179,7 @@ public class Specs {
 		["play sound %m.sound",					" ", 3, "playSound:",						"pop"],
 		["play sound %m.sound until done",		" ", 3, "doPlaySoundAndWait",				"pop"],
 		["stop all sounds",						" ", 3, "stopAllSounds"],
+		["sound loudness",                          "r", 3, "getSoundData"],
 		["-"],
 		["play drum %d.drum for %n beats",		" ", 3, "playDrum",							1, 0.25],
 		["rest for %n beats",					" ", 3, "rest:elapsed:from:",				0.25],
