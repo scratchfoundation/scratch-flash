@@ -58,6 +58,7 @@ public class BlockArg extends Sprite {
 	public var isEditable:Boolean;
 	public var field:TextField;
 	public var menuName:String;
+	public var menuItems:Array;
 
 	private var menuIcon:Shape;
 
@@ -91,7 +92,11 @@ public class BlockArg extends Sprite {
 			addEventListener(MouseEvent.MOUSE_DOWN, invokeMenu);
 		} else if (type == 'm') {
 			base = new BlockShape(BlockShape.RectShape, c);
-			this.menuName = menuName;
+			if(menuName.charAt(0) == '[') {
+				this.menuItems = menuName.slice(1,menuName.length - 1).split(',');
+			} else {
+				this.menuName = menuName;
+			}
 			addEventListener(MouseEvent.MOUSE_DOWN, invokeMenu);
 		} else if (type == 'n') {
 			base = new BlockShape(BlockShape.NumberShape, c);
@@ -240,7 +245,7 @@ public class BlockArg extends Sprite {
 	private function invokeMenu(evt:MouseEvent):void {
 		if ((menuIcon != null) && (evt.localX <= menuIcon.x)) return;
 		if (Block.MenuHandlerFunction != null) {
-			Block.MenuHandlerFunction(evt, parent, this, menuName);
+			Block.MenuHandlerFunction(evt, parent, this, menuName, menuItems);
 			evt.stopImmediatePropagation();
 		}
 	}

@@ -135,6 +135,21 @@ public class Specs {
 		["x position",							"r", 1, "xpos"],
 		["y position",							"r", 1, "ypos"],
 		["direction",							"r", 1, "heading"],
+		["-"],
+		["scroll right %n",						" ", 1, "scrollRight",		10],
+		["scroll up %n",						" ", 1, "scrollUp",		10],
+		["align backdrop %m.scrollAlign",			" ", 1, "scrollAlign",		'bottom-left'],
+		["--"],
+		["x scroll",							"r", 1, "xScroll"],
+		["y scroll",							"r", 1, "yScroll"],
+
+		// stage motion (scrolling)
+		["scroll right %n",						" ", 101, "scrollRight",		10],
+		["scroll up %n",						" ", 101, "scrollUp",		10],
+		["align backdrop %m.scrollAlign",			" ", 101, "scrollAlign",		'bottom-left'],
+		["--"],
+		["x scroll",							"r", 101, "xScroll"],
+		["y scroll",							"r", 101, "yScroll"],
 
 		// looks
 		["say %s for %n secs",					" ", 2, "say:duration:elapsed:from:",	"Hello!", 2],
@@ -148,6 +163,8 @@ public class Specs {
 		["switch costume to %m.costume",		" ", 2, "lookLike:",				"costume1"],
 		["next costume",						" ", 2, "nextCostume"],
 		["switch backdrop to %m.backdrop",		" ", 2, "startScene", 				"backdrop1"],
+		["switch backdrop to %m.backdrop and wait", " ", 2, "startSceneAndWait",		"backdrop1"],
+		["next backdrop",							" ", 2, "nextScene"],
 		["-"],
 		["change %m.effect effect by %n",		" ", 2, "changeGraphicEffect:by:",	"color", 25],
 		["set %m.effect effect to %n",			" ", 2, "setGraphicEffect:to:",		"color", 0],
@@ -160,10 +177,14 @@ public class Specs {
 		["go back %n layers",					" ", 2, "goBackByLayers:", 			1],
 		["-"],
 		["costume #",							"r", 2, "costumeIndex"],
-		["backdrop name",						"r", 2, "sceneName"],
+		["costume name",							"r", 2, "costumeName"],
 		["size",								"r", 2, "scale"],
+		["backdrop #",							"r", 2, "backgroundIndex"],
+		["backdrop name",						"r", 2, "sceneName"],
 
 		// stage looks
+		["hide all sprites",					" ", 102, "hideAll"],
+		["-"],
 		["switch backdrop to %m.backdrop",			" ", 102, "startScene", 			"backdrop1"],
 		["switch backdrop to %m.backdrop and wait", " ", 102, "startSceneAndWait",		"backdrop1"],
 		["next backdrop",							" ", 102, "nextScene"],
@@ -172,8 +193,8 @@ public class Specs {
 		["set %m.effect effect to %n",			" ", 102, "setGraphicEffect:to:",		"color", 0],
 		["clear graphic effects",				" ", 102, "filterReset"],
 		["-"],
-		["backdrop name",						"r", 102, "sceneName"],
 		["backdrop #",							"r", 102, "backgroundIndex"],
+		["backdrop name",						"r", 102, "sceneName"],
 
 		// sound
 		["play sound %m.sound",					" ", 3, "playSound:",						"pop"],
@@ -239,6 +260,10 @@ public class Specs {
 		["if %b then",							"e", 6, "doIfElse"],
 		["wait until %b",						" ", 6, "doWaitUntil"],
 		["repeat until %b",						"c", 6, "doUntil"],
+		["while %b",							"c", 6, "doWhile"],
+		["for each %m.var in %n",			"c", 6, "doForLoop", "variable", 10],
+		["-"],
+		["all at once",							"c", 6, "warpSpeed"],
 		["-"],
 		["stop %m.stop",						"f", 6, "stopScripts", "all"],
 		["-"],
@@ -257,6 +282,10 @@ public class Specs {
 		["if %b then",							"e", 106, "doIfElse"],
 		["wait until %b",						" ", 106, "doWaitUntil"],
 		["repeat until %b",						"c", 106, "doUntil"],
+		["while %b",							"c", 106, "doWhile"],
+		["for each %m.var in %n",			"c", 106, "doForLoop", "variable", 10],
+		["-"],
+		["all at once",							"c", 106, "warpSpeed"],
 		["-"],
 		["stop %m.stop",						"f", 106, "stopScripts", "all"],
 		["-"],
@@ -285,11 +314,16 @@ public class Specs {
 		["timer",								"r", 7, "timer"],
 		["reset timer",							" ", 7, "timerReset"],
 		["-"],
+		["counter",								"r", 7, "COUNT"],
+		["reset counter",						" ", 7, "CLR_COUNT"],
+		["increase counter",						" ", 7, "INCR_COUNT"],
+		["-"],
 		["%m.attribute of %m.spriteOrStage",	"r", 7, "getAttribute:of:"],
 		["-"],
 		["current %m.timeAndDate", 				"r", 7, "timeAndDate",			"minute"],
 		["days since 2000", 					"r", 7, "timestamp"],
 		["username",							"r", 7, "getUserName"],
+		["user id",								"r", 7, "getUserId"],
 
 		// stage sensing
 		["ask %s and wait",						" ", 107, "doAsk", 				"What's your name?"],
@@ -309,17 +343,26 @@ public class Specs {
 		["timer",								"r", 107, "timer"],
 		["reset timer",							" ", 107, "timerReset"],
 		["-"],
+		["counter",								"r", 107, "COUNT"],
+		["reset counter",						" ", 107, "CLR_COUNT"],
+		["increase counter",						" ", 107, "INCR_COUNT"],
+		["-"],
 		["%m.attribute of %m.spriteOrStage",	"r", 107, "getAttribute:of:"],
 		["-"],
 		["current %m.timeAndDate", 				"r", 107, "timeAndDate",		"minute"],
 		["days since 2000", 					"r", 107, "timestamp"],
 		["username",							"r", 107, "getUserName"],
+		["user id",								"r", 107, "getUserId"],
 
 		// operators
 		["%n + %n",								"r", 8, "+",					"", ""],
 		["%n - %n",								"r", 8, "-",					"", ""],
 		["%n * %n",								"r", 8, "*",					"", ""],
 		["%n / %n",								"r", 8, "/",					"", ""],
+		["-"],
+		["%n mod %n",							"r", 8, "%",					"", ""],
+		["-"],
+		["%m.mathOp of %n",						"r", 8, "computeFunction:of:",	"round", ""],
 		["-"],
 		["pick random %n to %n",		"r", 8, "randomFrom:to:",		1, 10],
 		["-"],
@@ -334,11 +377,6 @@ public class Specs {
 		["join %s %s",							"r", 8, "concatenate:with:",	"hello ", "world"],
 		["letter %n of %s",						"r", 8, "letter:of:",			1, "world"],
 		["length of %s",						"r", 8, "stringLength:",		"world"],
-		["-"],
-		["%n mod %n",							"r", 8, "%",					"", ""],
-		["round %n",							"r", 8, "rounded", 				""],
-		["-"],
-		["%m.mathOp of %n",						"r", 8, "computeFunction:of:",	"sqrt", 9],
 
 		// variables
 		["set %m.var to %s",								" ", 9, SET_VAR],
@@ -361,38 +399,22 @@ public class Specs {
 		["hide list %m.list",								" ", 12, "hideList:"],
 
 		// obsolete blocks from Scratch 1.4 that may be used in older projects
-		["play drum %n for %n beats",			" ", 98, "drum:duration:elapsed:from:", 1, 0.25], // Scratch 1.4 MIDI drum
-		["set instrument to %n",				" ", 98, "midiInstrument:", 1],
-		["loud?",								"b", 98, "isLoud"],
+		["play drum %n for %n beats",			" ", 98, "drum:duration:elapsed:from:", 48, 0.25], // Scratch 1.4 MIDI drum
+		["set instrument to %n",				" ", 98, "midiInstrument:", 1], // Scratch 1.4 MIDI instrument
+		["loud?",								"b", 98, "isLoud"], // loudness > 10 (30 in 1.4)
 
 		// obsolete blocks from Scratch 1.4 that are converted to new forms (so should never appear):
-		["abs %n",								"r", 98, "abs"],
-		["sqrt %n",								"r", 98, "sqrt"],
+		["forever if %b",						"cf", 98, "doForeverIf"],
 		["stop script",							"f", 98, "doReturn"],
 		["stop all",							"f", 98, "stopAll"],
+		["round %n",							"r", 98, "rounded"],
+		["abs %n",								"r", 98, "abs"],
+		["sqrt %n",								"r", 98, "sqrt"],
+		["turn %n degrees",			" ", 98, "turn:"],
+		["glide x: %n y: %n in %n secs",			" ", 98, "gotoX:y:duration:elapsed:from:"],
+		["point away from edge",		" ", 98, "turnAwayFromEdge"],
 		["switch to background %m.costume",		" ", 98, "showBackground:", "backdrop1"],
 		["next background",						" ", 98, "nextBackground"],
-		["forever if %b",						"cf",98, "doForeverIf"],
-
-		// testing and experimental control prims
-		["noop",								"r", 99, "COUNT"],
-		["counter",								"r", 99, "COUNT"],
-		["clear counter",						" ", 99, "CLR_COUNT"],
-		["incr counter",						" ", 99, "INCR_COUNT"],
-		["for each %m.varName in %s",			"c", 99, "doForLoop", "v", 10],
-		["while %b",							"c", 99, "doWhile"],
-		["all at once",							"c", 99, "warpSpeed"],
-
-		// stage motion (scrolling)
-		["scroll right %n",						" ", 99, "scrollRight",		10],
-		["scroll up %n",						" ", 99, "scrollUp",		10],
-		["align scene %m.scrollAlign",			" ", 99, "scrollAlign",		'bottom-left'],
-		["x scroll",							"r", 99, "xScroll"],
-		["y scroll",							"r", 99, "yScroll"],
-
-		// other obsolete blocks from alpha/beta
-		["hide all sprites",					" ", 99, "hideAll"],
-		["user id",								"r", 99, "getUserId"],
 
 	];
 
