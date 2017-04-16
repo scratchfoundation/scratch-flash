@@ -1029,9 +1029,9 @@ public class ScratchRuntime {
 
 	public function allVarNames():Array {
 		var result:Array = [], v:Variable;
-		for each (v in app.stageObj().variables) result.push(v.name);
+		for each (v in app.stageObj().variables) result.push(new RenderedVariable(v.name, false));
 		if (!app.viewedObj().isStage) {
-			for each (v in app.viewedObj().variables) result.push(v.name);
+			for each (v in app.viewedObj().variables) result.push(new RenderedVariable(v.name, true));
 		}
 		return result;
 	}
