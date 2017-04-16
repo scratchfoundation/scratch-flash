@@ -63,6 +63,7 @@ public class Primitives {
 		primTable["letter:of:"]			= primLetterOf;
 		primTable["stringLength:"]		= function(b:*):* { return String(interp.arg(b, 0)).length };
 
+		primTable["^"]					= function(b:*):* { return Math.pow(interp.arg(b, 0), interp.arg(b, 1)) };
 		primTable["%"]					= primModulo;
 		primTable["rounded"]			= function(b:*):* { return Math.round(interp.numarg(b, 0)) };
 		primTable["computeFunction:of:"] = primMathFunction;
