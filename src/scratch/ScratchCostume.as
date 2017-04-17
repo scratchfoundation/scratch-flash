@@ -123,7 +123,7 @@ public class ScratchCostume {
 
 	public function set baseLayerData(data:ByteArray):void {
 		__baseLayerData = data;
-		baseLayerMD5 = null;
+		baseLayerMD5 = data ? by.blooddy.crypto.MD5.hashBytes(data) + fileExtension(data) : null;
 	}
 
 	public function get textLayerData():ByteArray {
@@ -132,7 +132,7 @@ public class ScratchCostume {
 
 	public function set textLayerData(data:ByteArray):void {
 		__textLayerData = data;
-		textLayerMD5 = null;
+		textLayerMD5 = data ? by.blooddy.crypto.MD5.hashBytes(data) + '.png' : null;
 	}
 
 	public function get segmentationState():SegmentationState {
