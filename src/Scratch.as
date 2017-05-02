@@ -39,6 +39,7 @@ import flash.net.FileFilter;
 import flash.net.FileReference;
 import flash.net.FileReferenceList;
 import flash.net.LocalConnection;
+import flash.net.SharedObject;
 import flash.net.URLLoader;
 import flash.net.URLLoaderDataFormat;
 import flash.net.URLRequest;
@@ -134,6 +135,10 @@ public class Scratch extends Sprite {
 	public const tipsBarClosedWidth:int = 17;
 
 	public var logger:Log = new Log(16);
+
+	// Offline Queue
+	private var offlineQueue:OfflineQueue = OfflineQueue.getInstance();
+	private var fileSystemIO:FileSystemIO = new FileSystemIO();
 
 	public function Scratch() {
 		SVGTool.setStage(stage);
@@ -1136,11 +1141,17 @@ public class Scratch extends Sprite {
 		function clearProject():void {
 			startNewProject('', '');
 			setProjectName('Untitled');
+			// Logic for creating a new project::create packet
+			var sharedObj:SharedObject = SharedObject.getLocal('Scratch');
+			var clientID:String = String(fileSystemIO.getPropertyValue('clientID'));
+			var appOpenPacket:Packet = new Packet(clientID, "Untitled", 'project', 'create', sharedObj.data.lang, null);
+			offlineQueue.enqueue(appOpenPacket.getJSONRepresentation(), false);
+			// TODO: Remove trace statement
+			trace("created a new project::create packet");
 			topBarPart.refresh();
 			stagePart.refresh();
 			if (callback != null) callback();
 		}
-
 		saveProjectAndThen(clearProject);
 	}
 
