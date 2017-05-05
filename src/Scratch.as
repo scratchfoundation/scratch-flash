@@ -137,8 +137,7 @@ public class Scratch extends Sprite {
 	public var logger:Log = new Log(16);
 
 	// Offline Queue
-	private var offlineQueue:OfflineQueue = OfflineQueue.getInstance();
-	private var fileSystemIO:FileSystemIO = new FileSystemIO();
+	private var offlineSystem:OfflineSystem = OfflineSystem.getInstance();
 
 	public function Scratch() {
 		SVGTool.setStage(stage);
@@ -1142,10 +1141,9 @@ public class Scratch extends Sprite {
 			startNewProject('', '');
 			setProjectName('Untitled');
 			// Logic for creating a new project::create packet
-			var sharedObj:SharedObject = SharedObject.getLocal('Scratch');
-			var clientID:String = String(fileSystemIO.getPropertyValue('clientID'));
-			var appOpenPacket:Packet = new Packet(clientID, "Untitled", 'project', 'create', sharedObj.data.lang, null);
-			offlineQueue.enqueue(appOpenPacket.getJSONRepresentation(), false);
+			var clientID:String = offlineSystem.getClientId();
+			var appOpenPacket:Packet = new Packet(clientID, "Untitled", 'project', 'create', offlineSystem.getCurrentLanguage(), null);
+			offlineSystem.enqueuePacket(appOpenPacket.getJSONRepresentation(), false);
 			// TODO: Remove trace statement
 			trace("created a new project::create packet");
 			topBarPart.refresh();
