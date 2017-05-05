@@ -1140,7 +1140,6 @@ public class Scratch extends Sprite {
 		function clearProject():void {
 			startNewProject('', '');
 			setProjectName('Untitled');
-			// Logic for creating a new project::create packet
 			var clientID:String = offlineSystem.getClientId();
 			var appOpenPacket:Packet = new Packet(clientID, "Untitled", 'project', 'create', offlineSystem.getCurrentLanguage(), null);
 			offlineSystem.enqueuePacket(appOpenPacket.getJSONRepresentation(), false);
