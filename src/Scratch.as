@@ -1142,7 +1142,7 @@ public class Scratch extends Sprite {
 			setProjectName('Untitled');
 			var clientID:String = offlineSystem.getClientId();
 			var appOpenPacket:Packet = new Packet(clientID, "Untitled", 'project', 'create', offlineSystem.getCurrentLanguage(), null);
-			offlineSystem.enqueuePacket(appOpenPacket.getJSONRepresentation(), false);
+			offlineSystem.enqueuePacket(appOpenPacket);
 			// TODO: Remove trace statement
 			trace("created a new project::create packet");
 			topBarPart.refresh();
