@@ -162,17 +162,12 @@ public class PaletteBuilder {
   }
 
   protected function addExtensionButtons():void {
-    addAddExtensionButton();
     if (Scratch.app.isExtensionDevMode) {
       var extensionDevManager:ExtensionDevManager = Scratch.app.extensionManager as ExtensionDevManager;
       if (extensionDevManager) {
         addItem(extensionDevManager.makeLoadExperimentalExtensionButton());
       }
     }
-  }
-
-  protected function addAddExtensionButton():void {
-    addItem(new Button(Translator.map('Add an Extension'), showAnExtension, false, '/help/studio/tips/blocks/add-an-extension/'));
   }
 
   protected function addAddLibraryButton():void {
