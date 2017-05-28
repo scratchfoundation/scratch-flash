@@ -76,6 +76,7 @@ public class Block extends Sprite {
 	public var warpProcFlag:Boolean;	// used by procedure definition hats to indicate warp speed
 	public var rightToLeft:Boolean;
 	public var scriptBrowserBlock:Boolean;
+	public var originalBlock:Block; // for script browser blocks
 
 	public var isHat:Boolean = false;
 	public var isAsyncHat:Boolean = false;
@@ -847,6 +848,11 @@ public class Block extends Sprite {
 	public function menu(evt:MouseEvent):void {
 		// Note: Unlike most menu() methods, this method invokes
 		// the menu itself rather than returning a menu to the caller.
+		if (scriptBrowserBlock) {
+			DialogBox.notify('Wewlad', 'Huh');
+			originalBlock.menu(evt);
+			return;
+		}
 		if (MenuHandlerFunction == null) return;
 		if (isEmbeddedInProcHat()) MenuHandlerFunction(null, parent);
 		else MenuHandlerFunction(null, this);

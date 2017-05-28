@@ -70,7 +70,7 @@ public class BlockArg extends Sprite {
 	//	n - number (rounded)
 	//	s - string (rectangular)
 	//	none of the above - custom subclass of BlockArg
-	public function BlockArg(type:String, color:int, editable:Boolean = false, menuName:String = '', shouldHaveColorIcon:Boolean = false) {
+	public function BlockArg(type:String, color:int, editable:Boolean = false, menuName:String = '', shouldHaveColorIcon:Boolean = false, shouldNotHaveWhiteText:Boolean = false) {
 		this.type = type;
 
 		if (color == -1) { // copy for clone; omit graphics
@@ -94,6 +94,7 @@ public class BlockArg extends Sprite {
 			base = new BlockShape(BlockShape.RectShape, c);
 			this.menuName = menuName;
 			addEventListener(MouseEvent.MOUSE_DOWN, invokeMenu);
+			editable = true; // because why not
 		} else if (type == 'n') {
 			base = new BlockShape(BlockShape.NumberShape, c);
 			numberType = NT_FLOAT;
@@ -146,7 +147,8 @@ public class BlockArg extends Sprite {
 			field.text = numberType ? '10' : '';
 			if (numberType) field.restrict = '0-9e.\\-'; // restrict to numeric characters
 			if (editable) {
-				base.setColor(0xFFFFFF); // if editable, set color to white
+				if (type != 'm') base.setColor(0xFFFFFF); // if editable, set color to white
+				else if (!shouldNotHaveWhiteText) field.textColor = 0xFFFFFF;
 				isEditable = true;
 			}
 			field.addEventListener(FocusEvent.FOCUS_OUT, stopEditing);
