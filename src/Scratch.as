@@ -771,8 +771,8 @@ public class Scratch extends Sprite {
 			soundsPart.refresh();
 		}
 		if (isShowing(scriptsPart)) {
-			scriptsPart.updatePalette();
 			scriptsPane.viewScriptsFor(obj);
+			scriptsPart.updatePalette();
 			scriptsPart.updateSpriteWatermark();
 		}
 		if (isShowing(scriptBrowserPart)) {
@@ -1636,6 +1636,7 @@ public class Scratch extends Sprite {
 
 	public function selectScript(script:Block):void {
 		scriptsPane.viewOneScript(script);
+		updatePalette();
 	}
 
 	// -----------------------------

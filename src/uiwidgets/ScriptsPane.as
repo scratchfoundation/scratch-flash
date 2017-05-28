@@ -42,7 +42,6 @@ public class ScriptsPane extends ScrollFrameContents {
 	private const INSERT_WRAP:int = 4;
 
 	public var viewedScript:Block;
-
 	private var viewedScriptX:int;
 	private var viewedScriptY:int;
 
@@ -102,7 +101,7 @@ public class ScriptsPane extends ScrollFrameContents {
 		viewedObj = obj;
 		if (viewedObj != null) {
 			var blockList:Array = viewedObj.allBlocks();
-			for each (var b:Block in viewedObj.scripts) {
+			for each (var b:Block in viewedObj.visibleScripts()) {
 				b.cacheAsBitmap = true;
 				addChild(b);
 			}

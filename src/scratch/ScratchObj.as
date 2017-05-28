@@ -370,6 +370,31 @@ public class ScratchObj extends Sprite {
 		return result;
 	}
 
+	public function visibleScripts():Array {
+		var result:Array = [];
+		for each (var script:Block in scripts) {
+			if (script.op === Specs.PROCEDURE_DEF) {
+				if (script.spec.indexOf(Specs.MAGIC_PROC_PREFIX) === 0) {
+					continue;
+				}
+			}
+			result.push(script);
+		}
+		return result;
+	}
+
+	public function magicProcedureDefinitions():Array {
+		var result:Array = [];
+		for each (var script:Block in scripts) {
+			if (script.op === Specs.PROCEDURE_DEF) {
+				if (script.spec.indexOf(Specs.MAGIC_PROC_PREFIX) === 0) {
+					result.push(script);
+				}
+			}
+		}
+		return result;
+	}
+
 	/* Sounds */
 
 	public function findSound(arg:*):ScratchSound {
@@ -406,7 +431,10 @@ public class ScratchObj extends Sprite {
 		var result:Array = [];
 		for (var i:int = 0; i < scripts.length; i++) {
 			var b:Block = scripts[i] as Block;
-			if (b && (b.op == Specs.PROCEDURE_DEF)) result.push(b);
+			if (
+				b && (b.op == Specs.PROCEDURE_DEF) &&
+				b.spec.indexOf(Specs.MAGIC_PROC_PREFIX) !== 0
+			) result.push(b);
 		}
 		return sortScriptsArray(result);
 	}
@@ -437,7 +465,11 @@ public class ScratchObj extends Sprite {
 
 	public function varNames():Array {
 		var varList:Array = [];
-		for each (var v:Variable in variables) varList.push(v.name);
+		for each (var v:Variable in variables) {
+			if (v.name.indexOf(Specs.BROADCAST_VAR_PREFIX) !== 0) {
+				varList.push(v.name);
+			}
+		}
 		return varList.sort();
 	}
 
@@ -650,14 +682,9 @@ public class ScratchObj extends Sprite {
 		}
 
 		// scripts
-		for (i = 0; i < scripts.length; i++) {
-			// entries are of the form: [x y stack]
-			var entry:Array = scripts[i];
-			var b:Block = BlockIO.arrayToStack(entry[2], isStage);
-			b.x = entry[0];
-			b.y = entry[1];
-			scripts[i] = b;
-		}
+		var scriptEntries:Array = scripts;
+		scripts = [];
+		addJSONScripts(scriptEntries);
 
 		// script comments
 		for (i = 0; i < scriptComments.length; i++) {
@@ -676,6 +703,16 @@ public class ScratchObj extends Sprite {
 			jsonObj = costumes[i];
 			costumes[i] = new ScratchCostume('json temp', null);
 			costumes[i].readJSON(jsonObj);
+		}
+	}
+
+	public function addJSONScripts(scriptEntries:Array):void {
+		for each (var entry:Array in scriptEntries) {
+			// Entries are of the form [x, y, stack]
+			var b:Block = BlockIO.arrayToStack(entry[2], isStage);
+			b.x = entry[0];
+			b.y = entry[1];
+			scripts.push(b);
 		}
 	}
 

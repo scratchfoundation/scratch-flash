@@ -346,6 +346,12 @@ public class Block extends Sprite {
 		argTypes = [];
 		for (i = 0; i < specParts.length; i++) {
 			var o:DisplayObject = argOrLabelFor(specParts[i], c);
+			if (o is TextField) {
+				var tf:TextField = (o as TextField);
+				if (tf.text.indexOf(Specs.MAGIC_PROC_PREFIX) === 0) {
+					tf.text = Specs.MAGIC_PROC_HUMAN + ' ' + tf.text.slice(Specs.MAGIC_PROC_PREFIX.length);
+				}
+			}
 			labelsAndArgs.push(o);
 			var argType:String = 'icon';
 			if (o is BlockArg) argType = specParts[i];

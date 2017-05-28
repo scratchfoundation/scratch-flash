@@ -71,6 +71,7 @@ public class BlockMenus implements DragClient {
 		if (menuName == 'booleanSensor') menuHandler.booleanSensorMenu(evt);
 		if (menuName == 'broadcast') menuHandler.broadcastMenu(evt);
 		if (menuName == 'broadcastInfoMenu') menuHandler.broadcastInfoMenu(evt);
+		if (menuName == 'broadcastVar') menuHandler.broadcastVarMenu(evt);
 		if (menuName == 'colorPicker') menuHandler.colorPicker(evt);
 		if (menuName == 'costume') menuHandler.costumeMenu(evt);
 		if (menuName == 'direction') menuHandler.dirMenu(evt);
@@ -850,6 +851,56 @@ public class BlockMenus implements DragClient {
 			if (block.op === 'broadcast:') m.addItem('..and wait');
 			else if (block.op === 'doBroadcastAndWait') m.addItem('..no wait');
 		}
+		showMenu(m);
+	}
+
+	private function broadcastVarMenu(evt:MouseEvent):void {
+		var msg:String;
+
+		function broadcastVarSelection(selection:*):void {
+			if (selection is Function) { selection(); return; }
+
+			blockArg.setArgValue(selection);
+		}
+
+		function createVariable():void {
+			function cb():void {
+				var n:String = d.getField('Variable name').replace(/^\s+|\s+$/g, '');
+				if (n.length == 0) return;
+
+				blockArg.setArgValue(n);
+
+				n = Specs.BROADCAST_VAR_PREFIX + msg + '>' + n;
+				app.stagePane.lookupOrCreateVar(n);
+
+				app.updatePalette();
+			}
+
+			var d:DialogBox = new DialogBox(cb);
+			d.addTitle('New Broadcast Variable');
+			d.addField('Variable name', 150);
+			d.addAcceptCancelButtons('OK');
+			d.showOnStage(app.stage);
+		}
+
+		var m:Menu = new Menu(broadcastVarSelection, 'broadcastVar');
+
+		var arg:BlockArg = block.getNormalizedArg(0);
+		if (arg is BlockArg) {
+			msg = arg.argValue;
+
+			var entries:Array = app.stagePane.collectBroadcastVarNames(msg);
+			if (entries.length) {
+				for each (var entry:Array in entries) {
+					var n:String = entry[0];
+					m.addItem(n);
+				}
+				m.addLine();
+			}
+
+			m.addItem('new variable..', createVariable);
+		}
+
 		showMenu(m);
 	}
 
