@@ -27,6 +27,7 @@ package ui {
 	import uiwidgets.*;
 	import util.*;
 	import translation.Translator;
+	import util.Color;
 
 public class ProcedureSpecEditor extends Sprite {
 
@@ -47,6 +48,45 @@ public class ProcedureSpecEditor extends Sprite {
 
 	private const labelColor:int = 0x8738bf; // 0x6c36b3; // 0x9c35b3;
 	private const selectedLabelColor:int = 0xefa6ff;
+
+	// Probably out of date list of all %m and %d options
+	private const menuNames:Array = [
+		['Attributes', 'attribute'],
+		['Backdrops', 'backdrop'],
+		['Boolean sensors', 'booleanSensor'],
+		['Broadcasts', 'broadcast'],
+		['Broadcast context menu', 'broadcastInfoMenu'],
+		['Color picker', 'colorPicker'],
+		['Costumes', 'costume'],
+		['Directions', 'direction'],
+		['Drums', 'drum'],
+		['Graphic effects', 'effect'],
+		['Instruments', 'instrument'],
+		['Keys', 'key'],
+		['Lists', 'list'],
+		['List delete options', 'listDeleteItem'],
+		['List items', 'listItem'],
+		['Locations', 'location'],
+		['Math operations', 'mathOp'],
+		['Motor directions', 'motorDirection'],
+		['Notes', 'note'],
+		['Procedure context menu', 'procMenu'],
+		['Rotation styles', 'rotationStyle'],
+		['Scroll alignments', 'scrollAlign'],
+		['Sensors', 'sensor'],
+		['Sounds', 'sound'],
+		['Sprites and myself', 'spriteOnly'],
+		['Sprites and mouse', 'spriteOrMouse'],
+		['Sprites and stage', 'spriteOrStage'],
+		['Stage and this sprite', 'stageOrThis'],
+		['Stop options', 'stop'],
+		['Time and date', 'timeAndDate'],
+		['Trigger sensors', 'triggerSensor'],
+		['Mouse pointer or edge', 'touching'],
+		['Variables', 'var'],
+		['Video motion types', 'videoMotionType'],
+		['Video states', 'videoState']
+	];
 
 	public function ProcedureSpecEditor(originalSpec:String, inputNames:Array, warpFlag:Boolean) {
 		addChild(base = new Shape());
@@ -83,6 +123,9 @@ public class ProcedureSpecEditor extends Sprite {
 			'Add number input:',
 			'Add string input:',
 			'Add boolean input:',
+			'Add color input:',
+			'Add menu input:',
+			'Add number menu input:',
 			'Add label text:',
 			'text',
 		];
@@ -117,6 +160,9 @@ public class ProcedureSpecEditor extends Sprite {
 				if (argSpec == 'b') arg = makeBooleanArg();
 				if (argSpec == 'n') arg = makeNumberArg();
 				if (argSpec == 's') arg = makeStringArg();
+				if (argSpec == 'c') arg = makeColorArg();
+				if (argSpec == 'm') arg = makeMenuArg(s.slice(3));
+				if (argSpec == 'd') arg = makeNumberMenuArg(s.slice(3));
 				if (arg) {
 					arg.setArgValue(inputNames[i++]);
 					addElement(arg);
@@ -139,7 +185,10 @@ public class ProcedureSpecEditor extends Sprite {
 		var result:String = '';
 		for each (var o:* in row) {
 			if (o is TextField) result += ReadStream.escape(TextField(o).text);
-			if (o is BlockArg) result += '%' + BlockArg(o).type;
+			if (o is BlockArg) {
+				result += '%' + BlockArg(o).type;
+				if (BlockArg(o).menuName) result += '.' + BlockArg(o).menuName;
+			}
 			if ((result.length > 0) && (result.charAt(result.length - 1) != ' ')) result += ' ';
 		}
 		if ((result.length > 0) && (result.charAt(result.length - 1) == ' ')) result = result.slice(0, result.length - 1);
@@ -152,9 +201,13 @@ public class ProcedureSpecEditor extends Sprite {
 			if (el is BlockArg) {
 				var arg:BlockArg = BlockArg(el);
 				var v:* = 0;
+				// TODO actual defaults?
 				if (arg.type == 'b') v = false;
 				if (arg.type == 'n') v = 1;
 				if (arg.type == 's') v = '';
+				if (arg.type == 'c') v = Color.random();
+				if (arg.type == 'm') v = arg.menuName;
+				if (arg.type == 'd') v = 1;
 				result.push(v);
 			}
 		}
@@ -179,16 +232,24 @@ public class ProcedureSpecEditor extends Sprite {
 			makeLabel('Add number input:', 14),
 			makeLabel('Add string input:', 14),
 			makeLabel('Add boolean input:', 14),
+			makeLabel('Add color input:', 14),
+			makeLabel('Add menu input:', 14),
+			makeLabel('Add number menu input:', 14),
 			makeLabel('Add label text:', 14)
 		];
 		buttons = [
 			new Button('', function():void { appendObj(makeNumberArg()) }),
 			new Button('', function():void { appendObj(makeStringArg()) }),
 			new Button('', function():void { appendObj(makeBooleanArg()) }),
+			new Button('', function():void { appendObj(makeColorArg()) }),
+			new Button('', function():void { chooseMenuType(makeMenuArg) }),
+			new Button('', function():void { chooseMenuType(makeNumberMenuArg) }),
 			new Button(Translator.map('text'), function():void { appendObj(makeTextField('')) })
 		];
 
 		const lightGray:int = 0xA0A0A0;
+
+		var icon:BlockShape;
 
 		icon = new BlockShape(BlockShape.NumberShape, lightGray);
 		icon.setWidthAndTopHeight(25, 14, true);
@@ -198,9 +259,21 @@ public class ProcedureSpecEditor extends Sprite {
 		icon.setWidthAndTopHeight(22, 14, true);
 		buttons[1].setIcon(icon);
 
-		var icon:BlockShape = new BlockShape(BlockShape.BooleanShape, lightGray);
+		icon = new BlockShape(BlockShape.BooleanShape, lightGray);
 		icon.setWidthAndTopHeight(25, 14, true);
 		buttons[2].setIcon(icon);
+
+		icon = new BlockShape(BlockShape.RectShape, lightGray);
+		icon.setWidthAndTopHeight(16, 16, true);
+		buttons[3].setIcon(icon);
+
+		icon = new BlockShape(BlockShape.RectShape, lightGray);
+		icon.setWidthAndTopHeight(28, 14, true);
+		buttons[4].setIcon(icon);
+
+		icon = new BlockShape(BlockShape.NumberShape, lightGray);
+		icon.setWidthAndTopHeight(28, 14, true);
+		buttons[5].setIcon(icon);
 
 		for each (var label:TextField in buttonLabels) addChild(label);
 		for each (var b:Button in buttons) addChild(b);
@@ -278,6 +351,31 @@ public class ProcedureSpecEditor extends Sprite {
 		var result:BlockArg = new BlockArg('s', 0xFFFFFF, true);
 		result.setArgValue(unusedArgName('string'));
 		return result;
+	}
+
+	private function makeColorArg():BlockArg {
+		var result:BlockArg = new BlockArg('c', 0xFFFFFF, true, '', true);
+		result.setArgValue(unusedArgName('color'));
+		return result;
+	}
+
+	private function makeMenuArg(type:String):BlockArg {
+		var result:BlockArg = new BlockArg('m', 0xFFFFFF, true, type, false, true);
+		result.setArgValue(unusedArgName('menu'));
+		return result;
+	}
+
+	private function makeNumberMenuArg(type:String):BlockArg {
+		var result:BlockArg = new BlockArg('d', 0xFFFFFF, true, type);
+		result.field.restrict = null; // allow any string to be entered, not just numbers
+		result.setArgValue(unusedArgName('menu'));
+		return result;
+	}
+
+	private function chooseMenuType(action:Function):void {
+		var m:Menu = new Menu(function(result:String):void { appendObj(action(result)); });
+		for each (var i:Array in menuNames) m.addItem(i[0], i[1]);
+		m.showOnStage(Scratch.app.stage);
 	}
 
 	private function unusedArgName(prefix:String):String {

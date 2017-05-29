@@ -39,6 +39,10 @@ public class Specs {
 	public static const PROCEDURE_DEF:String = "procDef";
 	public static const GET_PARAM:String = "getParam";
 
+	public static const MAGIC_PROC_PREFIX:String = "$$SCRAP:";
+	public static const MAGIC_PROC_HUMAN:String = "(Scrap)";
+	public static const BROADCAST_VAR_PREFIX:String = "$$broadcast-";
+
 	public static const motionCategory:int = 1;
 	public static const looksCategory:int = 2;
 	public static const eventsCategory:int = 5;

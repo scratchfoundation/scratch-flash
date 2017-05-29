@@ -41,6 +41,10 @@ public class ScriptsPane extends ScrollFrameContents {
 	private const INSERT_SUB2:int = 3;
 	private const INSERT_WRAP:int = 4;
 
+	public var viewedScript:Block;
+	private var viewedScriptX:int;
+	private var viewedScriptY:int;
+
 	public var app:Scratch;
 	public var padding:int = 10;
 
@@ -86,6 +90,8 @@ public class ScriptsPane extends ScrollFrameContents {
 
 	public function viewScriptsFor(obj:ScratchObj):void {
 		// View the blocks for the given object.
+		restoreScriptPosition();
+		viewedScript = null;
 		saveScripts(false);
 		while (numChildren > 0) {
 			var child:DisplayObject = removeChildAt(0);
@@ -95,7 +101,7 @@ public class ScriptsPane extends ScrollFrameContents {
 		viewedObj = obj;
 		if (viewedObj != null) {
 			var blockList:Array = viewedObj.allBlocks();
-			for each (var b:Block in viewedObj.scripts) {
+			for each (var b:Block in viewedObj.visibleScripts()) {
 				b.cacheAsBitmap = true;
 				addChild(b);
 			}
@@ -110,15 +116,50 @@ public class ScriptsPane extends ScrollFrameContents {
 		(parent as ScrollFrame).updateScrollbars();
 	}
 
+	public function viewOneScript(block:Block):void {
+		restoreScriptPosition();
+
+		saveScripts(false);
+		while (numChildren > 0) {
+			var child:DisplayObject = removeChildAt(0);
+			child.cacheAsBitmap = false;
+		}
+
+		viewedScript = block;
+		viewedScriptX = block.x;
+		viewedScriptY = block.y;
+
+		// No comments for now
+
+		// Viewed script not saved for now
+
+		// Script should be positioned at whatever the padding value that's used
+		// in clean-up is
+		block.x = block.y = padding;
+
+		block.cacheAsBitmap = true;
+		addChild(block);
+
+		// Reset scroll offset
+		updateSize();
+		x = y = 0;
+		(parent as ScrollFrame).updateScrollbars();
+	}
+
 	public function saveScripts(saveNeeded:Boolean = true):void {
 		// Save the blocks in this pane in the viewed objects scripts list.
 		if (viewedObj == null) return;
-		viewedObj.scripts.splice(0); // remove all
-		viewedObj.scriptComments.splice(0); // remove all
+
+		// We don't want to remove all scripts...
+		//viewedObj.scripts.splice(0); // remove all
+
+		// Probably not doing comments.
+		//viewedObj.scriptComments.splice(0); // remove all
+
 		for (var i:int = 0; i < numChildren; i++) {
 			var o:* = getChildAt(i);
-			if (o is Block) viewedObj.scripts.push(o);
-			if (o is ScratchComment) viewedObj.scriptComments.push(o);
+			if (o is Block && viewedObj.scripts.indexOf(o) < 0) viewedObj.scripts.push(o);
+			//if (o is ScratchComment) viewedObj.scriptComments.push(o);
 		}
 		var blockList:Array = viewedObj.allBlocks();
 		for each (var c:ScratchComment in viewedObj.scriptComments) {
@@ -126,6 +167,13 @@ public class ScriptsPane extends ScrollFrameContents {
 		}
 		if (saveNeeded) app.setSaveNeeded();
 		fixCommentLayout();
+	}
+
+	public function restoreScriptPosition():void {
+		if (viewedScript) {
+			viewedScript.x = viewedScriptX;
+			viewedScript.y = viewedScriptY;
+		}
 	}
 
 	public function prepareToDrag(b:Block):void {
@@ -219,12 +267,15 @@ public class ScriptsPane extends ScrollFrameContents {
 		return result;
 	}
 
-	private function blockDropped(b:Block):void {
+	private function blockDropped(b:Block):Boolean {
+		var shouldUpdatePalette:Boolean = false;
 		if (nearestTarget == null) {
 			b.cacheAsBitmap = true;
+			shouldUpdatePalette = true;
 		} else {
 			if(app.editMode) b.hideRunFeedback();
 			b.cacheAsBitmap = false;
+			b.removeFromParentObjScriptList();
 			if (b.isReporter) {
 				Block(nearestTarget[1].parent).replaceArgWithBlock(nearestTarget[1], b, this);
 			} else {
@@ -248,8 +299,8 @@ public class ScriptsPane extends ScrollFrameContents {
 				}
 			}
 		}
-		if (b.op == Specs.PROCEDURE_DEF) app.updatePalette();
 		app.runtime.blockDropped(b);
+		return shouldUpdatePalette;
 	}
 
 	public function findTargetsFor(b:Block):void {
@@ -366,21 +417,16 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 	}
 
 	private function dropCompatible(droppedBlock:Block, target:DisplayObject):Boolean {
-		const menusThatAcceptReporters:Array = [
-			'broadcast', 'costume', 'backdrop', 'scene', 'sound',
-			'spriteOnly', 'spriteOrMouse', 'location', 'spriteOrStage', 'touching'];
 		if (!droppedBlock.isReporter) return true; // dropping a command block
 		if (target is Block) {
 			if (Block(target).isEmbeddedInProcHat()) return false;
 			if (Block(target).isEmbeddedParameter()) return false;
+		} else {
+			if (BlockArg(target).type == 'h') return false;
 		}
 		var dropType:String = droppedBlock.type;
-		var targetType:String = target is Block ? Block(target.parent).argType(target).slice(1) : BlockArg(target).type;
-		if (targetType == 'm') {
-			if (Block(target.parent).type == 'h') return false;
-			return menusThatAcceptReporters.indexOf(BlockArg(target).menuName) > -1;
-		}
-		if (targetType == 'b') return dropType == 'b';
+		var targetType:String = (target is Block) ? Block(target).type : BlockArg(target).type;
+		if (targetType == 'm') return Block(target.parent).type != 'h';
 		return true;
 	}
 
@@ -406,13 +452,16 @@ return true; // xxx disable this check for now; it was causing confusion at Scra
 		obj.y = Math.max(5, localP.y);
 		obj.scaleX = obj.scaleY = 1;
 		addChild(obj);
-		if (b) blockDropped(b);
+
+		var shouldUpdatePalette:Boolean = false;
+		if (b) shouldUpdatePalette = blockDropped(b);
 		if (c) {
 			c.blockRef = blockAtPoint(localP); // link to the block under comment top-left corner, or unlink if none
 		}
 		saveScripts();
 		updateSize();
 		if (c) fixCommentLayout();
+		if (shouldUpdatePalette) app.updatePalette();
 		return true;
 	}
 

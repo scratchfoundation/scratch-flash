@@ -60,6 +60,7 @@ public class BlockArg extends Sprite {
 	public var menuName:String;
 
 	private var menuIcon:Shape;
+	private var colorIcon:Shape;
 
 	// BlockArg types:
 	//	b - boolean (pointed)
@@ -69,7 +70,7 @@ public class BlockArg extends Sprite {
 	//	n - number (rounded)
 	//	s - string (rectangular)
 	//	none of the above - custom subclass of BlockArg
-	public function BlockArg(type:String, color:int, editable:Boolean = false, menuName:String = '') {
+	public function BlockArg(type:String, color:int, editable:Boolean = false, menuName:String = '', shouldHaveColorIcon:Boolean = false, shouldNotHaveWhiteText:Boolean = false) {
 		this.type = type;
 
 		if (color == -1) { // copy for clone; omit graphics
@@ -93,6 +94,7 @@ public class BlockArg extends Sprite {
 			base = new BlockShape(BlockShape.RectShape, c);
 			this.menuName = menuName;
 			addEventListener(MouseEvent.MOUSE_DOWN, invokeMenu);
+			editable = true; // because why not
 		} else if (type == 'n') {
 			base = new BlockShape(BlockShape.NumberShape, c);
 			numberType = NT_FLOAT;
@@ -127,6 +129,17 @@ public class BlockArg extends Sprite {
 			addChild(menuIcon);
 		}
 
+		if (shouldHaveColorIcon) { // add a color icon
+			colorIcon = new Shape();
+			var g:Graphics = colorIcon.graphics;
+			g.beginFill(0x632D99, 1);
+			g.drawRoundRect(0, 0, 5, 5, 5);
+			g.endFill();
+			colorIcon.x = 5;
+			colorIcon.y = 5;
+			addChild(colorIcon);
+		}
+
 		if (editable || numberType || (type == 'm')) { // add a string field
 			field = makeTextField();
 			if ((type == 'm') && !editable) field.textColor = 0xFFFFFF;
@@ -134,7 +147,8 @@ public class BlockArg extends Sprite {
 			field.text = numberType ? '10' : '';
 			if (numberType) field.restrict = '0-9e.\\-'; // restrict to numeric characters
 			if (editable) {
-				base.setColor(0xFFFFFF); // if editable, set color to white
+				if (type != 'm') base.setColor(0xFFFFFF); // if editable, set color to white
+				else if (!shouldNotHaveWhiteText) field.textColor = 0xFFFFFF;
 				isEditable = true;
 			}
 			field.addEventListener(FocusEvent.FOCUS_OUT, stopEditing);
@@ -227,9 +241,10 @@ public class BlockArg extends Sprite {
 		// fix layout:
 		var padding:int = (type == 'n') ? 3 : 0;
 		if (type == 'b') padding = 8;
-		if (menuIcon != null) padding = (type == 'd') ? 10 : 13;
+		if (menuIcon != null || colorIcon != null) padding = (type == 'd') ? 10 : 13;
 		var w:int = Math.max(14, field.textWidth + 6 + padding);
 		if (menuIcon) menuIcon.x = w - menuIcon.width - 3;
+		if (colorIcon) colorIcon.x = w - colorIcon.width - 5;
 		base.setWidth(w);
 		base.redraw();
 		if (parent is Block) Block(parent).fixExpressionLayout();
