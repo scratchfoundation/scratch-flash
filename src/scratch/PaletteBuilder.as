@@ -198,6 +198,12 @@ public class PaletteBuilder {
 
     function addBlocks(names:Array):void {
       for each (var n:String in names) {
+        if (n.indexOf(Specs.MAGIC_PROC_PREFIX) === 0) {
+          if (!(viewedScript && viewedScript.op === 'procDef' && viewedScript.spec.indexOf(Specs.MAGIC_PROC_PREFIX) === 0)) {
+            continue;
+          }
+        }
+
         addVariableCheckbox(n, getSpec === Specs.GET_LIST);
         addItem(new Block(n, 'r', catColor, getSpec), true);
       }
