@@ -109,7 +109,11 @@ public class SoundPrims {
 			var drum:int = Math.round(interp.numarg(b, 0));
 			var isMIDI:Boolean = (b.op == 'drum:duration:elapsed:from:');
 			var secs:Number = beatsToSeconds(interp.numarg(b, 1));
-			playDrum(drum, isMIDI, 10, s); // always play entire drum sample
+			var drumDuration:Number = 10; // always play entire drum sample
+			if (secs == 0) {
+    			drumDuration = 0; 
+			}
+			playDrum(drum, isMIDI, drumDuration, s); 
 			interp.startTimer(secs);
 		} else {
 			interp.checkTimer();
