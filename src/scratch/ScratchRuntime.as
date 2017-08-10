@@ -37,6 +37,7 @@ import flash.media.*;
 import flash.net.*;
 import flash.system.System;
 import flash.text.TextField;
+import flash.ui.Keyboard;
 import flash.utils.*;
 
 import interpreter.*;
@@ -948,18 +949,14 @@ public class ScratchRuntime {
 
 	public function keyDown(evt:KeyboardEvent):void {
 		shiftIsDown = evt.shiftKey;
-		var ch:int = evt.charCode;
-		if (evt.charCode == 0) ch = mapArrowKey(evt.keyCode);
-		if ((65 <= ch) && (ch <= 90)) ch += 32; // map A-Z to a-z
+		var ch:int = getCharCode(evt);
 		if (!(evt.target is TextField)) startKeyHats(ch);
 		if (ch < 128) keyIsDown[ch] = true;
 	}
 
 	public function keyUp(evt:KeyboardEvent):void {
 		shiftIsDown = evt.shiftKey;
-		var ch:int = evt.charCode;
-		if (evt.charCode == 0) ch = mapArrowKey(evt.keyCode);
-		if ((65 <= ch) && (ch <= 90)) ch += 32; // map A-Z to a-z
+		var ch:int = getCharCode(evt);
 		if (ch < 128) keyIsDown[ch] = false;
 	}
 
@@ -967,12 +964,22 @@ public class ScratchRuntime {
 		for (var i:int = 0; i < 128; i++) keyIsDown[i] = false;
 	}
 
-	private function mapArrowKey(keyCode:int):int {
-		// map key codes for arrow keys to ASCII, other key codes to zero
-		if (keyCode == 37) return 28;
-		if (keyCode == 38) return 30;
-		if (keyCode == 39) return 29;
-		if (keyCode == 40) return 31;
+	// Get an ASCII value for the key pressed:
+	// - Latin letters will be normalized to lower-case
+	// - Arrows will be mapped to ASCII/Unicode delimiters (this is a traditional hack in Scratch 2.0; see mapArrowKey)
+	private static function getCharCode(evt:KeyboardEvent):int {
+		var arrowCode:int = mapArrowKey(evt.keyCode);
+		if (arrowCode) return arrowCode;
+		return String.fromCharCode(evt.keyCode).toLowerCase().charCodeAt(0);
+	}
+
+	// Map key codes for arrow keys to ASCII delimiters, and other key codes to zero.
+	// See https://en.wikipedia.org/wiki/Delimiter#ASCII_delimited_text
+	private static function mapArrowKey(keyCode:int):int {
+		if (keyCode == Keyboard.LEFT) return 28; // file separator
+		if (keyCode == Keyboard.UP) return 30; // group separator
+		if (keyCode == Keyboard.RIGHT) return 29; // record separator
+		if (keyCode == Keyboard.DOWN) return 31; // unit separator
 		return 0;
 	}
 
