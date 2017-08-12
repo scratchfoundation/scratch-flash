@@ -149,7 +149,7 @@ public class SoundBank {
 
 	// -----------------------------
 	// Scratch 2.0 Instrument Definitions
-	//------------------------------
+	// -----------------------------
 
 	// Each instrument is an array of one or more key-span entries of the following form:
 	//
@@ -223,7 +223,6 @@ public class SoundBank {
 		 [50, 'TenorSax_C3', 48, 8939, 10794, [20, 0, 0]],
 		 [59, 'TenorSax_C3', 48, 8939, 10794, [40, 0, 0]],
 		 [67, 'AltoSax_A3', 57, 8546, 9049],
-		 [75, 'AltoSax_A3', 57, 8546, 9049, [20, 0, 0]],
 		 [80, 'AltoSax_A3', 57, 8546, 9049, [20, 0, 0]],
 		 [128, 'AltoSax_C6', 84, 1258, 1848]],
 
@@ -283,7 +282,7 @@ public class SoundBank {
 
 	static private var drums:Array = [
 		['SnareDrum', 0],
-		['Tom', 0],
+		['BassDrum', 0],
 		['SideStick', 0],
 		['Crash', -7],
 		['HiHatOpen', -8],
@@ -303,42 +302,42 @@ public class SoundBank {
 	];
 
 	// Old 2.0 drums
-	static private var oldDrums:Array = [
-		['BassDrum', -7],
-		['SideStick', 0],
-		['SnareDrum', 0],
-		['Tom', -5, 7260, 7483, 3.2],
-		['Tom', 0, 7260, 7483, 3],
-		['Tom', 7, 7260, 7483, 2.7],
-		['Tom', 12, 7260, 7483, 2.7],
-		['HiHatClosed', 0],
-		['HiHatPedal', 0],
-		['HiHatOpen', -8],
-		['Crash', -7],
-		['Tambourine', 0],
-		['Clap', 0],
-		['WoodBlock', 0],
-		['WoodBlock', -4],
-		['Claves', 0],
-		['Cowbell', 0],
-		['Triangle', -6, 16843, 17255, 0.5],
-		['Triangle', -6, 16843, 17255, 4], // jhm decay
-		['Bongo', 2],
-		['Bongo', -1],
-		['Conga', -2, 4247, 4499, 0.5],
-		['Conga', -2, 4247, 4499, 1], // jhm decay
-		['Conga', -7, 4247, 4499, 2], // jhm decay
-		['Cabasa', 0],
-		['Maracas', 0],
-		['GuiroShort', 0],
-		['GuiroLong', 0],
-		['Vibraslap', -6],
-		['Cuica', -5],
-	];
+	//static private var oldDrums:Array = [
+	//	['BassDrum', -7],
+	//	['SideStick', 0],
+	//	['SnareDrum', 0],
+	//	['Tom', -5, 7260, 7483, 3.2],
+	//	['Tom', 0, 7260, 7483, 3],
+	//	['Tom', 7, 7260, 7483, 2.7],
+	//	['Tom', 12, 7260, 7483, 2.7],
+	//	['HiHatClosed', 0],
+	//	['HiHatPedal', 0],
+	//	['HiHatOpen', -8],
+	//	['Crash', -7],
+	//	['Tambourine', 0],
+	//	['Clap', 0],
+	//	['WoodBlock', 0],
+	//	['WoodBlock', -4],
+	//	['Claves', 0],
+	//	['Cowbell', 0],
+	//	['Triangle', -6, 16843, 17255, 0.5],
+	//	['Triangle', -6, 16843, 17255, 4], // jhm decay
+	//	['Bongo', 2],
+	//	['Bongo', -1],
+	//	['Conga', -2, 4247, 4499, 0.5],
+	//	['Conga', -2, 4247, 4499, 1], // jhm decay
+	//	['Conga', -7, 4247, 4499, 2], // jhm decay
+	//	['Cabasa', 0],
+	//	['Maracas', 0],
+	//	['GuiroShort', 0],
+	//	['GuiroLong', 0],
+	//	['Vibraslap', -6],
+	//	['Cuica', -5],
+	//];
 
 	// Approximate Scratch 1.4 (i.e. MIDI) drums using Scratch 2.0 drum samples.
 	static private var midiDrums:Array = [
-		['BassDrum', -4], //35
+		['BassDrum', -4], // 35
 		['BassDrum', 0],
 		['SideStick', 0],
 		['SnareDrum', 0],
@@ -373,7 +372,7 @@ public class SoundBank {
 		['Cowbell', 19], // high agogo
 		['Cowbell', 12], // low agogo
 		['Cabasa', 0],
-		['Maracas', 0], //70
+		['Maracas', 0], // 70
 		['Cuica', 12], // short whistle
 		['Cuica', 5], // long whistle
 		['GuiroShort', 0],
