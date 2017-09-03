@@ -55,7 +55,7 @@ public class Primitives {
 		primTable[">"]				= function(b:*):* { return compare(interp.arg(b, 0), interp.arg(b, 1)) > 0 };
 		primTable["&"]				= function(b:*):* { return interp.arg(b, 0) && interp.arg(b, 1) };
 		primTable["|"]				= function(b:*):* { return interp.arg(b, 0) || interp.arg(b, 1) };
-		primTable["not"]			= function(b:*):* { return !interp.arg(b, 0) };
+		primTable["not"]			= function(b:*):* { return !interp.boolarg(b, 0) };
 		primTable["abs"]			= function(b:*):* { return Math.abs(interp.numarg(b, 0)) };
 		primTable["sqrt"]			= function(b:*):* { return Math.sqrt(interp.numarg(b, 0)) };
 
