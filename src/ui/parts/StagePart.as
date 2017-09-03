@@ -91,7 +91,7 @@ public class StagePart extends UIPart {
 	public static function strings():Array {
 		return [
 			'by', 'shared', 'unshared', 'Turbo Mode',
-			'This project can detect who is using it, through the “username” block. To hide your identity, sign out before using the project.',
+			'This project uses the “username” block, meaning it can know your username.  Please sign out if you do not want the project to know your username',
 		];
 	}
 
@@ -526,7 +526,7 @@ public class StagePart extends UIPart {
 		userNameWarning.alpha = 0.9;
 
 		const versionFormat:TextFormat = new TextFormat(CSS.font, 16, 0x000000);
-		var userNameWarningText:TextField = makeLabel(Translator.map('This project can detect who is using it, through the “username” block. To hide your identity, sign out before using the project.'), versionFormat, 15, 45);
+		var userNameWarningText:TextField = makeLabel(Translator.map('This project uses the “username” block, meaning it can know your username.  Please sign out if you do not want the project to know your username'), versionFormat, 15, 45);
 		userNameWarningText.width = userNameWarning.width - 10;
 		userNameWarningText.multiline = true;
 		userNameWarningText.wordWrap = true;
