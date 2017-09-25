@@ -218,12 +218,12 @@ public class Server implements IServer {
 			request.method = URLRequestMethod.POST;
 			request.data = data;
 
-			if (mimeType) request.requestHeaders.push(new URLRequestHeader("Content-type", mimeType));
+			if (mimeType) request.requestHeaders.push(new URLRequestHeader("content-type", mimeType));
 
 			// header for CSRF authentication when sending data
 			var csrfCookie:String = getCSRF();
 			if (csrfCookie && (csrfCookie.length > 0)) {
-				request.requestHeaders.push(new URLRequestHeader('X-CSRFToken', csrfCookie));
+				request.requestHeaders.push(new URLRequestHeader('x-csrftoken', csrfCookie));
 			}
 
 			if (data.length == 0) {

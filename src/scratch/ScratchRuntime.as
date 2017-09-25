@@ -26,6 +26,8 @@ import assets.Resources;
 import blocks.Block;
 import blocks.BlockArg;
 
+import com.adobe.utils.StringUtil;
+
 import extensions.ExtensionManager;
 
 import flash.display.*;
@@ -37,6 +39,7 @@ import flash.media.*;
 import flash.net.*;
 import flash.system.System;
 import flash.text.TextField;
+import flash.ui.Keyboard;
 import flash.utils.*;
 
 import interpreter.*;
@@ -67,8 +70,7 @@ public class ScratchRuntime {
 	public var app:Scratch;
 	public var interp:Interpreter;
 	public var motionDetector:VideoMotionPrims;
-	public var keyIsDown:Array = new Array(128); // records key up/down state
-	public var shiftIsDown:Boolean;
+	public var keyIsDown:Array = []; // sparse array recording key up/down state
 	public var lastAnswer:String = '';
 	public var cloneCount:int;
 	public var edgeTriggersEnabled:Boolean = false; // initially false, becomes true when project first run
@@ -556,15 +558,16 @@ public class ScratchRuntime {
 		}
 	}
 
-	public function startKeyHats(ch:int):void {
+	public function startKeyHats(keyCode:int):void {
 		var keyName:String = null;
-		if (('a'.charCodeAt(0) <= ch) && (ch <= 'z'.charCodeAt(0))) keyName = String.fromCharCode(ch);
-		if (('0'.charCodeAt(0) <= ch) && (ch <= '9'.charCodeAt(0))) keyName = String.fromCharCode(ch);
-		if (28 == ch) keyName = 'left arrow';
-		if (29 == ch) keyName = 'right arrow';
-		if (30 == ch) keyName = 'up arrow';
-		if (31 == ch) keyName = 'down arrow';
-		if (32 == ch) keyName = 'space';
+		switch (keyCode) {
+			case Keyboard.LEFT: keyName = 'left arrow'; break;
+			case Keyboard.RIGHT: keyName = 'right arrow'; break;
+			case Keyboard.UP: keyName = 'up arrow'; break;
+			case Keyboard.DOWN: keyName = 'down arrow'; break;
+			case Keyboard.SPACE: keyName = 'space'; break;
+			default: keyName = String.fromCharCode(keyCode).toLowerCase(); break;
+		}
 		function startMatchingKeyHats(stack:Block, target:ScratchObj):void {
 			if (stack.op == 'whenKeyPressed') {
 				var k:String = stack.args[0].argValue;
@@ -946,34 +949,50 @@ public class ScratchRuntime {
 	// Keyboard input handling
 	//------------------------------
 
+	public function get shiftIsDown():Boolean {
+		return keyIsDown[Keyboard.SHIFT];
+	}
+
+	// see BitmapEdit.cropToSelection()
+	public function set shiftIsDown(value:Boolean):void {
+		keyIsDown[Keyboard.SHIFT] = value;
+	}
+
 	public function keyDown(evt:KeyboardEvent):void {
-		shiftIsDown = evt.shiftKey;
-		var ch:int = evt.charCode;
-		if (evt.charCode == 0) ch = mapArrowKey(evt.keyCode);
-		if ((65 <= ch) && (ch <= 90)) ch += 32; // map A-Z to a-z
+		var ch:int = getCharCode(evt);
 		if (!(evt.target is TextField)) startKeyHats(ch);
-		if (ch < 128) keyIsDown[ch] = true;
+		keyIsDown[ch] = true;
 	}
 
 	public function keyUp(evt:KeyboardEvent):void {
-		shiftIsDown = evt.shiftKey;
-		var ch:int = evt.charCode;
-		if (evt.charCode == 0) ch = mapArrowKey(evt.keyCode);
-		if ((65 <= ch) && (ch <= 90)) ch += 32; // map A-Z to a-z
-		if (ch < 128) keyIsDown[ch] = false;
+		var ch:int = getCharCode(evt);
+		delete keyIsDown[ch];
 	}
 
 	private function clearKeyDownArray():void {
-		for (var i:int = 0; i < 128; i++) keyIsDown[i] = false;
+		keyIsDown.length = 0;
 	}
 
-	private function mapArrowKey(keyCode:int):int {
-		// map key codes for arrow keys to ASCII, other key codes to zero
-		if (keyCode == 37) return 28;
-		if (keyCode == 38) return 30;
-		if (keyCode == 39) return 29;
-		if (keyCode == 40) return 31;
-		return 0;
+	// Get a normalized "ASCII" value for the keyCode pressed:
+	// - Number keys on the numeric keypad will be mapped to ASCII digits
+	// - Other keyCodes will pass through as-is. This means:
+	//   - Letter keys will return the upper-case ASCII value (note: lower-case ASCII overlaps with other keyCodes)
+	//   - Number keys not on the numeric keypad will return the ASCII value of the corresponding digit
+	//   - Other keys (for example, arrows) will have meaningless but unique ASCII codes, useful for "any" key detection
+	private static function getCharCode(evt:KeyboardEvent):int {
+		switch (evt.keyCode) {
+			case Keyboard.NUMPAD_0: return Keyboard.NUMBER_0;
+			case Keyboard.NUMPAD_1: return Keyboard.NUMBER_1;
+			case Keyboard.NUMPAD_2: return Keyboard.NUMBER_2;
+			case Keyboard.NUMPAD_3: return Keyboard.NUMBER_3;
+			case Keyboard.NUMPAD_4: return Keyboard.NUMBER_4;
+			case Keyboard.NUMPAD_5: return Keyboard.NUMBER_5;
+			case Keyboard.NUMPAD_6: return Keyboard.NUMBER_6;
+			case Keyboard.NUMPAD_7: return Keyboard.NUMBER_7;
+			case Keyboard.NUMPAD_8: return Keyboard.NUMBER_8;
+			case Keyboard.NUMPAD_9: return Keyboard.NUMBER_9;
+			default: return evt.keyCode;
+		}
 	}
 
 	// -----------------------------
