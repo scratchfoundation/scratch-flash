@@ -1,4 +1,5 @@
 
+*.as text eol=lf
 *.bat text eol=crlf
 
 .gitattributes text eol=lf

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * BMPFunctions
  *
  * BMPFunctions class provides some functions to modify bitmapData.
