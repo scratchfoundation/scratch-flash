@@ -37,6 +37,7 @@ import flash.media.*;
 import flash.net.*;
 import flash.system.System;
 import flash.text.TextField;
+import flash.ui.Keyboard;
 import flash.utils.*;
 
 import interpreter.*;
@@ -64,10 +65,17 @@ import watchers.*;
 
 public class ScratchRuntime {
 
+	// Scratch uses these pseudo-Unicode values to map arrow keys as if they were printable characters.
+	// Changing these values may break compatibility with existing projects using "hacked" keypress blocks.
+	private static const SCRATCH_ARROW_LEFT:int = 28; // file separator
+	private static const SCRATCH_ARROW_RIGHT:int = 29; // record separator
+	private static const SCRATCH_ARROW_UP:int = 30; // group separator
+	private static const SCRATCH_ARROW_DOWN:int = 31; // unit separator
+
 	public var app:Scratch;
 	public var interp:Interpreter;
 	public var motionDetector:VideoMotionPrims;
-	public var keyIsDown:Array = new Array(128); // records key up/down state
+	public var keyIsDown:Array = []; // sparse array recording key up/down state
 	public var shiftIsDown:Boolean;
 	public var lastAnswer:String = '';
 	public var cloneCount:int;
@@ -557,14 +565,7 @@ public class ScratchRuntime {
 	}
 
 	public function startKeyHats(ch:int):void {
-		var keyName:String = null;
-		if (('a'.charCodeAt(0) <= ch) && (ch <= 'z'.charCodeAt(0))) keyName = String.fromCharCode(ch);
-		if (('0'.charCodeAt(0) <= ch) && (ch <= '9'.charCodeAt(0))) keyName = String.fromCharCode(ch);
-		if (28 == ch) keyName = 'left arrow';
-		if (29 == ch) keyName = 'right arrow';
-		if (30 == ch) keyName = 'up arrow';
-		if (31 == ch) keyName = 'down arrow';
-		if (32 == ch) keyName = 'space';
+		var keyName:String = getKeyName(ch);
 		function startMatchingKeyHats(stack:Block, target:ScratchObj):void {
 			if (stack.op == 'whenKeyPressed') {
 				var k:String = stack.args[0].argValue;
@@ -948,32 +949,54 @@ public class ScratchRuntime {
 
 	public function keyDown(evt:KeyboardEvent):void {
 		shiftIsDown = evt.shiftKey;
-		var ch:int = evt.charCode;
-		if (evt.charCode == 0) ch = mapArrowKey(evt.keyCode);
-		if ((65 <= ch) && (ch <= 90)) ch += 32; // map A-Z to a-z
+		var ch:int = getKeyCodeFromEvent(evt);
 		if (!(evt.target is TextField)) startKeyHats(ch);
-		if (ch < 128) keyIsDown[ch] = true;
+		keyIsDown[ch] = true;
 	}
 
 	public function keyUp(evt:KeyboardEvent):void {
 		shiftIsDown = evt.shiftKey;
-		var ch:int = evt.charCode;
-		if (evt.charCode == 0) ch = mapArrowKey(evt.keyCode);
-		if ((65 <= ch) && (ch <= 90)) ch += 32; // map A-Z to a-z
-		if (ch < 128) keyIsDown[ch] = false;
+		var ch:int = getKeyCodeFromEvent(evt);
+		keyIsDown[ch] = false;
 	}
 
 	private function clearKeyDownArray():void {
-		for (var i:int = 0; i < 128; i++) keyIsDown[i] = false;
+		keyIsDown.length = 0;
 	}
 
-	private function mapArrowKey(keyCode:int):int {
-		// map key codes for arrow keys to ASCII, other key codes to zero
-		if (keyCode == 37) return 28;
-		if (keyCode == 38) return 30;
-		if (keyCode == 39) return 29;
-		if (keyCode == 40) return 31;
-		return 0;
+	private static function getKeyCodeFromEvent(event:KeyboardEvent):int {
+		var charCode:int = event.charCode;
+		if (charCode == 0) {
+			switch (event.keyCode) {
+				case Keyboard.LEFT: return SCRATCH_ARROW_LEFT;
+				case Keyboard.RIGHT: return SCRATCH_ARROW_RIGHT;
+				case Keyboard.UP: return SCRATCH_ARROW_UP;
+				case Keyboard.DOWN: return SCRATCH_ARROW_DOWN;
+			}
+		}
+		return String.fromCharCode(charCode).toLowerCase().charCodeAt(0);
+	}
+
+	public static function getKeyCode(keyName:String):int {
+		switch (keyName) {
+			case 'left arrow': return SCRATCH_ARROW_LEFT;
+			case 'right arrow': return SCRATCH_ARROW_RIGHT;
+			case 'up arrow': return SCRATCH_ARROW_UP;
+			case 'down arrow': return SCRATCH_ARROW_DOWN;
+			case 'space': return Keyboard.SPACE;
+		}
+		return keyName.charCodeAt(0);
+	}
+
+	public static function getKeyName(keyCode:int):String {
+		switch (keyCode) {
+			case SCRATCH_ARROW_LEFT: return 'left arrow';
+			case SCRATCH_ARROW_RIGHT: return 'right arrow';
+			case SCRATCH_ARROW_UP: return 'up arrow';
+			case SCRATCH_ARROW_DOWN: return 'down arrow';
+			case Keyboard.SPACE: return 'space';
+			default: return String.fromCharCode(keyCode);
+		}
 	}
 
 	// -----------------------------

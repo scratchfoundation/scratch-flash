@@ -229,14 +229,8 @@ public class SensingPrims {
 			}
 			return false;
 		}
-		var ch:int = key.charCodeAt(0);
-		if (ch > 127) return false;
-		if (key == 'left arrow') ch = 28;
-		if (key == 'right arrow') ch = 29;
-		if (key == 'up arrow') ch = 30;
-		if (key == 'down arrow') ch = 31;
-		if (key == 'space') ch = 32;
-		return app.runtime.keyIsDown[ch];
+		var ch:int = ScratchRuntime.getKeyCode(key);
+		return app.runtime.keyIsDown[ch] || false;
 	}
 
 	private function primDistanceTo(b:Block):Number {
