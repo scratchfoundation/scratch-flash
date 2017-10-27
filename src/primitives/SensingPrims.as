@@ -25,7 +25,6 @@
 package primitives {
 	import flash.display.*;
 	import flash.geom.*;
-	import flash.ui.Keyboard;
 	import flash.utils.Dictionary;
 	import blocks.Block;
 	import interpreter.*;
@@ -230,16 +229,14 @@ public class SensingPrims {
 			}
 			return false;
 		}
-		var ch:int;
-		switch (key) {
-			case 'left arrow': ch = Keyboard.LEFT; break;
-			case 'right arrow': ch = Keyboard.RIGHT; break;
-			case 'up arrow': ch = Keyboard.UP; break;
-			case 'down arrow': ch = Keyboard.DOWN; break;
-			case 'space': ch = Keyboard.SPACE; break;
-			default: ch = key.toUpperCase().charCodeAt(0); break;
-		}
-		return app.runtime.keyIsDown[ch] || false;
+		var ch:int = key.charCodeAt(0);
+		if (ch > 127) return false;
+		if (key == 'left arrow') ch = 28;
+		if (key == 'right arrow') ch = 29;
+		if (key == 'up arrow') ch = 30;
+		if (key == 'down arrow') ch = 31;
+		if (key == 'space') ch = 32;
+		return app.runtime.keyIsDown[ch];
 	}
 
 	private function primDistanceTo(b:Block):Number {

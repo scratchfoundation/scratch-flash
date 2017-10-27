@@ -26,8 +26,6 @@ import assets.Resources;
 import blocks.Block;
 import blocks.BlockArg;
 
-import com.adobe.utils.StringUtil;
-
 import extensions.ExtensionManager;
 
 import flash.display.*;
@@ -70,7 +68,8 @@ public class ScratchRuntime {
 	public var app:Scratch;
 	public var interp:Interpreter;
 	public var motionDetector:VideoMotionPrims;
-	public var keyIsDown:Array = []; // sparse array recording key up/down state
+	public var keyIsDown:Array = new Array(128); // records key up/down state
+	public var shiftIsDown:Boolean;
 	public var lastAnswer:String = '';
 	public var cloneCount:int;
 	public var edgeTriggersEnabled:Boolean = false; // initially false, becomes true when project first run
@@ -558,16 +557,15 @@ public class ScratchRuntime {
 		}
 	}
 
-	public function startKeyHats(keyCode:int):void {
+	public function startKeyHats(ch:int):void {
 		var keyName:String = null;
-		switch (keyCode) {
-			case Keyboard.LEFT: keyName = 'left arrow'; break;
-			case Keyboard.RIGHT: keyName = 'right arrow'; break;
-			case Keyboard.UP: keyName = 'up arrow'; break;
-			case Keyboard.DOWN: keyName = 'down arrow'; break;
-			case Keyboard.SPACE: keyName = 'space'; break;
-			default: keyName = String.fromCharCode(keyCode).toLowerCase(); break;
-		}
+		if (('a'.charCodeAt(0) <= ch) && (ch <= 'z'.charCodeAt(0))) keyName = String.fromCharCode(ch);
+		if (('0'.charCodeAt(0) <= ch) && (ch <= '9'.charCodeAt(0))) keyName = String.fromCharCode(ch);
+		if (28 == ch) keyName = 'left arrow';
+		if (29 == ch) keyName = 'right arrow';
+		if (30 == ch) keyName = 'up arrow';
+		if (31 == ch) keyName = 'down arrow';
+		if (32 == ch) keyName = 'space';
 		function startMatchingKeyHats(stack:Block, target:ScratchObj):void {
 			if (stack.op == 'whenKeyPressed') {
 				var k:String = stack.args[0].argValue;
@@ -949,50 +947,40 @@ public class ScratchRuntime {
 	// Keyboard input handling
 	//------------------------------
 
-	public function get shiftIsDown():Boolean {
-		return keyIsDown[Keyboard.SHIFT];
-	}
-
-	// see BitmapEdit.cropToSelection()
-	public function set shiftIsDown(value:Boolean):void {
-		keyIsDown[Keyboard.SHIFT] = value;
-	}
-
 	public function keyDown(evt:KeyboardEvent):void {
+		shiftIsDown = evt.shiftKey;
 		var ch:int = getCharCode(evt);
 		if (!(evt.target is TextField)) startKeyHats(ch);
-		keyIsDown[ch] = true;
+		if (ch < 128) keyIsDown[ch] = true;
 	}
 
 	public function keyUp(evt:KeyboardEvent):void {
+		shiftIsDown = evt.shiftKey;
 		var ch:int = getCharCode(evt);
-		delete keyIsDown[ch];
+		if (ch < 128) keyIsDown[ch] = false;
 	}
 
 	private function clearKeyDownArray():void {
-		keyIsDown.length = 0;
+		for (var i:int = 0; i < 128; i++) keyIsDown[i] = false;
 	}
 
-	// Get a normalized "ASCII" value for the keyCode pressed:
-	// - Number keys on the numeric keypad will be mapped to ASCII digits
-	// - Other keyCodes will pass through as-is. This means:
-	//   - Letter keys will return the upper-case ASCII value (note: lower-case ASCII overlaps with other keyCodes)
-	//   - Number keys not on the numeric keypad will return the ASCII value of the corresponding digit
-	//   - Other keys (for example, arrows) will have meaningless but unique ASCII codes, useful for "any" key detection
+	// Get an ASCII value for the key pressed:
+	// - Latin letters will be normalized to lower-case
+	// - Arrows will be mapped to ASCII/Unicode delimiters (this is a traditional hack in Scratch 2.0; see mapArrowKey)
 	private static function getCharCode(evt:KeyboardEvent):int {
-		switch (evt.keyCode) {
-			case Keyboard.NUMPAD_0: return Keyboard.NUMBER_0;
-			case Keyboard.NUMPAD_1: return Keyboard.NUMBER_1;
-			case Keyboard.NUMPAD_2: return Keyboard.NUMBER_2;
-			case Keyboard.NUMPAD_3: return Keyboard.NUMBER_3;
-			case Keyboard.NUMPAD_4: return Keyboard.NUMBER_4;
-			case Keyboard.NUMPAD_5: return Keyboard.NUMBER_5;
-			case Keyboard.NUMPAD_6: return Keyboard.NUMBER_6;
-			case Keyboard.NUMPAD_7: return Keyboard.NUMBER_7;
-			case Keyboard.NUMPAD_8: return Keyboard.NUMBER_8;
-			case Keyboard.NUMPAD_9: return Keyboard.NUMBER_9;
-			default: return evt.keyCode;
-		}
+		var arrowCode:int = mapArrowKey(evt.keyCode);
+		if (arrowCode) return arrowCode;
+		return String.fromCharCode(evt.keyCode).toLowerCase().charCodeAt(0);
+	}
+
+	// Map key codes for arrow keys to ASCII delimiters, and other key codes to zero.
+	// See https://en.wikipedia.org/wiki/Delimiter#ASCII_delimited_text
+	private static function mapArrowKey(keyCode:int):int {
+		if (keyCode == Keyboard.LEFT) return 28; // file separator
+		if (keyCode == Keyboard.UP) return 30; // group separator
+		if (keyCode == Keyboard.RIGHT) return 29; // record separator
+		if (keyCode == Keyboard.DOWN) return 31; // unit separator
+		return 0;
 	}
 
 	// -----------------------------
