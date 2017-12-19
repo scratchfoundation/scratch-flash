@@ -39,6 +39,7 @@ import flash.net.FileFilter;
 import flash.net.FileReference;
 import flash.net.FileReferenceList;
 import flash.net.LocalConnection;
+import flash.net.SharedObject;
 import flash.net.URLLoader;
 import flash.net.URLLoaderDataFormat;
 import flash.net.URLRequest;
@@ -1142,15 +1143,17 @@ public class Scratch extends Sprite {
 				'\n\nPlease do not distribute!', stage);
 	}
 
+	protected function onNewProject():void {}
+
 	protected function createNewProjectAndThen(callback:Function = null):void {
 		function clearProject():void {
 			startNewProject('', '');
 			setProjectName('Untitled');
+			onNewProject();
 			topBarPart.refresh();
 			stagePart.refresh();
 			if (callback != null) callback();
 		}
-
 		saveProjectAndThen(clearProject);
 	}
 
