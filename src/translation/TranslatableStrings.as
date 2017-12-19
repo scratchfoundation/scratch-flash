@@ -128,6 +128,7 @@ public class TranslatableStrings {
 		addAll(VariableSettings.strings());
 		addAll(Watcher.strings());
 		addAll(CameraDialog.strings());
+		addAll(PrivacyDialog.strings());
 		Menu.stringCollectionMode = false;
 
 		export('uiStrings');
