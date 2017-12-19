@@ -136,9 +136,6 @@ public class Scratch extends Sprite {
 
 	public var logger:Log = new Log(16);
 
-	// Offline Queue
-	private var offlineSystem:OfflineSystem = OfflineSystem.getInstance();
-
 	public function Scratch() {
 		SVGTool.setStage(stage);
 		loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, uncaughtErrorHandler);
@@ -1136,13 +1133,13 @@ public class Scratch extends Sprite {
 				'\n\nPlease do not distribute!', stage);
 	}
 
+	protected function onNewProject():void {}
+
 	protected function createNewProjectAndThen(callback:Function = null):void {
 		function clearProject():void {
 			startNewProject('', '');
 			setProjectName('Untitled');
-			var clientID:String = offlineSystem.getClientId();
-			var appOpenPacket:Packet = new Packet(clientID, "Untitled", 'project', 'create', offlineSystem.getCurrentLanguage(), null);
-			offlineSystem.enqueuePacket(appOpenPacket);
+			onNewProject();
 			topBarPart.refresh();
 			stagePart.refresh();
 			if (callback != null) callback();
