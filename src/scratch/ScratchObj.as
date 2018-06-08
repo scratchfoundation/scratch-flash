@@ -544,7 +544,7 @@ public class ScratchObj extends Sprite {
 	public function click(evt:MouseEvent):void {
 		var app:Scratch = root as Scratch;
 		if (!app) return;
-		var now:uint = getTimer();
+		var now:uint = CachedTimer.getCachedTimer();
 		app.runtime.startClickedHats(this);
 		if ((now - lastClickTime) < DOUBLE_CLICK_MSECS) {
 			if (isStage || ScratchSprite(this).isClone) return;

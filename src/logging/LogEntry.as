@@ -20,6 +20,8 @@
 package logging {
 import flash.utils.getTimer;
 
+import util.CachedTimer;
+
 public class LogEntry {
 	public var timeStamp:Number;
 	public var severity:int;
@@ -49,11 +51,11 @@ public class LogEntry {
 		return [makeTimeStampString(), LogLevel.LEVEL[severity], messageKey].join(' | ');
 	}
 
-	private static const timerOffset:Number = new Date().time - getTimer();
+	private static const timerOffset:Number = new Date().time - CachedTimer.getFreshTimer();
 
 	// Returns approximately the same value as "new Date().time" without GC impact
 	public static function getCurrentTime():Number {
-		return getTimer() + timerOffset;
+		return CachedTimer.getCachedTimer() + timerOffset;
 	}
 }
 }

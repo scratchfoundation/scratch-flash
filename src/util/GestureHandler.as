@@ -123,7 +123,7 @@ public class GestureHandler {
 	}
 
 	public function step():void {
-		if ((getTimer() - mouseDownTime) > DOUBLE_CLICK_MSECS) {
+		if ((CachedTimer.getCachedTimer() - mouseDownTime) > DOUBLE_CLICK_MSECS) {
 			if (gesture == "unknown") {
 				if (mouseTarget != null) handleDrag(null);
 				if (gesture != 'drag') handleClick(mouseDownEvent);
@@ -132,7 +132,7 @@ public class GestureHandler {
 				handleClick(mouseDownEvent);
 			}
 		}
-		if (carriedObj && scrollTarget && (getTimer() - scrollStartTime) > SCROLL_MSECS && (scrollXVelocity || scrollYVelocity)) {
+		if (carriedObj && scrollTarget && (CachedTimer.getCachedTimer() - scrollStartTime) > SCROLL_MSECS && (scrollXVelocity || scrollYVelocity)) {
 			if (scrollTarget.allowHorizontalScrollbar) {
 				scrollTarget.contents.x = Math.min(0, Math.max(-scrollTarget.maxScrollH(), scrollTarget.contents.x + scrollXVelocity));
 			}
@@ -195,7 +195,7 @@ public class GestureHandler {
 			handleTool(evt);
 			return;
 		}
-		mouseDownTime = getTimer();
+		mouseDownTime = CachedTimer.getCachedTimer();
 		mouseDownEvent = evt;
 		gesture = "unknown";
 		mouseTarget = null;
@@ -261,7 +261,7 @@ public class GestureHandler {
 			if (t is ScrollFrameContents) {
 				scrollTarget = t.parent as ScrollFrame;
 				if (scrollTarget != oldTarget) {
-					scrollStartTime = getTimer();
+					scrollStartTime = CachedTimer.getCachedTimer();
 				}
 				break;
 			}
@@ -293,7 +293,7 @@ public class GestureHandler {
 				}
 			}
 			if (!scrollXVelocity && !scrollYVelocity) {
-				scrollStartTime = getTimer();
+				scrollStartTime = CachedTimer.getCachedTimer();
 			}
 		}
 		if (bubble) {
@@ -540,7 +540,7 @@ public class GestureHandler {
 		obj.startDrag();
 		if(obj is DisplayObject) obj.cacheAsBitmap = true;
 		carriedObj = obj;
-		scrollStartTime = getTimer();
+		scrollStartTime = CachedTimer.getCachedTimer();
 	}
 
 	private function dropHandled(droppedObj:*, evt:MouseEvent):Boolean {

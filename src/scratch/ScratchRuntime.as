@@ -108,7 +108,7 @@ public class ScratchRuntime {
 			return;
 		}
 		if (ready==ReadyLabel.COUNTDOWN) {
-			var tR:Number = getTimer()*.001-videoSeconds;
+			var tR:Number = CachedTimer.getCachedTimer()*.001-videoSeconds;
 			while (t>videoSounds.length/videoFramerate+1/videoFramerate) {
 				saveSound();
 			}
@@ -135,7 +135,7 @@ public class ScratchRuntime {
 			}
 		}
 		if (recording) { // Recording a YouTube video?
-			var t:Number = getTimer()*.001-videoSeconds;
+			var t:Number = CachedTimer.getCachedTimer()*.001-videoSeconds;
 			//If, based on time and framerate, the current frame needs to be in the video, capture the frame.
 			//Will always be true if framerate is 30, as every frame is captured.
 			if (t>videoSounds.length/videoFramerate+1/videoFramerate) {
@@ -213,7 +213,7 @@ public class ScratchRuntime {
 	
 	private function saveFrame():void {
 		saveSound();
-		var t:Number = getTimer()*.001-videoSeconds;
+		var t:Number = CachedTimer.getCachedTimer()*.001-videoSeconds;
 		while (t>videoSounds.length/videoFramerate+1/videoFramerate) {
 			saveSound();
 		}
@@ -380,7 +380,7 @@ public class ScratchRuntime {
 			videoHeight = 360;
 		}
 		ready=ReadyLabel.COUNTDOWN;
-		videoSeconds = getTimer()*.001;
+		videoSeconds = CachedTimer.getCachedTimer()*.001;
 		baFlvEncoder = new ByteArrayFlvEncoder(videoFramerate);
 		baFlvEncoder.setVideoProperties(videoWidth, videoHeight);
 		baFlvEncoder.setAudioProperties(FlvEncoder.SAMPLERATE_44KHZ, true, true, true);
@@ -433,7 +433,7 @@ public class ScratchRuntime {
 		ready=ReadyLabel.NOT_READY;
 		app.refreshStagePart();
 		var player:ScratchSoundPlayer, length:int;
-		videoSeconds = getTimer() * 0.001;
+		videoSeconds = CachedTimer.getCachedTimer() * 0.001;
 		for each (player in ScratchSoundPlayer.activeSounds) {
 			length = int((player.soundChannel.position*.001)*videoFramerate);
 			player.readPosition = Math.max(Math.min(baFlvEncoder.audioFrameSize*length,player.dataBytes.length),0);

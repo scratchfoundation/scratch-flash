@@ -33,6 +33,8 @@ import flash.utils.ByteArray;
 
 import scratch.ScratchSound;
 
+import util.CachedTimer;
+
 public class ScratchSoundPlayer {
 
 	static public var activeSounds:Array = [];
@@ -160,7 +162,7 @@ public class ScratchSoundPlayer {
 
 	private function writeSampleData(evt:SampleDataEvent):void {
 		var i:int;
-		if ((lastBufferTime != 0) && ((getTimer() - lastBufferTime) > 230)) {
+		if ((lastBufferTime != 0) && ((CachedTimer.getCachedTimer() - lastBufferTime) > 230)) {
 			soundChannel = null; // don't explicitly stop the sound channel in this callback; allow it to stop on its own
 			stopPlaying();
 			return;
@@ -174,7 +176,7 @@ public class ScratchSoundPlayer {
 		}
 		dataBytes.writeBytes(data);
 		if ((bytePosition >= endOffset) && (lastBufferTime == 0)) {
-			lastBufferTime = getTimer();
+			lastBufferTime = CachedTimer.getCachedTimer();
 		}
 	}
 

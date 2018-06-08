@@ -1052,12 +1052,8 @@ SCRATCH::allow3d{
 		currentTexture = null;
 	}
 
-	private var drawCount:uint = 0;
-	//private var lastTime:int = 0;
 	public function onRender(e:Event):void {
 		if (!scratchStage) return;
-		//trace('frame was '+(getTimer() - lastTime)+'ms.');
-		//lastTime = getTimer();
 
 		if (scratchStage.stage.stage3Ds[0] == null || __context == null || __context.driverInfo == "Disposed") {
 			if (__context) __context.dispose();
@@ -1068,7 +1064,6 @@ SCRATCH::allow3d{
 
 		draw();
 		__context.present();
-		++drawCount;
 
 		// Invalidate cached renders
 		for (var o:Object in cachedOtherRenderBitmaps)

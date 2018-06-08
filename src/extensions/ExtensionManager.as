@@ -403,7 +403,7 @@ public class ExtensionManager {
 
 	public function updateIndicator(indicator:IndicatorLight, ext:ScratchExtension, firstTime:Boolean = false):void {
 		if(ext.port > 0) {
-			var msecsSinceLastResponse:uint = getTimer() - ext.lastPollResponseTime;
+			var msecsSinceLastResponse:uint = CachedTimer.getCachedTimer() - ext.lastPollResponseTime;
 			if (msecsSinceLastResponse > 500) indicator.setColorAndMsg(0xE00000, 'Cannot find helper app');
 			else if (ext.problem != '') indicator.setColorAndMsg(0xE0E000, ext.problem);
 			else indicator.setColorAndMsg(0x00C000, ext.success);
@@ -724,7 +724,7 @@ public class ExtensionManager {
 
 	private function processPollResponse(ext:ScratchExtension, response:String):void {
 		if (response == null) return;
-		ext.lastPollResponseTime = getTimer();
+		ext.lastPollResponseTime = CachedTimer.getCachedTimer();
 		ext.problem = '';
 
 		// clear the busy list unless we just started a command that waits

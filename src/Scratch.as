@@ -734,6 +734,7 @@ public class Scratch extends Sprite {
 
 	protected function step(e:Event):void {
 		// Step the runtime system and all UI components.
+		CachedTimer.clearCachedTimer();
 		gh.step();
 		runtime.stepRuntime();
 		Transition.step(null);
@@ -971,10 +972,6 @@ public class Scratch extends Sprite {
 		scriptsPart.setWidthHeight(contentW, contentH);
 
 		if (mediaLibrary) mediaLibrary.setWidthHeight(topBarPart.w, fullH);
-		if (frameRateGraph) {
-			frameRateGraph.y = stage.stageHeight - frameRateGraphH;
-			addChild(frameRateGraph); // put in front
-		}
 
 		SCRATCH::allow3d {
 			if (isIn3D) render3D.onStageResize();
@@ -1495,76 +1492,6 @@ public class Scratch extends Sprite {
 		lp.scaleY = stagePane.scaleY;
 		lp.x = int(p.x + ((stagePane.width - lp.width) / 2));
 		lp.y = int(p.y + ((stagePane.height - lp.height) / 2));
-	}
-
-	// -----------------------------
-	// Frame rate readout (for use during development)
-	//------------------------------
-
-	private var frameRateReadout:TextField;
-	private var firstFrameTime:int;
-	private var frameCount:int;
-
-	protected function addFrameRateReadout(x:int, y:int, color:uint = 0):void {
-		frameRateReadout = new TextField();
-		frameRateReadout.autoSize = TextFieldAutoSize.LEFT;
-		frameRateReadout.selectable = false;
-		frameRateReadout.background = false;
-		frameRateReadout.defaultTextFormat = new TextFormat(CSS.font, 12, color);
-		frameRateReadout.x = x;
-		frameRateReadout.y = y;
-		addChild(frameRateReadout);
-		frameRateReadout.addEventListener(Event.ENTER_FRAME, updateFrameRate);
-	}
-
-	private function updateFrameRate(e:Event):void {
-		frameCount++;
-		if (!frameRateReadout) return;
-		var now:int = getTimer();
-		var msecs:int = now - firstFrameTime;
-		if (msecs > 500) {
-			var fps:Number = Math.round((1000 * frameCount) / msecs);
-			frameRateReadout.text = fps + ' fps (' + Math.round(msecs / frameCount) + ' msecs)';
-			firstFrameTime = now;
-			frameCount = 0;
-		}
-	}
-
-	// TODO: Remove / no longer used
-	private const frameRateGraphH:int = 150;
-	private var frameRateGraph:Shape;
-	private var nextFrameRateX:int;
-	private var lastFrameTime:int;
-
-	private function addFrameRateGraph():void {
-		addChild(frameRateGraph = new Shape());
-		frameRateGraph.y = stage.stageHeight - frameRateGraphH;
-		clearFrameRateGraph();
-		stage.addEventListener(Event.ENTER_FRAME, updateFrameRateGraph);
-	}
-
-	public function clearFrameRateGraph():void {
-		var g:Graphics = frameRateGraph.graphics;
-		g.clear();
-		g.beginFill(0xFFFFFF);
-		g.drawRect(0, 0, stage.stageWidth, frameRateGraphH);
-		nextFrameRateX = 0;
-	}
-
-	private function updateFrameRateGraph(evt:*):void {
-		var now:int = getTimer();
-		var msecs:int = now - lastFrameTime;
-		lastFrameTime = now;
-		var c:int = 0x505050;
-		if (msecs > 40) c = 0xE0E020;
-		if (msecs > 50) c = 0xA02020;
-
-		if (nextFrameRateX > stage.stageWidth) clearFrameRateGraph();
-		var g:Graphics = frameRateGraph.graphics;
-		g.beginFill(c);
-		var barH:int = Math.min(frameRateGraphH, msecs / 2);
-		g.drawRect(nextFrameRateX, frameRateGraphH - barH, 1, barH);
-		nextFrameRateX++;
 	}
 
 	// -----------------------------

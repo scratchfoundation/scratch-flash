@@ -70,10 +70,12 @@ import scratch.*;
 
 import sound.*;
 
+import util.CachedTimer;
+
 public class Interpreter {
 
-	public var activeThread:Thread;				// current thread
-	public var currentMSecs:int = getTimer();	// millisecond clock for the current step
+	public var activeThread:Thread;         // current thread
+	public var currentMSecs:int;            // millisecond clock for the current step
 	public var turboMode:Boolean = false;
 
 	private var app:Scratch;
@@ -220,10 +222,9 @@ public class Interpreter {
 	}
 
 	public function stepThreads():void {
-		startTime = getTimer();
 		var workTime:int = (0.75 * 1000) / app.stage.frameRate; // work for up to 75% of one frame time
 		doRedraw = false;
-		currentMSecs = getTimer();
+		startTime = currentMSecs = CachedTimer.getCachedTimer();
 		if (threads.length == 0) return;
 		while ((currentMSecs - startTime) < workTime) {
 			if (warpThread && (warpThread.block == null)) clearWarpBlock();
@@ -247,7 +248,7 @@ public class Interpreter {
 				threads = newThreads;
 				if (threads.length == 0) return;
 			}
-			currentMSecs = getTimer();
+			currentMSecs = CachedTimer.getFreshTimer();
 			if (doRedraw || (runnableCount == 0)) return;
 		}
 	}
@@ -265,7 +266,7 @@ public class Interpreter {
 		}
 		yield = false;
 		while (true) {
-			if (activeThread == warpThread) currentMSecs = getTimer();
+			if (activeThread == warpThread) currentMSecs = CachedTimer.getFreshTimer();
 			evalCmd(activeThread.block);
 			if (yield) {
 				if (activeThread == warpThread) {

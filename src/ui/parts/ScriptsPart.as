@@ -33,6 +33,8 @@ import ui.*;
 
 import uiwidgets.*;
 
+import util.CachedTimer;
+
 public class ScriptsPart extends UIPart {
 
 	private var shape:Shape;
@@ -130,12 +132,12 @@ public class ScriptsPart extends UIPart {
 	private var lastUpdateTime:uint;
 
 	private function updateExtensionIndicators():void {
-		if ((getTimer() - lastUpdateTime) < 500) return;
+		if ((CachedTimer.getCachedTimer() - lastUpdateTime) < 500) return;
 		for (var i:int = 0; i < app.palette.numChildren; i++) {
 			var indicator:IndicatorLight = app.palette.getChildAt(i) as IndicatorLight;
 			if (indicator) app.extensionManager.updateIndicator(indicator, indicator.target);
 		}		
-		lastUpdateTime = getTimer();
+		lastUpdateTime = CachedTimer.getCachedTimer();
 	}
 
 	public function setWidthHeight(w:int, h:int):void {
