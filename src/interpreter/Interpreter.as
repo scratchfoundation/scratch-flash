@@ -224,7 +224,7 @@ public class Interpreter {
 	public function stepThreads():void {
 		var workTime:int = (0.75 * 1000) / app.stage.frameRate; // work for up to 75% of one frame time
 		doRedraw = false;
-		startTime = currentMSecs = CachedTimer.getCachedTimer();
+		startTime = currentMSecs = CachedTimer.getFreshTimer();
 		if (threads.length == 0) return;
 		while ((currentMSecs - startTime) < workTime) {
 			if (warpThread && (warpThread.block == null)) clearWarpBlock();
@@ -265,13 +265,15 @@ public class Interpreter {
 			}
 		}
 		yield = false;
+		var warpStartTimer:int = CachedTimer.getCachedTimer();
 		while (true) {
-			if (activeThread == warpThread) currentMSecs = CachedTimer.getFreshTimer();
+			if (activeThread == warpThread) currentMSecs = warpStartTimer;
 			evalCmd(activeThread.block);
 			if (yield) {
 				if (activeThread == warpThread) {
 					if ((currentMSecs - startTime) > warpMSecs) return;
 					yield = false;
+					warpStartTimer = CachedTimer.getFreshTimer();
 					continue;
 				} else return;
 			}
