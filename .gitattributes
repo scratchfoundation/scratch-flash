@@ -1,8 +1,24 @@
 
+*.agal text eol=lf
 *.as text eol=lf
+*.gradle text eol=lf
+*.groovy text eol=lf
+*.json text eol=lf
+*.iml text eol=lf
+*.md text eol=lf
+*.pbk text eol=lf
+*.xml text eol=lf
+*.yml text eol=lf
+
 *.bat text eol=crlf
 
+CONTRIBUTORS text eol=lf
+COPYING text text eol=lf
+README.TXT text eol=lf
+TRADEMARK_POLICY text eol=lf
 .gitattributes text eol=lf
 .gitignore text eol=lf
 .gitmodules text eol=lf
+build.properties text eol=lf
+gradle-wrapper.properties text eol=lf
 gradlew text eol=lf
