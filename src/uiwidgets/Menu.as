@@ -34,6 +34,8 @@ package uiwidgets {
 	import flash.utils.getTimer;
 	import translation.TranslatableStrings;
 
+import util.CachedTimer;
+
 public class Menu extends Sprite {
 
 	// when stringCollectionMode is true menus are not displayed but strings are recorded for translation
@@ -192,8 +194,8 @@ public class Menu extends Sprite {
 			return;
 		}
 
-		if ((getTimer() - lastTime) < scrollMSecs) return;
-		lastTime = getTimer();
+		if ((CachedTimer.getCachedTimer() - lastTime) < scrollMSecs) return;
+		lastTime = CachedTimer.getCachedTimer();
 
 		var localY:int = this.globalToLocal(new Point(stage.mouseX, stage.mouseY)).y;
 		if ((localY < (2 + scrollInset)) && (firstItemIndex > 0)) scrollBy(-1);

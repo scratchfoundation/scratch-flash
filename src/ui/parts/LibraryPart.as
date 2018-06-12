@@ -32,6 +32,8 @@ import ui.media.*;
 import ui.SpriteThumbnail;
 import uiwidgets.*;
 
+import util.CachedTimer;
+
 public class LibraryPart extends UIPart {
 
 	private const smallTextFormat:TextFormat = new TextFormat(CSS.font, 10, CSS.textColor);
@@ -251,12 +253,12 @@ public class LibraryPart extends UIPart {
 	public function step():void {
 		// Update thumbnails and sprite details.
 		var viewedObj:ScratchObj = app.viewedObj();
-		var updateThumbnails:Boolean = ((getTimer() - lastUpdate) > updateInterval);
+		var updateThumbnails:Boolean = ((CachedTimer.getCachedTimer() - lastUpdate) > updateInterval);
 		for each (var tn:SpriteThumbnail in allThumbnails()) {
 			if (updateThumbnails) tn.updateThumbnail();
 			tn.select(tn.targetObj == viewedObj);
 		}
-		if (updateThumbnails) lastUpdate = getTimer();
+		if (updateThumbnails) lastUpdate = CachedTimer.getCachedTimer();
 		if (spriteDetails.visible) spriteDetails.step();
 		if (videoButton && videoButton.visible) updateVideoButton();
 	}

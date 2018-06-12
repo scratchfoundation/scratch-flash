@@ -26,7 +26,9 @@ package watchers {
 	import interpreter.Interpreter;
 	import scratch.ScratchObj;
 	import translation.Translator;
-	import util.JSON;
+
+import util.CachedTimer;
+import util.JSON;
 	import uiwidgets.*;
 
 public class ListWatcher extends Sprite {
@@ -222,7 +224,7 @@ public class ListWatcher extends Sprite {
 		if (!visible) return;
 		adjustLastAccessSize();
 		if ((i < 1) || (i > lastAccess.length)) return;
-		lastAccess[i - 1] = getTimer();
+		lastAccess[i - 1] = CachedTimer.getCachedTimer();
 		lastActiveIndex = i - 1;
 		interp.redraw();
 	}
@@ -265,7 +267,7 @@ public class ListWatcher extends Sprite {
 		// Highlight the cell number of all recently accessed cells currently visible.
 		const fadeoutMSecs:int = 800;
 		adjustLastAccessSize();
-		var now:int = getTimer();
+		var now:int = CachedTimer.getCachedTimer();
 		isIdle = true; // try to be idle; set to false if any non-zero lastAccess value is found
 		for (var i:int = 0; i < visibleCellNums.length; i++) {
 			var lastAccessTime:int = lastAccess[firstVisibleIndex + i];
