@@ -18,8 +18,6 @@
  */
 
 package util {
-	import flash.utils.getTimer;
-
 public class Transition {
 
 	private static var activeTransitions:Array = [];

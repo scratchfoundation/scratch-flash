@@ -18,8 +18,6 @@
  */
 
 package logging {
-import flash.utils.getTimer;
-
 import util.CachedTimer;
 
 public class LogEntry {

@@ -52,7 +52,6 @@ package util {
 	import flash.filters.*;
 	import flash.geom.*;
 	import flash.text.*;
-	import flash.utils.getTimer;
 	import blocks.*;
 	import scratch.*;
 	import uiwidgets.*;

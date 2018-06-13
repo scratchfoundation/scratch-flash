@@ -31,7 +31,6 @@ package uiwidgets {
 	import flash.events.*;
 	import flash.filters.DropShadowFilter;
 	import flash.geom.Point;
-	import flash.utils.getTimer;
 	import translation.TranslatableStrings;
 
 import util.CachedTimer;

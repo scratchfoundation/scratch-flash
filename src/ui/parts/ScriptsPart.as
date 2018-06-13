@@ -25,7 +25,6 @@
 package ui.parts {
 import flash.display.*;
 import flash.text.*;
-import flash.utils.getTimer;
 
 import scratch.*;
 

@@ -32,7 +32,6 @@ import flash.errors.IllegalOperationError;
 import flash.events.*;
 import flash.net.*;
 import flash.utils.Dictionary;
-import flash.utils.getTimer;
 
 import interpreter.*;
 
