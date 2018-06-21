@@ -221,22 +221,12 @@ public class Interpreter {
 	}
 
 	private const workTimeCheckIntervalFactor:Number = 1/3.0;
-	private const maxIterationCountSamples: uint = 10;
-	private var iterationCountSamples: Vector.<uint> = new <uint>[500]; // initial guess
+	private var iterationCountEstimate: Number = 1; // start low to avoid appearance of hang
 
 	private function addIterationCountSample(sample:uint):void {
-		iterationCountSamples.push(sample);
-		while (iterationCountSamples.length > maxIterationCountSamples) {
-			iterationCountSamples.shift();
-		}
-	}
-
-	private function getAverageIterationCount():Number {
-		var total:uint = 0;
-		for each (var sample:uint in iterationCountSamples) {
-			total += sample;
-		}
-		return Number(total) / iterationCountSamples.length;
+		// Exponential moving average: simulate N=10 with a=2/(N+1)=2/11
+		const alpha:Number = 2.0/11.0;
+		iterationCountEstimate += alpha * (sample - iterationCountEstimate);
 	}
 
 	public function stepThreads():void {
@@ -244,9 +234,8 @@ public class Interpreter {
 		doRedraw = false;
 		startTime = currentMSecs = CachedTimer.getFreshTimer();
 		if (threads.length == 0) return;
-		var currentEstimate:Number = getAverageIterationCount();
 		var iterationCount:uint = 0;
-		var checkInterval:uint = Math.round(workTimeCheckIntervalFactor * currentEstimate);
+		var checkInterval:uint = Math.round(workTimeCheckIntervalFactor * iterationCountEstimate);
 		var checkCount:uint = 0;
 		while ((currentMSecs - startTime) < workTime) {
 			if (warpThread && (warpThread.block == null)) clearWarpBlock();
@@ -296,15 +285,13 @@ public class Interpreter {
 			}
 		}
 		yield = false;
-		var warpStartTimer:int = CachedTimer.getCachedTimer();
 		while (true) {
-			if (activeThread == warpThread) currentMSecs = warpStartTimer;
+			if (activeThread == warpThread) currentMSecs = CachedTimer.getFreshTimer();
 			evalCmd(activeThread.block);
 			if (yield) {
 				if (activeThread == warpThread) {
 					if ((currentMSecs - startTime) > warpMSecs) return;
 					yield = false;
-					warpStartTimer = CachedTimer.getFreshTimer();
 					continue;
 				} else return;
 			}
