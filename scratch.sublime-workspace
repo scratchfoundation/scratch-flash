@@ -183,6 +183,31 @@
 	},
 	"buffers":
 	[
+		{
+			"file": "src/Scratch.as",
+			"settings":
+			{
+				"buffer_size": 46355,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/translation/Translator.as",
+			"settings":
+			{
+				"buffer_size": 8787,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/util/Server.as",
+			"settings":
+			{
+				"buffer_size": 12230,
+				"line_ending": "Unix"
+			}
+		}
 	],
 	"build_system": "",
 	"build_system_choices":
@@ -248,10 +273,15 @@
 	},
 	"expanded_folders":
 	[
-		"/Users/zezhen/workspace/scratch-flash"
+		"/Users/zezhen/workspace/scratch-flash",
+		"/Users/zezhen/workspace/scratch-flash/build",
+		"/Users/zezhen/workspace/scratch-flash/build/11.6"
 	],
 	"file_history":
 	[
+		"/Users/zezhen/workspace/scratch-flash/index.html",
+		"/Users/zezhen/Downloads/bd_B6055_B5948_20180719_20180721.tsv",
+		"/Users/zezhen/workspace/scratch-flash/src/blocks/Block.as",
 		"/Users/zezhen/workspace/tmp/adserver_query.py",
 		"/Users/zezhen/workspace/tmp/test.py",
 		"/Users/zezhen/workspace/tmp/tensorflow/test.py",
@@ -376,20 +406,18 @@
 		"/Users/zezhen/pacing/info_201512071100",
 		"/Users/zezhen/pacing/budget_change",
 		"/Users/zezhen/analysis/smooth_201511182300",
-		"/Users/zezhen/workspace/budget_data_client/README.md",
-		"/Users/zezhen/workspace/budget_data_client/target/classes/bin/ingest_throttle_rate.sh",
-		"/Users/zezhen/workspace/budget_data_client/target/classes/bin/throttle_rate_change_upload.sh",
-		"/Users/zezhen/workspace/budget_data_client/src/main/resources/bin/throttle_rate_change_upload.sh"
+		"/Users/zezhen/workspace/budget_data_client/README.md"
 	],
 	"find":
 	{
-		"height": 26.0
+		"height": 39.0
 	},
 	"find_in_files":
 	{
 		"height": 101.0,
 		"where_history":
 		[
+			""
 		]
 	},
 	"find_state":
@@ -397,6 +425,25 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"ExternalInterface",
+			"setFonts",
+			"allowscriptaccess",
+			"url",
+			"isOffline",
+			"loaderInfo",
+			"mode",
+			"callServer",
+			"serverGet",
+			"initializeLanguageList",
+			"setFonts",
+			"font12",
+			"callServer",
+			"serverGet",
+			"SharedObject",
+			"setLanguageValue",
+			"getSelectedLang",
+			"stage",
+			"Scratch"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -408,14 +455,102 @@
 		"reverse": false,
 		"show_context": true,
 		"use_buffer2": true,
-		"whole_word": false,
+		"whole_word": true,
 		"wrap": true
 	},
 	"groups":
 	[
 		{
+			"selected": 2,
 			"sheets":
 			[
+				{
+					"buffer": 0,
+					"file": "src/Scratch.as",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 46355,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5232,
+								5232
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/ActionScript/ActionScript.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 2233.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "src/translation/Translator.as",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 8787,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2491,
+								2491
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/ActionScript/ActionScript.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 629.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "src/util/Server.as",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 12230,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								7283,
+								7283
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/ActionScript/ActionScript.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1243.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				}
 			]
 		}
 	],
@@ -997,9 +1132,13 @@
 	"select_project":
 	{
 		"height": 500.0,
-		"last_filter": "",
+		"last_filter": "tm",
 		"selected_items":
 		[
+			[
+				"tm",
+				"~/workspace/tmp/tmp.sublime-project"
+			],
 			[
 				"bl",
 				"~/Dropbox/blog/blog.sublime-project"
@@ -1007,10 +1146,6 @@
 			[
 				"",
 				"~/Dropbox/blog/blog.sublime-project"
-			],
-			[
-				"tm",
-				"~/workspace/archive/conf/tmp.sublime-workspace"
 			],
 			[
 				"da",

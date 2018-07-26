@@ -263,7 +263,8 @@ public class Server implements IServer {
 //			whenDone(BackpackPart.localAssets[md5]);
 //			return null;
 //		}
-		var url:String = URLs.assetCdnPrefix + URLs.internalAPI + 'asset/' + md5 + '/get/';
+		//var url:String = URLs.assetCdnPrefix + URLs.internalAPI + 'asset/' + md5 + '/get/';
+		var url:String = URLs.assetCdnPrefix + URLs.internalAPI + 'asset/' + md5;
 		return serverGet(url, whenDone);
 	}
 
