@@ -45,7 +45,15 @@ if __name__ == '__main__':
         },
         '/internalapi': {
             'tools.staticdir.on': True,
-            'tools.staticdir.dir': 'asset/internalapi'
+            'tools.staticdir.dir': 'internalapi'
+        },
+        '/js': {
+            'tools.staticdir.on': True,
+            'tools.staticdir.dir': 'js'
+        },
+        '/css': {
+            'tools.staticdir.on': True,
+            'tools.staticdir.dir': 'css'
         },
         '/debug': {
             'tools.staticdir.on': True,

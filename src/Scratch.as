@@ -163,11 +163,13 @@ public class Scratch extends Sprite {
 	}
 
 	protected function initialize():void {
-		isOffline = !URLUtil.isHttpURL(loaderInfo.url);
-		hostProtocol = URLUtil.getProtocol(loaderInfo.url);
+		//isOffline = !URLUtil.isHttpURL(loaderInfo.url);
+		isOffline = true;
 		log(LogLevel.DEBUG, loaderInfo.url);
-		log(LogLevel.DEBUG, "isOffline:" + isOffline);
+		log(LogLevel.DEBUG, "set isOffline to " + isOffline);
 
+		hostProtocol = URLUtil.getProtocol(loaderInfo.url);
+		
 		isExtensionDevMode = (loaderInfo.parameters['extensionDevMode'] == 'true');
 		isMicroworld = (loaderInfo.parameters['microworldMode'] == 'true');
 
@@ -436,7 +438,6 @@ public class Scratch extends Sprite {
 
 	protected function startInEditMode():Boolean {
 		return isOffline || isExtensionDevMode;
-		//return true;
 	}
 
 	public function getMediaLibrary(type:String, whenDone:Function):MediaLibrary {

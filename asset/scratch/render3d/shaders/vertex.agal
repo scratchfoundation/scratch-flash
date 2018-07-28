@@ -1,2 +1,0 @@
-op = mul4x4(va0, vc0) // pos to clipspace
-v0 = va1 // copy u,v
