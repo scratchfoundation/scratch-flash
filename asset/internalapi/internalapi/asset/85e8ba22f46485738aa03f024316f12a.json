@@ -1,0 +1,46 @@
+{
+	"objName": "Hannah",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "hannah-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "b983d99560313e38b4b3cd36cbd5f0d1.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 138,
+			"rotationCenterY": 126
+		},
+		{
+			"costumeName": "hannah-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "d0c3b4b24fbf1152de3ebb68f6b875ae.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 48,
+			"rotationCenterY": 160
+		},
+		{
+			"costumeName": "hannah-c",
+			"baseLayerID": -1,
+			"baseLayerMD5": "5fdce07935156bbcf943793fa84e826c.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 170,
+			"rotationCenterY": 130
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

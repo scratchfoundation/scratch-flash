@@ -184,74 +184,57 @@
 	"buffers":
 	[
 		{
-			"file": "bin-debug/Scratch.html",
+			"file": "src/scratch/ScratchRuntime.as",
 			"settings":
 			{
-				"buffer_size": 8479,
-				"line_ending": "Windows"
+				"buffer_size": 51400,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/util/ReadStream.as",
+			"settings":
+			{
+				"buffer_size": 3343,
+				"line_ending": "Unix"
 			}
 		},
 		{
 			"file": "src/Scratch.as",
 			"settings":
 			{
-				"buffer_size": 46403,
+				"buffer_size": 47727,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "asset/scratch/new.html",
+			"contents": "Searching 1586 files for \"ExternalInterface\"\n\n/Users/zezhen/workspace/scratch-flash/asset/scratch/history/history.js:\n  112      }\n  113  \n  114:     // Get the Flash player object for performing ExternalInterface callbacks.\n  115      // Updated for changes to SWFObject2.\n  116      function getPlayer(id) {\n\n/Users/zezhen/workspace/scratch-flash/bin-debug/history/history.js:\n  112      }\n  113  \n  114:     // Get the Flash player object for performing ExternalInterface callbacks.\n  115      // Updated for changes to SWFObject2.\n  116      function getPlayer(id) {\n\n/Users/zezhen/workspace/scratch-flash/bin-release/history/history.js:\n  112      }\n  113  \n  114:     // Get the Flash player object for performing ExternalInterface callbacks.\n  115      // Updated for changes to SWFObject2.\n  116      function getPlayer(id) {\n\n/Users/zezhen/workspace/scratch-flash/html-template/history/history.js:\n  112      }\n  113  \n  114:     // Get the Flash player object for performing ExternalInterface callbacks.\n  115      // Updated for changes to SWFObject2.\n  116      function getPlayer(id) {\n\n/Users/zezhen/workspace/scratch-flash/src/Scratch.as:\n   33  import flash.display.*;\n   34  import flash.events.*;\n   35: import flash.external.ExternalInterface;\n   36  import flash.geom.Point;\n   37  import flash.geom.Rectangle;\n   ..\n  147  \n  148  \tprotected function determineJSAccess():void {\n  149: \t\tif (externalInterfaceAvailable()) {\n  150  \t\t\ttry {\n  151  \t\t\t\texternalCall('function(){return true;}', jsAccessDetermined);\n  ...\n  228  \n  229  \tprotected function handleStartupParameters():void {\n  230: \t\tsetupExternalInterface(false);\n  231  \t\tjsEditorReady();\n  232  \t}\n  233  \n  234: \tprotected function setupExternalInterface(oldWebsitePlayer:Boolean):void {\n  235  \t\tif (!jsEnabled) return;\n  236  \n  ...\n  256  \t\t\tsetProjectName(\"OpenSprites Backpack\");\n  257  \t\t\tremoveLoadProgressBox();\n  258: \t\t\tExternalInterface.call('JSloadProjectUrlCallback', false);\n  259  \t\t}\n  260   \t\tfunction handleError(e:ErrorEvent):void {\n  261  \t\t\tjsThrowError('Failed to load project: ' + e.toString());\n  262  \t\t\tremoveLoadProgressBox();\n  263: \t\t\tExternalInterface.call('JSloadProjectUrlCallback', e);\n  264  \t\t}\n  265  \t\t\n  ...\n 1578  \t//------------------------------\n 1579  \n 1580: \tpublic function externalInterfaceAvailable():Boolean {\n 1581: \t\treturn ExternalInterface.available;\n 1582  \t}\n 1583  \n ....\n 1586  \t\tvar retVal:*;\n 1587  \t\ttry {\n 1588: \t\t\tretVal = ExternalInterface.call.apply(ExternalInterface, args);\n 1589  \t\t}\n 1590  \t\tcatch (e:Error)\n ....\n 1599  \n 1600  \tpublic function addExternalCallback(functionName:String, closure:Function):void {\n 1601: \t\tExternalInterface.addCallback(functionName, closure);\n 1602  \t}\n 1603  \n\n15 matches across 5 files\n",
 			"settings":
 			{
-				"buffer_size": 155316,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "html-template/mit.html",
-			"settings":
-			{
-				"buffer_size": 44435,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
+				"buffer_size": 2773,
+				"line_ending": "Unix",
+				"name": "Find Results",
+				"scratch": true
 			}
 		},
 		{
 			"file": "html-template/index.template.html",
 			"settings":
 			{
-				"buffer_size": 8717,
+				"buffer_size": 9094,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"contents": "3.2M\t/Users/zezhen/Applications\n 12K\t/Users/zezhen/Desktop\n 79M\t/Users/zezhen/Documents\n5.4G\t/Users/zezhen/Downloads\n1.4G\t/Users/zezhen/Dropbox\n1.5G\t/Users/zezhen/Google Drive\n 60G\t/Users/zezhen/Library\n 54G\t/Users/zezhen/Movies\n 25G\t/Users/zezhen/Music\n 80G\t/Users/zezhen/Pictures\n8.0K\t/Users/zezhen/Public\n3.3G\t/Users/zezhen/nltk_data\n4.0K\t/Users/zezhen/start_flash_player_debugger.sh\n2.6G\t/Users/zezhen/workspace\n110G\t/Users/zezhen/百度云同步盘",
+			"file": "bin-debug/Scratch.html",
 			"settings":
 			{
-				"buffer_size": 441,
-				"line_ending": "Unix",
-				"name": "3.2M\t/Users/zezhen/Applications"
-			}
-		},
-		{
-			"file": "/Users/zezhen/Downloads/2.html",
-			"settings":
-			{
-				"buffer_size": 8838,
+				"buffer_size": 8855,
 				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/Users/zezhen/Downloads/1.html",
-			"settings":
-			{
-				"buffer_size": 8838,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
+				"line_ending": "Windows"
 			}
 		}
 	],
@@ -319,16 +302,26 @@
 	},
 	"expanded_folders":
 	[
+		"/Users/zezhen/workspace/scratch-flash",
+		"/Users/zezhen/workspace/scratch-flash/asset",
+		"/Users/zezhen/workspace/scratch-flash/bin-debug"
 	],
 	"file_history":
 	[
+		"/Users/zezhen/workspace/scratch-flash/asset/scratch/css/project_base.css",
+		"/Users/zezhen/workspace/scratch-flash/bin-debug/Scratch.html",
+		"/Users/zezhen/workspace/scratch-flash/src/Scratch.as",
+		"/Users/zezhen/workspace/scratch-flash/asset/scratch/new.html",
+		"/Users/zezhen/workspace/scratch-flash/html-template/mit.html",
+		"/Users/zezhen/workspace/scratch-flash/html-template/index.template.html",
+		"/Users/zezhen/Downloads/2.html",
+		"/Users/zezhen/Downloads/1.html",
 		"/Users/zezhen/workspace/scratch-asset/scratch/new.html",
 		"/Users/zezhen/workspace/scratch-asset/scratch/Scratch.html",
 		"/Users/zezhen/workspace/scratch-asset/scratch/mit.html",
 		"/Users/zezhen/workspace/scratch-asset/mit.html",
 		"/Users/zezhen/workspace/scratch-flash/src/util/Server.as",
 		"/Users/zezhen/workspace/scratch-flash/src/scratch/ScratchRuntime.as",
-		"/Users/zezhen/workspace/scratch-flash/src/Scratch.as",
 		"/Users/zezhen/workspace/scratch-flash/src/translation/Translator.as",
 		"/Users/zezhen/workspace/scratch-flash/html-template/swfobject.js",
 		"/Users/zezhen/workspace/scratch-flash/bin-release/Scratch.html",
@@ -442,14 +435,7 @@
 		"/Users/zezhen/workspace/budget_data_client/src/main/resources/bin/ingest_ads_metrics.sh",
 		"/Users/zezhen/workspace/budget_data_client/arya/release_definition/resources/prod-red-message/image/post-deploy",
 		"/Users/zezhen/workspace/budget_data_client/src/main/resources/bin/retention.sh",
-		"/Users/zezhen/workspace/budget_data_client/src/main/launch/property_mapping_ingest.run",
-		"/Users/zezhen/workspace/budget_data_client/target/classes/bin/start_message_consumer.sh",
-		"/Users/zezhen/Documents/father - visa/note",
-		"/Users/zezhen/workspace/budget_data_client/src/main/launch/property_mapping.run",
-		"/Users/zezhen/workspace/budget_data_client/arya/release_definition/resources/stage-blue-grid/image/post-deploy",
-		"/Users/zezhen/workspace/budget_data_client/src/main/python/etl_tool/email.py",
-		"/Users/zezhen/workspace/budget_data_client/src/main/resources/bin/ingest_spgen_output.sh",
-		"/Users/zezhen/convert.pl"
+		"/Users/zezhen/workspace/budget_data_client/src/main/launch/property_mapping_ingest.run"
 	],
 	"find":
 	{
@@ -460,6 +446,8 @@
 		"height": 101.0,
 		"where_history":
 		[
+			"",
+			"asset/scratch/css",
 			""
 		]
 	},
@@ -468,6 +456,39 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"addExternalCallback",
+			"call",
+			"ExternalInterface",
+			"addExternalCallback",
+			"ASloadBase64SBX",
+			"loadBase64SBX",
+			"loadGithubURL",
+			"createNewProjectScratchX",
+			"load",
+			"addExternalCallback",
+			"jsE",
+			"externalCall",
+			"addExternalCallback",
+			"jse",
+			"js",
+			"addExternalCallback",
+			"jseditor",
+			"FileReferenceList",
+			"select",
+			"selectProjectFile",
+			"installProjectFromFile",
+			"installEmptyProject",
+			"addParts",
+			"getScratchStage",
+			"loadSingleFile",
+			"selectProjectFile",
+			"Load Project",
+			"isExtensionDevMode",
+			"isoffline",
+			"ASloadProjectUrl",
+			".editor",
+			"editor",
+			"extensionDevMode",
 			"dev",
 			"devm",
 			"dev",
@@ -562,40 +583,7 @@
 			"serverGet",
 			"callServer(",
 			"callServer",
-			"exceptionHandler",
-			"URLRequest",
-			"bgcolor",
-			"width",
-			"handleEmbedStatus",
-			"serverGet",
-			"locale/lang_list.txt",
-			"onCallServerHttpStatus",
-			"callServer(",
-			"callServer",
-			"serverGet",
-			"callServer",
-			"addListeners",
-			"statusHandler",
-			"onCallServerHttpStatus",
-			"callServer",
-			"onCallServerException",
-			"handleStartupParameters",
-			"Interpreter",
-			"initInterpreter",
-			"initServer",
-			"overrideURLs",
-			"setDefaultURLs",
-			"initServer",
-			"server",
-			"Server",
-			"serverGet",
-			"callServer",
-			"addListeners",
-			"statusHandler",
-			"onCallServerHttpStatus",
-			"statusHandler",
-			"HTTPStatusEvent",
-			"uncaughtErrorHandler"
+			"exceptionHandler"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -623,54 +611,24 @@
 	"groups":
 	[
 		{
-			"selected": 3,
+			"selected": 2,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "bin-debug/Scratch.html",
+					"file": "src/scratch/ScratchRuntime.as",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 8479,
+						"buffer_size": 51400,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								6019,
-								6028
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/HTML/HTML.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1586.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 5,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "src/Scratch.as",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 46403,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								5314,
-								5330
+								26191,
+								26191
 							]
 						],
 						"settings":
@@ -679,21 +637,146 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 2314.0,
+						"translation.y": 12889.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "src/util/ReadStream.as",
+					"semi_transient": true,
+					"settings":
+					{
+						"buffer_size": 3343,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2394,
+								2394
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/ActionScript/ActionScript.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
 					"type": "text"
 				},
 				{
 					"buffer": 2,
-					"file": "asset/scratch/new.html",
+					"file": "src/Scratch.as",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 155316,
+						"buffer_size": 47727,
 						"regions":
 						{
+						},
+						"selection":
+						[
+							[
+								7368,
+								7368
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/ActionScript/ActionScript.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 3669.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2773,
+						"regions":
+						{
+							"match":
+							{
+								"flags": 112,
+								"regions":
+								[
+									[
+										196,
+										213
+									],
+									[
+										457,
+										474
+									],
+									[
+										720,
+										737
+									],
+									[
+										985,
+										1002
+									],
+									[
+										1244,
+										1261
+									],
+									[
+										1412,
+										1429
+									],
+									[
+										1621,
+										1638
+									],
+									[
+										1723,
+										1740
+									],
+									[
+										1916,
+										1933
+									],
+									[
+										2150,
+										2167
+									],
+									[
+										2305,
+										2322
+									],
+									[
+										2360,
+										2377
+									],
+									[
+										2470,
+										2487
+									],
+									[
+										2499,
+										2516
+									],
+									[
+										2674,
+										2691
+									]
+								],
+								"scope": ""
+							}
 						},
 						"selection":
 						[
@@ -704,9 +787,14 @@
 						],
 						"settings":
 						{
-							"syntax": "Packages/HTML/HTML.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
+							"detect_indentation": false,
+							"line_numbers": false,
+							"output_tag": 1,
+							"result_base_dir": "",
+							"result_file_regex": "^([^ \t].*):$",
+							"result_line_regex": "^ +([0-9]+):",
+							"scroll_past_end": true,
+							"syntax": "Packages/Default/Find Results.hidden-tmLanguage"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -716,50 +804,20 @@
 					"type": "text"
 				},
 				{
-					"buffer": 3,
-					"file": "html-template/mit.html",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 44435,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2729,
-								2729
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/HTML/HTML.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
 					"buffer": 4,
 					"file": "html-template/index.template.html",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 8717,
+						"buffer_size": 9094,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2559,
-								2559
+								2272,
+								2272
 							]
 						],
 						"settings":
@@ -769,55 +827,27 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 699.0,
+						"translation.y": 563.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
 					"buffer": 5,
+					"file": "bin-debug/Scratch.html",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 441,
+						"buffer_size": 8855,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								228,
-								228
-							]
-						],
-						"settings":
-						{
-							"auto_name": "3.2M\t/Users/zezhen/Applications",
-							"syntax": "Packages/Text/Plain text.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 7,
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "/Users/zezhen/Downloads/2.html",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 8838,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								8838,
-								8838
+								2902,
+								2225
 							]
 						],
 						"settings":
@@ -827,40 +857,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 623.0,
+						"translation.y": 485.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "/Users/zezhen/Downloads/1.html",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 8838,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								5051,
-								5051
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/HTML/HTML.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 17.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
 					"type": "text"
 				}
 			]
@@ -926,6 +926,10 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"scratch.as",
+				"src/Scratch.as"
+			],
 			[
 				"mit",
 				"scratch-flash/html-template/mit.html"
@@ -1433,10 +1437,6 @@
 			[
 				"ffl.bf1.prod",
 				"buildinfo/release_definition_ffl/resources/curveball.set.budget_ffl.bf1.prod.thaum/image/curveball.set.budget_ffl.bf1.prod.thaum.yidf"
-			],
-			[
-				"ffl.gq1.stag",
-				"buildinfo/release_definition_ffl/resources/curveball.set.budget_ffl.gq1.stag/image/curveball.set.budget_ffl.gq1.stag.yidf"
 			]
 		],
 		"width": 0.0

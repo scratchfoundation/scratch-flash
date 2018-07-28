@@ -1,0 +1,54 @@
+{
+	"objName": "Khalid Dance",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "khalid-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "d0018780c7458f002b6fec6d1fea3570.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 79,
+			"rotationCenterY": 101
+		},
+		{
+			"costumeName": "Khalid-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "88023269142bfc3ecab5b13cc8cbddb9.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 69,
+			"rotationCenterY": 103
+		},
+		{
+			"costumeName": "khalid-c",
+			"baseLayerID": -1,
+			"baseLayerMD5": "30dbce950a2d2dddc0ea53d1462d116b.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 69,
+			"rotationCenterY": 109
+		},
+		{
+			"costumeName": "khalid-d",
+			"baseLayerID": -1,
+			"baseLayerMD5": "e189aec22f4cb57a90f75457615fbbd8.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 66,
+			"rotationCenterY": 63
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

@@ -1,0 +1,38 @@
+{
+	"objName": "Bells",
+	"sounds": [{
+			"soundName": "xylo1",
+			"soundID": -1,
+			"md5": "5c6964021197fdd4ff46a0f107e6d624.wav",
+			"sampleCount": 238995,
+			"rate": 22050,
+			"format": "adpcm"
+		}],
+	"costumes": [{
+			"costumeName": "bells-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "1f151bee966df3f0c41138941713280e.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 53,
+			"rotationCenterY": 51
+		},
+		{
+			"costumeName": "bells-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "5b3879a162881aed93169bf0a6680f45.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 48,
+			"rotationCenterY": 31
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

@@ -1,0 +1,29 @@
+{
+	"objName": "Magic Wand",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "magicwand",
+			"baseLayerID": -1,
+			"baseLayerMD5": "3db9bfe57d561557795633c5cda44e8c.svg",
+			"rotationCenterX": 41,
+			"rotationCenterY": 18
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

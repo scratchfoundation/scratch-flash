@@ -246,12 +246,24 @@ public class Scratch extends Sprite {
 		}
 
 		addExternalCallback('ASloadProjectUrl', loadProjectUrl);
+
+		//addExternalCallback('ASloadProjectFile', loadProjectFile);
 	}
+
+	//public function loadProjectFile(filename:String) {
+	//	log(LogLevel.DEBUG, filename);
+	//	var _fileName:String, data:ByteArray;
+	//	var file:FileReference = FileReference(filename);
+	//	_filename = file.name;
+	//	data = file.data;
+	//	runtime.installProjectFromFile(filename, data);
+	//}
 
 	public function loadProjectUrl(url:String){
 		log(LogLevel.DEBUG, url);
 		function handleComplete(e:Event):void {
 			lp.setInfo("Opening project...")
+			log(LogLevel.DEBUG, "open project from " + url);
 			runtime.installProjectFromData(loader.data);
 			setProjectName("OpenSprites Backpack");
 			removeLoadProgressBox();

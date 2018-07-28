@@ -1,0 +1,29 @@
+{
+	"objName": "Sun",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "sun",
+			"baseLayerID": -1,
+			"baseLayerMD5": "55c931c65456822c0c56a2b30e3e550d.svg",
+			"rotationCenterX": 72,
+			"rotationCenterY": 72
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

@@ -1,0 +1,32 @@
+<languageVersion : 1.0;>
+
+kernel Mosaic
+<	vendor : "MIT Media Laboratory";
+	namespace : "filters";
+	version : 1;
+	description : "Scratch Mosaic";
+>
+{
+	// number of copies of the original
+	parameter float count
+	<
+		minValue: 1.0;
+		maxValue: 100.0;
+		defaultValue: 1.0;
+	>;
+
+	// width and height of the input image
+	parameter float2 widthAndHeight
+	<
+		minValue: float2(1.0, 1.0);
+		maxValue: float2(2000.0, 2000.0);
+		defaultValue: float2(200.0, 200.0);
+	>;
+
+	input image4 src;
+	output pixel4 dst;
+
+	void evaluatePixel() {
+		dst = sampleNearest(src, mod(outCoord() * count, widthAndHeight));
+	}
+}

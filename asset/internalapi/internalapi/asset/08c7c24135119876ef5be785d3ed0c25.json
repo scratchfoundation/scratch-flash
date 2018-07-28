@@ -1,0 +1,21 @@
+{
+	"objName": "Bananas",
+	"costumes": [{
+			"costumeName": "bananas",
+			"baseLayerID": -1,
+			"baseLayerMD5": "40bb8a1afe88cec78254f6fcfee98242.svg",
+			"rotationCenterX": 36,
+			"rotationCenterY": 37
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

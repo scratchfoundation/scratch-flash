@@ -1,0 +1,46 @@
+{
+	"objName": "Watermelon",
+	"sounds": [{
+			"soundName": "meow",
+			"soundID": -1,
+			"md5": "83c36d806dc92327b9e7049a565c6bff.wav",
+			"sampleCount": 18688,
+			"rate": 22050,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "watermelon-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "26fecef75cf3b6e0d98bff5c06475036.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 40,
+			"rotationCenterY": 27
+		},
+		{
+			"costumeName": "watermelon-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "fbdaf4d1d349edd3ddf3a1c4528aa9ec.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 22,
+			"rotationCenterY": 27
+		},
+		{
+			"costumeName": "watermelon-c",
+			"baseLayerID": -1,
+			"baseLayerMD5": "5976c10412306fc093c1d1930fa05119.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 21,
+			"rotationCenterY": 15
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

@@ -1,0 +1,38 @@
+{
+	"objName": "Gift",
+	"sounds": [{
+			"soundName": "birthday song",
+			"soundID": -1,
+			"md5": "89691587a169d935a58c48c3d4e78534.wav",
+			"sampleCount": 161408,
+			"rate": 22050,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "gift-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "abeae2217b3ce67b1ff761cd7a89274d.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 33,
+			"rotationCenterY": 25
+		},
+		{
+			"costumeName": "gift-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "5cae973c98f2d98b51e6c6b3c9602f8c.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 33,
+			"rotationCenterY": 26
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

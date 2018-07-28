@@ -1,0 +1,30 @@
+{
+	"objName": "K-block",
+	"sounds": [{
+			"soundName": "meow",
+			"soundID": -1,
+			"md5": "83c36d806dc92327b9e7049a565c6bff.wav",
+			"sampleCount": 18688,
+			"rate": 22050,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "k-block",
+			"baseLayerID": -1,
+			"baseLayerMD5": "19601cc33449813aa93a47c63167e5c1.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 24,
+			"rotationCenterY": 40
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

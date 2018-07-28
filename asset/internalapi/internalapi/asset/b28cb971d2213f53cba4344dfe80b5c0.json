@@ -1,0 +1,30 @@
+{
+	"objName": "O-block",
+	"sounds": [{
+			"soundName": "meow",
+			"soundID": -1,
+			"md5": "83c36d806dc92327b9e7049a565c6bff.wav",
+			"sampleCount": 18688,
+			"rate": 22050,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "o-block",
+			"baseLayerID": -1,
+			"baseLayerMD5": "e88638200a73e167d0e266a343019cec.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 32,
+			"rotationCenterY": 40
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

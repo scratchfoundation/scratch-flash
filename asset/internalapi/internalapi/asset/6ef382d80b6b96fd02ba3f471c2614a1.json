@@ -1,0 +1,36 @@
+{
+	"objName": "Anna",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "anna-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "23ab3e9be3be672fa2c43571e92b2b3e.png",
+			"rotationCenterX": 76,
+			"rotationCenterY": 87
+		},
+		{
+			"costumeName": "anna-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "25b8d4f7eae0add3bc24c20f5f17ada9.png",
+			"rotationCenterX": 57,
+			"rotationCenterY": 110
+		}],
+	"currentCostumeIndex": 1,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

@@ -1,0 +1,5222 @@
+<html><head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge"><script type="text/javascript" src="https://bam.nr-data.net/1/1c6ed9743c?a=2845391&amp;v=1071.385e752&amp;to=M1IHN0NYXEZWAEFRCgoYIxZfWkZcWA0aSBcLXQAARUocQ14GQktfNEUKCVRaRnFSF1RRCTJeABQfXldB&amp;rst=2476&amp;ref=https://scratch.mit.edu/projects/49843898/&amp;ap=98&amp;be=669&amp;fe=2460&amp;dc=1582&amp;perf=%7B%22timing%22:%7B%22of%22:1532674972313,%22n%22:0,%22u%22:474,%22ue%22:474,%22f%22:17,%22dn%22:23,%22dne%22:64,%22c%22:64,%22s%22:75,%22ce%22:101,%22rq%22:102,%22rp%22:460,%22rpe%22:472,%22dl%22:601,%22di%22:1581,%22ds%22:1581,%22de%22:1628,%22dc%22:2458,%22l%22:2458,%22le%22:2460%7D,%22navigation%22:%7B%7D%7D&amp;jsonp=NREUM.setToken"></script><script src="https://js-agent.newrelic.com/nr-1071.min.js"></script><script type="text/javascript" async="" src="https://ssl.google-analytics.com/ga.js"></script><script type="text/javascript" async="" src="https://www.gstatic.com/recaptcha/api2/v1531759913576/recaptcha__en.js"></script><script type="text/javascript">window.NREUM||(NREUM={}),__nr_require=function(e,t,n){function r(n){if(!t[n]){var o=t[n]={exports:{}};e[n][0].call(o.exports,function(t){var o=e[n][1][t];return r(o||t)},o,o.exports)}return t[n].exports}if("function"==typeof __nr_require)return __nr_require;for(var o=0;o<n.length;o++)r(n[o]);return r}({1:[function(e,t,n){function r(){}function o(e,t,n){return function(){return i(e,[f.now()].concat(u(arguments)),t?null:this,n),t?void 0:this}}var i=e("handle"),a=e(2),u=e(3),c=e("ee").get("tracer"),f=e("loader"),s=NREUM;"undefined"==typeof window.newrelic&&(newrelic=s);var p=["setPageViewName","setCustomAttribute","setErrorHandler","finished","addToTrace","inlineHit","addRelease"],d="api-",l=d+"ixn-";a(p,function(e,t){s[t]=o(d+t,!0,"api")}),s.addPageAction=o(d+"addPageAction",!0),s.setCurrentRouteName=o(d+"routeName",!0),t.exports=newrelic,s.interaction=function(){return(new r).get()};var m=r.prototype={createTracer:function(e,t){var n={},r=this,o="function"==typeof t;return i(l+"tracer",[f.now(),e,n],r),function(){if(c.emit((o?"":"no-")+"fn-start",[f.now(),r,o],n),o)try{return t.apply(this,arguments)}catch(e){throw c.emit("fn-err",[arguments,this,e],n),e}finally{c.emit("fn-end",[f.now()],n)}}}};a("setName,setAttribute,save,ignore,onEnd,getContext,end,get".split(","),function(e,t){m[t]=o(l+t)}),newrelic.noticeError=function(e){"string"==typeof e&&(e=new Error(e)),i("err",[e,f.now()])}},{}],2:[function(e,t,n){function r(e,t){var n=[],r="",i=0;for(r in e)o.call(e,r)&&(n[i]=t(r,e[r]),i+=1);return n}var o=Object.prototype.hasOwnProperty;t.exports=r},{}],3:[function(e,t,n){function r(e,t,n){t||(t=0),"undefined"==typeof n&&(n=e?e.length:0);for(var r=-1,o=n-t||0,i=Array(o<0?0:o);++r<o;)i[r]=e[t+r];return i}t.exports=r},{}],4:[function(e,t,n){t.exports={exists:"undefined"!=typeof window.performance&&window.performance.timing&&"undefined"!=typeof window.performance.timing.navigationStart}},{}],ee:[function(e,t,n){function r(){}function o(e){function t(e){return e&&e instanceof r?e:e?c(e,u,i):i()}function n(n,r,o,i){if(!d.aborted||i){e&&e(n,r,o);for(var a=t(o),u=m(n),c=u.length,f=0;f<c;f++)u[f].apply(a,r);var p=s[y[n]];return p&&p.push([b,n,r,a]),a}}function l(e,t){v[e]=m(e).concat(t)}function m(e){return v[e]||[]}function w(e){return p[e]=p[e]||o(n)}function g(e,t){f(e,function(e,n){t=t||"feature",y[n]=t,t in s||(s[t]=[])})}var v={},y={},b={on:l,emit:n,get:w,listeners:m,context:t,buffer:g,abort:a,aborted:!1};return b}function i(){return new r}function a(){(s.api||s.feature)&&(d.aborted=!0,s=d.backlog={})}var u="nr@context",c=e("gos"),f=e(2),s={},p={},d=t.exports=o();d.backlog=s},{}],gos:[function(e,t,n){function r(e,t,n){if(o.call(e,t))return e[t];var r=n();if(Object.defineProperty&&Object.keys)try{return Object.defineProperty(e,t,{value:r,writable:!0,enumerable:!1}),r}catch(i){}return e[t]=r,r}var o=Object.prototype.hasOwnProperty;t.exports=r},{}],handle:[function(e,t,n){function r(e,t,n,r){o.buffer([e],r),o.emit(e,t,n)}var o=e("ee").get("handle");t.exports=r,r.ee=o},{}],id:[function(e,t,n){function r(e){var t=typeof e;return!e||"object"!==t&&"function"!==t?-1:e===window?0:a(e,i,function(){return o++})}var o=1,i="nr@id",a=e("gos");t.exports=r},{}],loader:[function(e,t,n){function r(){if(!x++){var e=h.info=NREUM.info,t=d.getElementsByTagName("script")[0];if(setTimeout(s.abort,3e4),!(e&&e.licenseKey&&e.applicationID&&t))return s.abort();f(y,function(t,n){e[t]||(e[t]=n)}),c("mark",["onload",a()+h.offset],null,"api");var n=d.createElement("script");n.src="https://"+e.agent,t.parentNode.insertBefore(n,t)}}function o(){"complete"===d.readyState&&i()}function i(){c("mark",["domContent",a()+h.offset],null,"api")}function a(){return E.exists&&performance.now?Math.round(performance.now()):(u=Math.max((new Date).getTime(),u))-h.offset}var u=(new Date).getTime(),c=e("handle"),f=e(2),s=e("ee"),p=window,d=p.document,l="addEventListener",m="attachEvent",w=p.XMLHttpRequest,g=w&&w.prototype;NREUM.o={ST:setTimeout,SI:p.setImmediate,CT:clearTimeout,XHR:w,REQ:p.Request,EV:p.Event,PR:p.Promise,MO:p.MutationObserver};var v=""+location,y={beacon:"bam.nr-data.net",errorBeacon:"bam.nr-data.net",agent:"js-agent.newrelic.com/nr-1071.min.js"},b=w&&g&&g[l]&&!/CriOS/.test(navigator.userAgent),h=t.exports={offset:u,now:a,origin:v,features:{},xhrWrappable:b};e(1),d[l]?(d[l]("DOMContentLoaded",i,!1),p[l]("load",r,!1)):(d[m]("onreadystatechange",o),p[m]("onload",r)),c("mark",["firstbyte",u],null,"api");var x=0,E=e(4)},{}]},{},["loader"]);</script><script type="text/javascript">window.NREUM||(NREUM={});NREUM.info={"beacon":"bam.nr-data.net","queueTime":0,"licenseKey":"1c6ed9743c","agent":"","transactionName":"M1IHN0NYXEZWAEFRCgoYIxZfWkZcWA0aSBcLXQAARUocQ14GQktfNEUKCVRaRnFSF1RRCTJeABQfXldB","applicationID":"2845391","errorBeacon":"bam.nr-data.net","applicationTime":98}</script>
+     
+    <meta name="google-site-verification" content="m_3TAXDreGTFyoYnEmU9mcKB4Xtw5mw6yRkuJtXRKxM">
+    <title>Untitled 在 Scratch 上</title>
+    
+
+<meta name="description" content="Scratch to SWF on Scratch by junebeetle">
+
+
+    <link rel="stylesheet" href="//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/vendor/redmond/jquery.ui.all.css">
+    
+        <link href="//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/css/main.css" rel="stylesheet" type="text/css">
+   
+   <link rel="stylesheet" href="//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__//css/handheld.css" media="handheld, only screen and (max-device-width:480px)">
+
+    
+    
+        <link href="//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/css/project_base.css" rel="stylesheet" type="text/css">
+    
+    <link href="//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__//vendor/redmond/jquery-ui.css" rel="stylesheet">
+    <script type="text/javascript" src="//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__//js/swfobject.js"></script>
+
+    <script type="text/javascript" src="//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__//js/jquery.min.js"></script>
+    <script type="text/javascript" src="//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/js/lib/underscore-min.js"></script>
+    
+    <script>
+      window.console||(window.console={log:$.noop,error:$.noop,debug:$.noop}); // ensure console fails gracefully when missing
+      // define _gaq here to log errors with GA. ga.js script gets loaded furthe down
+      var sessionCookieName = 'scratchsessionsid';
+      var _gaq = window._gaq || [];
+      _gaq.push(['_setAccount', 'UA-30688952-1']);
+      _gaq.push(['_setSampleRate', '10']);
+      _gaq.push(['_trackPageview']);
+      
+      
+      
+      
+
+      
+    </script>
+    <script type="text/javascript">
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie != '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function setCookie(name, value, days) {
+            var expires;
+
+            if (days) {
+                var date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toGMTString();
+            } else {
+                expires = "";
+            }
+            document.cookie = escape(name) + "=" + escape(value) + expires + "; path=/";
+        }
+    </script>
+    
+  <script>
+    
+
+var Scratch = Scratch || {};
+Scratch.INIT_DATA = Scratch.INIT_DATA || {};
+
+
+
+Scratch.INIT_DATA.ADMIN = false;
+Scratch.INIT_DATA.LOGGED_IN_USER = {
+  
+  options: {
+     
+    
+
+permissions: [
+    
+]
+
+  }
+};
+Scratch.INIT_DATA.comment_posting = true;
+
+Scratch.INIT_DATA.BROWSERS_SUPPORTED = {
+
+  chrome: 35,
+  firefox: 31,
+  msie: 8,
+  safari: 7
+};
+
+Scratch.INIT_DATA.TEMPLATE_CUES = {
+
+  unsupported_browser: true,
+  welcome: true,
+  confirmed_email: false
+};
+  
+
+
+
+
+Scratch.INIT_DATA.PROJECT = {
+  
+  model: {
+    id: 49843898,
+    title: 'Scratch to SWF',
+    notes: 'I check these comments occasionally, but if you post a question and I or another Scratcher hasn\u0027t answered in a few days, please try contacting me via my website.\u000A\u000AAll the images and text are done in Adobe Illustrator. The Scratch cat is from Scratch, of course. The Flash symbol is traced from a SWF file icon from Adobe Flash player. The font used is Helvetica.',
+    credits: 'You can convert your Scratch projects to Flash on my website!\u000Ahttp://junebeetle.github.io/converter/\u000A\u000AThis allows you to make them into standalone applications, post them on your website, send them to people who don\u0027t have Scratch, and share them without sharing the source code.',
+    creator: 'junebeetle',
+    modifiedDate: '2018\u002D01\u002D09 02:18:27',
+    isPublished: true,
+    comments_allowed: true
+  },
+  is_new: false,
+
+  is_censored: false,
+  is_permcensored: false,
+
+  reportText: {
+    "": "从下方选择理由",
+    "0": "请提供原生项目的连结",
+    "1": "请提供未取得同意的内容的连结",
+    "2": "请告诉我们为什么你觉得项目过于暴力或恐怖",
+    "3": "请告诉我们在项目的哪里带有不当的内容（备注、谢志、角色名称、项目说明…还是哪个字段）",
+    "4": "请告诉我们哪个声音文件是不当音乐",
+    "5": "请告诉我们他在哪里公开了个人联络数据（是在备注、谢志、角色名称、项目说明…还是哪个字段）",
+    "6": "请告诉我们为什么这个项目没有遵守我们的社群规范",
+    "8": "请告诉我们是哪个角色或背景带有不当的图片"
+  }
+
+  
+  ,embedUrl: 'http://scratch.mit.edu/projects/embed/49843898/'
+  
+  
+}
+
+Scratch.INIT_DATA.HAS_NEVER_REMIXED = true;
+
+Scratch.INIT_DATA.TIPS = {
+  HELP_URLS : {
+    
+      'ab': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/ab/",
+    
+      'ar': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/ar/",
+    
+      'an': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/an/",
+    
+      'ast': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/ast/",
+    
+      'id': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/id/",
+    
+      'ms': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/ms/",
+    
+      'be': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/be/",
+    
+      'bg': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/bg/",
+    
+      'ca': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/ca/",
+    
+      'cs': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/cs/",
+    
+      'cy': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/cy/",
+    
+      'da': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/da/",
+    
+      'de': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/de/",
+    
+      'yum': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/yum/",
+    
+      'et': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/et/",
+    
+      'el': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/el/",
+    
+      'en': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/en/",
+    
+      'eo': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/eo/",
+    
+      'es': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/es/",
+    
+      'eu': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/eu/",
+    
+      'fa': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/fa/",
+    
+      'fr': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/fr/",
+    
+      'fur': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/fur/",
+    
+      'ga': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/ga/",
+    
+      'gd': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/gd/",
+    
+      'gl': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/gl/",
+    
+      'ko': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/ko/",
+    
+      'hy': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/hy/",
+    
+      'he': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/he/",
+    
+      'hi': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/hi/",
+    
+      'hr': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/hr/",
+    
+      'zu': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/zu/",
+    
+      'is': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/is/",
+    
+      'it': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/it/",
+    
+      'kn': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/kn/",
+    
+      'kk': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/kk/",
+    
+      'rw': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/rw/",
+    
+      'ht': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/ht/",
+    
+      'ku': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/ku/",
+    
+      'la': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/la/",
+    
+      'lv': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/lv/",
+    
+      'lt': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/lt/",
+    
+      'mk': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/mk/",
+    
+      'hu': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/hu/",
+    
+      'ml': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/ml/",
+    
+      'mt': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/mt/",
+    
+      'mr': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/mr/",
+    
+      'cat': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/cat/",
+    
+      'mn': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/mn/",
+    
+      'my': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/my/",
+    
+      'nl': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/nl/",
+    
+      'ja': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/ja/",
+    
+      'ja-hr': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/ja-hr/",
+    
+      'nb': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/nb/",
+    
+      'nn': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/nn/",
+    
+      'uz': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/uz/",
+    
+      'th': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/th/",
+    
+      'pl': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/pl/",
+    
+      'pt': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/pt/",
+    
+      'pt-br': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/pt-br/",
+    
+      'ro': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/ro/",
+    
+      'ru': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/ru/",
+    
+      'sc': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/sc/",
+    
+      'sq': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/sq/",
+    
+      'sk': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/sk/",
+    
+      'sl': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/sl/",
+    
+      'sr': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/sr/",
+    
+      'fi': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/fi/",
+    
+      'sv': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/sv/",
+    
+      'te': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/te/",
+    
+      'nai': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/nai/",
+    
+      'vi': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/vi/",
+    
+      'tr': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/tr/",
+    
+      'uk': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/uk/",
+    
+      'zh-cn': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/zh-cn/",
+    
+      'zh-tw': "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/zh-tw/",
+    
+  },
+
+  CURRENT_LANGUAGE: "zh-cn",
+};
+
+
+
+
+Scratch.INIT_DATA.COI = {
+  TARGET_DOMAIN: "http://cdn.scratch.mit.edu"
+};
+
+
+
+
+Scratch.INIT_DATA.IS_IP_BANNED = false;
+
+Scratch.INIT_DATA.GLOBAL_URLS = {
+  'media_url': '//uploads.scratch.mit.edu/',
+  'static_url': '//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/',
+  'static_path': '/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/'
+}
+
+Scratch.INIT_DATA.IS_SOCIAL = false;
+
+Scratch.ALERT_MSGS = {
+  'error': 'Oops! Something went wrong',
+  'inappropriate-generic': 'Hmm...the bad word detector thinks there is a problem with your text. Please change it and remember to <a target="_blank" href="/community_guidelines/">be respectful</a>.',
+  'image-invalid': 'Upload a valid image. The file you uploaded was either not an image or a corrupted image.',
+  'thumbnail-missing': 'Missing file',
+  'thumbnail-upload-bad': 'Bad upload',
+  'thumbnail-too-large': 'Maximum file size is 1 MB.',
+
+  'inappropriate-comment': 'Hmm...the bad word detector thinks there is a problem with your comment. Please change it and remember to <a target="_blank" href="/community_guidelines/">be respectful</a>.',
+  'comment-has-chat-site': 'Uh oh! This comment contains a link to a website with unmoderated chat. For safety reasons, please do not link to these sites!',
+
+  'empty-comment': "You can't post an empty comment!",
+  'delete_comment': '<div title="Delete Comment?"><p>Are you sure you want to delete this comment? If the comment is mean or disrespectful, please click report instead, to let the Scratch Team know about it.</p></div>',
+  'report_comment': '<div title="Report Comment?"></p>Are you sure you want to report this comment?</p></div>',
+  'report_comment_educator': '<div title="Delete Comment?"></p>Are you sure you want to delete this comment?</p></div>',
+  'followed': 'You are now following ',
+  'unfollowed': 'You are no longer following ',
+  'comment-spam': "Hmm, seems like you've posted the same comment a bunch of times. Please don't spam.",
+  'comment-flood': "Woah, seems like you're commenting really quickly. Please wait longer between posts.",
+  'comment-muted': "Hmm, the filterbot is pretty sure your recent comments weren't ok for Scratch, so your account has been muted for the rest of the day. :/",
+  'comment-unconstructive': "Hmm, the filterbot thinks your comment may be mean or disrespectful. Remember, most projects on Scratch are made by people who are just learning how to program. Read the <a href='/community_guidelines'>community guidelines</a>, and be nice.",
+  'comment-disallowed': "Hmm, it looks like comments have been turned off for this page. :/",
+  'project-complaint-length': "That's too short. Please describe in detail what's inappropriate or disrespectful about the project.",
+  'project-complaint-buglength': "That's too short! Please describe in detail what you expected the project to do, and how exactly it is broken. Thanks!",
+  'editable-text-too-long': "That's too long! Please find a way to shorten your text."
+
+  ,"notes-changed": "变更已储存",
+  "added-to-studio": "加入到工作室",
+  "tags-changed": "变更已储存",
+  "tags-limited": "最多可用 3 个标签。",
+  "tags-edit-error": "修改标签时发生错误，请重新整理页面以检视更新。",
+  "inappropriate-tag": "恩…你的标签好像使用了不当的字眼，请修改它，同时记得<a target=\"_blank\" href=\"/community_guidelines/\">尊重</a>是美德。",
+  "project-complaint-type": "请从下拉列表选择检举此项目的原因。"
+
+
+}
+
+
+  </script>
+
+
+    <meta property="og:type" content="website">
+    
+    <meta property="og:description" content="Make games, stories and interactive art with Scratch. (scratch.mit.edu)">
+    
+
+    
+
+<meta property="og:title" content="Scratch - Scratch to SWF">
+<meta property="og:description" content="You can convert your Scratch projects to Flash on my website! http://junebeetle.github.io/converter/ This allows you to make them into standalone applications, post them on your website, send them to people who don't have Scratch, and share them without sharing the source code.">
+
+
+
+  </head>
+
+  <body class="viewer editor">
+  <!--[if lte IE 8]>
+  <div class="unsupported-browser banner" data-cue="unsupported_browser">
+    <div class="container">
+      <span>Scratch supports Internet Explorer 9+. We suggest you upgrade to <a href="/info/faq/#requirements">a supported browser</a>, <a href="/scratch2download/">download the offline editor</a>, or <a href="https://en.scratch-wiki.info/wiki/List_of_Bug_Workarounds">read about common workarounds</a>.</span>
+    </div>
+  </div>
+  <![endif]-->
+    <div id="pagewrapper" style="opacity: 1;">
+      
+      
+      <div id="topnav">
+      <div class="innerwrap">
+        <div class="container">
+          <a href="/" class="logo"><span class="scratch"></span></a>
+          <ul class="site-nav">
+            <li><a id="project-create" href="/projects/editor/?tip_bar=home">创建</a></li><li><a href="/explore/projects/all">探索</a></li><li><a href="/tips">提示</a></li><li class="last"><a href="/about/">关于</a></li>
+          </ul>
+          
+          <form class="search" action="/search/projects" method="get">
+            <input type="submit" class="glass" value="">
+            
+	          <input id="search-input" type="text" placeholder="搜索" name="q">
+          </form>
+          
+          
+          <ul class="account-nav">
+              <li class="join-scratch" data-control="registration"><span class=""><span>加入 Scratch</span></span></li><li id="login-dropdown" class="sign-in dropdown"><span data-toggle="dropdown" class="dropdown-toggle"><span>登入</span></span><div class="popover bottom dropdown-menu"><div class="arrow"></div><div class="popover-content"><form method="post" id="login" action="#"><label for="username">用户名称</label><input type="text" id="login_dropdown_username" name="username" maxlength="30" class="wide username"><label for="password" class="password">密码</label><input type="password" name="password" class="wide password"><div class="ajax-loader" style="display:none; float: left;"></div><button type="submit">登入</button><span class="forgot-password"><a href="/accounts/password_reset/">需要帮助？</a></span><div class="error"></div></form></div></div></li><li data-control="modal-login" class="sign-in mobile"><span>登入</span></li>
+          </ul>
+          
+          <script type="text/template" id="template-account-nav-logged-out">
+          <ul class="account-nav" >
+              <li class="join-scratch" data-control="registration"><span class=""><span>加入 Scratch</span></span></li><li id="login-dropdown" class="sign-in dropdown"><span data-toggle="dropdown" class="dropdown-toggle"><span>登入</span></span><div class="popover bottom dropdown-menu"><div class="arrow"></div><div class="popover-content" ><form method="post" id="login" action="#"><label for="username">用户名称</label><input type="text" id="login_dropdown_username" name="username" maxlength="30" class="wide username" /><label for="password" class="password">密码</label><input type="password" name="password" class="wide password" /><div class="ajax-loader" style="display:none; float: left;"></div><button type="submit">登入</button><span class="forgot-password"><a href="/accounts/password_reset/">需要帮助？</a></span><div class="error"></div></form></div></div></li><li data-control="modal-login" class="sign-in mobile"><span>登入</span></li>
+          </ul>
+          </script>
+          <script type="text/template" id="template-account-nav-logged-in">
+          <ul class="account-nav logged-in"><li class="messages"><a title="消息 - 系统更新与注意事项" href="/messages" class="messages-icon"><span class="notificationsCount none">0</span></a></li><li class="my-stuff"><a title="我的东西 - 管理项目和工作室" href="/mystuff/" class="mystuff-icon"></a></li><li class="logged-in-user dropdown"><span class="user-name dropdown-toggle" data-toggle="dropdown"><img class="user-icon" src="<%- LOGGED_IN_USER.model.thumbnail_url %>" width="24" height="24"><%- LOGGED_IN_USER.model.username_truncated %><span class="caret"></span></span><div class="dropdown-menu blue" ><ul class="user-nav"><li><a href="<%- LOGGED_IN_USER.model.profile_url %>">个人信息</a></li><li><a href="/mystuff/">我的东西</a></li><% if (LOGGED_IN_USER.model.is_educator){ %><li><a href="/educators/classes/">我的所有班级</a></li><% } %><% if (LOGGED_IN_USER.model.is_student){ %><li><a href="/classes/<%- LOGGED_IN_USER.model.classroom_id %>/">我的班级</a></li><% } %><li><a href="/accounts/settings/">账户设定</a></li><li id="logout" class="logout divider"><form method="post" action="/accounts/logout/"><input type='hidden' name='csrfmiddlewaretoken' value='7nzapxI6atNcNvEPgH4EJe0uNqkwOLWF' /><input type="submit" value="登出"></form></li></ul></div></li></ul>
+          </script>
+          <script type="text/javascript" src="//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/js/account-nav.js"></script>
+        </div>
+        <iframe class="iframeshim" frameborder="0" scrolling="no"><html><head></head><body></body></html></iframe>
+      </div><!-- innerwrap -->
+      </div>
+        
+
+      <div class="confirm-email banner" data-cue="confirmed_email" style="display:none;">
+        <div class="container">
+          
+          <span><a id="confirm-email-popup" href="#">验证信箱</a> 以启用分享功能。 <a href="/help/faq/#accounts">有问题吗？</a></span>
+          <div class="close">x</div>
+        </div>
+      </div>
+
+        
+        <div class="container" id="content">
+        <div id="alert-view"></div>
+        
+
+
+
+
+
+<div class="showcase" id="project" data-project-id="49843898">
+  <div class="box">
+    <div class="box-head">
+      
+      <div class="header-text">
+          
+<h2 id="title">Scratch to SWF</h2>
+
+        <div id="author">
+           自
+          
+            <a href="/users/junebeetle/"><span id="owner">junebeetle</span></a>
+          
+          
+        </div>
+      </div>
+      
+  
+
+      <div class="buttons">
+        <div id="editor-stats">
+        <div class="stat"><span class="count" id="script-count">0</span> 个程序</div>
+        <div class="stat"><span class="count" id="sprite-count">1</span> 个角色</div>
+        </div>
+        <a href="#editor">
+          <div class="button" id="see-inside">
+              <span class="see-inside icon white">观看程序页面</span>
+          </div>
+        </a>
+      </div>
+      
+    </div>
+    <div class="box-content">
+      <div class="stage">
+        <div id="player" class="player">
+        
+        <!-- Start template projects/public.html project-swf -->
+        
+
+<!-- Start template project/includes/flash_player_object.html -->
+<div id="scratch-loader" style="display: none;"></div>
+<object type="application/x-shockwave-flash" data="//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/Scratch.swf" width="100%" height="100%" id="scratch" style="visibility: visible;"><param name="allowscriptaccess" value="always"><param name="allowfullscreen" value="true"><param name="wmode" value="direct"><param name="menu" value="false"><param name="flashvars" value="autostart=false&amp;cdnToken=0e83330413f7a7b5731284573c98ccdc&amp;urlOverrides=%7B%22sitePrefix%22%3A%22https%3A%2F%2Fscratch.mit.edu%2F%22%2C%22siteCdnPrefix%22%3A%22http%3A%2F%2Fcdn.scratch.mit.edu%2F%22%2C%22assetPrefix%22%3A%22http%3A%2F%2Fassets.scratch.mit.edu%2F%22%2C%22assetCdnPrefix%22%3A%22http%3A%2F%2Fcdn.assets.scratch.mit.edu%2F%22%2C%22projectPrefix%22%3A%22http%3A%2F%2Fprojects.scratch.mit.edu%2F%22%2C%22projectCdnPrefix%22%3A%22http%3A%2F%2Fcdn.projects.scratch.mit.edu%2F%22%2C%22internalAPI%22%3A%22internalapi%2F%22%2C%22siteAPI%22%3A%22site-api%2F%22%2C%22staticFiles%22%3A%22scratchr2%2Fstatic%2F%22%7D&amp;inIE=false&amp;project_id=49843898&amp;project_title=Scratch%20to%20SWF&amp;project_notes=I%20check%20these%20comments%20occasionally%2C%20but%20if%20you%20post%20a%20question%20and%20I%20or%20another%20Scratcher%20hasn't%20answered%20in%20a%20few%20days%2C%20please%20try%20contacting%20me%20via%20my%20website.%0A%0AAll%20the%20images%20and%20text%20are%20done%20in%20Adobe%20Illustrator.%20The%20Scratch%20cat%20is%20from%20Scratch%2C%20of%20course.%20The%20Flash%20symbol%20is%20traced%20from%20a%20SWF%20file%20icon%20from%20Adobe%20Flash%20player.%20The%20font%20used%20is%20Helvetica.&amp;project_credits=You%20can%20convert%20your%20Scratch%20projects%20to%20Flash%20on%20my%20website!%0Ahttp%3A%2F%2Fjunebeetle.github.io%2Fconverter%2F%0A%0AThis%20allows%20you%20to%20make%20them%20into%20standalone%20applications%2C%20post%20them%20on%20your%20website%2C%20send%20them%20to%20people%20who%20don't%20have%20Scratch%2C%20and%20share%20them%20without%20sharing%20the%20source%20code.&amp;project_creator=junebeetle&amp;project_modifiedDate=2018-01-09%2002%3A18%3A27&amp;project_isPublished=true&amp;project_comments_allowed=true"></object>
+
+<script type="text/javascript">
+window.SWFready=$.Deferred(); // Deferred makes sure we don't call ASSetEditMode before SWF is ready.
+function JSeditorReady() {
+    try {
+        SWFready.resolve();
+        return true;
+    } catch (error) {
+        console.error(error.message, "\n", error.stack);
+        throw error;
+    }
+}
+
+function handleEmbedStatus(e) {
+    $('#scratch-loader').hide();
+    if(!e.success) {
+        $('#scratch').css('marginTop', '10');
+        $('#scratch IMG.proj_thumb').css('width', '179px');
+        $('#scratch DIV.scratch_unsupported').show();
+        $('#scratch DIV.scratch_loading').hide();
+    }else{
+        $('#scratch').css('visibility', 'visible');
+    }
+}
+
+// The flashvars tell flash about the project data (and autostart=true)
+var flashvars = {
+    autostart: 'false',
+    cdnToken: '0e83330413f7a7b5731284573c98ccdc',
+    urlOverrides: {
+        sitePrefix: window.location.protocol + '//' + window.location.host + '/',
+        siteCdnPrefix: "http://cdn.scratch.mit.edu/",
+        assetPrefix: "http://assets.scratch.mit.edu/",
+        assetCdnPrefix: "http://cdn.assets.scratch.mit.edu/",
+        projectPrefix: "http://projects.scratch.mit.edu/",
+        projectCdnPrefix: "http://cdn.projects.scratch.mit.edu/",
+        internalAPI: "internalapi/",
+        siteAPI: "site-api/",
+        staticFiles: "scratchr2/static/"
+    },
+
+    inIE: (navigator.userAgent.indexOf('MSIE') > -1)
+};
+
+$.each(flashvars, function(prop, val) {
+    if($.isPlainObject(val))
+        flashvars[prop] = encodeURIComponent(JSON.stringify(val));
+});
+
+$.each(Scratch.INIT_DATA.PROJECT.model, function(i, val) {
+    if(val != null)
+        flashvars['project_'+i] = encodeURIComponent(val);
+});
+
+if(Scratch.INIT_DATA.PROJECT.is_new)
+    flashvars.project_isNew = true;
+
+var params = {
+    allowscriptaccess: 'always',
+    allowfullscreen: 'true',
+    wmode: 'direct',
+    menu: 'false'
+};
+
+// url format flashvars for createSWF call (see
+// https://github.com/LLK/scratchr2/blob/f42c289a5fa890d9c5562cc1fa54b0aea3dfa45e/static/js/swfobject.js#L673-L682)
+for (var i in flashvars) {
+    if (typeof params.flashvars !== 'undefined') {
+        params.flashvars += '&' + i + '=' +flashvars[i];
+    } else {
+        params.flashvars = i + '=' + flashvars[i];
+    }
+}
+
+var swfFile = (swfobject.hasFlashPlayerVersion('11.7.0') ? 'Scratch.swf' : 'ScratchFor10.2.swf');
+
+var swfAtt = {
+    data: "//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/" + swfFile,
+    width: "100%",
+    height: "100%"
+};
+
+swfobject.addDomLoadEvent(function() {
+    // check if mobile/tablet browser user bowser
+    if(bowser.mobile || (bowser.tablet && typeof bowser.msie === 'undefined')) {
+        // if on mobile, show error screen
+        handleEmbedStatus({success: false});
+    } else {
+        // if not on ie, let browser try to handle flash loading
+        var swf = swfobject.createSWF(swfAtt, params, "scratch");
+        handleEmbedStatus({success: true, ref: swf});
+    }
+    document.getElementById('scratch').style.visibility = 'visible';
+});
+
+//Dynamically add iframe for registration window
+$.when(window.SWFready).done(function() {$('<iframe id="registration-iframe" class="iframeshim" style="background:#fff;z-index:-1;" frameborder="0" scrolling="no">').insertBefore('#registration')});
+
+// enables the SWF to log errors
+function JSthrowError(e) {
+    if (window.onerror) window.onerror(e, 'swf', 0);
+    else console.error(e);
+}
+</script>
+<!-- End template project/includes/flash_player_object.html -->
+
+        <!-- End template projects/public.html project-swf -->
+        
+        </div>
+      </div>
+      <div id="info" class="info">
+        
+        <div class="dynamic">
+          
+
+<div class="text-block">
+    <b>操作说明</b>
+  <div id="instructions" class="read-only instructions" style="height: 145.5px;"> 
+    <div class="scrollbar disable" style="height: 146px;"><div class="track" style="height: 146px;"><div class="thumb" style="top: 0px; height: 146px;"><div class="end"></div></div></div></div>
+    <div class="viewport">
+      <div class="overview" style="top: 0px;">
+        <p></p><p>You can convert your Scratch projects to Flash on my website!<br>http://junebeetle.github.io/converter/</p>
+
+<p>This allows you to make them into standalone applications, post them on your website, send them to people who don't have Scratch, and share them without sharing the source code.</p><p></p>
+      </div>
+    </div>
+  </div>
+<div class="divider"></div>
+</div>
+
+
+          
+<div class="text-block">
+    <b>备注与谢志 </b>
+  <div id="description" class="read-only instructions" style="height: 145.5px;">
+    <div class="scrollbar" style="height: 146px;"><div class="track" style="height: 146px;"><div class="thumb" style="top: 0px; height: 142.107px;"><div class="end"></div></div></div></div>
+    <div class="viewport">
+      <div class="overview" style="top: 0px;">
+        <p></p><p>I check these comments occasionally, but if you post a question and I or another Scratcher hasn't answered in a few days, please try contacting me via my website.</p>
+
+<p>All the images and text are done in Adobe Illustrator. The Scratch cat is from Scratch, of course. The Flash symbol is traced from a SWF file icon from Adobe Flash player. The font used is Helvetica.</p><p></p>
+      </div>
+    </div>
+  </div>
+ </div>
+
+        </div>
+        <div id="fixed" class="fixed">
+          
+          
+          
+          
+
+
+<div id="project-tags" class="has-tags">
+  <div class="tag-box">
+    
+    <span class="tag"><a href="/search/projects?q=flash">flash</a></span>
+    
+    <span class="tag"><a href="/search/projects?q=swf">swf</a></span>
+    
+    <span class="tag"><a href="/search/projects?q=converter">converter</a></span>
+    
+  </div>
+</div>
+
+
+
+          <div class="dates">
+          
+          <span class="date-shared">
+            <a href="/info/faq/#remix" class="copyright"></a>
+            
+分享于 27 二月 2015
+
+          </span>
+      <span class="date-updated">最后修改于 9 一月 2018</span>
+          
+          </div>
+        </div>
+        
+      </div>
+
+      <div class="actions clearfix">
+        
+        <div id="stats" class="active">
+            
+            <div class="action tooltip bottom first" data-control="modal-login" data-stat="favoriters" data-add="true">
+            <span class="hovertext"><span class="arrow"></span>将项目加入收藏</span>
+            <span class="favorite icon" data-content="fav-count">
+              317
+            </span>
+            </div>
+            
+
+            
+            <div class="action tooltip bottom" id="love-this" data-control="modal-login" data-stat="lovers" data-add="true">
+            <span class="hovertext"><span class="arrow"></span>给这个项目点赞</span>
+            <span class="love icon" data-content="love-count">344</span>
+          </div>
+            
+
+          
+
+
+
+
+           
+          <div class="stats">
+            <div id="total-views" class="first action tooltip bottom grey">
+              <span class="hovertext"><span class="arrow"></span>观看次数</span>
+              <span class="icon views">9677</span>
+            </div>
+            <div class="action last tooltip bottom grey">
+              <span class="hovertext"><span class="arrow"></span>观看改编树</span>
+              <a href="/projects/49843898/remixtree/" class="remix-tree" onclick="on_click_remixtree(49843898, window.location.pathname, '/projects/49843898/remixtree/', 49843898);">
+                <span class="icon remix-tree">&nbsp;6</span>
+              </a>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="player-box-footer-module" id="player-box-footer">
+</div>
+
+<div class="player-box-footer-module" id="bug-report-form">
+</div>
+
+<div id="add-to-menu" class="player-box-footer-module hide page">
+  <div class="section first">
+      <h4>在你管理的工作室中添加（或移除）项目</h4>
+      只要点击下面列出的任何工作室
+  <div class="studio-list">
+    <ul>
+      <div class="next-page" data-url="/site-api/galleries/curated_by_or_with_project/49843898/1/"></div>
+    </ul>
+  </div>
+</div>
+  <div class="close">x</div>
+</div>
+
+<div id="download-menu" class="player-box-footer-module hide page">
+  <div class="section first" style="height: 100px;">
+    <h4>下载此项目</h4>
+    
+    <div id="old-scratch-project2" class="hide">
+    <div class="button"><span class="icon download">&nbsp;</span>
+      <span>Download code </span>
+    </div>
+    <span class="alert alert-warning">This project can be opened in Scratch 1.4 or 2.0</span>
+    </div>
+
+    <div id="new-scratch-project">
+      <div class="button"><span class="icon download">&nbsp;</span>
+        <span>Download code </span> 
+      </div> 
+      <span class="alert alert-warning">This project was edited in 2.0 so you need 2.0 to open it</span>
+      <br>(dialog appears on the stage)
+    </div>
+
+  </div>
+  <div class="close" data-control="close">x</div>
+</div>
+
+<div id="share-to-menu" class="player-box-footer-module hide page">
+  <div class="section embed first">
+      <h4>嵌入</h4> 
+    <form class="form-horizontal">
+    <textarea id="embed-textarea" width="98%">      &lt;iframe allowtransparency="true" width="485" height="402" src="//scratch.mit.edu/projects/embed/49843898/?autostart=false" frameborder="0" allowfullscreen&gt;&lt;/iframe&gt;
+    </textarea>
+    <span class="small-text">复制并将上面的代码贴到想嵌入的网页上。</span>
+    </form>
+  </div>
+  <div class="section social">
+      <h4>分享</h4>
+    <a class="social-icon facebook" href="http://www.facebook.com/sharer.php?u=https://scratch.mit.edu/projects/49843898/" target="_blank"></a>
+    <a class="social-icon twitter" href="http://twitter.com/intent/tweet?original_referer=https://scratch.mit.edu/projects/49843898/&amp;text=https://scratch.mit.edu/projects/49843898/ made w/ Scratch" target="_blank"></a>
+    <a class="social-icon google-class" href="https://classroom.google.com/share?url=https://scratch.mit.edu/projects/49843898/" target="_blank"></a>
+    <textarea readonly="" id="link-textarea" width="90%"></textarea>
+  </div>
+  <div class="section download hide" id="old-scratch-project">
+    <h4>Download 1.4 Project</h4>
+    <a class="grey button" href=""><span class="text">Download code</span></a>
+ </div>
+
+<div class="close">x</div>
+</div>
+
+
+
+
+
+<div class="cols related">
+  <div class="col-11">
+    <div class="box">
+      <div class="box-head">
+        <h4><span class="icon-sm comment black"></span>评论 <span id="comment-count">(996)</span></h4>
+      </div>
+      <div class="box-content">
+        
+            
+
+
+
+<div id="comments">
+  
+  <div id="comment-form">
+    
+    
+        <form id="main-post-form" class="comments-on">
+            <div class="control-group tooltip right">
+                
+                <textarea name="content" placeholder="发表评论" data-control="modal-login"></textarea>
+                
+                <span id="comment-alert" class="hovertext error" data-control="error" data-content="comment-error"><span class="arrow"></span><span class="text"></span></span>
+                <span class="small-text">还可输入 <span id="chars-left">500</span> 个字符。</span>
+            </div>
+            <div class="control-group">
+                <div class="button small" data-control="modal-login" data-parent-thread="" data-commentee-id=""><a href="#null">送出</a></div>
+            <div class="button small grey" data-control="cancel"><a href="#null">取消</a></div>
+                <span class="notification"></span>
+            </div>
+        </form>
+        
+    
+    <div class="clearfix"></div>
+  </div>
+  <div>
+    <ul class="comments" data-content="comments">
+      
+    
+<!-- templates/comments/list.html -->
+
+    <span data-control-comment-count="996"></span>
+
+
+    <li class="top-level-reply">
+        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-97146085" class="comment " data-comment-id="97146085">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/codeforfunspace" id="comment-user" data-comment-user="codeforfunspace"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/25915254_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/codeforfunspace">codeforfunspace</a>
+    </div>
+    <div class="content">
+      
+      
+        Hey JuneBeetle I have A problem, When I open It With My Flash It automatically downloads The SWF Again And I get Confused. :(       OS: Windows 10
+      
+    </div>
+    <div>
+      <span class="time" title="七月 15, 2018">12 天 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="97146085" data-parent-thread="97146085" data-commentee-id="25915254" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+        
+            <ul class="replies" data-thread="97146085">
+                
+            </ul>
+            
+        
+    </li>
+
+    <li class="top-level-reply">
+        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-96861863" class="comment " data-comment-id="96861863">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/RokCoding" id="comment-user" data-comment-user="RokCoding"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/33853448_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/RokCoding">RokCoding</a>
+    </div>
+    <div class="content">
+      
+      
+        THANK U SO MUCH!!! It WORKED!!
+      
+    </div>
+    <div>
+      <span class="time" title="七月 09, 2018">18 天 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="96861863" data-parent-thread="96861863" data-commentee-id="33853448" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+        
+            <ul class="replies" data-thread="96861863">
+                
+            </ul>
+            
+        
+    </li>
+
+    <li class="top-level-reply">
+        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-96638178" class="comment " data-comment-id="96638178">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/DancingLine" id="comment-user" data-comment-user="DancingLine"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/33873414_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/DancingLine">DancingLine</a>
+    </div>
+    <div class="content">
+      
+      
+        Hey everybody! I made a tutorial on How to convert a Scratch project into an exe file using this junebeetle's converter! <a href="https://scratch.mit.edu/projects/235423821/">https://scratch.mit.edu/projects/235423821/</a>
+      
+    </div>
+    <div>
+      <span class="time" title="七月 04, 2018">23 天 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="96638178" data-parent-thread="96638178" data-commentee-id="33873414" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+        
+            <ul class="replies" data-thread="96638178">
+                
+            </ul>
+            
+        
+    </li>
+
+    <li class="top-level-reply">
+        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-96583553" class="comment " data-comment-id="96583553">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/Griffin_Hart_Music" id="comment-user" data-comment-user="Griffin_Hart_Music"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/33708384_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/Griffin_Hart_Music">Griffin_Hart_Music</a>
+    </div>
+    <div class="content">
+      
+      
+        Every time I use it, It makes it an Adobe Acrobat PDF. What do I do?
+      
+    </div>
+    <div>
+      <span class="time" title="七月 03, 2018">25 天 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="96583553" data-parent-thread="96583553" data-commentee-id="33708384" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+        
+            <ul class="replies" data-thread="96583553">
+                
+                    <li class="reply">
+                        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-97099951" class="comment " data-comment-id="97099951">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/funcoding4u" id="comment-user" data-comment-user="funcoding4u"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/25043639_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/funcoding4u">funcoding4u</a>
+    </div>
+    <div class="content">
+      
+       <a href="/users/Griffin_Hart_Music">@Griffin_Hart_Music</a>
+      
+      
+        make sure you save i as .SWF
+      
+    </div>
+    <div>
+      <span class="time" title="七月 14, 2018">13 天 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="97099951" data-parent-thread="96583553" data-commentee-id="25043639" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+                    </li>
+                
+                    <li class="reply">
+                        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-97115661" class="comment " data-comment-id="97115661">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/Griffin_Hart_Music" id="comment-user" data-comment-user="Griffin_Hart_Music"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/33708384_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/Griffin_Hart_Music">Griffin_Hart_Music</a>
+    </div>
+    <div class="content">
+      
+       <a href="/users/funcoding4u">@funcoding4u</a>
+      
+      
+        How? It gives me no options for some reason.
+      
+    </div>
+    <div>
+      <span class="time" title="七月 15, 2018">13 天 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="97115661" data-parent-thread="96583553" data-commentee-id="33708384" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+                    </li>
+                
+                    <li class="reply last">
+                        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-97145953" class="comment " data-comment-id="97145953">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/codeforfunspace" id="comment-user" data-comment-user="codeforfunspace"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/25915254_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/codeforfunspace">codeforfunspace</a>
+    </div>
+    <div class="content">
+      
+       <a href="/users/Griffin_Hart_Music">@Griffin_Hart_Music</a>
+      
+      
+        Rename it and delete the ".PDF " and Replace It with ".SWF "
+      
+    </div>
+    <div>
+      <span class="time" title="七月 15, 2018">12 天 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="97145953" data-parent-thread="96583553" data-commentee-id="25915254" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+                    </li>
+                
+            </ul>
+            
+        
+    </li>
+
+    <li class="top-level-reply">
+        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-96474287" class="comment " data-comment-id="96474287">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/matty1406" id="comment-user" data-comment-user="matty1406"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/22327564_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/matty1406">matty1406</a>
+    </div>
+    <div class="content">
+      
+      
+        thanks to this website I can put my scratch games onto gamejolt
+      
+    </div>
+    <div>
+      <span class="time" title="六月 30, 2018">27 天 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="96474287" data-parent-thread="96474287" data-commentee-id="22327564" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+        
+            <ul class="replies" data-thread="96474287">
+                
+            </ul>
+            
+        
+    </li>
+
+    <li class="top-level-reply">
+        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-95889954" class="comment " data-comment-id="95889954">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/KierhamGD" id="comment-user" data-comment-user="KierhamGD"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/22635175_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/KierhamGD">KierhamGD</a>
+    </div>
+    <div class="content">
+      
+      
+        I used that website to post my scratch games on NG!
+      
+    </div>
+    <div>
+      <span class="time" title="六月 18, 2018">大约 1 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="95889954" data-parent-thread="95889954" data-commentee-id="22635175" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+        
+            <ul class="replies" data-thread="95889954">
+                
+                    <li class="reply last">
+                        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-96518974" class="comment " data-comment-id="96518974">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/junebeetle" id="comment-user" data-comment-user="junebeetle"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/2050516_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/junebeetle">junebeetle</a>
+    </div>
+    <div class="content">
+      
+       <a href="/users/KierhamGD">@KierhamGD</a>
+      
+      
+        That's amazing! I think someone should make a discussions thread for linking converted games :)
+      
+    </div>
+    <div>
+      <span class="time" title="七月 01, 2018">26 天 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="96518974" data-parent-thread="95889954" data-commentee-id="2050516" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+                    </li>
+                
+            </ul>
+            
+        
+    </li>
+
+    <li class="top-level-reply">
+        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-95871293" class="comment " data-comment-id="95871293">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/mullafacation" id="comment-user" data-comment-user="mullafacation"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/5308902_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/mullafacation">mullafacation</a>
+    </div>
+    <div class="content">
+      
+      
+        Scratch 3.0. runs on HTML5 so will SB2 files run on Adobe AIR anymore?
+      
+    </div>
+    <div>
+      <span class="time" title="六月 17, 2018">大约 1 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="95871293" data-parent-thread="95871293" data-commentee-id="5308902" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+        
+            <ul class="replies" data-thread="95871293">
+                
+                    <li class="reply last">
+                        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-96556238" class="comment " data-comment-id="96556238">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/Fupicat" id="comment-user" data-comment-user="Fupicat"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/6103312_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/Fupicat">Fupicat</a>
+    </div>
+    <div class="content">
+      
+       <a href="/users/mullafacation">@mullafacation</a>
+      
+      
+        Scratch 3.0 uses sb3 instead of sb2 so... yes, I think.
+      
+    </div>
+    <div>
+      <span class="time" title="七月 02, 2018">25 天 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="96556238" data-parent-thread="95871293" data-commentee-id="6103312" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+                    </li>
+                
+            </ul>
+            
+        
+    </li>
+
+    <li class="top-level-reply">
+        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-95279070" class="comment " data-comment-id="95279070">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/HelperCPBot" id="comment-user" data-comment-user="HelperCPBot"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/22775402_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/HelperCPBot">HelperCPBot</a>
+    </div>
+    <div class="content">
+      
+      
+         <a href="/users/junebeetle">@junebeetle</a> sorry I meant fix fullscreen and the green flag bar, if you hide the green flag bar, it doesn't work at all
+      
+    </div>
+    <div>
+      <span class="time" title="六月 05, 2018">2 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="95279070" data-parent-thread="95279070" data-commentee-id="22775402" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+        
+            <ul class="replies" data-thread="95279070">
+                
+                    <li class="reply">
+                        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-95493348" class="comment " data-comment-id="95493348">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/2dcat" id="comment-user" data-comment-user="2dcat"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/28589872_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/2dcat">2dcat</a>
+    </div>
+    <div class="content">
+      
+       <a href="/users/HelperCPBot">@HelperCPBot</a>
+      
+      
+        does it work when it starts automatically?
+      
+    </div>
+    <div>
+      <span class="time" title="六月 09, 2018">2 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="95493348" data-parent-thread="95279070" data-commentee-id="28589872" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+                    </li>
+                
+                    <li class="reply last">
+                        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-95568017" class="comment " data-comment-id="95568017">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/HelperCPBot" id="comment-user" data-comment-user="HelperCPBot"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/22775402_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/HelperCPBot">HelperCPBot</a>
+    </div>
+    <div class="content">
+      
+       <a href="/users/HelperCPBot">@HelperCPBot</a>
+      
+      
+        yes but it doesn't work when u don't show green flag bar
+      
+    </div>
+    <div>
+      <span class="time" title="六月 11, 2018">2 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="95568017" data-parent-thread="95279070" data-commentee-id="22775402" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+                    </li>
+                
+            </ul>
+            
+        
+    </li>
+
+    <li class="top-level-reply">
+        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-95151536" class="comment " data-comment-id="95151536">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/HelperCPBot" id="comment-user" data-comment-user="HelperCPBot"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/22775402_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/HelperCPBot">HelperCPBot</a>
+    </div>
+    <div class="content">
+      
+      
+         <a href="/users/junebettle">@junebettle</a> Please fix the fullscreen option it is glitched
+      
+    </div>
+    <div>
+      <span class="time" title="六月 03, 2018">2 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="95151536" data-parent-thread="95151536" data-commentee-id="22775402" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+        
+            <ul class="replies" data-thread="95151536">
+                
+                    <li class="reply last">
+                        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-95151547" class="comment " data-comment-id="95151547">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/HelperCPBot" id="comment-user" data-comment-user="HelperCPBot"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/22775402_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/HelperCPBot">HelperCPBot</a>
+    </div>
+    <div class="content">
+      
+       <a href="/users/HelperCPBot">@HelperCPBot</a>
+      
+      
+         <a href="/users/junebeetle">@junebeetle</a>
+      
+    </div>
+    <div>
+      <span class="time" title="六月 03, 2018">2 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="95151547" data-parent-thread="95151536" data-commentee-id="22775402" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+                    </li>
+                
+            </ul>
+            
+        
+    </li>
+
+    <li class="top-level-reply">
+        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-95113205" class="comment " data-comment-id="95113205">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/cinnamonboi" id="comment-user" data-comment-user="cinnamonboi"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/32012731_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/cinnamonboi">cinnamonboi</a>
+    </div>
+    <div class="content">
+      
+      
+        I like the idea, I enjoy it :&gt;
+      
+    </div>
+    <div>
+      <span class="time" title="六月 02, 2018">2 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="95113205" data-parent-thread="95113205" data-commentee-id="32012731" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+        
+            <ul class="replies" data-thread="95113205">
+                
+            </ul>
+            
+        
+    </li>
+
+    <li class="top-level-reply">
+        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-94682111" class="comment " data-comment-id="94682111">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/CheeseNQuackers" id="comment-user" data-comment-user="CheeseNQuackers"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/17290396_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/CheeseNQuackers">CheeseNQuackers</a>
+    </div>
+    <div class="content">
+      
+      
+        How do I convert that into .exe now? I know there's an Adobe Flash application that turns these files into .exe but i can't find it. So could you send me a link to it and does it cost money?
+      
+    </div>
+    <div>
+      <span class="time" title="五月 25, 2018">2 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="94682111" data-parent-thread="94682111" data-commentee-id="17290396" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+        
+            <ul class="replies" data-thread="94682111">
+                
+                    <li class="reply last">
+                        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-94693347" class="comment " data-comment-id="94693347">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/CheeseNQuackers" id="comment-user" data-comment-user="CheeseNQuackers"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/17290396_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/CheeseNQuackers">CheeseNQuackers</a>
+    </div>
+    <div class="content">
+      
+       <a href="/users/CheeseNQuackers">@CheeseNQuackers</a>
+      
+      
+        Nevermind I did it myself, thank you for adding that to your website.
+      
+    </div>
+    <div>
+      <span class="time" title="五月 25, 2018">2 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="94693347" data-parent-thread="94682111" data-commentee-id="17290396" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+                    </li>
+                
+            </ul>
+            
+        
+    </li>
+
+    <li class="top-level-reply">
+        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-94239105" class="comment " data-comment-id="94239105">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/IndigoCoke390" id="comment-user" data-comment-user="IndigoCoke390"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/23199380_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/IndigoCoke390">IndigoCoke390</a>
+    </div>
+    <div class="content">
+      
+      
+        it dose'nt work for me
+      
+    </div>
+    <div>
+      <span class="time" title="五月 17, 2018">2 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="94239105" data-parent-thread="94239105" data-commentee-id="23199380" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+        
+            <ul class="replies" data-thread="94239105">
+                
+                    <li class="reply last">
+                        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-94498879" class="comment " data-comment-id="94498879">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/junebeetle" id="comment-user" data-comment-user="junebeetle"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/2050516_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/junebeetle">junebeetle</a>
+    </div>
+    <div class="content">
+      
+       <a href="/users/IndigoCoke390">@IndigoCoke390</a>
+      
+      
+        I _can_ help you, but I need some information on what's going wrong. You can't expect help with any technical problems if you don't describe what happens!
+      
+    </div>
+    <div>
+      <span class="time" title="五月 22, 2018">2 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="94498879" data-parent-thread="94239105" data-commentee-id="2050516" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+                    </li>
+                
+            </ul>
+            
+        
+    </li>
+
+    <li class="top-level-reply">
+        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-94174729" class="comment " data-comment-id="94174729">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/HelperCPBot" id="comment-user" data-comment-user="HelperCPBot"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/22775402_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/HelperCPBot">HelperCPBot</a>
+    </div>
+    <div class="content">
+      
+      
+        doesn't work for me anymore, please fix
+      
+    </div>
+    <div>
+      <span class="time" title="五月 16, 2018">2 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="94174729" data-parent-thread="94174729" data-commentee-id="22775402" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+        
+            <ul class="replies" data-thread="94174729">
+                
+                    <li class="reply">
+                        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-94498880" class="comment " data-comment-id="94498880">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/junebeetle" id="comment-user" data-comment-user="junebeetle"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/2050516_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/junebeetle">junebeetle</a>
+    </div>
+    <div class="content">
+      
+       <a href="/users/HelperCPBot">@HelperCPBot</a>
+      
+      
+        I _can_ help you, but I need some information on what's going wrong. You can't expect help with any technical problems if you don't describe what happens!
+      
+    </div>
+    <div>
+      <span class="time" title="五月 22, 2018">2 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="94498880" data-parent-thread="94174729" data-commentee-id="2050516" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+                    </li>
+                
+                    <li class="reply">
+                        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-94759232" class="comment " data-comment-id="94759232">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/HelperCPBot" id="comment-user" data-comment-user="HelperCPBot"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/22775402_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/HelperCPBot">HelperCPBot</a>
+    </div>
+    <div class="content">
+      
+       <a href="/users/junebeetle">@junebeetle</a>
+      
+      
+        I mean, its just full screen and removing green flag bar to be fixed
+      
+    </div>
+    <div>
+      <span class="time" title="五月 27, 2018">2 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="94759232" data-parent-thread="94174729" data-commentee-id="22775402" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+                    </li>
+                
+                    <li class="reply last">
+                        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-94783552" class="comment " data-comment-id="94783552">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/HelperCPBot" id="comment-user" data-comment-user="HelperCPBot"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/22775402_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/HelperCPBot">HelperCPBot</a>
+    </div>
+    <div class="content">
+      
+       <a href="/users/HelperCPBot">@HelperCPBot</a>
+      
+      
+        what happens os it will shwo a bit of the side of the editor and in the middle show white
+      
+    </div>
+    <div>
+      <span class="time" title="五月 27, 2018">2 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="94783552" data-parent-thread="94174729" data-commentee-id="22775402" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+                    </li>
+                
+            </ul>
+            
+        
+    </li>
+
+    <li class="top-level-reply">
+        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-93816206" class="comment " data-comment-id="93816206">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/Awesome1035" id="comment-user" data-comment-user="Awesome1035"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/14645847_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/Awesome1035">Awesome1035</a>
+    </div>
+    <div class="content">
+      
+      
+        i love ur site!
+      
+    </div>
+    <div>
+      <span class="time" title="五月 09, 2018">3 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="93816206" data-parent-thread="93816206" data-commentee-id="14645847" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+        
+            <ul class="replies" data-thread="93816206">
+                
+            </ul>
+            
+        
+    </li>
+
+    <li class="top-level-reply">
+        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-93580731" class="comment " data-comment-id="93580731">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/VEXIQMASTER" id="comment-user" data-comment-user="VEXIQMASTER"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/26013484_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/VEXIQMASTER">VEXIQMASTER</a>
+    </div>
+    <div class="content">
+      
+      
+        Thank you for the website and keep up the good work!
+      
+    </div>
+    <div>
+      <span class="time" title="五月 05, 2018">3 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="93580731" data-parent-thread="93580731" data-commentee-id="26013484" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+        
+            <ul class="replies" data-thread="93580731">
+                
+            </ul>
+            
+        
+    </li>
+
+    <li class="top-level-reply">
+        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-93580706" class="comment " data-comment-id="93580706">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/VEXIQMASTER" id="comment-user" data-comment-user="VEXIQMASTER"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/26013484_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/VEXIQMASTER">VEXIQMASTER</a>
+    </div>
+    <div class="content">
+      
+      
+        your epic!
+      
+    </div>
+    <div>
+      <span class="time" title="五月 05, 2018">3 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="93580706" data-parent-thread="93580706" data-commentee-id="26013484" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+        
+            <ul class="replies" data-thread="93580706">
+                
+            </ul>
+            
+        
+    </li>
+
+    <li class="top-level-reply">
+        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-93493165" class="comment " data-comment-id="93493165">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/P3tray" id="comment-user" data-comment-user="P3tray"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/32630949_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/P3tray">P3tray</a>
+    </div>
+    <div class="content">
+      
+      
+        Just thought i would let you know, due to chromes latest update you can no-longer permanently allow flash on websites. For an unknown reason your website doesn't request for flash, no issue for me. I just used IE11 instead.
+      
+    </div>
+    <div>
+      <span class="time" title="五月 03, 2018">3 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="93493165" data-parent-thread="93493165" data-commentee-id="32630949" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+        
+            <ul class="replies" data-thread="93493165">
+                
+            </ul>
+            
+        
+    </li>
+
+    <li class="top-level-reply">
+        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-93444225" class="comment " data-comment-id="93444225">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/123squirrel" id="comment-user" data-comment-user="123squirrel"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/32263345_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/123squirrel">123squirrel</a>
+    </div>
+    <div class="content">
+      
+      
+        Is there a way to be certain it's safe?
+      
+    </div>
+    <div>
+      <span class="time" title="五月 02, 2018">3 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="93444225" data-parent-thread="93444225" data-commentee-id="32263345" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+        
+            <ul class="replies" data-thread="93444225">
+                
+                    <li class="reply">
+                        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-93446364" class="comment " data-comment-id="93446364">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/123squirrel" id="comment-user" data-comment-user="123squirrel"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/32263345_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/123squirrel">123squirrel</a>
+    </div>
+    <div class="content">
+      
+       <a href="/users/123squirrel">@123squirrel</a>
+      
+      
+        Reason I'm asking is because my mom says it may not be safe... I think it is, though.
+      
+    </div>
+    <div>
+      <span class="time" title="五月 02, 2018">3 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="93446364" data-parent-thread="93444225" data-commentee-id="32263345" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+                    </li>
+                
+                    <li class="reply">
+                        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-93446397" class="comment " data-comment-id="93446397">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/123squirrel" id="comment-user" data-comment-user="123squirrel"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/32263345_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/123squirrel">123squirrel</a>
+    </div>
+    <div class="content">
+      
+       <a href="/users/123squirrel">@123squirrel</a>
+      
+      
+        I think it's safe, that is...
+      
+    </div>
+    <div>
+      <span class="time" title="五月 02, 2018">3 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="93446397" data-parent-thread="93444225" data-commentee-id="32263345" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+                    </li>
+                
+                    <li class="reply lastvisible">
+                        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-93477722" class="comment " data-comment-id="93477722">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/junebeetle" id="comment-user" data-comment-user="junebeetle"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/2050516_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/junebeetle">junebeetle</a>
+    </div>
+    <div class="content">
+      
+       <a href="/users/123squirrel">@123squirrel</a>
+      
+      
+        I can't prove to you that it's safe but I give you my word that it is. I wrote it all and you can see all the code on my website if you don't trust me. Sorry that your mom is worried about it. I totally get that but she doesn't need to be! :)
+      
+    </div>
+    <div>
+      <span class="time" title="五月 03, 2018">3 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="93477722" data-parent-thread="93444225" data-commentee-id="2050516" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+                    </li>
+                
+                    <li class="reply truncated">
+                        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-93481499" class="comment " data-comment-id="93481499">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/123squirrel" id="comment-user" data-comment-user="123squirrel"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/32263345_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/123squirrel">123squirrel</a>
+    </div>
+    <div class="content">
+      
+       <a href="/users/junebeetle">@junebeetle</a>
+      
+      
+        Thanks for getting back with me! I'll look at your website again, and this time I may be able to convince my mom, hopefully!
+      
+    </div>
+    <div>
+      <span class="time" title="五月 03, 2018">3 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="93481499" data-parent-thread="93444225" data-commentee-id="32263345" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+                    </li>
+                
+                    <li class="reply truncated last">
+                        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-93481546" class="comment " data-comment-id="93481546">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/123squirrel" id="comment-user" data-comment-user="123squirrel"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/32263345_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/123squirrel">123squirrel</a>
+    </div>
+    <div class="content">
+      
+       <a href="/users/123squirrel">@123squirrel</a>
+      
+      
+        I trust you, it's just that she doesn't usually want me to download stuff from a website she doesn't know.
+      
+    </div>
+    <div>
+      <span class="time" title="五月 03, 2018">3 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="93481546" data-parent-thread="93444225" data-commentee-id="32263345" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+                    </li>
+                
+            </ul>
+            
+                <div class="more-replies"><span class="pulldown">检视所有响应（ 5 则）<span class="arrow"> ▼</span></span></div>
+            
+        
+    </li>
+
+    <li class="top-level-reply">
+        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-93395552" class="comment " data-comment-id="93395552">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/123squirrel" id="comment-user" data-comment-user="123squirrel"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/32263345_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/123squirrel">123squirrel</a>
+    </div>
+    <div class="content">
+      
+      
+        And what did you use to make this converter?
+      
+    </div>
+    <div>
+      <span class="time" title="五月 01, 2018">3 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="93395552" data-parent-thread="93395552" data-commentee-id="32263345" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+        
+            <ul class="replies" data-thread="93395552">
+                
+                    <li class="reply">
+                        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-93441952" class="comment " data-comment-id="93441952">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/HINT5" id="comment-user" data-comment-user="HINT5"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/17962204_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/HINT5">HINT5</a>
+    </div>
+    <div class="content">
+      
+       <a href="/users/123squirrel">@123squirrel</a>
+      
+      
+        https://github.com/junebeetle/junebeetle.github.io
+      
+    </div>
+    <div>
+      <span class="time" title="五月 02, 2018">3 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="93441952" data-parent-thread="93395552" data-commentee-id="17962204" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+                    </li>
+                
+                    <li class="reply">
+                        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-93444170" class="comment " data-comment-id="93444170">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/123squirrel" id="comment-user" data-comment-user="123squirrel"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/32263345_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/123squirrel">123squirrel</a>
+    </div>
+    <div class="content">
+      
+       <a href="/users/HINT5">@HINT5</a>
+      
+      
+        Thanks!
+      
+    </div>
+    <div>
+      <span class="time" title="五月 02, 2018">3 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="93444170" data-parent-thread="93395552" data-commentee-id="32263345" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+                    </li>
+                
+                    <li class="reply last">
+                        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-93477737" class="comment " data-comment-id="93477737">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/junebeetle" id="comment-user" data-comment-user="junebeetle"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/2050516_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/junebeetle">junebeetle</a>
+    </div>
+    <div class="content">
+      
+       <a href="/users/123squirrel">@123squirrel</a>
+      
+      
+        ActionScript (aka Adobe Flash code) :)
+      
+    </div>
+    <div>
+      <span class="time" title="五月 03, 2018">3 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="93477737" data-parent-thread="93395552" data-commentee-id="2050516" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+                    </li>
+                
+            </ul>
+            
+        
+    </li>
+
+    <li class="top-level-reply">
+        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-93050353" class="comment " data-comment-id="93050353">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/Faster-Projects" id="comment-user" data-comment-user="Faster-Projects"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/30967257_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/Faster-Projects">Faster-Projects</a>
+    </div>
+    <div class="content">
+      
+      
+        What do I do after I convert? How do I add to a web?
+      
+    </div>
+    <div>
+      <span class="time" title="四月 25, 2018">3 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="93050353" data-parent-thread="93050353" data-commentee-id="30967257" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+        
+            <ul class="replies" data-thread="93050353">
+                
+                    <li class="reply last">
+                        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-93069345" class="comment " data-comment-id="93069345">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/junebeetle" id="comment-user" data-comment-user="junebeetle"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/2050516_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/junebeetle">junebeetle</a>
+    </div>
+    <div class="content">
+      
+       <a href="/users/Faster-Projects">@Faster-Projects</a>
+      
+      
+        You can use HTML &lt;embed&gt; tags on your website. People also can put them on sites like GameJolt and Newgrounds. https://www.w3schools.com/tags/tag_embed.asp
+      
+    </div>
+    <div>
+      <span class="time" title="四月 25, 2018">3 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="93069345" data-parent-thread="93050353" data-commentee-id="2050516" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+                    </li>
+                
+            </ul>
+            
+        
+    </li>
+
+    <li class="top-level-reply">
+        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-92980363" class="comment " data-comment-id="92980363">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/agen7c" id="comment-user" data-comment-user="agen7c"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/17650991_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/agen7c">agen7c</a>
+    </div>
+    <div class="content">
+      
+      
+        perfect!! <img src="//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/images/easter_eggs/pizza-cat.png" class="easter-egg">
+      
+    </div>
+    <div>
+      <span class="time" title="四月 24, 2018">3 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="92980363" data-parent-thread="92980363" data-commentee-id="17650991" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+        
+            <ul class="replies" data-thread="92980363">
+                
+            </ul>
+            
+        
+    </li>
+
+    <li class="top-level-reply">
+        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-92963014" class="comment " data-comment-id="92963014">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/christophert9015" id="comment-user" data-comment-user="christophert9015"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/11411262_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/christophert9015">christophert9015</a>
+    </div>
+    <div class="content">
+      
+      
+        The file does not work for me after the conversion. Did you just rename the file with "swf" instead of "sb2" at the end, or is it real, but i have a bad computer?
+      
+    </div>
+    <div>
+      <span class="time" title="四月 23, 2018">3 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="92963014" data-parent-thread="92963014" data-commentee-id="11411262" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+        
+            <ul class="replies" data-thread="92963014">
+                
+                    <li class="reply">
+                        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-92987278" class="comment " data-comment-id="92987278">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/junebeetle" id="comment-user" data-comment-user="junebeetle"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/2050516_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/junebeetle">junebeetle</a>
+    </div>
+    <div class="content">
+      
+       <a href="/users/christophert9015">@christophert9015</a>
+      
+      
+        It is completely real and you probably don't have a bad computer. You might need to install a Flash Player, or you might need to convert the SWF file to an EXE/Mac app. http://junebeetle.github.io/converter/executables
+      
+    </div>
+    <div>
+      <span class="time" title="四月 24, 2018">3 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="92987278" data-parent-thread="92963014" data-commentee-id="2050516" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+                    </li>
+                
+                    <li class="reply">
+                        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-93442027" class="comment " data-comment-id="93442027">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/HINT5" id="comment-user" data-comment-user="HINT5"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/17962204_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/HINT5">HINT5</a>
+    </div>
+    <div class="content">
+      
+       <a href="/users/junebeetle">@junebeetle</a>
+      
+      
+        probably didn't change to .swf. You should change your github so it saves as .swf automatically
+      
+    </div>
+    <div>
+      <span class="time" title="五月 02, 2018">3 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="93442027" data-parent-thread="92963014" data-commentee-id="17962204" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+                    </li>
+                
+                    <li class="reply last">
+                        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-93477781" class="comment " data-comment-id="93477781">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/junebeetle" id="comment-user" data-comment-user="junebeetle"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/2050516_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/junebeetle">junebeetle</a>
+    </div>
+    <div class="content">
+      
+       <a href="/users/HINT5">@HINT5</a>
+      
+      
+        I can't make it save automatically as SWF (limitation in ActionScript/Flash) but I've updated the converter so that if you don't, it warns you afterwards. Thanks for the suggestion though!
+      
+    </div>
+    <div>
+      <span class="time" title="五月 03, 2018">3 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="93477781" data-parent-thread="92963014" data-commentee-id="2050516" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+                    </li>
+                
+            </ul>
+            
+        
+    </li>
+
+    <li class="top-level-reply">
+        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-92875453" class="comment " data-comment-id="92875453">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/StarWars_71" id="comment-user" data-comment-user="StarWars_71"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/17444971_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/StarWars_71">StarWars_71</a>
+    </div>
+    <div class="content">
+      
+      
+        how do i convert adobe flash files into scratch
+      
+    </div>
+    <div>
+      <span class="time" title="四月 22, 2018">3 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="92875453" data-parent-thread="92875453" data-commentee-id="17444971" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+        
+            <ul class="replies" data-thread="92875453">
+                
+                    <li class="reply last">
+                        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-92987323" class="comment " data-comment-id="92987323">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/junebeetle" id="comment-user" data-comment-user="junebeetle"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/2050516_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/junebeetle">junebeetle</a>
+    </div>
+    <div class="content">
+      
+       <a href="/users/StarWars_71">@StarWars_71</a>
+      
+      
+        You can't. Flash is made with ActionScript and there is no (easy) way to convert that into a Scratch project file. It's a completely different language. However, you _can_ extract the original Scratch file from a SWF that was made with this converter. For that, try a Flash decompiler like FFDec.
+      
+    </div>
+    <div>
+      <span class="time" title="四月 24, 2018">3 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="92987323" data-parent-thread="92875453" data-commentee-id="2050516" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+                    </li>
+                
+            </ul>
+            
+        
+    </li>
+
+    <li class="top-level-reply">
+        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-92630088" class="comment " data-comment-id="92630088">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/tweer" id="comment-user" data-comment-user="tweer"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/2163915_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/tweer">tweer</a>
+    </div>
+    <div class="content">
+      
+      
+        It appears as a blank white screen using Windows 10 and Flash Player 10.
+      
+    </div>
+    <div>
+      <span class="time" title="四月 17, 2018">3 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="92630088" data-parent-thread="92630088" data-commentee-id="2163915" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+        
+            <ul class="replies" data-thread="92630088">
+                
+                    <li class="reply">
+                        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-92693812" class="comment " data-comment-id="92693812">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/junebeetle" id="comment-user" data-comment-user="junebeetle"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/2050516_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/junebeetle">junebeetle</a>
+    </div>
+    <div class="content">
+      
+       <a href="/users/tweer">@tweer</a>
+      
+      
+        The SWF file? Or the converter? Feel free to contact me via my website and send me the files so I can look at it! It _should_ work on Flash Player 10.
+      
+    </div>
+    <div>
+      <span class="time" title="四月 18, 2018">3 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="92693812" data-parent-thread="92630088" data-commentee-id="2050516" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+                    </li>
+                
+                    <li class="reply last">
+                        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-93833505" class="comment " data-comment-id="93833505">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/tweer" id="comment-user" data-comment-user="tweer"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/2163915_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/tweer">tweer</a>
+    </div>
+    <div class="content">
+      
+       <a href="/users/junebeetle">@junebeetle</a>
+      
+      
+        The SWF. It opens a flash player with a white screen.
+      
+    </div>
+    <div>
+      <span class="time" title="五月 09, 2018">3 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="93833505" data-parent-thread="92630088" data-commentee-id="2163915" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+                    </li>
+                
+            </ul>
+            
+        
+    </li>
+
+    <li class="top-level-reply">
+        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-92601017" class="comment " data-comment-id="92601017">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/junebeetle" id="comment-user" data-comment-user="junebeetle"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/2050516_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/junebeetle">junebeetle</a>
+    </div>
+    <div class="content">
+      
+      
+        Major update! See my profile page or http://junebeetle.github.io/converter for more info :) Bug testing appreciated as always!
+      
+    </div>
+    <div>
+      <span class="time" title="四月 17, 2018">3 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="92601017" data-parent-thread="92601017" data-commentee-id="2050516" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+        
+            <ul class="replies" data-thread="92601017">
+                
+            </ul>
+            
+        
+    </li>
+
+    <li class="top-level-reply">
+        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-92148729" class="comment " data-comment-id="92148729">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/game_over_guys" id="comment-user" data-comment-user="game_over_guys"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/default_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/game_over_guys">game_over_guys</a>
+    </div>
+    <div class="content">
+      
+      
+        i tried but it takes too long to save the swf file. is it normal? if not, can you tell me how to fix this?
+      
+    </div>
+    <div>
+      <span class="time" title="四月 08, 2018">4 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="92148729" data-parent-thread="92148729" data-commentee-id="31887460" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+        
+            <ul class="replies" data-thread="92148729">
+                
+                    <li class="reply last">
+                        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-92235340" class="comment " data-comment-id="92235340">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/junebeetle" id="comment-user" data-comment-user="junebeetle"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/2050516_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/junebeetle">junebeetle</a>
+    </div>
+    <div class="content">
+      
+       <a href="/users/game_over_guys">@game_over_guys</a>
+      
+      
+        Make sure you aren't in incognito mode. Big projects are just slow.
+      
+    </div>
+    <div>
+      <span class="time" title="四月 10, 2018">4 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="92235340" data-parent-thread="92148729" data-commentee-id="2050516" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+                    </li>
+                
+            </ul>
+            
+        
+    </li>
+
+    <li class="top-level-reply">
+        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-92063069" class="comment " data-comment-id="92063069">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/Helicopterbudgie" id="comment-user" data-comment-user="Helicopterbudgie"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/26544095_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/Helicopterbudgie">Helicopterbudgie</a>
+    </div>
+    <div class="content">
+      
+      
+        Safe? and does it work on Mac?
+      
+    </div>
+    <div>
+      <span class="time" title="四月 06, 2018">4 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="92063069" data-parent-thread="92063069" data-commentee-id="26544095" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+        
+            <ul class="replies" data-thread="92063069">
+                
+                    <li class="reply">
+                        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-92065560" class="comment " data-comment-id="92065560">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/swirl-ix" id="comment-user" data-comment-user="swirl-ix"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/24995034_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/swirl-ix">swirl-ix</a>
+    </div>
+    <div class="content">
+      
+       <a href="/users/Helicopterbudgie">@Helicopterbudgie</a>
+      
+      
+        It's completely safe and works on Mac as well.
+      
+    </div>
+    <div>
+      <span class="time" title="四月 06, 2018">4 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="92065560" data-parent-thread="92063069" data-commentee-id="24995034" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+                    </li>
+                
+                    <li class="reply last">
+                        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-92494855" class="comment " data-comment-id="92494855">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/junebeetle" id="comment-user" data-comment-user="junebeetle"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/2050516_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/junebeetle">junebeetle</a>
+    </div>
+    <div class="content">
+      
+       <a href="/users/Helicopterbudgie">@Helicopterbudgie</a>
+      
+      
+        Completely. Never modifies any files on your computer other than the SWF file you save from it. (It couldn't, even if I wanted to. Flash is protected from doing things like that.) It does! I have a Mac.
+      
+    </div>
+    <div>
+      <span class="time" title="四月 15, 2018">3 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="92494855" data-parent-thread="92063069" data-commentee-id="2050516" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+                    </li>
+                
+            </ul>
+            
+        
+    </li>
+
+    <li class="top-level-reply">
+        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-90493001" class="comment " data-comment-id="90493001">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/jaythau221" id="comment-user" data-comment-user="jaythau221"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/16193606_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/jaythau221">jaythau221</a>
+    </div>
+    <div class="content">
+      
+      
+        Its not working it just downloads a Rar file.
+      
+    </div>
+    <div>
+      <span class="time" title="三月 09, 2018">5 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="90493001" data-parent-thread="90493001" data-commentee-id="16193606" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+        
+            <ul class="replies" data-thread="90493001">
+                
+                    <li class="reply">
+                        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-91136905" class="comment " data-comment-id="91136905">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/jeffyTheKodeKing" id="comment-user" data-comment-user="jeffyTheKodeKing"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/24643745_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/jeffyTheKodeKing">jeffyTheKodeKing</a>
+    </div>
+    <div class="content">
+      
+       <a href="/users/jaythau221">@jaythau221</a>
+      
+      
+        you need to name the file with ".swf" at the end
+      
+    </div>
+    <div>
+      <span class="time" title="三月 20, 2018">4 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="91136905" data-parent-thread="90493001" data-commentee-id="24643745" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+                    </li>
+                
+                    <li class="reply last">
+                        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-91144792" class="comment " data-comment-id="91144792">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/jaythau221" id="comment-user" data-comment-user="jaythau221"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/16193606_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/jaythau221">jaythau221</a>
+    </div>
+    <div class="content">
+      
+       <a href="/users/jeffyTheKodeKing">@jeffyTheKodeKing</a>
+      
+      
+        I found the way to fix it, but thanks anyways.
+      
+    </div>
+    <div>
+      <span class="time" title="三月 21, 2018">4 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="91144792" data-parent-thread="90493001" data-commentee-id="16193606" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+                    </li>
+                
+            </ul>
+            
+        
+    </li>
+
+    <li class="top-level-reply">
+        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-90280353" class="comment " data-comment-id="90280353">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/FluffyWolfee409" id="comment-user" data-comment-user="FluffyWolfee409"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/default_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/FluffyWolfee409">FluffyWolfee409</a>
+    </div>
+    <div class="content">
+      
+      
+        For some reason my swf file is just a blank white screen. This happens on any computer I use.
+      
+    </div>
+    <div>
+      <span class="time" title="三月 05, 2018">5 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="90280353" data-parent-thread="90280353" data-commentee-id="16142465" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+        
+            <ul class="replies" data-thread="90280353">
+                
+                    <li class="reply">
+                        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-90331878" class="comment " data-comment-id="90331878">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/junebeetle" id="comment-user" data-comment-user="junebeetle"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/2050516_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/junebeetle">junebeetle</a>
+    </div>
+    <div class="content">
+      
+       <a href="/users/FluffyWolfee409">@FluffyWolfee409</a>
+      
+      
+        junebeetle.github.io/converter/executables &lt;-- Please try converting to an application and run it again. This may fix your problem. If not, see the "contact me" on my website.
+      
+    </div>
+    <div>
+      <span class="time" title="三月 06, 2018">5 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="90331878" data-parent-thread="90280353" data-commentee-id="2050516" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+                    </li>
+                
+                    <li class="reply last">
+                        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-91049415" class="comment " data-comment-id="91049415">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/Demian_Wolf" id="comment-user" data-comment-user="Demian_Wolf"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/default_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/Demian_Wolf">Demian_Wolf</a>
+    </div>
+    <div class="content">
+      
+       <a href="/users/FluffyWolfee409">@FluffyWolfee409</a>
+      
+      
+        Try using Adobe Flash Player, not Macromedia.
+      
+    </div>
+    <div>
+      <span class="time" title="三月 19, 2018">4 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="91049415" data-parent-thread="90280353" data-commentee-id="17587600" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+                    </li>
+                
+            </ul>
+            
+        
+    </li>
+
+    <li class="top-level-reply">
+        
+
+
+
+
+
+
+
+
+
+
+
+<div id="comments-90076954" class="comment " data-comment-id="90076954">
+  <div class="actions-wrap">
+  
+  </div>
+  <a href="/users/Yakov5776" id="comment-user" data-comment-user="Yakov5776"><img class="avatar" src="//cdn2.scratch.mit.edu/get_image/user/22155712_60x60.png" width="45" height="45"></a>
+  <div class="info">
+    <div class="name">
+      <a href="/users/Yakov5776">Yakov5776</a>
+    </div>
+    <div class="content">
+      
+      
+        oops Sorry for double message
+      
+    </div>
+    <div>
+      <span class="time" title="三月 01, 2018">5 个月 前</span>
+      
+        
+        <a class="reply" style="display: none;" data-comment-id="90076954" data-parent-thread="90076954" data-commentee-id="22155712" data-control="modal-login">
+            <span>回应</span>
+        </a>
+        
+      
+    </div>
+    <div data-content="reply-form"></div>
+  </div>
+</div>
+
+
+
+
+
+        
+            <ul class="replies" data-thread="90076954">
+                
+            </ul>
+            
+        
+    </li>
+
+
+    <div class="button grey" style="position: relative; left: 47%;" data-control="load-more"><span>载入更多内容</span></div>
+
+<!-- end templates/comments/list.html -->
+</ul>
+  </div>
+</div>
+
+        
+      </div>
+    </div>
+  </div>
+
+  <div class="col-5">
+    
+    
+    
+    <div class="box">
+      <div class="box-head">
+        <h4><span class="icon-sm remix black"></span>改编 (5)</h4>
+    <a href="remixes" class="right" onclick="on_click_remixes(window.location.pathname, '/projects/49843898/remixtree/', 49843898);">检视全部</a>
+      </div>
+      <div class="box-content grey">
+        <ul class="media-col">
+          
+          <li>
+          <div class="project thumb">
+          <a href="/projects/71517922/" class="image" onclick="on_click_remixbar(window.location.pathname, '/projects/71517922/', 49843898, 71517922);">
+            <img src="//cdn2.scratch.mit.edu/get_image/project/71517922_144x108.png" class="image">
+          </a>
+          <span class="title"><a href="/projects/71517922/" onclick="on_click_remixbar(window.location.pathname, '/projects/71517922/', 49843898, 71517922);">Scratch to SWF remix</a></span>
+          <span class="owner">自 710710jjjj</span>
+          </div></li>
+          
+          <li>
+          <div class="project thumb">
+          <a href="/projects/92559715/" class="image" onclick="on_click_remixbar(window.location.pathname, '/projects/92559715/', 49843898, 92559715);">
+            <img src="//cdn2.scratch.mit.edu/get_image/project/92559715_144x108.png" class="image">
+          </a>
+          <span class="title"><a href="/projects/92559715/" onclick="on_click_remixbar(window.location.pathname, '/projects/92559715/', 49843898, 92559715);">Scratch to Scratch</a></span>
+          <span class="owner">自 eddo12321</span>
+          </div></li>
+          
+          <li>
+          <div class="project thumb">
+          <a href="/projects/209236133/" class="image" onclick="on_click_remixbar(window.location.pathname, '/projects/209236133/', 49843898, 209236133);">
+            <img src="//cdn2.scratch.mit.edu/get_image/project/209236133_144x108.png" class="image">
+          </a>
+          <span class="title"><a href="/projects/209236133/" onclick="on_click_remixbar(window.location.pathname, '/projects/209236133/', 49843898, 209236133);">Scratch to SWF remix</a></span>
+          <span class="owner">自 art9coding</span>
+          </div></li>
+          
+        </ul>
+      </div>
+    </div>
+    
+    
+    
+
+
+    
+    
+    <div class="box galleries" id="galleries">
+      <div class="box-head">
+        <h4><span class="icon-sm studio black"></span>工作室  (26)</h4>
+    <a href="studios" class="right">检视全部</a>
+      </div>
+      <div class="box-content grey">
+        <ul class="media-col">
+          
+          
+
+
+
+<!-- templates/carousel/gallery-thumb.html -->
+<li class="gallery thumb item">
+  <a href="/studios/4510892/" class="image">
+    <span class="image">
+      <img class="lazy" data-original="//cdn2.scratch.mit.edu/get_image/gallery/4510892_170x100.png" width="170" height="100" src="//cdn2.scratch.mit.edu/get_image/gallery/4510892_170x100.png" style="display: block;">
+    </span>
+    <span class="stats">
+      <span class="icon-sm studio white"></span>
+    </span>
+  </a>
+  <span class="title">
+    <a href="/studios/4510892/">COOKIE MAN
+    </a>
+  </span>
+</li>
+<!-- end templates/carousel/gallery-thumb.html -->
+
+
+          
+          
+
+
+
+<!-- templates/carousel/gallery-thumb.html -->
+<li class="gallery thumb item">
+  <a href="/studios/4450380/" class="image">
+    <span class="image">
+      <img class="lazy" data-original="//cdn2.scratch.mit.edu/get_image/gallery/4450380_170x100.png" width="170" height="100" src="//cdn2.scratch.mit.edu/get_image/gallery/4450380_170x100.png" style="display: block;">
+    </span>
+    <span class="stats">
+      <span class="icon-sm studio white"></span>
+    </span>
+  </a>
+  <span class="title">
+    <a href="/studios/4450380/">This studio is about anything!
+    </a>
+  </span>
+</li>
+<!-- end templates/carousel/gallery-thumb.html -->
+
+
+          
+          
+
+
+
+<!-- templates/carousel/gallery-thumb.html -->
+<li class="gallery thumb item">
+  <a href="/studios/4217609/" class="image">
+    <span class="image">
+      <img class="lazy" data-original="//cdn2.scratch.mit.edu/get_image/project/49843898_170x100.png" width="170" height="100" src="//cdn2.scratch.mit.edu/get_image/project/49843898_170x100.png" style="display: block;">
+    </span>
+    <span class="stats">
+      <span class="icon-sm studio white"></span>
+    </span>
+  </a>
+  <span class="title">
+    <a href="/studios/4217609/">Cece Liu's Studio
+    </a>
+  </span>
+</li>
+<!-- end templates/carousel/gallery-thumb.html -->
+
+
+          
+          
+
+
+
+<!-- templates/carousel/gallery-thumb.html -->
+<li class="gallery thumb item">
+  <a href="/studios/4213546/" class="image">
+    <span class="image">
+      <img class="lazy" data-original="//cdn2.scratch.mit.edu/get_image/gallery/4213546_170x100.png" width="170" height="100" src="//cdn2.scratch.mit.edu/get_image/gallery/4213546_170x100.png" style="display: block;">
+    </span>
+    <span class="stats">
+      <span class="icon-sm studio white"></span>
+    </span>
+  </a>
+  <span class="title">
+    <a href="/studios/4213546/">Masonthecoolguy's viewed projects
+    </a>
+  </span>
+</li>
+<!-- end templates/carousel/gallery-thumb.html -->
+
+
+          
+          
+
+
+
+<!-- templates/carousel/gallery-thumb.html -->
+<li class="gallery thumb item">
+  <a href="/studios/4209419/" class="image">
+    <span class="image">
+      <img class="lazy" data-original="//cdn2.scratch.mit.edu/get_image/gallery/4209419_170x100.png" width="170" height="100" src="//cdn2.scratch.mit.edu/get_image/gallery/4209419_170x100.png" style="display: block;">
+    </span>
+    <span class="stats">
+      <span class="icon-sm studio white"></span>
+    </span>
+  </a>
+  <span class="title">
+    <a href="/studios/4209419/">Get Projects Famous! :D
+    </a>
+  </span>
+</li>
+<!-- end templates/carousel/gallery-thumb.html -->
+
+
+          
+          
+
+
+
+<!-- templates/carousel/gallery-thumb.html -->
+<li class="gallery thumb item">
+  <a href="/studios/4176580/" class="image">
+    <span class="image">
+      <img class="lazy" data-original="//cdn2.scratch.mit.edu/get_image/gallery/4176580_170x100.png" width="170" height="100" src="//cdn2.scratch.mit.edu/get_image/gallery/4176580_170x100.png" style="display: block;">
+    </span>
+    <span class="stats">
+      <span class="icon-sm studio white"></span>
+    </span>
+  </a>
+  <span class="title">
+    <a href="/studios/4176580/">Can we get 1k projects?
+    </a>
+  </span>
+</li>
+<!-- end templates/carousel/gallery-thumb.html -->
+
+
+          
+          
+
+
+
+<!-- templates/carousel/gallery-thumb.html -->
+<li class="gallery thumb item">
+  <a href="/studios/4157248/" class="image">
+    <span class="image">
+      <img class="lazy" data-original="//cdn2.scratch.mit.edu/get_image/gallery/4157248_170x100.png" width="170" height="100" src="//cdn2.scratch.mit.edu/get_image/gallery/4157248_170x100.png" style="display: block;">
+    </span>
+    <span class="stats">
+      <span class="icon-sm studio white"></span>
+    </span>
+  </a>
+  <span class="title">
+    <a href="/studios/4157248/">-Cinematic- Fan Club 
+    </a>
+  </span>
+</li>
+<!-- end templates/carousel/gallery-thumb.html -->
+
+
+          
+          
+
+
+
+<!-- templates/carousel/gallery-thumb.html -->
+<li class="gallery thumb item">
+  <a href="/studios/3761995/" class="image">
+    <span class="image">
+      <img class="lazy" data-original="//cdn2.scratch.mit.edu/get_image/project/103548892_170x100.png" width="170" height="100" src="//cdn2.scratch.mit.edu/get_image/project/103548892_170x100.png" style="display: block;">
+    </span>
+    <span class="stats">
+      <span class="icon-sm studio white"></span>
+    </span>
+  </a>
+  <span class="title">
+    <a href="/studios/3761995/">DeleteThisAcount's Recently Seen Projects
+    </a>
+  </span>
+</li>
+<!-- end templates/carousel/gallery-thumb.html -->
+
+
+          
+          
+
+
+
+<!-- templates/carousel/gallery-thumb.html -->
+<li class="gallery thumb item">
+  <a href="/studios/3690512/" class="image">
+    <span class="image">
+      <img class="lazy" data-original="//cdn2.scratch.mit.edu/get_image/gallery/3690512_170x100.png" width="170" height="100" src="//cdn2.scratch.mit.edu/get_image/gallery/3690512_170x100.png" style="display: block;">
+    </span>
+    <span class="stats">
+      <span class="icon-sm studio white"></span>
+    </span>
+  </a>
+  <span class="title">
+    <a href="/studios/3690512/">Scratch App Development
+    </a>
+  </span>
+</li>
+<!-- end templates/carousel/gallery-thumb.html -->
+
+
+          
+          
+
+
+
+<!-- templates/carousel/gallery-thumb.html -->
+<li class="gallery thumb item">
+  <a href="/studios/3456837/" class="image">
+    <span class="image">
+      <img class="lazy" data-original="//cdn2.scratch.mit.edu/get_image/gallery/3456837_170x100.png" width="170" height="100" src="//cdn2.scratch.mit.edu/get_image/gallery/3456837_170x100.png" style="display: block;">
+    </span>
+    <span class="stats">
+      <span class="icon-sm studio white"></span>
+    </span>
+  </a>
+  <span class="title">
+    <a href="/studios/3456837/">HEY MAH BOIS ITS KEEMSTAR
+    </a>
+  </span>
+</li>
+<!-- end templates/carousel/gallery-thumb.html -->
+
+
+          
+        </ul>
+      </div>
+    </div>
+    
+    
+  </div>
+
+</div>
+
+
+<div class="humane"><iframe class="iframeshim" frameborder="0" scrolling="no"><html><head></head><body></body></html></iframe></div>
+<div id="tip-bar" style="display: block;">
+  <div id="tip-bar-inner" class="tipsclosed">
+    <div class="tip-header">
+      <span class="tip-icon toggle-control">?</span>
+      <h5>
+        <span class="close-circle-dark">x</span>
+        <span class="tip-ctrl tip-home active">所有技巧</span>
+      </h5>
+    </div>
+    <div class="tip-content">
+        <div class="tip-arrow-container">
+            <span class="tip-arrow opentip toggle-control">◀</span>
+        </div>
+        <iframe id="tip-content-container" src="//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/help/zh-cn/home.html" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
+    </div>
+  </div>
+  <iframe class="iframeshim" frameborder="0" scrolling="no"><html><head></head><body></body></html></iframe>
+</div>
+
+        </div>
+
+
+        
+
+
+<div id="explore-bar">
+	<div id="explore-header" class="closed">
+		<div id="explore-header-closed">
+			<div class="header-text"><div id="open">&nbsp;&nbsp;</div><!-- <span id="new" class="foo">New!</span> -->浏览更多建立者的其他项目 | 建立者 junebeetle</div>
+		</div>
+		<div id="explore-header-open" class="hidden">	
+			<div class="header-text">
+				<span id="creator-text" class="explore-by-text"></span>
+				<span id="remixes-text" class="explore-by-text hidden"></span>
+				<!-- <span id="location-text" class="explore-by-text hidden"></span> -->
+			</div>
+			<div id="explore-buttons">
+				<span id="creator" class="explore_button button small grey bold"><span>创造者</span></span>
+			<span id="remixes" class="explore_button button small grey"><span>改编</span></span>
+				<!--<span id="loves" class="explore_button button small grey"><span>Mutual Loves</span></span></a>-->
+				<!--<span id="location" class="explore_button button small grey"><span>Location</span></span></a> -->
+			</div>
+			<div id="close">&nbsp;&nbsp;</div>
+		</div>
+	</div>
+	<div id="related-projects" class="carousel">
+		<div id="inner" class="carousel-inner">
+			<ul class="list-container hidden " id="creator-list"><div class="ajax-loader"></div></ul>
+			<ul class="list-container hidden " id="remixes-list"><div class="ajax-loader"></div></ul>
+			<!--<ul class="list-container hidden " id="loves-list"><div class="ajax-loader"></div></ul>-->
+			<!--<ul class="list-container hidden " id="location-list"><div class="ajax-loader"></div></ul>-->
+		</div>
+		<a class="carousel-control left arrow-left off" href="#related-projects" data-slide="prev">‹</a>
+	  	<a class="carousel-control right arrow-right on" href="#related-projects" data-slide="next">›</a>
+	</div>
+</div>
+
+
+        
+    </div>
+    <div id="footer">
+      <div class="container">
+        <style>
+          #footer ul.footer-col li {
+            list-style-type:none;
+            display: inline-block;
+            width: 184px;
+            text-align: left;
+            vertical-align: top;
+          }
+
+          #footer ul.footer-col li h4 {
+            font-weight: bold;
+            font-size: 14px;
+            color: #666;
+          }
+
+        </style>
+        <ul class="clearfix footer-col">
+          <li>
+            <h4>关于</h4>
+            <ul>
+              <li><a href="/about/">关于 Scratch</a></li>
+              <li><a href="/parents/">致家长</a></li>
+              <li><a href="/educators/">致教师</a></li>
+              <li><a href="/developers">致开发者</a></li>
+              <li><a href="/info/credits/">谢志</a></li>
+              <li><a href="/jobs/">工作</a></li>
+              <li><a href="https://www.scratchfoundation.org/media-kit/">新闻</a></li>
+            </ul>
+          </li>
+          <li>
+            <h4>社群</h4>
+            <ul>
+              <li><a href="/community_guidelines/">社群规范</a></li>
+              <li><a href="/discuss/">讨论区</a></li>
+              <li><a href="http://wiki.scratch.mit.edu/">Scratch Wiki</a></li>
+              <li><a href="/statistics/">统计</a></li>
+            </ul>
+          </li>
+          <li>
+            <h4>支援</h4>
+            <ul>
+              <li><a href="/tips">提示</a></li>
+              <li><a href="/info/faq/">常见问答</a></li>
+              <li><a href="/download">离线编辑器</a></li>
+              <li><a href="/contact-us/">联络我们</a></li>
+              <li><a href="/store">Scratch商店</a></li>
+              <li><a href="https://secure.donationpay.org/scratchfoundation/">赞助</a></li>
+            </ul>
+          </li>
+          <li>
+            <h4>法律</h4>
+            <ul>
+              <li><a href="/terms_of_use/">使用条款</a></li>
+              <li><a href="/privacy_policy/">隐私权政策</a></li>
+              <li><a href="/DMCA/">DMCA</a></li>
+            </ul>
+          </li>
+          <li>
+            <h4>Scratch 家族</h4>
+            <ul>
+              <li><a href="http://scratched.gse.harvard.edu/">ScratchEd</a></li>
+              <li><a href="http://www.scratchjr.org/">ScratchJr</a></li>
+              <li><a href="http://day.scratch.mit.edu/">Scratch 日</a></li>
+              <li><a href="/conference/">Scratch 会议</a></li>
+              <li><a href="http://www.scratchfoundation.org/">Scratch 基金会</a></li>
+            </ul>
+          </li>
+        </ul>
+        <ul class="clearfix" id="footer-menu">
+          <li>
+            <form id="lang-dropdown" method="post" action="/i18n/setlang/">
+              <select id="language-selection" name="language">
+              
+                <option value="ab">Аҧсшәа</option>
+              
+                <option value="ar">العربية</option>
+              
+                <option value="an">Aragonés</option>
+              
+                <option value="ast">Asturianu</option>
+              
+                <option value="id">Bahasa Indonesia</option>
+              
+                <option value="ms">Bahasa Melayu</option>
+              
+                <option value="be">Беларуская</option>
+              
+                <option value="bg">Български</option>
+              
+                <option value="ca">Català</option>
+              
+                <option value="cs">Česky</option>
+              
+                <option value="cy">Cymraeg</option>
+              
+                <option value="da">Dansk</option>
+              
+                <option value="de">Deutsch</option>
+              
+                <option value="yum">Edible Scratch</option>
+              
+                <option value="et">Eesti</option>
+              
+                <option value="el">Ελληνικά</option>
+              
+                <option value="en">English</option>
+              
+                <option value="eo">Esperanto</option>
+              
+                <option value="es">Español</option>
+              
+                <option value="eu">Euskara</option>
+              
+                <option value="fa">فارسی</option>
+              
+                <option value="fr">Français</option>
+              
+                <option value="fur">Furlan</option>
+              
+                <option value="ga">Gaeilge</option>
+              
+                <option value="gd">Gàidhlig</option>
+              
+                <option value="gl">Galego</option>
+              
+                <option value="ko">한국어</option>
+              
+                <option value="hy">Հայերեն</option>
+              
+                <option value="he">עִבְרִית</option>
+              
+                <option value="hi">हिन्दी</option>
+              
+                <option value="hr">Hrvatski</option>
+              
+                <option value="zu">isiZulu</option>
+              
+                <option value="is">Íslenska</option>
+              
+                <option value="it">Italiano</option>
+              
+                <option value="kn">ಭಾಷೆ-ಹೆಸರು</option>
+              
+                <option value="kk">Қазақша</option>
+              
+                <option value="rw">Kinyarwanda</option>
+              
+                <option value="ht">Kreyòl</option>
+              
+                <option value="ku">Kurdî</option>
+              
+                <option value="la">Latina</option>
+              
+                <option value="lv">Latviešu</option>
+              
+                <option value="lt">Lietuvių</option>
+              
+                <option value="mk">Македонски</option>
+              
+                <option value="hu">Magyar</option>
+              
+                <option value="ml">മലയാളം</option>
+              
+                <option value="mt">Malti</option>
+              
+                <option value="mr">मराठी</option>
+              
+                <option value="cat">Meow</option>
+              
+                <option value="mn">Монгол хэл</option>
+              
+                <option value="my">မြန်မာဘာသာ</option>
+              
+                <option value="nl">Nederlands</option>
+              
+                <option value="ja">日本語</option>
+              
+                <option value="ja-hr">にほんご</option>
+              
+                <option value="nb">Norsk Bokmål</option>
+              
+                <option value="nn">Norsk Nynorsk</option>
+              
+                <option value="uz">Oʻzbekcha</option>
+              
+                <option value="th">ไทย</option>
+              
+                <option value="pl">Polski</option>
+              
+                <option value="pt">Português</option>
+              
+                <option value="pt-br">Português Brasileiro</option>
+              
+                <option value="ro">Română</option>
+              
+                <option value="ru">Русский</option>
+              
+                <option value="sc">Sardu</option>
+              
+                <option value="sq">Shqip</option>
+              
+                <option value="sk">Slovenčina</option>
+              
+                <option value="sl">Slovenščina</option>
+              
+                <option value="sr">Српски</option>
+              
+                <option value="fi">Suomi</option>
+              
+                <option value="sv">Svenska</option>
+              
+                <option value="te">తెలుగు</option>
+              
+                <option value="nai">Tepehuan</option>
+              
+                <option value="vi">Tiếng Việt</option>
+              
+                <option value="tr">Türkçe</option>
+              
+                <option value="uk">Українська</option>
+              
+                <option value="zh-cn" selected="">简体中文</option>
+              
+                <option value="zh-tw">正體中文</option>
+              
+              </select>
+            </form>
+          </li>
+        </ul>
+        <p>Scratch 是麻省理工学院终生幼儿园团队底下的一个计划</p>
+      </div>
+    </div>
+    
+
+    
+<!-- templates/modal-login.html block -->
+	    <div class="modal hide fade in" id="login-dialog" style="width: 450px">
+        <form method="post" action="/login/">
+          <fieldset>
+            <div class="modal-header">
+              <a href="#" data-dismiss="modal" class="close">x
+              </a>
+	      <h3>登入</h3>
+            </div>
+            <div class="modal-body">
+            
+              <div class="control-group">
+		      <label class="control-label" for="username">用户名称
+                </label>
+                <div class="controls">
+                  <input class="username" type="text" name="username" maxlength="30">
+                </div>
+              </div>
+              <div class="control-group">
+		            <label class="control-label" for="password">密码
+                </label>
+                <div class="controls">
+                  <input type="password" name="password" class="password">
+                </div>
+              </div>
+              
+              <div class="control-group" id="recaptcha_field">
+                <script src="https://www.google.com/recaptcha/api.js?render=explicit" async="" defer=""></script>
+                <div class="g-recaptcha" id="recaptcha-container" data-sitekey="6LeRbUwUAAAAAFYhKgk3G9OKWqE_OJ7Z-7VTUCbl"></div>
+              </div>
+              
+            </div>
+            <div class="modal-footer">
+              <span class="error">
+              </span>
+              <div class="buttons-right">
+                <button class="button primary" type="submit">登入</button> 
+                
+		<a data-control="registration">或加入 Scratch</a>
+                
+              </div>
+            </div>
+           
+          </fieldset>
+        </form>
+        <iframe class="iframeshim" frameborder="0" scrolling="no"><html><head></head><body></body></html></iframe>
+      </div>
+<!-- end templates/modal-login.html -->
+
+    
+        <iframe id="registration-iframe" class="iframeshim" style="background:#fff;z-index:-1;" frameborder="0" scrolling="no"></iframe><div id="registration" class="registration modal hide fade" data-backdrop="static">
+          <iframe class="iframeshim" frameborder="0" scrolling="no"><html><head></head><body></body></html></iframe>
+        </div>
+    
+
+    
+    
+
+    
+<div id="remix-modal" class="modal hide fade in">
+
+    <div class="modal-header">
+        <span type="button" class="close" data-dismiss="modal">×</span>
+        <h3>Ready to Remix!</h3>
+    </div>
+
+    <div class="modal-body">
+      <div id="remix-dialog">
+      <p>Add your ideas! You could try:</p>
+      <ul>
+        <li>drawing a new costume</li>
+        <li>changing the scripts</li>
+        <li>creating a new sprite</li>
+      </ul>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <div class="buttons-right">
+        <button class="button primary" type="submit">了解，开始吧！</button> 
+      </div>
+    </div>
+    <iframe class="iframeshim" frameborder="0" scrolling="no"><html><head></head><body></body></html></iframe>
+
+</div> <!-- #remix-modal -->
+
+
+    <script type="text/javascript" src="//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__//js/jquery-ui.min.js"></script>
+
+    <script type="text/javascript" src="//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/js/main.js" charset="utf-8"></script>
+
+  
+  <script type="text/javascript">
+    // load gaq script
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+    <script type="text/javascript" src="//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/js/base.js" charset="utf-8"></script>
+    <script type="text/javascript" src="//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/js/lazyload.js" charset="utf-8"></script>
+    
+<script type="text/javascript" src="//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__//js/lib/jquery-visibility.js"></script>
+<script type="text/javascript" src="//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__//js/carousel.js"></script>
+<script type="text/javascript" src="//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__//js/explore-bar.js"></script>
+
+<script>
+  backbone_data = {
+    project:  {
+      
+      pk: null,
+      fields: {},
+      
+    },
+  };
+
+  data = {
+   
+    user: {
+      username: '',
+      id: null
+    },
+    
+    
+    project: {
+      id: 49843898,
+      parentId: null,
+      creator: 'junebeetle',
+      title: 'Scratch to SWF',
+      isPrivate: false,
+    }
+    
+  };
+</script>
+
+
+<script>
+  var projectUrl = '/projects/49843898/';
+</script>
+
+
+
+<script type="text/javascript" src="//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__//js/save_actions.js"></script>
+
+<script type="text/javascript" src="//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__//js/tag_regex.js"></script>
+<script>
+  $('#link-textarea').val(window.location.href);
+</script>
+
+    
+
+    
+<script type="text/template" id="template-alert-project-changed">
+    <p>Project was updated  successfully.</p>
+</script>
+
+<script type="text/template" id="template-tip-bar">
+  <div id="tip-bar-inner" class="<%- isOpen ? 'tipsopen' : 'tipsclosed' %>">
+    <div class="tip-header">
+      <span class="tip-icon toggle-control">?</span>
+      <h5>
+        <span class="close-circle-dark">x</span>
+        <span class="tip-ctrl tip-home active">所有技巧</span>
+      </h5>
+    </div>
+    <div class="tip-content">
+        <div class="tip-arrow-container">
+            <span class="tip-arrow opentip toggle-control">&#9664;</span>
+        </div>
+        <iframe id="tip-content-container" src="" frameBorder="0" <% if (bowser.name !== 'Internet Explorer') { %>webkitallowfullscreen mozallowfullscreen allowfullscreen <% } %>></iframe>
+    </div>
+  </div>
+  <iframe class="iframeshim" frameborder="0" scrolling="no"><html><head></head><body></body></html></iframe>
+</script>
+
+
+
+
+
+<script type="text/template" id="template-collection-count">
+  <%- count %>
+</script>
+
+<script type="text/template" id="template-comment-actions">
+<% if (can_delete) { %>
+  <% if (is_staff && comment_user == current_user) { %>
+    <span data-control="delete" class="actions report">Delete</span>
+  <% } else if (type != "gallery" || comment_user == current_user) { %>
+    <span data-control="delete" class="actions report">Delete</span>
+  <% } %>
+<% } %>
+<% if (current_user != comment_user) { %>
+  <span data-control="report" class="actions report">
+  <% if (student_of_educator) { %>
+    删除
+  <% } else { %>
+    检举
+  <% } %></span>
+<% } %>
+</script>
+
+<script type="text/template" id="template-modal-login">
+<div class="modal hide fade in" id="login-dialog" style="width: 450px">
+  <form method="post" action="/login/">
+    <fieldset>
+      <div class="modal-header">
+        <a href="#" data-dismiss="modal" class="close">x
+        </a>
+        <h3>Login</h3>
+      </div>
+      <div class="modal-body">
+        <div class="control-group">
+        <label class="control-label" for="username">用户名称
+          </label>
+          <div class="controls">
+            <input id="username" type="text" name="username" maxlength="30" />
+          </div>
+        </div>
+        <div class="control-group">
+        <label class="control-label" for="password">密码
+          </label>
+          <div class="controls">
+            <input type="password" name="password" id="password" />
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <span class="error">
+        </span>
+        <span class="button primary" id="sign-in" data-control="site-login">
+        <span>{% trans "Sign in" $}
+          </span>
+        </span>
+      </div>
+    </fieldset>
+  </form>
+</div>
+</script>
+
+<script type="text/template" id="template-comment-reply">
+  <form>
+    <div class="control-group tooltip right">
+      <textarea name="content"></textarea>
+      
+      <span class="hovertext error" data-control="error" data-content="comment-error"><span class="arrow"></span><span class="text"></span></span>
+      <span class="small-text">还可输入 <span id="chars-left-<%- comment_id %>">500</span> 个字符。</span>
+    </div>
+    <div class="control-group">
+        <div class="button small" data-parent-thread="<%- thread_id %>" data-commentee-id="<%- commentee_id %>" data-control="modal-login"><a href="#null">送出</a></div>
+        <div class="button small grey" data-control="cancel"><a href="#null">取消</a></div>
+      <span class="notification"></span>
+    </div>
+  </form>
+</script>
+
+<script type="text/template" id="template-deletion-canceled">
+<div class="deletion-canceled">
+  <div class="form">
+    <p>
+    Your account was scheduled for deletion but you logged in. Your account has been reactivated. If you didn’t request for your account to be deleted, you should <a href="/accounts/password_change/">change your password</a> to make sure your account is secure. 
+    </p>
+  </div>
+</div>
+</script>
+
+<script type="text/template" id="template-unsupported-browser">
+  <div class="unsupported-browser banner" data-cue="unsupported_browser">
+    <div class="container">
+      <span>Scratch works best on newer browsers. We suggest you upgrade to <a href="/info/faq/#requirements">a supported browser</a>, <a href="/scratch2download/">download the offline editor</a>, <a href="https://en.scratch-wiki.info/wiki/List_of_Bug_Workarounds">or read about common workarounds</a>.</span>
+      <div class="close">x</div>
+    </div>
+  </div>
+</script>
+
+<script type="text/template" id="template-unsupported-msie">
+  <div class="unsupported-browser banner" data-cue="unsupported_browser">
+    <div class="container">
+      <span>Scratch will stop supporting Internet Explorer 8 on April 30, 2015. We suggest you upgrade to <a href="/info/faq/#requirements">a supported browser</a>, <a href="/scratch2download/">download the offline editor</a>, or <a href="https://en.scratch-wiki.info/wiki/List_of_Bug_Workarounds">read about common workarounds</a>.</span>
+      <div class="close">x</div>
+    </div>
+  </div>
+</script>
+
+
+<script type="text/template" id="template-project-title">
+  <div id="title" class="editable read inline">
+    <form>
+      <h2><input value="Scratch to SWF" name="credits"></h2>
+    </form>
+  </div>
+</script>
+<script type="text/template" id="template-report">
+  
+  <div class="section first report">
+      <div class="form">
+        
+          <h4>检举为不当内容</h4>
+          <div>
+              
+              
+              请从下方的清单中选择回报的原因，是有不当的内容，还是有其他破坏<a href="/community_guidelines/" target="_blank">社群规范</a>的事情。
+              
+              <br>
+              如果你要检举云端数据库中的不当内容，你可以从此项目的 <a href="/cloudmonitor/49843898/">云端数据库操作纪录</a>中找到。
+              
+          </div>
+          <form class="form-horizontal">
+              <select name="report_category" id="report-category-selector">
+                  <option value="">选择一个原因</option>
+                  <option value="0">根本只是复制某个项目</option>
+                  <option value="1">未经同意使用的图片/音乐</option>
+                  <option value="2">过于暴力或恐怖</option>
+                  <option value="3">不当语言</option>
+                  <option value="4">不当音乐</option>
+                  <option value="8">不当图片</option>
+                  <option value="5">公开个人联络方式</option>
+                  <option value="6">其他</option>
+              </select>
+              <textarea id="report-explanation" placeholder="从下方选择理由"></textarea>
+              <button type="button" data-control="submit">Send</button>
+          </form>
+        </div>
+        <div class="message">
+          We have received your report. The Scratch Team will review the project based on the Scratch community guidelines.
+        </div>
+      
+  </div>
+<div data-control="close" class="close">x</div>
+
+</script>
+
+<script type="text/template" id="template-censor-reshare-dialog">
+<p>
+  Are you sure your project is OK for Scratch? Read the <a href="/community_guidelines" target="_blank">Community Guidelines</a> to be sure.
+</p>
+</script>
+
+
+
+
+
+<script type="text/template" id="template-notify-dialog">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Alerts</h3>
+  </div>
+  <div class="modal-body">
+    <div>
+        Template:
+        <select name="template">
+		<option value="The Scratch Team has removed this project because it appears to be an exact copy of someone else's original. It's fine to remix someone else's sprites, scripts, or images, but you must be sure to add your own ideas, and give them credit in the project notes. If you want to re-share it, make sure you describe what you changed in the project notes.">[Copy] Exact copy</option>
+		<option value="The Scratch Team has removed this project because it contains content that was copied without credit. It's fine to use someone else's creation as part of your project, as long as you give them credit in the project notes. If you want to re-share your project, make sure you provide credit.">[Copy] Uncredited content</option>
+		<option value="The Scratch Team has removed this project because it is disrespectful to another Scratcher. It's not OK to share projects about disagreements with other Scratchers, no matter what they've done. Instead, click report on any mean comments or projects you find, or use the Contact Us link (at the bottom of every page) to let the Scratch Team know what's going on.">[Gossip] Attack / gossip / drama</option>
+		<option value="The Scratch Team has removed this project because it contains lyrics that aren't OK for the Scratch community. Scratch is for kids ages 8 and up, so it's important that everything shared is appropriate for all ages. Change the song or use a clean version before re-sharing this project.">[Music] Bad lyrics</option>
+		<option value="The Scratch Team has removed this project. Sharing music created by someone else without making substantial changes is not fair to the original creators. You can incorporate music into your projects, but be sure to use the music to support your own creativity, not as the main focus of the project.">[Music] Music sharing</option>
+		<option value="The Scratch Team has removed this project because it is inappropriate for the Scratch website. Scratch is for kids ages 8 and up, so it's important that everything shared is appropriate for all ages.">[Inappropriate] Inappropriate project (general)</option>
+		<option value="The Scratch Team has removed this project because it uses language that's not appropriate for Scratch. Please edit it to remove the offensive stuff before re-sharing it.">[Inappropriate] Bad/vulgar language</option>
+		<option value="The Scratch Team has removed this project because it focused entirely on the Scratcher's physical appearance. We have found these types of projects often lead to inappropriate or unhealthy comments.">[Inappropriate] Face reveal</option>
+		<option value="The Scratch Team has removed this project because it is too violent or scary for the Scratch website. Scratch is for kids ages 8 and up, so it's important that everything shared is appropriate for all ages.">[Scary] Too violent / scary</option>
+		<option value="The Scratch Team has removed this project because it is too violent or scary for the Scratch website. Please remember that Scratch is for kids ages 8 and up, so it's important that everything shared is appropriate for all ages. <br><br>For additional information about projects inspired by the Five Nights at Freddy’s game series, please see https://scratch.mit.edu/discuss/topic/168506/.">[Scary] FNAF project</option>
+		<option value="We noticed you referenced self-injury in this project. When anything is shared regarding self-injury, we provide resources outside of Scratch that may be valuable. We do this because we don't believe that Scratch is the best place to work out self-injury related issues. If you are feeling intense emotions and need to speak to someone, please talk to an adult that you trust or chat online with someone who can help at <a href='https://teenlineonline.org/'>teenline.org</a> or <a href='https://www.imalive.org/'>imalive.org</a>. We want to make sure that people dealing with tough things have someone to talk to when they need to. - Scratch Team">[Self-injury] Referenced self-injury</option>
+		<option value="">Blank</option> 
+	</select>
+    </div>
+    <div>
+        <textarea name="message" style="height: 200px;"></textarea>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-primary">Send to <%- username %></button>
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+  </div>
+</script>
+
+
+
+
+
+    
+
+    <!-- load javascript translation catalog, and javascript fuzzy date library -->
+    <script type="text/javascript" src="/jsi18n/"></script>
+    <script type="text/javascript" src="//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/js/lib/jquery.timeago.settings.js"></script>
+
+    
+    <script type="text/javascript" src="//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__//js/apps/registration/main.js"></script>
+    
+
+    <script type="text/javascript" src="//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__//js/apps/global.js"></script>
+    <script>
+      Scratch.NotificationPollTime = 300000;
+    </script>
+
+    
+    <script type="text/javascript" src="//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/js/project_base.js" charset="utf-8"></script><div style="display: none;"></div>
+
+
+    
+    <script>
+    $(document).on("accountnavready", function(e){
+        $('#topnav .messages').notificationsAlert();
+    });
+    </script>
+    
+  
+  <!-- Site Version: 2.2018.07.12_2018_07_12_09_45 -->
+
+</body></html>

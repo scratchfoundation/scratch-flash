@@ -1,0 +1,46 @@
+{
+	"objName": "B-Story",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "B-story-1",
+			"baseLayerID": -1,
+			"baseLayerMD5": "2a8fac3c82d95f13203843a597b5757b.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 20,
+			"rotationCenterY": 25
+		},
+		{
+			"costumeName": "B-story-2",
+			"baseLayerID": -1,
+			"baseLayerMD5": "07fa4ebc421d84743b6ced189dd2f9cf.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 19,
+			"rotationCenterY": 25
+		},
+		{
+			"costumeName": "B-story-3",
+			"baseLayerID": -1,
+			"baseLayerMD5": "6c9a9203155f93f24f31b30e3bd76b6d.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 18,
+			"rotationCenterY": 23
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

@@ -1,0 +1,38 @@
+{
+	"objName": "Bell",
+	"sounds": [{
+			"soundName": "xylo1",
+			"soundID": -1,
+			"md5": "6ac484e97c1c1fe1384642e26a125e70.wav",
+			"sampleCount": 238232,
+			"rate": 22050,
+			"format": "adpcm"
+		},
+		{
+			"soundName": "bell toll",
+			"soundID": -1,
+			"md5": "25d61e79cbeba4041eebeaebd7bf9598.wav",
+			"sampleCount": 45168,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "bell1",
+			"baseLayerID": -1,
+			"baseLayerMD5": "f35056c772395455d703773657e1da6e.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 59,
+			"rotationCenterY": 69
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

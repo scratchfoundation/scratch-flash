@@ -1,0 +1,26 @@
+#topnav {
+  position: relative;
+}
+
+#topnav .search input {
+  width: 100px;
+}
+
+#topnav .site-nav li a {
+  padding: 0 8px;
+}
+
+#topnav .sign-in.dropdown {
+  display: none;
+}
+
+#topnav .sign-in.mobile {
+  display: inline-block;
+}
+
+.modal {
+  position: absolute;
+}
+
+
+

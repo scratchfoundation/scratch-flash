@@ -1,0 +1,38 @@
+{
+	"objName": "Ruby",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "ruby-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "c30210e8f719c3a4d2c7cc6917a39300.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 54,
+			"rotationCenterY": 172
+		},
+		{
+			"costumeName": "ruby-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "fc15fdbcc535473f6140cab28197f3be.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 76,
+			"rotationCenterY": 142
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

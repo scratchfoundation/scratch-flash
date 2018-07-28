@@ -1,0 +1,102 @@
+{
+	"objName": "Buildings",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "building-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "d713270e235851e5962becd73a951771.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 40,
+			"rotationCenterY": 30
+		},
+		{
+			"costumeName": "building-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "8c2d59c50a97d33b096f629258f02be6.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 46,
+			"rotationCenterY": -11
+		},
+		{
+			"costumeName": "building-c",
+			"baseLayerID": -1,
+			"baseLayerMD5": "7f3f51f495c39809bed95991dfa1f80d.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 25,
+			"rotationCenterY": 17
+		},
+		{
+			"costumeName": "building-d",
+			"baseLayerID": -1,
+			"baseLayerMD5": "61ba83d6bded299dd91168eb24cd379f.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 59,
+			"rotationCenterY": -10
+		},
+		{
+			"costumeName": "building-e",
+			"baseLayerID": -1,
+			"baseLayerMD5": "1beeb8f034a1128c9a799297b0b7fc26.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 36,
+			"rotationCenterY": 55
+		},
+		{
+			"costumeName": "building-f",
+			"baseLayerID": -1,
+			"baseLayerMD5": "451e0a565e95d945fe2addfe609ee9df.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 41,
+			"rotationCenterY": 27
+		},
+		{
+			"costumeName": "building-g",
+			"baseLayerID": -1,
+			"baseLayerMD5": "58b3c9b7a41dde698fa2b427b502c1fa.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 64,
+			"rotationCenterY": -65
+		},
+		{
+			"costumeName": "building-h",
+			"baseLayerID": -1,
+			"baseLayerMD5": "e952c8b14eeac894302d07d37a45ed99.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 33,
+			"rotationCenterY": 136
+		},
+		{
+			"costumeName": "building-i",
+			"baseLayerID": -1,
+			"baseLayerMD5": "b00b1123e3bfcb600242528d059ffcfb.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 31,
+			"rotationCenterY": -12
+		},
+		{
+			"costumeName": "building-j",
+			"baseLayerID": -1,
+			"baseLayerMD5": "e08fd1a7397efcfe0e3691f945693cb4.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 29,
+			"rotationCenterY": 33
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

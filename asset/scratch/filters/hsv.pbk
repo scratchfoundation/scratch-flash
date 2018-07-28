@@ -1,0 +1,72 @@
+<languageVersion: 1.0;>
+
+kernel HSV
+<	vendor : "MIT Media Laboratory";
+	namespace : "filters";
+	version : 1;
+	description : "Scratch HSV";
+>
+{
+	parameter float hueShift
+	<
+		minValue: float(-500.0);
+		maxValue: float(500.0);
+		defaultValue: float(0);
+	>;
+	parameter float brightnessShift
+	<
+		minValue: float(-100.0);
+		maxValue: float(100.0);
+		defaultValue: float(0);
+	>;
+
+	input image4 src;
+	output float4 dst;
+
+	void evaluatePixel() {
+		dst = sampleNearest(src, outCoord());
+		float r = dst.r;
+		float g = dst.g;
+		float b = dst.b;
+		// compute h, s, v
+		float h, s;
+		float v = max(r, max(g, b));
+		float span = v - min(r, min(g, b));
+		if (span == 0.0) {
+			h = s = 0.0; // grayscale
+		} else {
+			if (r == v) h = 60.0 * ((g - b) / span);
+			else if (g == v) h = 120.0 + (60.0 * ((b - r) / span));
+			else if (b == v) h = 240.0 + (60.0 * ((r - g) / span));
+			s = span / v;
+		}
+
+		if (hueShift != 0.0) {
+			// this code forces grayscale values to be slightly saturated
+			// so that some slight change of hue will be visible
+			if (v < 0.11) { v = 0.11; s = 1.0; } // force black to dark gray, fully-saturated
+			if (s < 0.09) s = 0.09; // make saturation at least 0.09
+			if ((v == 0.11) || (s == 0.09)) h = 0.0; // use same tint for all grays
+		}
+
+		// apply h, s, v shifts
+		h = mod(h + hueShift, 360.0);
+		if (h < 0.0) h += 360.0;
+		s = max(0.0, min(s, 1.0));
+		v = max(0.0, min(v + (brightnessShift / 100.0), 1.0));
+
+		// convert hsv to rgb and save pixel
+		int i = int(floor(h / 60.0));
+		float f = (h / 60.0) - float(i);
+		float p = v * (1.0 - s);
+		float q = v * (1.0 - (s * f));
+		float t = v * (1.0 - (s * (1.0 - f)));
+
+		if ((i == 0) || (i == 6)) dst.rgb = float3(v, t, p);
+		else if (i == 1) dst.rgb = float3(q, v, p);
+		else if (i == 2) dst.rgb = float3(p, v, t);
+		else if (i == 3) dst.rgb = float3(p, q, v);
+		else if (i == 4) dst.rgb = float3(t, p, v);
+		else if (i == 5) dst.rgb = float3(v, p, q);
+	}
+}

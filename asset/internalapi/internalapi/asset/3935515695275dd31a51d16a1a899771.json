@@ -1,0 +1,38 @@
+{
+	"objName": "Dog1",
+	"sounds": [{
+			"soundName": "dog1",
+			"soundID": -1,
+			"md5": "b15adefc3c12f758b6dc6a045362532f.wav",
+			"sampleCount": 3672,
+			"rate": 22050,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "dog1-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "39ddefa0cc58f3b1b06474d63d81ef56.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 83,
+			"rotationCenterY": 80
+		},
+		{
+			"costumeName": "dog1-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "598f4aa3d8f671375d1d2b3acf753416.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 83,
+			"rotationCenterY": 80
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

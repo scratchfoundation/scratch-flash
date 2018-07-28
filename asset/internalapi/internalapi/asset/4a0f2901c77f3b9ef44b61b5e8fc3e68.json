@@ -1,0 +1,46 @@
+{
+	"objName": "Z-Story",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "Z-story-1",
+			"baseLayerID": -1,
+			"baseLayerMD5": "86326c9180c485b557a075f4794939d7.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 19,
+			"rotationCenterY": 26
+		},
+		{
+			"costumeName": "Z-story-2",
+			"baseLayerID": -1,
+			"baseLayerMD5": "e10b203e47bbb41edab78be59e628449.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 19,
+			"rotationCenterY": 26
+		},
+		{
+			"costumeName": "Z-story-3",
+			"baseLayerID": -1,
+			"baseLayerMD5": "0788df7b1d9cf02dfdebc021d4f30ce4.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 17,
+			"rotationCenterY": 23
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

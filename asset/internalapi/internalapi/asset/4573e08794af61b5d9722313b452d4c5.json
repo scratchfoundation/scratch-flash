@@ -1,0 +1,30 @@
+{
+	"objName": "Neigh Pony",
+	"sounds": [{
+			"soundName": "horse",
+			"soundID": -1,
+			"md5": "45ffcf97ee2edca0199ff5aa71a5b72e.wav",
+			"sampleCount": 14464,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "neigh pony",
+			"baseLayerID": -1,
+			"baseLayerMD5": "176c4fb4df80df899ca28a48bd1f0edf.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 74,
+			"rotationCenterY": 78
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

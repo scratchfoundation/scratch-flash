@@ -1,0 +1,62 @@
+{
+	"objName": "Drum-Conga",
+	"sounds": [{
+			"soundName": "high conga",
+			"soundID": -1,
+			"md5": "16144544de90e98a92a265d4fc3241ea.wav",
+			"sampleCount": 8192,
+			"rate": 22050,
+			"format": ""
+		},
+		{
+			"soundName": "low conga",
+			"soundID": -1,
+			"md5": "0b6f94487cd8a1cf0bb77e15966656c3.wav",
+			"sampleCount": 8384,
+			"rate": 22050,
+			"format": ""
+		},
+		{
+			"soundName": "muted conga",
+			"soundID": -1,
+			"md5": "1d4abbe3c9bfe198a88badb10762de75.wav",
+			"sampleCount": 4544,
+			"rate": 22050,
+			"format": ""
+		},
+		{
+			"soundName": "tap conga",
+			"soundID": -1,
+			"md5": "fd9a67157f57f9cc6fe3cdce38a6d4a8.wav",
+			"sampleCount": 6880,
+			"rate": 22050,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "drums conga-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "b3da94523b6d3df2dd30602399599ab4.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 51,
+			"rotationCenterY": 51
+		},
+		{
+			"costumeName": "drums conga-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "d4398062ed6e09927ab52823255186d3.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 52,
+			"rotationCenterY": 79
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

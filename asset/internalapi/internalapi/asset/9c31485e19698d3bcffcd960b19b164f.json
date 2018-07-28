@@ -1,0 +1,36 @@
+{
+	"objName": "Penguin2 Talk",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "penguin2 talk-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "5a80f4b2fd20d43e4f7cb4189c08d99c.svg",
+			"rotationCenterX": 45,
+			"rotationCenterY": 79
+		},
+		{
+			"costumeName": "penguin2 talk-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "394e79f5f9a462064ece2a9a6606a07d.svg",
+			"rotationCenterX": 50,
+			"rotationCenterY": 78
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

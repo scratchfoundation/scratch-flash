@@ -1,0 +1,22 @@
+{
+	"objName": "Paddle",
+	"costumes": [{
+			"costumeName": "paddle",
+			"baseLayerID": -1,
+			"baseLayerMD5": "5cda5ed5ffabc3d06322551656427b06.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 39,
+			"rotationCenterY": 8
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 0.85000000000001,
+	"direction": -90,
+	"rotationStyle": "none",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

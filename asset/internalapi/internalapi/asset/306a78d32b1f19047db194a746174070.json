@@ -1,0 +1,36 @@
+{
+	"objName": "Dan",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "dan-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "1baa5b126e0e14d6070a997c0deefab5.png",
+			"rotationCenterX": 36,
+			"rotationCenterY": 100
+		},
+		{
+			"costumeName": "dan-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "74be10ac815fd090cb42b92801002bb1.png",
+			"rotationCenterX": 47,
+			"rotationCenterY": 100
+		}],
+	"currentCostumeIndex": 1,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

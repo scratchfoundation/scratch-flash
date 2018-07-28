@@ -1,0 +1,86 @@
+{
+	"objName": "Guitar-Electric",
+	"sounds": [{
+			"soundName": "C elec guitar",
+			"soundID": -1,
+			"md5": "0d340de02e14bebaf8dfa0e43eb3f1f9.wav",
+			"sampleCount": 44100,
+			"rate": 22050,
+			"format": ""
+		},
+		{
+			"soundName": "D elec guitar",
+			"soundID": -1,
+			"md5": "1b5de9866801eb2f9d4f57c7c3b473f5.wav",
+			"sampleCount": 44100,
+			"rate": 22050,
+			"format": ""
+		},
+		{
+			"soundName": "E elec guitar",
+			"soundID": -1,
+			"md5": "2e6a6ae3e0f72bf78c74def8130f459a.wav",
+			"sampleCount": 44100,
+			"rate": 22050,
+			"format": ""
+		},
+		{
+			"soundName": "F elec guitar",
+			"soundID": -1,
+			"md5": "5eb00f15f21f734986aa45156d44478d.wav",
+			"sampleCount": 44100,
+			"rate": 22050,
+			"format": ""
+		},
+		{
+			"soundName": "G elec guitar",
+			"soundID": -1,
+			"md5": "cd0d0e7dad415b2ffa2ba7a61860eaf8.wav",
+			"sampleCount": 44100,
+			"rate": 22050,
+			"format": ""
+		},
+		{
+			"soundName": "A elec guitar",
+			"soundID": -1,
+			"md5": "fa5f7fea601e9368dd68449d9a54c995.wav",
+			"sampleCount": 44100,
+			"rate": 22050,
+			"format": ""
+		},
+		{
+			"soundName": "B elec guitar",
+			"soundID": -1,
+			"md5": "81f142d0b00189703d7fe9b1f13f6f87.wav",
+			"sampleCount": 44100,
+			"rate": 22050,
+			"format": ""
+		},
+		{
+			"soundName": "C2 elec guitar",
+			"soundID": -1,
+			"md5": "3a8ed3129f22cba5b0810bc030d16b5f.wav",
+			"sampleCount": 44100,
+			"rate": 22050,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "guitar electric",
+			"baseLayerID": -1,
+			"baseLayerMD5": "18d7b47368ba1ead0d1ca436b8369211.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 37,
+			"rotationCenterY": 114
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

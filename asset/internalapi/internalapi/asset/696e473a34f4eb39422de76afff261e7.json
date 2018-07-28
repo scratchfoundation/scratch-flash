@@ -1,0 +1,54 @@
+{
+	"objName": "Abby",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "abby-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "afab2d2141e9811bd89e385e9628cb5f.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 31,
+			"rotationCenterY": 100
+		},
+		{
+			"costumeName": "abby-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "1e0116c7c2e5e80c679d0b33f1f5cfb7.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 31,
+			"rotationCenterY": 100
+		},
+		{
+			"costumeName": "abby-c",
+			"baseLayerID": -1,
+			"baseLayerMD5": "b6e23922f23b49ddc6f62f675e77417c.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 32,
+			"rotationCenterY": 100
+		},
+		{
+			"costumeName": "abby-d",
+			"baseLayerID": -1,
+			"baseLayerMD5": "2193cf08f74b8354f7c4fac37a06ea24.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 31,
+			"rotationCenterY": 100
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

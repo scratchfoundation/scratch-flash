@@ -1,0 +1,36 @@
+{
+	"objName": "Calvrett",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "calvrett jumping",
+			"baseLayerID": -1,
+			"baseLayerMD5": "82b2f97fec9083cad502a781fe88929b.png",
+			"rotationCenterX": 84,
+			"rotationCenterY": 108
+		},
+		{
+			"costumeName": "calvrett thinking",
+			"baseLayerID": -1,
+			"baseLayerMD5": "b8d2409e58b663020353c08fb029b7e6.png",
+			"rotationCenterX": 54,
+			"rotationCenterY": 85
+		}],
+	"currentCostumeIndex": 1,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

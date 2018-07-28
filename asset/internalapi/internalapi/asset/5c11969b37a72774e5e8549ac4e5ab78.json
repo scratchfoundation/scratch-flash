@@ -1,0 +1,46 @@
+{
+	"objName": "Creature1",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "creature1-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "a560c6eab2e1de2462bdaeb1d698736c.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 54,
+			"rotationCenterY": 80
+		},
+		{
+			"costumeName": "creature1-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "8042b71fc2ae322151c0a3a163701333.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 60,
+			"rotationCenterY": 78
+		},
+		{
+			"costumeName": "creature1-c",
+			"baseLayerID": -1,
+			"baseLayerMD5": "e12a83c8f1c0545b59fe8673e9fac79c.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 63,
+			"rotationCenterY": 164
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}
