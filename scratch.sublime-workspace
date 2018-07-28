@@ -184,27 +184,73 @@
 	"buffers":
 	[
 		{
+			"file": "bin-debug/Scratch.html",
+			"settings":
+			{
+				"buffer_size": 8479,
+				"line_ending": "Windows"
+			}
+		},
+		{
 			"file": "src/Scratch.as",
 			"settings":
 			{
-				"buffer_size": 46355,
+				"buffer_size": 46403,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "src/translation/Translator.as",
+			"file": "asset/scratch/new.html",
 			"settings":
 			{
-				"buffer_size": 8787,
+				"buffer_size": 155316,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "src/util/Server.as",
+			"file": "html-template/mit.html",
 			"settings":
 			{
-				"buffer_size": 12230,
+				"buffer_size": 44435,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "html-template/index.template.html",
+			"settings":
+			{
+				"buffer_size": 8717,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"contents": "3.2M\t/Users/zezhen/Applications\n 12K\t/Users/zezhen/Desktop\n 79M\t/Users/zezhen/Documents\n5.4G\t/Users/zezhen/Downloads\n1.4G\t/Users/zezhen/Dropbox\n1.5G\t/Users/zezhen/Google Drive\n 60G\t/Users/zezhen/Library\n 54G\t/Users/zezhen/Movies\n 25G\t/Users/zezhen/Music\n 80G\t/Users/zezhen/Pictures\n8.0K\t/Users/zezhen/Public\n3.3G\t/Users/zezhen/nltk_data\n4.0K\t/Users/zezhen/start_flash_player_debugger.sh\n2.6G\t/Users/zezhen/workspace\n110G\t/Users/zezhen/百度云同步盘",
+			"settings":
+			{
+				"buffer_size": 441,
+				"line_ending": "Unix",
+				"name": "3.2M\t/Users/zezhen/Applications"
+			}
+		},
+		{
+			"file": "/Users/zezhen/Downloads/2.html",
+			"settings":
+			{
+				"buffer_size": 8838,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/Users/zezhen/Downloads/1.html",
+			"settings":
+			{
+				"buffer_size": 8838,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		}
@@ -273,12 +319,23 @@
 	},
 	"expanded_folders":
 	[
-		"/Users/zezhen/workspace/scratch-flash",
-		"/Users/zezhen/workspace/scratch-flash/build",
-		"/Users/zezhen/workspace/scratch-flash/build/11.6"
 	],
 	"file_history":
 	[
+		"/Users/zezhen/workspace/scratch-asset/scratch/new.html",
+		"/Users/zezhen/workspace/scratch-asset/scratch/Scratch.html",
+		"/Users/zezhen/workspace/scratch-asset/scratch/mit.html",
+		"/Users/zezhen/workspace/scratch-asset/mit.html",
+		"/Users/zezhen/workspace/scratch-flash/src/util/Server.as",
+		"/Users/zezhen/workspace/scratch-flash/src/scratch/ScratchRuntime.as",
+		"/Users/zezhen/workspace/scratch-flash/src/Scratch.as",
+		"/Users/zezhen/workspace/scratch-flash/src/translation/Translator.as",
+		"/Users/zezhen/workspace/scratch-flash/html-template/swfobject.js",
+		"/Users/zezhen/workspace/scratch-flash/bin-release/Scratch.html",
+		"/Users/zezhen/workspace/scratch-flash/bin-debug/swfobject.js",
+		"/Users/zezhen/workspace/scratch-flash/bin-release/index.html",
+		"/Users/zezhen/workspace/scratch-asset/app.py",
+		"/Users/zezhen/workspace/scratch-asset/app.cnf",
 		"/Users/zezhen/workspace/scratch-flash/index.html",
 		"/Users/zezhen/Downloads/bd_B6055_B5948_20180719_20180721.tsv",
 		"/Users/zezhen/workspace/scratch-flash/src/blocks/Block.as",
@@ -392,21 +449,7 @@
 		"/Users/zezhen/workspace/budget_data_client/arya/release_definition/resources/stage-blue-grid/image/post-deploy",
 		"/Users/zezhen/workspace/budget_data_client/src/main/python/etl_tool/email.py",
 		"/Users/zezhen/workspace/budget_data_client/src/main/resources/bin/ingest_spgen_output.sh",
-		"/Users/zezhen/convert.pl",
-		"/Users/zezhen/workspace/budget_data_client/target/classes/bin/ingest_spgen_output.sh",
-		"/Users/zezhen/workspace/budget_data_client/target/classes/bin/parse_gpa_campaigns.sh",
-		"/Users/zezhen/workspace/archive/buket_test_scripts/bucket_25_run.sh",
-		"/Users/zezhen/query.dat",
-		"/Users/zezhen/ingest_ads_metrics.sh",
-		"/Users/zezhen/workspace/budget_data_client/arya/common/common.yidf",
-		"/Users/zezhen/new_id_201511182300",
-		"/Users/zezhen/analysis/smooth_201511182300_budget",
-		"/Users/zezhen/add_id_201512071920",
-		"/Users/zezhen/analysis/budget/budget_pacing_201511182300",
-		"/Users/zezhen/pacing/info_201512071100",
-		"/Users/zezhen/pacing/budget_change",
-		"/Users/zezhen/analysis/smooth_201511182300",
-		"/Users/zezhen/workspace/budget_data_client/README.md"
+		"/Users/zezhen/convert.pl"
 	],
 	"find":
 	{
@@ -425,60 +468,209 @@
 		"case_sensitive": false,
 		"find_history":
 		[
-			"ExternalInterface",
-			"setFonts",
-			"allowscriptaccess",
-			"url",
+			"dev",
+			"devm",
+			"dev",
+			"extensionDevMode",
+			"isExtensionDevMode",
+			"setupExternalInterface",
+			"createNewProjectScratchX",
+			"isExtensionDevMode",
+			"isoffline",
+			"tip_bar_api",
+			"setEditMode",
+			"startInEditMode",
+			"isExtensionDevMode",
+			"getMediaLibrary",
+			"google",
+			"jquery.ui.base.css",
+			"loadGithubURL",
+			"projectUrl",
+			"http://cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/",
+			"jquery-ui.min.js",
+			"http://cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__//",
+			"main.js.1",
+			"\"//",
+			"m_3TAXDreGTFyoYnEmU9mcKB4Xtw5mw6yRkuJtXRKxM",
+			"see-inside",
+			"account-nav.json",
+			"fragment/account-nav.json",
+			"DOCTYPE",
+			"swfobject",
+			"\\.editor",
+			".editor",
+			"flashContent",
+			"scratch",
+			"js",
+			"editor",
+			"setPresentationMode",
+			"presentationModeWasChanged",
+			"wasEditing",
+			"setEditMode",
+			"startInEditMode",
+			"isExtensionDevMode",
+			"extensionDevMode",
+			"isExtensionDevMode",
 			"isOffline",
-			"loaderInfo",
-			"mode",
-			"callServer",
+			"startInEditMode",
+			"editMode",
+			"presentationModeWasChanged",
+			"setPresentationMode",
+			"keyDown",
+			"setPresentationMode",
+			"presentationModeWasChanged",
+			"setEditMode",
+			"editMode",
+			"installNewProject",
+			"initExtensionManager",
+			"initRuntime",
+			"clearKeyDownArray",
+			"ScratchRuntime",
+			"initRuntime",
+			"loadSingleFile",
+			"FileReferenceList",
+			"fileList",
+			"load",
+			"runtime",
+			"Load Project",
+			"objectName",
+			"document",
+			"=",
+			"&",
+			":",
+			"&",
+			"=",
+			"&",
+			"><",
 			"serverGet",
-			"initializeLanguageList",
-			"setFonts",
-			"font12",
-			"callServer",
-			"serverGet",
+			"lang_",
+			"determineJSAccess",
+			"handleStartupParameters",
+			"gotPOFile",
+			"setLanguage",
 			"SharedObject",
 			"setLanguageValue",
-			"getSelectedLang",
-			"stage",
-			"Scratch"
+			"Translator",
+			"initializeLanguageList",
+			"completeHandler",
+			"callServer(",
+			"callServer",
+			"serverGet",
+			"setLanguageValue",
+			"DEBUG",
+			"getLanguageList",
+			"serverGet",
+			"callServer(",
+			"callServer",
+			"exceptionHandler",
+			"URLRequest",
+			"bgcolor",
+			"width",
+			"handleEmbedStatus",
+			"serverGet",
+			"locale/lang_list.txt",
+			"onCallServerHttpStatus",
+			"callServer(",
+			"callServer",
+			"serverGet",
+			"callServer",
+			"addListeners",
+			"statusHandler",
+			"onCallServerHttpStatus",
+			"callServer",
+			"onCallServerException",
+			"handleStartupParameters",
+			"Interpreter",
+			"initInterpreter",
+			"initServer",
+			"overrideURLs",
+			"setDefaultURLs",
+			"initServer",
+			"server",
+			"Server",
+			"serverGet",
+			"callServer",
+			"addListeners",
+			"statusHandler",
+			"onCallServerHttpStatus",
+			"statusHandler",
+			"HTTPStatusEvent",
+			"uncaughtErrorHandler"
 		],
 		"highlight": true,
 		"in_selection": false,
 		"preserve_case": false,
-		"regex": true,
+		"regex": false,
 		"replace_history":
 		[
+			"",
+			"\"http://",
+			":",
+			",",
+			":",
+			",",
+			">\\n<",
+			"\"http://",
+			"'",
+			"\\\""
 		],
 		"reverse": false,
 		"show_context": true,
 		"use_buffer2": true,
-		"whole_word": true,
+		"whole_word": false,
 		"wrap": true
 	},
 	"groups":
 	[
 		{
-			"selected": 2,
+			"selected": 3,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "src/Scratch.as",
+					"file": "bin-debug/Scratch.html",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 46355,
+						"buffer_size": 8479,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								5232,
-								5232
+								6019,
+								6028
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1586.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "src/Scratch.as",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 46403,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5314,
+								5330
 							]
 						],
 						"settings":
@@ -487,68 +679,188 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 2233.0,
+						"translation.y": 2314.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 2,
 					"type": "text"
 				},
 				{
-					"buffer": 1,
-					"file": "src/translation/Translator.as",
+					"buffer": 2,
+					"file": "asset/scratch/new.html",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 8787,
+						"buffer_size": 155316,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2491,
-								2491
+								0,
+								0
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/ActionScript/ActionScript.sublime-syntax",
-							"translate_tabs_to_spaces": false
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 629.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 1,
 					"type": "text"
 				},
 				{
-					"buffer": 2,
-					"file": "src/util/Server.as",
+					"buffer": 3,
+					"file": "html-template/mit.html",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 12230,
+						"buffer_size": 44435,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								7283,
-								7283
+								2729,
+								2729
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/ActionScript/ActionScript.sublime-syntax",
-							"translate_tabs_to_spaces": false
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1243.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "html-template/index.template.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 8717,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2559,
+								2559
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 699.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 441,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								228,
+								228
+							]
+						],
+						"settings":
+						{
+							"auto_name": "3.2M\t/Users/zezhen/Applications",
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "/Users/zezhen/Downloads/2.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 8838,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								8838,
+								8838
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 623.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "/Users/zezhen/Downloads/1.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 8838,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5051,
+								5051
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 17.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
 					"type": "text"
 				}
 			]
@@ -605,7 +917,7 @@
 	"project": "scratch.sublime-project",
 	"replace":
 	{
-		"height": 48.0
+		"height": 70.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -614,6 +926,26 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"mit",
+				"scratch-flash/html-template/mit.html"
+			],
+			[
+				"new",
+				"scratch-flash/asset/scratch/new.html"
+			],
+			[
+				"ScratchRuntime",
+				"scratch-flash/src/scratch/ScratchRuntime.as"
+			],
+			[
+				"index",
+				"scratch-flash/html-template/index.template.html"
+			],
+			[
+				"scratch",
+				"scratch-flash/bin-debug/Scratch.html"
+			],
 			[
 				"runtime",
 				"arya/release_definition/resources/prod-blue-corp/image/runtime.yidf"
@@ -1105,26 +1437,6 @@
 			[
 				"ffl.gq1.stag",
 				"buildinfo/release_definition_ffl/resources/curveball.set.budget_ffl.gq1.stag/image/curveball.set.budget_ffl.gq1.stag.yidf"
-			],
-			[
-				"ffl_st",
-				"devel/src/fast_feedback_loop/src/main/resources/ffl_stop.sh"
-			],
-			[
-				"ffl.bf",
-				"buildinfo/release_definition_ffl/resources/curveball.set.budget_ffl.bf1.prod/image/curveball.set.budget_ffl.bf1.prod.yidf"
-			],
-			[
-				"ffl.stag",
-				"buildinfo/release_definition_ffl/resources/curveball.set.budget_ffl.bf1.stag/image/curveball.set.budget_ffl.bf1.stag.yidf"
-			],
-			[
-				"ff.gq1.sta",
-				"buildinfo/release_definition_ffl/resources/curveball.set.budget_ffl.gq1.stag/image/curveball.set.budget_ffl.gq1.stag.yidf"
-			],
-			[
-				"fflbf1.st",
-				"buildinfo/release_definition_ffl/resources/curveball.set.budget_ffl.bf1.stag/image/curveball.set.budget_ffl.bf1.stag.yidf"
 			]
 		],
 		"width": 0.0

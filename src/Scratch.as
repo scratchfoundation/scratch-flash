@@ -165,7 +165,8 @@ public class Scratch extends Sprite {
 	protected function initialize():void {
 		isOffline = !URLUtil.isHttpURL(loaderInfo.url);
 		hostProtocol = URLUtil.getProtocol(loaderInfo.url);
-		ExternalInterface.call("console.log", loaderInfo.url);
+		log(LogLevel.DEBUG, loaderInfo.url);
+		log(LogLevel.DEBUG, "isOffline:" + isOffline);
 
 		isExtensionDevMode = (loaderInfo.parameters['extensionDevMode'] == 'true');
 		isMicroworld = (loaderInfo.parameters['microworldMode'] == 'true');
@@ -243,6 +244,39 @@ public class Scratch extends Sprite {
 			addExternalCallback('ASloadBase64SBX', loadBase64SBX);
 			addExternalCallback('ASsetModalOverlay', setModalOverlay);
 		}
+
+		addExternalCallback('ASloadProjectUrl', loadProjectUrl);
+	}
+
+	public function loadProjectUrl(url:String){
+		log(LogLevel.DEBUG, url);
+		function handleComplete(e:Event):void {
+			lp.setInfo("Opening project...")
+			runtime.installProjectFromData(loader.data);
+			setProjectName("OpenSprites Backpack");
+			removeLoadProgressBox();
+			ExternalInterface.call('JSloadProjectUrlCallback', false);
+		}
+ 		function handleError(e:ErrorEvent):void {
+			jsThrowError('Failed to load project: ' + e.toString());
+			removeLoadProgressBox();
+			ExternalInterface.call('JSloadProjectUrlCallback', e);
+		}
+		
+		function handleProgress(e:ProgressEvent) {
+			lp.setProgress(e.bytesLoaded / e.bytesTotal);
+			lp.setInfo("" + (Math.floor(e.bytesLoaded/100000)/10) + "MB / " + (Math.floor(e.bytesTotal/100000)/10) + "MB")
+		}
+ 		addLoadProgressBox("Loading from OpenSprites...");
+		loadInProgress = true;
+		var request:URLRequest = new URLRequest(url);
+		var loader:URLLoader = new URLLoader(request);
+		loader.dataFormat = URLLoaderDataFormat.BINARY;
+		loader.addEventListener(Event.COMPLETE, handleComplete);
+		loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, handleError);
+		loader.addEventListener(IOErrorEvent.IO_ERROR, handleError);
+		loader.addEventListener(ProgressEvent.PROGRESS, handleProgress);
+		loader.load(request);
 	}
 
 	protected function jsEditorReady():void {
@@ -390,6 +424,7 @@ public class Scratch extends Sprite {
 
 	protected function startInEditMode():Boolean {
 		return isOffline || isExtensionDevMode;
+		//return true;
 	}
 
 	public function getMediaLibrary(type:String, whenDone:Function):MediaLibrary {

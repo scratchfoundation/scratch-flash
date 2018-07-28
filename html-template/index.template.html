@@ -35,7 +35,38 @@
         <!${useBrowserHistory} END Browser History required section -->  
             
         <script type="text/javascript" src="swfobject.js"></script>
+        <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
         <script type="text/javascript">
+            window.SWFready=$.Deferred(); // Deferred makes sure we don't call ASSetEditMode before SWF is ready.
+
+            function getObject(objectName) {
+                if (navigator.appName.indexOf("icrosoft") != -1) {
+                    return window[objectName+'IE'];
+                } else {
+                    return document[objectName];
+                }
+            }
+            function JSeditorReady() {
+                try {
+                    getObject("Scratch").ASloadProjectUrl("http://localhost:4080/internalapi/first.sb2");
+                    SWFready.resolve();
+                    return true;
+                } catch (error) {
+                    console.error(error.message, "\n", error.stack);
+                    throw error;
+                }
+            }
+            // function handleEmbedStatus(e) {
+            //     $('#scratch-loader').hide();
+            //     if(!e.success) {
+            //         $('#scratch').css('marginTop', '10');
+            //         $('#scratch IMG.proj_thumb').css('width', '179px');
+            //         $('#scratch DIV.scratch_unsupported').show();
+            //         $('#scratch DIV.scratch_loading').hide();
+            //     }else{
+            //         $('#scratch').css('visibility', 'visible');
+            //     }
+            // }
             // For version detection, set to min. required Flash Player version, or 0 (or 0.0.0), for no version detection. 
             var swfVersionStr = "${version_major}.${version_minor}.${version_revision}";
             // To use express install, set to playerProductInstall.swf, otherwise the empty string. 
@@ -48,6 +79,28 @@
                   "project_isPrivate": true,
                   "project_isNew": true
                 };
+            // The flashvars tell flash about the project data (and autostart=true)
+            // var flashvars = {
+            //     autostart: 'false',
+            //     urlOverrides: {
+            //         sitePrefix: window.location.protocol + '//' + window.location.host + '/',
+            //         siteCdnPrefix: "http://localhost:4080/internalapi/",
+            //         assetPrefix: "http://localhost:4080/internalapi/",
+            //         assetCdnPrefix: "http://localhost:4080/internalapi/",
+            //         projectPrefix: "http://localhost:4080/internalapi/",
+            //         projectCdnPrefix: "http://localhost:4080/internalapi/",
+            //         internalAPI: "internalapi/",
+            //         siteAPI: "site-api/",
+            //         staticFiles: "scratchr2/static/"
+            //     },
+
+            //     inIE: (navigator.userAgent.indexOf('MSIE') > -1)
+            // };
+            // $.each(flashvars, function(prop, val) {
+            //     if($.isPlainObject(val))
+            //         flashvars[prop] = encodeURIComponent(JSON.stringify(val));
+            // });
+
             var params = {};
             params.quality = "high";
             params.bgcolor = "${bgcolor}";
