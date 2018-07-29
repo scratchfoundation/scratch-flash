@@ -258,7 +258,6 @@ public class Scratch extends Sprite {
 		log(LogLevel.DEBUG, url);
 		function handleComplete(e:Event):void {
 			lp.setInfo("Opening project...")
-			log(LogLevel.DEBUG, "open project from " + url);
 			runtime.installProjectFromData(loader.data);
 			setProjectName(title);
 			removeLoadProgressBox();

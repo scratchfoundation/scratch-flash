@@ -35,33 +35,7 @@
         <!${useBrowserHistory} END Browser History required section -->  
             
         <script type="text/javascript" src="swfobject.js"></script>
-        <!-- <script type="text/javascript" src="https://js-agent.newrelic.com/nr-1071.min.js"></script> -->
-        <!-- <script type="text/javascript" src="https://ssl.google-analytics.com/ga.js"></script> -->
-        <!-- <script type="text/javascript" src="https://www.gstatic.com/recaptcha/api2/v1531759913576/recaptcha__en.js"></script> -->
         <script type="text/javascript" src="http://cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__//js/jquery.min.js"></script>
-        <!-- <link rel="stylesheet" type="text/css" href="http://cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/vendor/redmond/jquery.ui.all.css" />
-        <link rel="stylesheet" type="text/css" href="http://cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/css/main.css" />
-        <link rel="stylesheet" type="text/css" href="http://cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__//css/handheld.css" />
-        <link rel="stylesheet" type="text/css" href="http://cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/css/project_base.css" />
-        <link rel="stylesheet" type="text/css" href="http://cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__//vendor/redmond/jquery-ui.css" />
-
-        <script type="text/javascript" src="http://cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__//js/swfobject.js"></script>
-        <script type="text/javascript" src="http://cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__//js/jquery.min.js"></script>
-        <script type="text/javascript" src="http://cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/js/lib/underscore-min.js"></script>
-        <script type="text/javascript" src="http://cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/js/account-nav.js"></script>
-        <script type="text/javascript" src="http://cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__//js/jquery-ui.min.js"></script>
-        <script type="text/javascript" src="http://cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/js/main.js"></script>
-        <script type="text/javascript" src="http://cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/js/base.js"></script>
-        <script type="text/javascript" src="http://cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/js/lazyload.js"></script>
-        <script type="text/javascript" src="http://cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__//js/lib/jquery-visibility.js"></script>
-        <script type="text/javascript" src="http://cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__//js/carousel.js"></script>
-        <script type="text/javascript" src="http://cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__//js/explore-bar.js"></script>
-        <script type="text/javascript" src="http://cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__//js/save_actions.js"></script>
-        <script type="text/javascript" src="http://cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__//js/tag_regex.js"></script>
-        <script type="text/javascript" src="http://cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/js/lib/jquery.timeago.settings.js"></script>
-        <script type="text/javascript" src="http://cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__//js/apps/registration/main.js"></script>
-        <script type="text/javascript" src="http://cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__//js/apps/global.js"></script>
-        <script type="text/javascript" src="http://cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/js/project_base.js"></script> -->
         <script type="text/javascript">
             window.SWFready=$.Deferred(); // Deferred makes sure we don't call ASSetEditMode before SWF is ready.
 
@@ -82,60 +56,47 @@
                     throw error;
                 }
             }
-            // function handleEmbedStatus(e) {
-            //     $('#scratch-loader').hide();
-            //     if(!e.success) {
-            //         $('#scratch').css('marginTop', '10');
-            //         $('#scratch IMG.proj_thumb').css('width', '179px');
-            //         $('#scratch DIV.scratch_unsupported').show();
-            //         $('#scratch DIV.scratch_loading').hide();
-            //     }else{
-            //         $('#scratch').css('visibility', 'visible');
-            //     }
-            // }
+
             // For version detection, set to min. required Flash Player version, or 0 (or 0.0.0), for no version detection. 
             var swfVersionStr = "${version_major}.${version_minor}.${version_revision}";
             // To use express install, set to playerProductInstall.swf, otherwise the empty string. 
             var xiSwfUrlStr = "${expressInstallSwf}";
+            //The flashvars tell flash about the project data (and autostart=true)
             var flashvars = {
-                  "autostart": false,
-                  "urlOverrides": "{'sitePrefix':'http://localhost:4080/internalapi/','siteCdnPrefix':'http://localhost:4080/internalapi/','assetPrefix':'http://localhost:4080/internalapi/','assetCdnPrefix':'http://localhost:4080/internalapi/','projectPrefix':'http://localhost:4080/internalapi/','projectCdnPrefix':'http://localhost:4080/internalapi/','internalAPI':'internalapi/','siteAPI':'site-api/','staticFiles':'scratchr2/static/'}",
-                  "inIE": false,
-                  "project_title": "test",
-                  "project_isPrivate": true,
-                  "project_isNew": true
-                };
-            // The flashvars tell flash about the project data (and autostart=true)
-            // var flashvars = {
-            //     autostart: 'false',
-            //     urlOverrides: {
-            //         sitePrefix: window.location.protocol + '//' + window.location.host + '/',
-            //         siteCdnPrefix: "http://localhost:4080/internalapi/",
-            //         assetPrefix: "http://localhost:4080/internalapi/",
-            //         assetCdnPrefix: "http://localhost:4080/internalapi/",
-            //         projectPrefix: "http://localhost:4080/internalapi/",
-            //         projectCdnPrefix: "http://localhost:4080/internalapi/",
-            //         internalAPI: "internalapi/",
-            //         siteAPI: "site-api/",
-            //         staticFiles: "scratchr2/static/"
-            //     },
+                autostart: 'false',
+                urlOverrides: {
+                    sitePrefix: window.location.protocol + '//' + window.location.host + '/',
+                    siteCdnPrefix: "http://localhost:4080/internalapi/",
+                    assetPrefix: "http://localhost:4080/internalapi/",
+                    assetCdnPrefix: "http://localhost:4080/internalapi/",
+                    projectPrefix: "http://localhost:4080/internalapi/",
+                    projectCdnPrefix: "http://localhost:4080/internalapi/",
+                    internalAPI: "internalapi/",
+                    siteAPI: "site-api/",
+                    staticFiles: "scratchr2/static/"
+                },
+                project_isPrivate: 'true',
+                project_isNew: 'true',
+                inIE: (navigator.userAgent.indexOf('MSIE') > -1)
+            };
+            $.each(flashvars, function(prop, val) {
+                if($.isPlainObject(val))
+                    flashvars[prop] = encodeURIComponent(JSON.stringify(val));
+            });
 
-            //     inIE: (navigator.userAgent.indexOf('MSIE') > -1)
-            // };
-            // $.each(flashvars, function(prop, val) {
-            //     if($.isPlainObject(val))
-            //         flashvars[prop] = encodeURIComponent(JSON.stringify(val));
-            // });
-
-            var params = {};
-            params.quality = "high";
-            params.bgcolor = "${bgcolor}";
-            params.allowscriptaccess = "sameDomain";
-            params.allowfullscreen = "true";
-            var attributes = {};
-            attributes.id = "${application}";
-            attributes.name = "${application}";
-            attributes.align = "middle";
+            var params = {
+                quality: "high",
+                bgcolor: "${bgcolor}",
+                allowscriptaccess: "sameDomain",
+                allowfullscreen: "true"
+            };
+            
+            var attributes = {
+                id: "${application}",
+                name: "${application}",
+                align: "middle"
+            };
+        
             swfobject.embedSWF(
                 "${swf}.swf", "flashContent", 
                 "${width}", "${height}", 
