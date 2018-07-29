@@ -41,6 +41,8 @@ import flash.net.FileReferenceList;
 import flash.net.LocalConnection;
 import flash.net.SharedObject;
 import flash.net.URLLoader;
+import flash.net.URLRequestHeader;
+import flash.net.URLRequestMethod;
 import flash.net.URLLoaderDataFormat;
 import flash.net.URLRequest;
 import flash.system.*;
@@ -252,22 +254,13 @@ public class Scratch extends Sprite {
 		//addExternalCallback('ASloadProjectFile', loadProjectFile);
 	}
 
-	//public function loadProjectFile(filename:String) {
-	//	log(LogLevel.DEBUG, filename);
-	//	var _fileName:String, data:ByteArray;
-	//	var file:FileReference = FileReference(filename);
-	//	_filename = file.name;
-	//	data = file.data;
-	//	runtime.installProjectFromFile(filename, data);
-	//}
-
-	public function loadProjectUrl(url:String){
+	public function loadProjectUrl(url:String, title:String){
 		log(LogLevel.DEBUG, url);
 		function handleComplete(e:Event):void {
 			lp.setInfo("Opening project...")
 			log(LogLevel.DEBUG, "open project from " + url);
 			runtime.installProjectFromData(loader.data);
-			setProjectName("OpenSprites Backpack");
+			setProjectName(title);
 			removeLoadProgressBox();
 			ExternalInterface.call('JSloadProjectUrlCallback', false);
 		}
@@ -1116,7 +1109,8 @@ public class Scratch extends Sprite {
 
 	protected function addFileMenuItems(b:*, m:Menu):void {
 		m.addItem('Load Project', runtime.selectProjectFile);
-		m.addItem('Save Project', exportProjectToFile);
+		m.addItem('Export Project', exportProjectToFile);
+		m.addItem('Save Project ', saveProjectToServer);
 		if (runtime.recording || runtime.ready==ReadyLabel.COUNTDOWN || runtime.ready==ReadyLabel.READY) {
 			m.addItem('Stop Video', runtime.stopVideo);
 		} else {
@@ -1243,6 +1237,50 @@ public class Scratch extends Sprite {
 		d.addButton('Don\'t save', proceedWithoutSaving);
 		d.addButton('Cancel', cancel);
 		d.showOnStage(stage);
+	}
+
+	public function saveProjectToServer():void {
+		
+		function handleError(e:ErrorEvent):void {
+			log(LogLevel.DEBUG, "error" + e.toString());
+			jsThrowError('Failed to save project: ' + e.toString());
+			removeLoadProgressBox();
+			ExternalInterface.call('JSSaveProjectCallback', e);
+		}
+
+		function squeakSoundsConverted():void {
+			scriptsPane.saveScripts(false);
+			var projectType:String = extensionManager.hasExperimentalExtensions() ? '.sbx' : '.sb2';
+			var defaultName:String = StringUtil.trim(projectName());
+			defaultName = ((defaultName.length > 0) ? defaultName : 'project') + projectType;
+			log(LogLevel.DEBUG, "saving file" + defaultName);
+			var decodedText:String = StringHelper.unescapeString(defaultName);
+			log(LogLevel.DEBUG, "saving file" + decodedText);
+
+			var zipData:ByteArray = projIO.encodeProjectAsZipFile(stagePane);
+			
+			var header:URLRequestHeader = new URLRequestHeader("Content-type", "application/octet-stream");
+			var request:URLRequest = new URLRequest("http://localhost:4080/save?user=test&filename=" + decodedText);
+			request.requestHeaders.push(header);
+			request.method = URLRequestMethod.POST;
+			request.data = zipData;
+
+			var loader:URLLoader = new URLLoader(request);
+			loader.dataFormat = URLLoaderDataFormat.BINARY;
+			loader.addEventListener(Event.COMPLETE, handleComplete);
+			loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, handleError);
+			loader.addEventListener(IOErrorEvent.IO_ERROR, handleError);
+			loader.load(request);
+		}
+
+		function handleComplete(e:Event):void {
+			log(LogLevel.DEBUG, "saved project");
+		}
+
+		if (loadInProgress) return;
+		var projIO:ProjectIO = new ProjectIO(this);
+		projIO.convertSqueakSounds(stagePane, squeakSoundsConverted);
+
 	}
 
 	public function exportProjectToFile(fromJS:Boolean = false, saveCallback:Function = null):void {

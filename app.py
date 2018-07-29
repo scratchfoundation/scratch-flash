@@ -37,6 +37,17 @@ class App(object):
     def index(self, **args):
         return file('./readme.md')
 
+    @cherrypy.expose
+    def save(self, **args):
+        cl = cherrypy.request.headers['Content-Length']
+        rawbody = cherrypy.request.body.read(int(cl))
+        user = args.get('user')
+        filename  = args.get('filename')
+        print user, filename
+        with open("/tmp/%s_%s" % (user, filename), 'w') as f:
+            f.write(rawbody)
+        return file('./readme.md')
+
 if __name__ == '__main__':
     conf = {
         '/': {
