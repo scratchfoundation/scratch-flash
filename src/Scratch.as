@@ -1252,14 +1252,14 @@ public class Scratch extends Sprite {
 			var projectType:String = extensionManager.hasExperimentalExtensions() ? '.sbx' : '.sb2';
 			var defaultName:String = StringUtil.trim(projectName());
 			defaultName = ((defaultName.length > 0) ? defaultName : 'project') + projectType;
-			log(LogLevel.DEBUG, "saving file" + defaultName);
-			var decodedText:String = StringHelper.unescapeString(defaultName);
-			log(LogLevel.DEBUG, "saving file" + decodedText);
 
 			var zipData:ByteArray = projIO.encodeProjectAsZipFile(stagePane);
 			
-			var header:URLRequestHeader = new URLRequestHeader("Content-type", "application/octet-stream");
-			var request:URLRequest = new URLRequest("http://localhost:4080/save?user=test&filename=" + decodedText);
+			var header:URLRequestHeader = new URLRequestHeader("Content-type", "application/octet-stream;charset=utf-8");
+			var url:String = "http://localhost:4080/save?user=test&filename=" + encodeURIComponent(defaultName);
+			var request:URLRequest = new URLRequest(url);
+			log(LogLevel.DEBUG, url);
+
 			request.requestHeaders.push(header);
 			request.method = URLRequestMethod.POST;
 			request.data = zipData;

@@ -1,6 +1,9 @@
+# coding: utf-8
+
 import cherrypy
 import os
 import ConfigParser
+from os import listdir
 # import os, tempfile, sys, socket, re
 # import importlib
 # from StringIO import StringIO
@@ -32,6 +35,7 @@ def jsonify_tool_callback(*args, **kwargs):
 cherrypy.tools.jsonify = cherrypy.Tool('before_finalize', jsonify_tool_callback, priority=30)
 
 class App(object):
+    FILE_TEMPLATE = "/tmp/%s_%s"
 
     @cherrypy.expose
     def index(self, **args):
@@ -41,12 +45,32 @@ class App(object):
     def save(self, **args):
         cl = cherrypy.request.headers['Content-Length']
         rawbody = cherrypy.request.body.read(int(cl))
-        user = args.get('user')
-        filename  = args.get('filename')
+        user = self.encode(args.get('user'))
+        filename = self.encode(args.get('filename'))
         print user, filename
-        with open("/tmp/%s_%s" % (user, filename), 'w') as f:
+
+        with open(App.FILE_TEMPLATE % (user, filename), 'w') as f:
             f.write(rawbody)
         return file('./readme.md')
+    
+    @cherrypy.expose
+    def show(self, **args):
+        user = self.encode(args.get('user'))
+        project_files = [f[len(user)+1:] for f in listdir('/tmp') if f.startswith(user) and f.endswith('sb2')]
+        return project_files
+
+    @cherrypy.expose
+    def load(self, **args):
+        user = self.encode(args.get('user'))
+        filename = self.encode(args.get('filename'))
+        print user, filename
+
+        return file(App.FILE_TEMPLATE % (user, filename))
+
+    
+    def encode(self, _str, charset='uft-8'):
+        return "{}".format(_str.encode('utf-8'))
+
 
 if __name__ == '__main__':
     conf = {

@@ -1,0 +1,1908 @@
+# Translators:
+# dnowba <d.now.ba@gmail.com>, 2016
+# Chris Garrity (ML) <chrisg@media.mit.edu>, 2016
+# YH-HSIEN FANG <yusianfang@gmail.com>, 2016
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-08-23 20:02+0100\n"
+"PO-Revision-Date: 2013-05-02 00:42+0000\n"
+"Last-Translator: YH-HSIEN FANG <yusianfang@gmail.com>, 2016\n"
+"Language-Team: Chinese (Taiwan) (https://www.transifex.com/llk/teams/60938/zh_TW/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: zh_TW\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Pootle 2.5.1.1\n"
+"X-POOTLE-MTIME: 1367455321.000000\n"
+
+msgid "%b and %b"
+msgstr "%b 且 %b"
+
+msgid "%b or %b"
+msgstr "%b 或 %b"
+
+msgid "%m.attribute of %m.spriteOrStage"
+msgstr "%m.attribute ( %m.spriteOrStage )"
+
+msgid "%m.list contains %s?"
+msgstr "清單 %m.list 包含 %s?"
+
+msgid "%m.mathOp of %n"
+msgstr "%m.mathOp 數值 %n"
+
+msgid "%m.sensor sensor value"
+msgstr "%m.sensor 的偵測值"
+
+msgid "%n mod %n"
+msgstr "%n 除以 %n 的餘數"
+
+msgid "Control"
+msgstr "控制"
+
+msgid "Data"
+msgstr "資料"
+
+msgid "Events"
+msgstr "事件"
+
+msgid "Looks"
+msgstr "外觀"
+
+msgid "More Blocks"
+msgstr "更多積木"
+
+msgid "Motion"
+msgstr "動作"
+
+msgid "Operators"
+msgstr "運算"
+
+msgid "Pen"
+msgstr "畫筆"
+
+msgid "Sensing"
+msgstr "偵測"
+
+msgid "Sound"
+msgstr "音效"
+
+msgid "add %s to %m.list"
+msgstr "新增項目 %s ( %m.list )"
+
+msgid "answer"
+msgstr "詢問的答案"
+
+msgid "ask %s and wait"
+msgstr "詢問 %s 並等待"
+
+# "backdrop" in Scratch 2.0 is similar to "background" in Scratch 1.4
+msgid "backdrop #"
+msgstr "背景編號"
+
+# "backdrop" in Scratch 2.0 is similar to "background" in Scratch 1.4
+msgid "backdrop name"
+msgstr "背景名稱"
+
+msgid "broadcast %m.broadcast"
+msgstr "廣播訊息 %m.broadcast"
+
+msgid "broadcast %m.broadcast and wait"
+msgstr "廣播訊息 %m.broadcast 並等待"
+
+msgid "change %m.effect effect by %n"
+msgstr "效果 %m.effect 改變 %n"
+
+msgid "change %m.var by %n"
+msgstr "變數 %m.var 改變 %n"
+
+msgid "change pen color by %n"
+msgstr "筆跡顏色改變 %n"
+
+msgid "change pen shade by %n"
+msgstr "筆跡亮度改變 %n"
+
+msgid "change pen size by %n"
+msgstr "筆跡寬度改變 %n"
+
+msgid "change size by %n"
+msgstr "尺寸改變 %n"
+
+msgid "change tempo by %n"
+msgstr "演奏速度改變 %n"
+
+msgid "change volume by %n"
+msgstr "音量改變 %n"
+
+msgid "change x by %n"
+msgstr "x 改變 %n"
+
+msgid "change y by %n"
+msgstr "y 改變 %n"
+
+msgid "clear"
+msgstr "筆跡清除"
+
+msgid "clear graphic effects"
+msgstr "效果清除"
+
+msgid "color %c is touching %c?"
+msgstr "顏色 %c 碰到 顏色 %c?"
+
+msgid "costume #"
+msgstr "造型編號"
+
+msgid "create clone of %m.spriteOnly"
+msgstr "分身 %m.spriteOnly 建立"
+
+msgid "current %m.timeAndDate"
+msgstr "目前時間的 %m.timeAndDate"
+
+msgid "days since 2000"
+msgstr "2000年迄今日數"
+
+msgid "define"
+msgstr "定義"
+
+msgid "delete %d.listDeleteItem of %m.list"
+msgstr "刪除第 %d.listDeleteItem 項 ( %m.list )"
+
+msgid "delete this clone"
+msgstr "分身刪除"
+
+msgid "direction"
+msgstr "方向"
+
+msgid "distance"
+msgstr "距離"
+
+msgid "distance to %m.spriteOrMouse"
+msgstr "與 %m.spriteOrMouse 的間距"
+
+msgid "else"
+msgstr "否則"
+
+msgid "forever"
+msgstr "重複無限次"
+
+msgid "glide %n secs to x:%n y:%n"
+msgstr "滑行 %n 秒到 x:%n y:%n"
+
+msgid "go back %n layers"
+msgstr "圖層下移 %n 層"
+
+msgid "go to %m.location"
+msgstr "定位到 %m.location 位置"
+
+msgid "go to front"
+msgstr "圖層上移至頂層"
+
+msgid "go to x:%n y:%n"
+msgstr "定位到 x:%n y:%n"
+
+msgid "hide"
+msgstr "隱藏"
+
+msgid "hide list %m.list"
+msgstr "清單 %m.list 隱藏"
+
+msgid "hide variable %m.var"
+msgstr "變數 %m.var 隱藏"
+
+msgid "if %b then"
+msgstr "如果 %b 那麼"
+
+msgid "if on edge, bounce"
+msgstr "碰到邊緣就反彈"
+
+msgid "insert %s at %d.listItem of %m.list"
+msgstr "添加 %s 為第 %d.listItem 項( %m.list )"
+
+msgid "item %d.listItem of %m.list"
+msgstr "清單第 %d.listItem 項項目( %m.list )"
+
+msgid "join %s %s"
+msgstr "字串組合 %s 和 %s"
+
+msgid "key %m.key pressed?"
+msgstr "%m.key 鍵被按下？"
+
+msgid "length of %m.list"
+msgstr "清單 %m.list 的項目數"
+
+msgid "length of %s"
+msgstr "字串長度( %s )"
+
+msgid "letter %n of %s"
+msgstr "字串中第 %n 字( %s )"
+
+msgid "loudness"
+msgstr "聲音響度"
+
+msgid "mouse down?"
+msgstr "滑鼠鍵被按下？"
+
+msgid "mouse x"
+msgstr "鼠標的 x"
+
+msgid "mouse y"
+msgstr "鼠標的 y"
+
+msgid "move %n steps"
+msgstr "移動 %n 點"
+
+# "backdrop" in Scratch 2.0 is similar to "background" in Scratch 1.4
+msgid "next backdrop"
+msgstr "下一個背景"
+
+msgid "next costume"
+msgstr "造型換成下一個"
+
+msgid "not %b"
+msgstr "%b 不成立"
+
+msgid "pen down"
+msgstr "下筆"
+
+msgid "pen up"
+msgstr "停筆"
+
+msgid "pick random %n to %n"
+msgstr "隨機取數 %n 到 %n"
+
+msgid "play drum %d.drum for %n beats"
+msgstr "演奏節拍 %d.drum %n 拍"
+
+msgid "play note %d.note for %n beats"
+msgstr "演奏音階 %d.note %n 拍"
+
+msgid "play sound %m.sound"
+msgstr "播放音效 %m.sound"
+
+msgid "play sound %m.sound until done"
+msgstr "播放音效 %m.sound 到底"
+
+msgid "point in direction %d.direction"
+msgstr "面朝 %d.direction 度"
+
+msgid "point towards %m.spriteOrMouse"
+msgstr "面朝 %m.spriteOrMouse 向"
+
+msgid "repeat %n"
+msgstr "重複 %n 次"
+
+msgid "repeat until %b"
+msgstr "重複直到 %b"
+
+msgid "replace item %d.listItem of %m.list with %s"
+msgstr "替換第 %d.listItem 項( %m.list )成 %s"
+
+msgid "reset timer"
+msgstr "計時器重置"
+
+msgid "rest for %n beats"
+msgstr "演奏休息 %n 拍"
+
+msgid "round %n"
+msgstr "四捨五入數值 %n"
+
+msgid "say %s"
+msgstr "說出 %s"
+
+msgid "say %s for %n secs"
+msgstr "說出 %s %n 秒"
+
+msgid "sensor %m.booleanSensor?"
+msgstr "偵測器 %m.booleanSensor？"
+
+msgid "set %m.effect effect to %n"
+msgstr "效果 %m.effect 設為 %n"
+
+msgid "set %m.motor power to %n"
+msgstr "%m.motor 的動力設為 %n"
+
+msgid "set %m.motor2 direction to %m.motorDirection"
+msgstr "%m.motor2 的方向設為 %m.motorDirection"
+
+msgid "set %m.var to %s"
+msgstr "變數 %m.var 設為 %s"
+
+msgid "set instrument to %d.instrument"
+msgstr "演奏樂器設為 %d.instrument"
+
+msgid "set pen color to %c"
+msgstr "筆跡顏色設為 %c"
+
+msgid "set pen color to %n"
+msgstr "筆跡顏色設為 %n"
+
+msgid "set pen shade to %n"
+msgstr "筆跡亮度設為 %n"
+
+msgid "set pen size to %n"
+msgstr "筆跡寬度設為 %n"
+
+msgid "set rotation style %m.rotationStyle"
+msgstr "迴轉方式設為 %m.rotationStyle"
+
+msgid "set size to %n%"
+msgstr "尺寸設為 %n% "
+
+msgid "set tempo to %n bpm"
+msgstr "演奏速度設為 %n bpm"
+
+msgid "set video transparency to %n%"
+msgstr "視訊透明度設為 %n%"
+
+msgid "set volume to %n%"
+msgstr "音量設為 %n%"
+
+msgid "set x to %n"
+msgstr "x 設為 %n"
+
+msgid "set y to %n"
+msgstr "y 設為 %n"
+
+msgid "show"
+msgstr "顯示"
+
+msgid "show list %m.list"
+msgstr "清單 %m.list 顯示"
+
+msgid "show variable %m.var"
+msgstr "變數 %m.var 顯示"
+
+msgid "size"
+msgstr "尺寸"
+
+msgid "stamp"
+msgstr "蓋章"
+
+msgid "stop %m.stop"
+msgstr "停止 %m.stop"
+
+msgid "stop all sounds"
+msgstr "停播所有音效"
+
+# "backdrop" in Scratch 2.0 is similar to "background" in Scratch 1.4
+msgid "switch backdrop to %m.backdrop"
+msgstr "背景換成 %m.backdrop"
+
+# "backdrop" in Scratch 2.0 is similar to "background" in Scratch 1.4
+msgid "switch backdrop to %m.backdrop and wait"
+msgstr "背景換成 %m.backdrop 並等待"
+
+msgid "switch costume to %m.costume"
+msgstr "造型換成 %m.costume"
+
+msgid "tempo"
+msgstr "演奏速度"
+
+msgid "think %s"
+msgstr "想著 %s"
+
+msgid "think %s for %n secs"
+msgstr "想著 %s %n 秒"
+
+msgid "tilt"
+msgstr "傾斜"
+
+msgid "timer"
+msgstr "計時器"
+
+msgid "touching %m.touching?"
+msgstr "碰到 %m.touching?"
+
+msgid "touching color %c?"
+msgstr "碰到顏色 %c?"
+
+msgid "turn %m.motor off"
+msgstr "關閉 %m.motor"
+
+msgid "turn %m.motor on"
+msgstr "開啟 %m.motor"
+
+msgid "turn %m.motor on for %n secs"
+msgstr "開啟 %m.motor 運轉 %n 秒"
+
+msgid "turn @turnLeft %n degrees"
+msgstr "左轉 @turnLeft %n 度"
+
+msgid "turn @turnRight %n degrees"
+msgstr "右轉 @turnRight %n 度"
+
+msgid "turn video %m.videoState"
+msgstr "視訊設為 %m.videoState"
+
+msgid "username"
+msgstr "用戶名稱"
+
+msgid "video %m.videoMotionType on %m.stageOrThis"
+msgstr "視訊 %m.videoMotionType ( %m.stageOrThis )"
+
+msgid "volume"
+msgstr "音量"
+
+msgid "wait %n secs"
+msgstr "等待 %n 秒"
+
+msgid "wait until %b"
+msgstr "等待直到 %b "
+
+msgid "when %m.booleanSensor"
+msgstr "當 %m.booleanSensor"
+
+msgid "when %m.key key pressed"
+msgstr "當 %m.key 鍵被按下"
+
+msgid "when %m.sensor %m.lessMore %n"
+msgstr "當 %m.sensor %m.lessMore %n"
+
+msgid "when %m.triggerSensor > %n"
+msgstr "當 %m.triggerSensor > %n"
+
+msgid "when @greenFlag clicked"
+msgstr "當 @greenFlag  被點擊"
+
+msgid "when I receive %m.broadcast"
+msgstr "當收到訊息 %m.broadcast"
+
+msgid "when I start as a clone"
+msgstr "當分身產生"
+
+msgid "when Stage clicked"
+msgstr "當舞台被點擊"
+
+# "backdrop" in Scratch 2.0 is similar to "background" in Scratch 1.4
+msgid "when backdrop switches to %m.backdrop"
+msgstr "當背景換成 %m.backdrop"
+
+msgid "when distance %m.lessMore %n"
+msgstr "當距離 %m.lessMore %n"
+
+msgid "when this sprite clicked"
+msgstr "當角色被點擊"
+
+msgid "when tilt %m.eNe %n"
+msgstr "當傾斜 %m.eNe %n"
+
+msgid "x position"
+msgstr "x 座標"
+
+msgid "y position"
+msgstr "y 座標"
+
+# The language name as it will appear in the language menu
+msgid "Language-Name"
+msgstr "正體中文"
+
+msgid "%m.list contains %s"
+msgstr "清單 %m.list 包含 %s"
+
+msgid "go to %m.spriteOrMouse"
+msgstr "定位到 %m.spriteOrMouse 位置"
+
+msgid "set motor direction %m.motorDirection"
+msgstr "馬達轉向設為 %m.motorDirection"
+
+msgid "set motor power %n"
+msgstr "馬達動力設為 %n"
+
+msgid "turn motor off"
+msgstr "馬達關閉"
+
+msgid "turn motor on"
+msgstr "馬達開啟"
+
+msgid "turn motor on for %n secs"
+msgstr "馬達啟動 %n 秒"
+
+msgid "when distance < %n"
+msgstr "當距離 < %n"
+
+msgid "when tilt = %n"
+msgstr "當傾斜度 = %n"
+
+msgid "10 ^"
+msgstr "10 ^"
+
+msgid ""
+"<b>Information about Cloud variables</b><br>&nbsp;<br>Currently, only "
+"numbers are supported<br>Chat rooms are not allowed, and will be "
+"removed<br>For more info, <a href=\"/help/faq/#clouddata\" "
+"target=\"_blank\">see the cloud data FAQ!</a>"
+msgstr ""
+"<b>關於雲端變數的資訊</b><br>&nbsp;<br>目前只支援使用數字。<br>不允許建立聊天室程式，會被移除。<br>若要了解更多資訊，<a "
+"href=\"/help/faq/#clouddata\" target=\"_blank\">請參考雲端資料常見問答！</a>"
+
+msgid "A connected"
+msgstr "A 已連接"
+
+msgid "A newer version of Scratch is available"
+msgstr "已有新版本的 Scratch 可用"
+
+msgid "About"
+msgstr "關於"
+
+msgid "Account settings"
+msgstr "帳戶設定"
+
+msgid "Add"
+msgstr "新增"
+
+msgid "Add an Extension"
+msgstr "添加擴充功能"
+
+msgid "Add boolean input:"
+msgstr "添加布林值輸入："
+
+msgid "Add label text:"
+msgstr "添加輔助文字："
+
+msgid "Add number input:"
+msgstr "添加數字輸入方塊："
+
+msgid "Add string input:"
+msgstr "添加文字輸入方塊："
+
+msgid "All"
+msgstr "全部"
+
+msgid "All Tips"
+msgstr "所有技巧"
+
+msgid ""
+"An updated version of the Scratch offline editor is available on the Scratch"
+" website."
+msgstr "在 Scratch 官網上有 Scratch 離線編輯器的更新版本可用。"
+
+msgid "Animal"
+msgstr "動物"
+
+msgid "Animals"
+msgstr "動物"
+
+msgid "B connected"
+msgstr "B 已連接"
+
+msgid "Back a layer"
+msgstr "移到下一層"
+
+msgid "Backdrop"
+msgstr "背景"
+
+msgid "Backdrop Library"
+msgstr "背景範例庫"
+
+msgid "Backdrops"
+msgstr "背景"
+
+msgid "Backpack"
+msgstr "背包"
+
+msgid "Bass"
+msgstr "貝斯"
+
+msgid "Bass Drum"
+msgstr "低音鼓"
+
+msgid "Bassoon"
+msgstr "低音管"
+
+msgid ""
+"Because you have a new Scratch account, any changes to cloud data won't be "
+"saved yet. Keep participating on the site you'll be able to use cloud data "
+"soon!"
+msgstr "由於你有了新的 Scratch 帳戶，任何雲端資料的變更將不會儲存。繼續參與站台的活動，很快的你就能使用雲端資料了！"
+
+msgid "Bitmap"
+msgstr "點陣圖"
+
+msgid "Bitmap Mode"
+msgstr "點陣圖模式"
+
+msgid "Block help"
+msgstr "輔助說明"
+
+msgid "Bongo"
+msgstr "邦加鼓"
+
+msgid "Bring to front"
+msgstr "移到最上層"
+
+msgid "Broadcast"
+msgstr "廣播"
+
+msgid "Brush"
+msgstr "筆刷"
+
+msgid "C connected"
+msgstr "C 已連接"
+
+msgid "Cabasa"
+msgstr "鐵沙鈴"
+
+msgid "Camera"
+msgstr "相機"
+
+msgid "Cancel"
+msgstr "取消"
+
+msgid "Cannot Delete"
+msgstr "無法刪除"
+
+msgid "Can’t find network connection or reach server."
+msgstr "無法連線到網路或伺服器。"
+
+msgid "Castle"
+msgstr "城堡"
+
+msgid "Category"
+msgstr "分類"
+
+msgid "Cello"
+msgstr "大提琴"
+
+msgid "Check for updates"
+msgstr "檢查新版本"
+
+msgid "Choir"
+msgstr "人聲合唱"
+
+msgid "Choose backdrop from library"
+msgstr "在範例庫中挑選背景"
+
+msgid "Choose costume from library"
+msgstr "在範例庫中挑選造型"
+
+msgid "Choose sound from library"
+msgstr "在範例庫中挑選音效"
+
+msgid "Choose sprite from library"
+msgstr "在範例庫中挑選角色"
+
+msgid "Circle"
+msgstr "正圓形"
+
+msgid "City"
+msgstr "城市"
+
+msgid "Clarinet"
+msgstr "單簧管"
+
+msgid "Claves"
+msgstr "梆子"
+
+msgid "Clear"
+msgstr "清除"
+
+msgid "Click \"Save now\" to try again or \"Download\" to save"
+msgstr "點擊「儲存」以重試或點擊「下載」以儲存"
+
+msgid "Close"
+msgstr "關閉"
+
+msgid "Closed Hi-Hat"
+msgstr "合起的腳踏鈸"
+
+msgid "Cloud data"
+msgstr "雲端資料"
+
+msgid "Cloud list (stored on server)"
+msgstr "雲端清單 (儲存於伺服器)"
+
+msgid "Cloud variable (stored on server)"
+msgstr "雲端變數 (儲存於伺服器)"
+
+msgid "Color a shape"
+msgstr "為圖形填色"
+
+msgid "Conga"
+msgstr "康加鼓"
+
+msgid "Connecting to Cloud data server..."
+msgstr "正在連接雲端資料伺服器…"
+
+msgid "Convert to bitmap"
+msgstr "轉換成點陣圖"
+
+msgid "Convert to vector"
+msgstr "轉換成向量圖"
+
+msgid "Converting mp3..."
+msgstr "正在轉換 mp3…"
+
+msgid "Copying..."
+msgstr "正在複製…"
+
+msgid "Costume"
+msgstr "造型"
+
+msgid "Costume Library"
+msgstr "造型範例庫"
+
+msgid "Costumes"
+msgstr "造型"
+
+msgid "Costumes > 1"
+msgstr "造型數 > 1"
+
+msgid "Could not retrieve new application from server."
+msgstr "無法從伺服器取得新應用程式。"
+
+msgid "Could not retrieve update location from server."
+msgstr "無法從伺服器取得更新位置。"
+
+msgid "Could not retrieve version information from server."
+msgstr "無法從伺服器取得版本資訊。"
+
+msgid "Could not write file:"
+msgstr "無法寫入檔案："
+
+msgid "Cowbell"
+msgstr "牛鈴"
+
+msgid "Crash Cymbal"
+msgstr "碎音鈸"
+
+msgid "Creating..."
+msgstr "正在建立…"
+
+msgid "Currently, only numbers can be stored in Cloud variables."
+msgstr "目前，雲端變數只能儲存數字。"
+
+msgid "D connected"
+msgstr "D 已連接"
+
+msgid "Dance"
+msgstr "舞蹈"
+
+msgid "Delete"
+msgstr "刪除"
+
+msgid "Don't save"
+msgstr "不要儲存"
+
+msgid "Download"
+msgstr "下載"
+
+msgid "Download to your computer"
+msgstr "下載到你的電腦"
+
+msgid "Downloading new version..."
+msgstr "正在下載新版本…"
+
+msgid "Dress-Up"
+msgstr "飾品"
+
+msgid "Duplicate"
+msgstr "複製"
+
+msgid "Edit"
+msgstr "編輯"
+
+msgid "Edit Block"
+msgstr "編輯積木"
+
+msgid "Effects"
+msgstr "效果"
+
+msgid "Electric Guitar"
+msgstr "電吉他"
+
+msgid "Electric Piano"
+msgstr "電子琴"
+
+msgid "Electronic"
+msgstr "電子"
+
+msgid "Ellipse"
+msgstr "圓形"
+
+msgid "Erase"
+msgstr "擦子"
+
+msgid "Eraser width"
+msgstr "擦子寬度"
+
+msgid "Error saving project"
+msgstr "儲存專案時發生錯誤"
+
+msgid "Error!"
+msgstr "錯誤！"
+
+msgid "Fantasy"
+msgstr "魔幻"
+
+msgid "Features"
+msgstr "特性"
+
+msgid "File"
+msgstr "檔案"
+
+msgid "Fill with color"
+msgstr "填色"
+
+msgid "Flip left-right"
+msgstr "橫向翻轉"
+
+msgid "Flip up-down"
+msgstr "直向翻轉"
+
+msgid "Flute"
+msgstr "長笛"
+
+msgid "Flying"
+msgstr "飛翔"
+
+msgid "Font:"
+msgstr "字型："
+
+msgid "For all sprites"
+msgstr "適用於所有角色"
+
+msgid "For this sprite only"
+msgstr "僅適用當前角色"
+
+msgid "Force help file update"
+msgstr "強制更新說明檔"
+
+msgid "Forward a layer"
+msgstr "移到上一層"
+
+msgid "Go to My Stuff"
+msgstr "移至「我的東西」"
+
+msgid "Group"
+msgstr "群組"
+
+msgid "Grow"
+msgstr "放大"
+
+msgid "Guiro"
+msgstr "刮瓜"
+
+msgid "Guitar"
+msgstr "吉他"
+
+msgid "Hand Clap"
+msgstr "拍掌"
+
+msgid "Hardware"
+msgstr "硬體"
+
+msgid "High C"
+msgstr "高音 C"
+
+msgid "Holiday"
+msgstr "節日"
+
+msgid "Human"
+msgstr "人類"
+
+msgid "Import"
+msgstr "匯入"
+
+msgid "Import experimental HTTP extension"
+msgstr "匯入實驗性 HTTP 擴充功能"
+
+msgid "Importing sound..."
+msgstr "正在匯入音效…"
+
+msgid "Indoors"
+msgstr "室內"
+
+msgid "Installing..."
+msgstr "正在安裝…"
+
+msgid "Instruments"
+msgstr "樂器"
+
+msgid "Letters"
+msgstr "字"
+
+msgid "Library"
+msgstr "範例庫"
+
+msgid "Line"
+msgstr "線條"
+
+msgid "Line width"
+msgstr "線條寬度"
+
+msgid "List name"
+msgstr "清單名稱"
+
+msgid "Loading help files..."
+msgstr "正在載入幫助檔案…"
+
+msgid "Loading project..."
+msgstr "正在載入專案…"
+
+msgid "Low C"
+msgstr "低音 C"
+
+msgid "Make a Block"
+msgstr "添加函式積木"
+
+msgid "Make a List"
+msgstr "建立一個清單"
+
+msgid "Make a Variable"
+msgstr "建立一個變數"
+
+msgid "Manual Update Available"
+msgstr "手動更新可用"
+
+msgid "Marimba"
+msgstr "馬林巴"
+
+msgid "Max"
+msgstr "最大值"
+
+msgid "Message Name"
+msgstr "訊息名稱"
+
+msgid "Microphone volume:"
+msgstr "麥克風音量："
+
+msgid "Middle C"
+msgstr "中音 C"
+
+msgid "Min"
+msgstr "最小值"
+
+msgid "Multiple"
+msgstr "多個"
+
+msgid "Music"
+msgstr "音樂"
+
+msgid "Music Box"
+msgstr "音樂盒"
+
+msgid "Music Loops"
+msgstr "音樂循環"
+
+msgid "Music and Dance"
+msgstr "音樂和舞蹈"
+
+msgid "Musical Notes"
+msgstr "音符"
+
+msgid "My Class"
+msgstr "我的班級"
+
+msgid "My Classes"
+msgstr "我的所有班級"
+
+msgid "My Stuff"
+msgstr "我的東西"
+
+msgid "Nature"
+msgstr "自然"
+
+msgid "New"
+msgstr "新建專案"
+
+msgid "New Block"
+msgstr "新的積木"
+
+msgid "New List"
+msgstr "新的清單"
+
+msgid "New Message"
+msgstr "新的訊息"
+
+msgid "New Variable"
+msgstr "新的變數"
+
+msgid "New backdrop from camera"
+msgstr "用攝影裝置錄製新背景"
+
+msgid "New backdrop:"
+msgstr "新的背景"
+
+msgid "New costume from camera"
+msgstr "用攝影裝置錄製新造型"
+
+msgid "New costume:"
+msgstr "新的造型："
+
+msgid "New name"
+msgstr "新的名稱："
+
+msgid "New sound:"
+msgstr "新的音效："
+
+msgid "New sprite from camera"
+msgstr "用攝影裝置錄製新角色"
+
+msgid "New sprite:"
+msgstr "新的角色："
+
+msgid "No motion blocks"
+msgstr "無可用的動作積木"
+
+msgid "No, Thanks"
+msgstr "不，謝了。"
+
+msgid "Not saved; network or server problem."
+msgstr "無法儲存，網路或伺服器發生問題。"
+
+msgid "Not saved; project did not load."
+msgstr "無法儲存，專案尚未載入。"
+
+msgid "OK"
+msgstr "確定"
+
+msgid "Offline Editor"
+msgstr "離線編輯器"
+
+msgid "Open"
+msgstr "開啟"
+
+msgid "Open Cuica"
+msgstr "打開的庫加鼓"
+
+msgid "Open Hi-Hat"
+msgstr "打開的腳踏鈸"
+
+msgid "Open Project"
+msgstr "開啟專案"
+
+msgid "Options"
+msgstr "選項"
+
+msgid "Organ"
+msgstr "風琴"
+
+msgid "Other"
+msgstr "其他"
+
+msgid "Outdoors"
+msgstr "戶外"
+
+msgid "Paint new backdrop"
+msgstr "自行繪製新的背景"
+
+msgid "Paint new costume"
+msgstr "自行繪製新的造型"
+
+msgid "Paint new sprite"
+msgstr "自行繪製新的角色"
+
+msgid "Password"
+msgstr "密碼"
+
+msgid "Password is required"
+msgstr "請填寫你在 Sratch 官方平台上的用戶密碼"
+
+msgid "Pencil"
+msgstr "鉛筆"
+
+msgid "People"
+msgstr "人物"
+
+msgid "Percussion"
+msgstr "打擊樂器"
+
+msgid "Piano"
+msgstr "鋼琴"
+
+msgid "Pick up color"
+msgstr "揀色"
+
+msgid "Pizzicato"
+msgstr "撥奏"
+
+msgid "Please visit the download page to install it."
+msgstr "請造訪下載頁面以安裝。"
+
+msgid "Profile"
+msgstr "個人資料"
+
+msgid "Project did not load."
+msgstr "專案並未載入。"
+
+msgid "Project name"
+msgstr "專案名稱"
+
+msgid "Project name is required"
+msgstr "請輸入專案名稱"
+
+msgid "Project not saved!"
+msgstr "專案尚未儲存！"
+
+msgid "Quit"
+msgstr "結束"
+
+msgid "Record"
+msgstr "錄音"
+
+msgid "Record & Export Video"
+msgstr "錄製並匯出影片"
+
+msgid "Record Project Video"
+msgstr "錄製成影片"
+
+msgid "Record new sound"
+msgstr "用麥克風錄製新音效"
+
+msgid "Rectangle"
+msgstr "方形"
+
+msgid "Redo"
+msgstr "重做"
+
+msgid "Remix"
+msgstr "改編"
+
+msgid "Remixing..."
+msgstr "正在改編…"
+
+msgid "Remove Background"
+msgstr "去背"
+
+msgid "Rename"
+msgstr "重新命名"
+
+msgid "Replace existing project?"
+msgstr "是否取代現有專案？"
+
+msgid "Reshape"
+msgstr "重新塑形"
+
+msgid "Revert"
+msgstr "還原"
+
+msgid "Reverting..."
+msgstr "正在還原…"
+
+msgid "Run without screen refresh"
+msgstr "運行（屏幕不刷新）"
+
+msgid "Running pre-release"
+msgstr "正在運行發行前版本"
+
+msgid "Save"
+msgstr "儲存"
+
+msgid "Save Project"
+msgstr "儲存"
+
+msgid "Save a copy of this project and add your own ideas."
+msgstr "建立專案複本並加入你的點子。"
+
+msgid "Save as"
+msgstr "另存"
+
+msgid "Save as a copy"
+msgstr "另存成複本"
+
+msgid "Save now"
+msgstr "儲存"
+
+msgid "Save project?"
+msgstr "是否儲存目前專案？"
+
+msgid "Saved"
+msgstr "已儲存"
+
+msgid "Saving changes..."
+msgstr "正在儲存變更…"
+
+msgid "Saving..."
+msgstr "正在儲存…"
+
+msgid "Saxophone"
+msgstr "薩克斯風"
+
+msgid "Scratch Updater"
+msgstr "Scratch 更新器"
+
+msgid "Script"
+msgstr "程式"
+
+msgid "Scripts"
+msgstr "程式"
+
+msgid "See project page"
+msgstr "檢視專案頁面"
+
+msgid "Select"
+msgstr "選取"
+
+msgid "Select and duplicate"
+msgstr "選取並複製"
+
+msgid "Send to back"
+msgstr "移到最下層"
+
+msgid "Server error:"
+msgstr "伺服器錯誤："
+
+msgid "Set Costume Center"
+msgstr "中心"
+
+msgid "Set costume center"
+msgstr "設定造型中心點"
+
+msgid "Share"
+msgstr "分享"
+
+msgid "Share to Scratch Website"
+msgstr "分享到 Scratch 官方平台"
+
+msgid "Share to website"
+msgstr "分享到官網"
+
+msgid "Shift:"
+msgstr "Shift："
+
+msgid "Shrink"
+msgstr "縮小"
+
+msgid "Side Stick"
+msgstr "鼓邊敲擊"
+
+msgid "Sign in"
+msgstr "登入"
+
+msgid "Sign in to save"
+msgstr "請先登入才能儲存"
+
+msgid "Sign out"
+msgstr "登出"
+
+msgid "Slider Range"
+msgstr "滑桿數值範圍"
+
+msgid "Small stage layout"
+msgstr "小型舞台面板"
+
+msgid "Smooth"
+msgstr "平滑的"
+
+msgid "Snare Drum"
+msgstr "軍鼓"
+
+msgid "Sound Library"
+msgstr "音效範例庫"
+
+msgid "Sounds"
+msgstr "音效"
+
+msgid "Space"
+msgstr "太空"
+
+msgid "Sports"
+msgstr "運動"
+
+msgid "Sprite"
+msgstr "角色"
+
+msgid "Sprite Library"
+msgstr "角色範例庫"
+
+msgid "Sprite1"
+msgstr "角色1"
+
+msgid "Sprites"
+msgstr "角色"
+
+msgid "Square"
+msgstr "正方形"
+
+msgid "Stage"
+msgstr "舞台"
+
+msgid "Stage selected:"
+msgstr "目前選擇的物件是「舞台」"
+
+msgid "Steel Drum"
+msgstr "鋼鼓"
+
+msgid "Success"
+msgstr "成功"
+
+msgid "Synth Lead"
+msgstr "合成主音"
+
+msgid "Synth Pad"
+msgstr "合成柔音"
+
+msgid "Tambourine"
+msgstr "鈴鼓"
+
+msgid "Text"
+msgstr "文字"
+
+msgid ""
+"The Scratch Team is always looking to better understand how Scratch is used "
+"around the world. To help support this effort, you can allow Scratch to "
+"automatically send usage information to the Scratch Team."
+msgstr ""
+"Scratch 團隊希望能深入瞭解 Scratch 在世界各地的使用情況。如果可以的話，希望你能允許 Scratch 將你的使用情形紀錄下來並發送給 "
+"Scratch 團隊。"
+
+msgid ""
+"The information we collect includes language selection, blocks usage, and "
+"some events like saving, loading, and uploading a project. We DO NOT collect"
+" any personal information. Please see our <a "
+"href='https://scratch.mit.edu/privacy_policy/'>Privacy Policy</a> for more "
+"information."
+msgstr ""
+"我們會蒐集的資訊包含了語言的選擇、積木的使用量，還有一些事件，像是儲存、載入、上傳專案。我們保證不會收集任何個人資訊。你可以觀看我們的<a "
+"href='https://scratch.mit.edu/privacy_policy/'>隱私政策</a>以進一步瞭解相關訊息。"
+
+msgid "Theme"
+msgstr "主題"
+
+msgid "Things"
+msgstr "物品"
+
+msgid "This is the current version."
+msgstr "目前的 Scratch 已是最新版本。"
+
+msgid ""
+"This project can detect who is using it, through the “username” block. To "
+"hide your identity, sign out before using the project."
+msgstr "這個專案使用了「用戶名稱」積木，可以偵測誰正在使用此專案。若要隱藏您的身份的話，先登出再使用。"
+
+msgid ""
+"This project uses Cloud data ‒ a feature that is available only to signed in"
+" users."
+msgstr "這個專案使用了「雲端資料」- 只有登入的用戶才能使用此功能。"
+
+msgid "This version is newer than the current release version."
+msgstr "這個版本比目前釋出的版本還新。"
+
+msgid "Throw away all changes since opening this project?"
+msgstr "確定要放棄在這個專案上做的任何變更嗎？"
+
+msgid "Tips"
+msgstr "技巧"
+
+msgid "To delete a block definition, first remove all uses of the block."
+msgstr "刪除某個積木的定義之前，要先把正在使用中的先移除。"
+
+msgid "Transportation"
+msgstr "交通"
+
+msgid "Triangle"
+msgstr "三角鐵"
+
+msgid "Trombone"
+msgstr "長號"
+
+msgid "Turbo Mode"
+msgstr "加速模式"
+
+msgid "Turbo mode"
+msgstr "加速模式"
+
+msgid "Type"
+msgstr "格式"
+
+msgid "Undelete"
+msgstr "復原刪除"
+
+msgid "Underwater"
+msgstr "水中"
+
+msgid "Undo"
+msgstr "復原"
+
+msgid "Undo Revert"
+msgstr "重做"
+
+msgid "Ungroup"
+msgstr "解散群組"
+
+msgid "Update check failed"
+msgstr "更新檢查失敗"
+
+msgid "Update failed"
+msgstr "更新失敗"
+
+msgid "Update not needed"
+msgstr "不需更新"
+
+msgid "Update now"
+msgstr "立即更新"
+
+msgid "Upload backdrop from file"
+msgstr "從電腦中挑選背景"
+
+msgid "Upload costume from file"
+msgstr "從電腦中挑選造型"
+
+msgid "Upload failed"
+msgstr "上傳失敗"
+
+msgid "Upload from your computer"
+msgstr "從電腦挑選"
+
+msgid "Upload sound from file"
+msgstr "從電腦中挑選音效"
+
+msgid "Upload sprite from file"
+msgstr "從電腦中挑選角色"
+
+msgid "Uploading image..."
+msgstr "正在上傳圖片檔…"
+
+msgid "Uploading sound..."
+msgstr "正在上傳音效檔…"
+
+msgid "Uploading sprite..."
+msgstr "正在上傳角色檔…"
+
+msgid "Variable name"
+msgstr "變數名稱"
+
+msgid "Vector"
+msgstr "向量圖"
+
+msgid "Vector Mode"
+msgstr "向量圖模式"
+
+msgid "Vibraphone"
+msgstr "顫音琴"
+
+msgid "Vibraslap"
+msgstr "振盪器"
+
+msgid "Video on:"
+msgstr "視訊影片於："
+
+msgid "Visit download page"
+msgstr "造訪下載頁面"
+
+msgid "Vocals"
+msgstr "人聲"
+
+msgid "Walking"
+msgstr "步行"
+
+msgid "Want to save? Click remix"
+msgstr "要儲存嗎？請點擊「改編」"
+
+msgid "Which column do you want to import"
+msgstr "您想匯入到哪個欄位"
+
+msgid "Wood Block"
+msgstr "木魚"
+
+msgid "Wooden Flute"
+msgstr "木笛"
+
+msgid "Yes, I'd Like To Help Improve Scratch"
+msgstr "是的，我願意幫助，讓 Scratch 變得更好"
+
+msgid ""
+"You cannot edit cloud data in someone else's project.<br>Any change that you"
+" make in the editor will be temporary and not persistent."
+msgstr "您不能編輯別人專案的雲端資料。<br>您所做的一切，都只是暫時的，並不會被儲存。"
+
+msgid "Your Scratch name"
+msgstr "帳號"
+
+msgid "Your Scratch name is required"
+msgstr "請填寫你在 Sratch 官方平台上的用戶名稱"
+
+msgid "Your project has been uploaded to scratch.mit.edu"
+msgstr "您的專案已經上傳到 scratch.mit.edu"
+
+msgid "a copy of the project file on your computer."
+msgstr "這個專案的複本在你的電腦。"
+
+msgid "abs"
+msgstr "絕對值"
+
+msgid "acos"
+msgstr "acos"
+
+msgid "add comment"
+msgstr "加註"
+
+msgid "all"
+msgstr "全部"
+
+msgid "all around"
+msgstr "不設限"
+
+msgid "any"
+msgstr "任何"
+
+msgid "asin"
+msgstr "asin"
+
+msgid "assets loaded"
+msgstr "個資源已載入"
+
+msgid "atan"
+msgstr "atan"
+
+msgid "backdrop"
+msgstr "背景"
+
+msgid "backdrop1"
+msgstr "背景1"
+
+msgid "backdrops"
+msgstr "背景"
+
+msgid "brightness"
+msgstr "亮度"
+
+msgid "button pressed"
+msgstr "按鈕被按下"
+
+msgid "by"
+msgstr "由"
+
+msgid "bytes loaded"
+msgstr "位元組已載入"
+
+msgid "can drag in player:"
+msgstr "播放時可拖曳："
+
+msgid "ceiling"
+msgstr "無條件進入"
+
+msgid "clean up"
+msgstr "整理工作區"
+
+msgid "clear senders/receivers"
+msgstr "清除發送者/接收者"
+
+msgid "color"
+msgstr "顏色"
+
+msgid "copy"
+msgstr "複製"
+
+msgid "cos"
+msgstr "cos"
+
+msgid "costume1"
+msgstr "造型1"
+
+msgid "costume2"
+msgstr "造型2"
+
+msgid "cut"
+msgstr "剪下"
+
+msgid "date"
+msgstr "日"
+
+msgid "day of week"
+msgstr "週"
+
+msgid "delete"
+msgstr "刪除"
+
+msgid "delete variable"
+msgstr "刪除變數"
+
+msgid "direction:"
+msgstr "方向："
+
+msgid "don't rotate"
+msgstr "不旋轉"
+
+msgid "down"
+msgstr "下"
+
+msgid "down arrow"
+msgstr "向下"
+
+msgid "duplicate"
+msgstr "複製"
+
+msgid "e ^"
+msgstr "e ^"
+
+msgid "edge"
+msgstr "邊緣"
+
+msgid "edit"
+msgstr "編輯"
+
+msgid "export"
+msgstr "匯出"
+
+msgid "fade in"
+msgstr "淡入"
+
+msgid "fade out"
+msgstr "淡出"
+
+msgid "fisheye"
+msgstr "魚眼"
+
+msgid "floor"
+msgstr "無條件捨去"
+
+msgid "ghost"
+msgstr "幻影"
+
+msgid "help"
+msgstr "幫助"
+
+msgid "hour"
+msgstr "時"
+
+msgid "import"
+msgstr "匯入"
+
+msgid "large readout"
+msgstr "大型顯示"
+
+msgid "last"
+msgstr "末"
+
+msgid "left"
+msgstr "左"
+
+msgid "left arrow"
+msgstr "向左"
+
+msgid "left-right"
+msgstr "左-右"
+
+msgid "length"
+msgstr "項目數"
+
+msgid "light"
+msgstr "光線"
+
+msgid "limit reached"
+msgstr "已達上（下）限"
+
+msgid "list"
+msgstr "清單"
+
+msgid "ln"
+msgstr "ln"
+
+msgid "log"
+msgstr "log"
+
+msgid "louder"
+msgstr "漸強"
+
+msgid "meow"
+msgstr "meow"
+
+msgid "message1"
+msgstr "訊息1"
+
+msgid "minute"
+msgstr "分"
+
+msgid "month"
+msgstr "月"
+
+msgid "mosaic"
+msgstr "馬賽克"
+
+msgid "motion"
+msgstr "動作"
+
+msgid "mouse-pointer"
+msgstr "鼠標"
+
+msgid "myself"
+msgstr "自己"
+
+msgid "new message..."
+msgstr "新訊息…"
+
+msgid "normal readout"
+msgstr "一般顯示"
+
+msgid "of"
+msgstr "之"
+
+msgid "off"
+msgstr "關閉"
+
+msgid "on"
+msgstr "開啟"
+
+msgid "on-flipped"
+msgstr "翻轉"
+
+msgid "other scripts in sprite"
+msgstr "角色的其它程式"
+
+msgid "other scripts in stage"
+msgstr "舞台上的其他程式"
+
+msgid "paste"
+msgstr "貼上"
+
+msgid "photo1"
+msgstr "照片1"
+
+msgid "pixelate"
+msgstr "像素化"
+
+msgid "pop"
+msgstr "pop"
+
+msgid "previous backdrop"
+msgstr "上一個背景"
+
+msgid "random"
+msgstr "隨機"
+
+msgid "random position"
+msgstr "隨機"
+
+msgid "record..."
+msgstr "錄音…"
+
+msgid "recording1"
+msgstr "錄音1"
+
+msgid "redo"
+msgstr "重做"
+
+msgid "rename variable"
+msgstr "重新命名變數"
+
+msgid "requires sign in"
+msgstr "需要登入"
+
+msgid "resistance-A"
+msgstr "電阻 A"
+
+msgid "resistance-B"
+msgstr "電阻 B"
+
+msgid "resistance-C"
+msgstr "電阻 C"
+
+msgid "resistance-D"
+msgstr "電阻 D"
+
+msgid "reverse"
+msgstr "反轉"
+
+msgid "right"
+msgstr "右"
+
+msgid "right arrow"
+msgstr "向右"
+
+msgid "rotation style:"
+msgstr "迴轉方式："
+
+msgid "save to local file"
+msgstr "儲存到電腦"
+
+msgid "second"
+msgstr "秒"
+
+msgid "select all"
+msgstr "全選"
+
+msgid "set slider min and max"
+msgstr "設定滑桿最小與最大值"
+
+msgid "shared"
+msgstr "已分享"
+
+msgid "show:"
+msgstr "顯示："
+
+msgid "silence"
+msgstr "靜音"
+
+msgid "sin"
+msgstr "sin"
+
+msgid "slider"
+msgstr "滑桿"
+
+msgid "softer"
+msgstr "漸弱"
+
+msgid "sound"
+msgstr "音效"
+
+msgid "space"
+msgstr "空白"
+
+msgid "sqrt"
+msgstr "平方根"
+
+msgid "tan"
+msgstr "tan"
+
+msgid "text"
+msgstr "文字"
+
+msgid "that way"
+msgstr "逆時針"
+
+msgid "this script"
+msgstr "這個程式"
+
+msgid "this sprite"
+msgstr "這個角色"
+
+msgid "this way"
+msgstr "順時針"
+
+msgid "undo"
+msgstr "復原"
+
+msgid "unshared"
+msgstr "未分享"
+
+msgid "up"
+msgstr "上"
+
+msgid "up arrow"
+msgstr "向上"
+
+msgid "variable"
+msgstr "變數"
+
+msgid "video direction"
+msgstr "視訊方向"
+
+msgid "video motion"
+msgstr "視訊動作"
+
+msgid "whirl"
+msgstr "漩渦"
+
+msgid "year"
+msgstr "年"
+
+msgid ""
+"<b>Information about Cloud variables</b><br>&nbsp;<br>Currently, only "
+"numbers are supported<br>Chat rooms are not allowed, and will be "
+"removed<br>For more info, <a href= target=>see the cloud data FAQ!</a>"
+msgstr ""
+"<b>雲端變數的</b><br>&nbsp;<br>目前只能用數字<br>不能用聊天室，會被刪除。<br>更多相關資訊<a "
+"href=\"/help/faq/#clouddata\" target=\"_blank\">請看雲端資料FAQ!</a>"
+
+msgid "Click  to try again or  to save"
+msgstr "點擊「儲存」以重試或「下載」以儲存"
+
+msgid "Cloud"
+msgstr "雲端"
+
+msgid "costume name"
+msgstr "造型名稱"
+
+msgid "Costumes:"
+msgstr "造型："
+
+msgid "Eraser width:"
+msgstr "擦子寬度："
+
+msgid "Line width:"
+msgstr "線條寬度："
+
+msgid "Scripts:"
+msgstr "程式："
+
+msgid "show receivers"
+msgstr "顯示接收者"
+
+msgid "show senders"
+msgstr "顯示傳送者"
+
+msgid "stored on server"
+msgstr "已儲存至伺服器"
