@@ -35,7 +35,8 @@
         <!${useBrowserHistory} END Browser History required section -->  
             
         <script type="text/javascript" src="swfobject.js"></script>
-        <script type="text/javascript" src="http://cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__//js/jquery.min.js"></script>
+        <script type="text/javascript" src="//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__//js/jquery.min.js"></script>
+        <script type="text/javascript" src="//cdn.jsdelivr.net/npm/fingerprintjs2@1.8.0/dist/fingerprint2.min.js"></script>
         <script type="text/javascript">
             window.SWFready=$.Deferred(); // Deferred makes sure we don't call ASSetEditMode before SWF is ready.
 
@@ -55,6 +56,14 @@
                     console.error(error.message, "\n", error.stack);
                     throw error;
                 }
+            }
+
+            function getFingerprint(callback) {
+                new Fingerprint2().get(function(result, components) {
+                    console.log(result) // a hash, representing your device fingerprint
+                    //console.log(components) // an array of FP components
+                    callback(result);
+                });
             }
 
             // For version detection, set to min. required Flash Player version, or 0 (or 0.0.0), for no version detection. 

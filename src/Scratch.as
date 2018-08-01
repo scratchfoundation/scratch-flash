@@ -1247,7 +1247,15 @@ public class Scratch extends Sprite {
 			ExternalInterface.call('JSSaveProjectCallback', e);
 		}
 
-		function squeakSoundsConverted():void {
+		function getFingerprint(): void {
+			externalCall('getFingerprint', function (fp:String):void {
+				if(fp) {
+					squeakSoundsConverted(fp)
+				}
+			});
+		}
+
+		function squeakSoundsConverted(user:String):void {
 			scriptsPane.saveScripts(false);
 			var projectType:String = extensionManager.hasExperimentalExtensions() ? '.sbx' : '.sb2';
 			var defaultName:String = StringUtil.trim(projectName());
@@ -1256,7 +1264,7 @@ public class Scratch extends Sprite {
 			var zipData:ByteArray = projIO.encodeProjectAsZipFile(stagePane);
 			
 			var header:URLRequestHeader = new URLRequestHeader("Content-type", "application/octet-stream;charset=utf-8");
-			var url:String = "http://localhost:4080/save?user=test&filename=" + encodeURIComponent(defaultName);
+			var url:String = "http://localhost:4080/save?user=" + user + "&filename=" + encodeURIComponent(defaultName);
 			var request:URLRequest = new URLRequest(url);
 			log(LogLevel.DEBUG, url);
 
@@ -1278,7 +1286,7 @@ public class Scratch extends Sprite {
 
 		if (loadInProgress) return;
 		var projIO:ProjectIO = new ProjectIO(this);
-		projIO.convertSqueakSounds(stagePane, squeakSoundsConverted);
+		projIO.convertSqueakSounds(stagePane, getFingerprint);
 
 	}
 
