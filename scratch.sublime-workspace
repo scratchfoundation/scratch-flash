@@ -248,24 +248,42 @@
 	},
 	"expanded_folders":
 	[
-		"/Users/zezhen/workspace/scratch-flash"
+		"/Users/zezhen/workspace/scratch-flash",
+		"/Users/zezhen/workspace/scratch-flash/src"
 	],
 	"file_history":
 	[
 		"/Users/zezhen/workspace/scratch-flash/src/Scratch.as",
-		"/Users/zezhen/workspace/scratch-flash/bin-debug/Scratch.html",
 		"/Users/zezhen/workspace/scratch-flash/html-template/index.template.html",
-		"/Users/zezhen/workspace/scratch-flash/src/scratch/ScratchRuntime.as",
+		"/Users/zezhen/workspace/scratch-flash/app.py",
+		"/Users/zezhen/workspace/scratch-flash/src/scratch/ScratchSound.as",
+		"/Users/zezhen/workspace/scratch-flash/src/util/StringHelper.as",
 		"/Users/zezhen/workspace/scratch-flash/src/util/ProjectIO.as",
+		"/Users/zezhen/workspace/scratch-flash/src/util/ZipIO.as",
+		"/Users/zezhen/workspace/scratch-flash/src/scratch/ScratchRuntime.as",
 		"/Users/zezhen/workspace/scratch-flash/src/ui/parts/TopBarPart.as",
+		"/Users/zezhen/workspace/scratch-flash/bin-debug/history/history.js",
+		"/Users/zezhen/workspace/scratch-flash/bin-debug/Scratch.html",
+		"/Users/zezhen/workspace/scratch-flash/html-template/mit.html",
+		"/Users/zezhen/workspace/scratch-flash/asset/scratch/css/project_base.css",
+		"/Users/zezhen/workspace/scratch-flash/asset/scratch/new.html",
+		"/Users/zezhen/Downloads/2.html",
+		"/Users/zezhen/Downloads/1.html",
+		"/Users/zezhen/workspace/scratch-asset/scratch/new.html",
+		"/Users/zezhen/workspace/scratch-asset/scratch/Scratch.html",
+		"/Users/zezhen/workspace/scratch-asset/scratch/mit.html",
+		"/Users/zezhen/workspace/scratch-asset/mit.html",
 		"/Users/zezhen/workspace/scratch-flash/src/util/Server.as",
 		"/Users/zezhen/workspace/scratch-flash/src/translation/Translator.as",
+		"/Users/zezhen/workspace/scratch-flash/html-template/swfobject.js",
 		"/Users/zezhen/workspace/scratch-flash/bin-release/Scratch.html",
-		"/Users/zezhen/workspace/scratch-flash/bin-debug/mit.html",
-		"/Users/zezhen/workspace/scratch-flash/src/logging/Log.as",
-		"/Users/zezhen/workspace/scratch-flash/src/logging/LogLevel.as",
+		"/Users/zezhen/workspace/scratch-flash/bin-debug/swfobject.js",
+		"/Users/zezhen/workspace/scratch-flash/bin-release/index.html",
+		"/Users/zezhen/workspace/scratch-asset/app.py",
+		"/Users/zezhen/workspace/scratch-asset/app.cnf",
 		"/Users/zezhen/workspace/scratch-flash/index.html",
-		"/Users/zezhen/Downloads/B6055_B5948_20180719_20180721.tsv",
+		"/Users/zezhen/Downloads/bd_B6055_B5948_20180719_20180721.tsv",
+		"/Users/zezhen/workspace/scratch-flash/src/blocks/Block.as",
 		"/Users/zezhen/workspace/tmp/adserver_query.py",
 		"/Users/zezhen/workspace/tmp/test.py",
 		"/Users/zezhen/workspace/tmp/tensorflow/test.py",
@@ -362,24 +380,7 @@
 		"/Users/zezhen/workspace/budget_data_client/arya/release_definition/resources/prod-red-corp/image/post-deploy",
 		"/Users/zezhen/workspace/budget_data_client/arya/release_definition/resources/stage-blue-corp/image/post-deploy",
 		"/Users/zezhen/workspace/budget_data_client/buildinfo/Makefile",
-		"/Users/zezhen/workspace/budget_data_client/arya/release_definition/resources/stage-blue-message/image/runtime.yidf",
-		"/Users/zezhen/workspace/budget_data_client/arya/release_definition/resources/prod-blue-grid/image/post-deploy",
-		"/Users/zezhen/workspace/budget_data_client/arya/release_definition/resources/prod-blue-message/image/post-deploy",
-		"/Users/zezhen/workspace/budget_data_client/target/classes/bin/retention.sh",
-		"/Users/zezhen/workspace/budget_data_client/src/main/resources/bin/ingest_ads_metrics.sh",
-		"/Users/zezhen/workspace/budget_data_client/arya/release_definition/resources/prod-red-message/image/post-deploy",
-		"/Users/zezhen/workspace/budget_data_client/src/main/resources/bin/retention.sh",
-		"/Users/zezhen/workspace/budget_data_client/src/main/launch/property_mapping_ingest.run",
-		"/Users/zezhen/workspace/budget_data_client/target/classes/bin/start_message_consumer.sh",
-		"/Users/zezhen/Documents/father - visa/note",
-		"/Users/zezhen/workspace/budget_data_client/src/main/launch/property_mapping.run",
-		"/Users/zezhen/workspace/budget_data_client/arya/release_definition/resources/stage-blue-grid/image/post-deploy",
-		"/Users/zezhen/workspace/budget_data_client/src/main/python/etl_tool/email.py",
-		"/Users/zezhen/workspace/budget_data_client/src/main/resources/bin/ingest_spgen_output.sh",
-		"/Users/zezhen/convert.pl",
-		"/Users/zezhen/workspace/budget_data_client/target/classes/bin/ingest_spgen_output.sh",
-		"/Users/zezhen/workspace/budget_data_client/target/classes/bin/parse_gpa_campaigns.sh",
-		"/Users/zezhen/workspace/archive/buket_test_scripts/bucket_25_run.sh"
+		"/Users/zezhen/workspace/budget_data_client/arya/release_definition/resources/stage-blue-message/image/runtime.yidf"
 	],
 	"find":
 	{
@@ -390,6 +391,8 @@
 		"height": 101.0,
 		"where_history":
 		[
+			"",
+			"asset/scratch/css",
 			""
 		]
 	},
@@ -398,61 +401,134 @@
 		"case_sensitive": false,
 		"find_history":
 		[
-			"exportProjectToFile",
-			"encodeProjectAsZipFile",
-			"decode",
-			"ProjectIO",
-			"installProjectFromData",
-			"installproject",
-			"loadproject",
+			"callToSaveProject",
+			"getFingerprint",
+			"getFingerprint'",
+			"bool",
+			"getFingerprint",
+			"jsEnable",
+			"ASGetFingerprint",
+			"ASloadProjectUrl",
 			"loadProjectUrl",
-			"title",
-			"url",
-			"Scratch.swf",
-			"setLanguagePressed",
-			"setLanguage",
-			"setSelectedLang",
-			"handleStartupParameters",
-			"setupExternalInterface",
-			"isOffline",
-			"isoffline",
-			"editor",
-			"presentationModeWasChanged",
-			"setPresentationMode",
-			"keyDown",
-			"setPresentationMode",
-			"presentationModeWasChanged",
-			"setEditMode",
-			"presentationModeWasChanged",
-			"setedit",
-			"jquery-ui.css",
-			"Backbone",
+			"tmp",
+			"call\\(",
+			"call(",
+			"call",
+			"external",
+			"figer",
+			",",
+			"\\t",
+			"saveProjec",
+			"save",
+			"projectName",
+			"lp",
+			"handleProgress",
+			"saveproject",
+			"lp\\.",
+			"lp.",
+			"saveP",
+			"loadP",
+			"exportProjectToFile",
+			"saveP",
+			"lp",
+			"saveP",
+			"stagePane",
+			"saveProjectToServer",
+			"selectProjectFile",
+			"exportProjectToFile",
+			"saveProjectToServer",
+			"exportPro",
+			"export",
+			"saveProject",
+			"save",
+			"saveProjectToServer",
+			"exportProjectToFile",
+			"saveProjectToServer",
+			"Save Project",
+			"Save Projectr",
+			"loadProjectUrl",
+			"saveProjectToServer",
+			"    ",
+			"convertSqueakSounds",
+			"load",
+			"saveProjectToServer",
+			"save",
+			"encodeProjectAsZipFile",
+			"buf",
+			"bug",
+			"encodeProjectAsZipFile",
+			"exportProjectToFile",
+			"loadSingleFile",
+			"load",
+			"loadprojectfro",
+			"loadprojectfrom",
+			"loadpro",
+			"loadproje",
+			"exportProjectToFile",
+			"Load Project",
+			"Event",
+			"getPlayer()",
+			"hashChangeHandler",
+			"scratch",
+			"addExternalCallback",
+			"call",
+			"ExternalInterface",
+			"addExternalCallback",
+			"ASloadBase64SBX",
+			"loadBase64SBX",
+			"loadGithubURL",
+			"createNewProjectScratchX",
+			"load",
+			"addExternalCallback",
+			"jsE",
 			"externalCall",
-			"project_base",
-			"project_base.js",
-			"project_base",
-			"tip_bar_api",
-			"externalCall",
-			"editmode",
-			"fixLayout",
-			"editMode",
-			"ScratchX",
+			"addExternalCallback",
+			"jse",
+			"js",
+			"addExternalCallback",
+			"jseditor",
+			"FileReferenceList",
+			"select",
+			"selectProjectFile",
+			"installProjectFromFile",
+			"installEmptyProject",
+			"addParts",
+			"getScratchStage",
+			"loadSingleFile",
+			"selectProjectFile",
+			"Load Project",
 			"isExtensionDevMode",
-			"startInEditMode",
+			"isoffline",
+			"ASloadProjectUrl",
+			".editor",
+			"editor",
+			"extensionDevMode",
+			"dev",
+			"devm",
+			"dev",
+			"extensionDevMode",
+			"isExtensionDevMode",
+			"setupExternalInterface",
+			"createNewProjectScratchX",
+			"isExtensionDevMode",
+			"isoffline",
+			"tip_bar_api",
 			"setEditMode",
-			"externalInterfaceAvailable",
-			"externalCall",
-			"initialize",
-			"jsAccessDetermined",
-			"jsEnabled",
-			"Scratch.app.jsEnabled",
-			"echoToJS",
-			"For",
-			"length",
-			"log",
-			"console.log",
-			"externalCall",
-			"ExternalInterface"
+			"startInEditMode",
+			"isExtensionDevMode",
+			"getMediaLibrary",
+			"google",
+			"jquery.ui.base.css",
+			"loadGithubURL",
+			"projectUrl",
+			"http://cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/",
+			"jquery-ui.min.js",
+			"http://cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__//",
+			"main.js.1",
+			"\"//",
+			"m_3TAXDreGTFyoYnEmU9mcKB4Xtw5mw6yRkuJtXRKxM",
+			"see-inside",
+			"account-nav.json"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -460,8 +536,19 @@
 		"regex": true,
 		"replace_history":
 		[
-			"Scratch116.swf",
-			"ForSoN"
+			"\\t",
+			"\\n",
+			"\\t",
+			"",
+			"\"http://",
+			":",
+			",",
+			":",
+			",",
+			">\\n<",
+			"\"http://",
+			"'",
+			"\\\""
 		],
 		"reverse": false,
 		"show_context": true,
@@ -538,12 +625,8 @@
 		"selected_items":
 		[
 			[
-				"ProjectIO",
-				"src/util/ProjectIO.as"
-			],
-			[
-				"scratc",
-				"src/scratch/ScratchRuntime.as"
+				"app.py",
+				"app.py"
 			],
 			[
 				"index",
@@ -555,43 +638,55 @@
 			],
 			[
 				"scratch",
+				"src/scratch/ScratchSound.as"
+			],
+			[
+				"zipo",
+				"src/util/ZipIO.as"
+			],
+			[
+				"proje",
+				"src/util/ProjectIO.as"
+			],
+			[
+				"scratchrun",
 				"src/scratch/ScratchRuntime.as"
 			],
 			[
-				"server",
-				"src/util/Server.as"
+				"scratc",
+				"src/Scratch.as"
 			],
 			[
-				"trans",
-				"src/translation/Translator.as"
-			],
-			[
-				"in",
+				"inde",
 				"html-template/index.template.html"
 			],
 			[
-				"scratchr",
-				"src/scratch/ScratchRuntime.as"
+				"ZipIO",
+				"src/util/ZipIO.as"
 			],
 			[
-				"mit",
-				"bin-debug/mit.html"
-			],
-			[
-				"log",
-				"src/logging/Log.as"
-			],
-			[
-				"LogLevel",
-				"src/logging/LogLevel.as"
-			],
-			[
-				"LOG",
-				"src/logging/Log.as"
+				"projectio",
+				"src/util/ProjectIO.as"
 			],
 			[
 				"runtime",
-				"arya/release_definition/resources/prod-blue-corp/image/runtime.yidf"
+				"src/scratch/ScratchRuntime.as"
+			],
+			[
+				"hist",
+				"bin-debug/history/history.js"
+			],
+			[
+				"mit",
+				"scratch-flash/html-template/mit.html"
+			],
+			[
+				"new",
+				"scratch-flash/asset/scratch/new.html"
+			],
+			[
+				"ScratchRuntime",
+				"scratch-flash/src/scratch/ScratchRuntime.as"
 			],
 			[
 				"cam",
@@ -850,6 +945,10 @@
 				"src/main/resources/bin/throttle_rate_hdfs_upload.sh"
 			],
 			[
+				"in",
+				"src/main/resources/bin/ingest_property_mapping.sh"
+			],
+			[
 				"throttl",
 				"target/classes/bin/throttle_rate_hdfs_upload.sh"
 			],
@@ -1036,18 +1135,6 @@
 			[
 				"pakcage",
 				"devel/src/fast_feedback_loop/src/main/yinst/pakcage.yicf"
-			],
-			[
-				"ffl_start",
-				"devel/src/fast_feedback_loop/src/main/resources/ffl_start.sh"
-			],
-			[
-				"pakac",
-				"devel/src/fast_feedback_loop/src/main/yinst/pakcage.yicf"
-			],
-			[
-				"ffl.gq1.prod",
-				"buildinfo/release_definition_ffl/resources/curveball.set.budget_ffl.gq1.prod/image/curveball.set.budget_ffl.gq1.prod.yidf"
 			]
 		],
 		"width": 0.0
@@ -1055,9 +1142,13 @@
 	"select_project":
 	{
 		"height": 500.0,
-		"last_filter": "",
+		"last_filter": "tm",
 		"selected_items":
 		[
+			[
+				"tm",
+				"~/workspace/tmp/tmp.sublime-project"
+			],
 			[
 				"bl",
 				"~/Dropbox/blog/blog.sublime-project"
@@ -1065,10 +1156,6 @@
 			[
 				"",
 				"~/Dropbox/blog/blog.sublime-project"
-			],
-			[
-				"tm",
-				"~/workspace/archive/conf/tmp.sublime-workspace"
 			],
 			[
 				"da",
