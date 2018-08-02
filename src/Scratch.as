@@ -250,16 +250,14 @@ public class Scratch extends Sprite {
 		}
 
 		addExternalCallback('ASloadProjectUrl', loadProjectUrl);
-
-		//addExternalCallback('ASloadProjectFile', loadProjectFile);
 	}
 
-	public function loadProjectUrl(url:String, title:String){
+	public function loadProjectUrl(url:String){
 		log(LogLevel.DEBUG, url);
 		function handleComplete(e:Event):void {
 			lp.setInfo("Opening project...")
 			runtime.installProjectFromData(loader.data);
-			setProjectName(title);
+			setProjectName("");
 			removeLoadProgressBox();
 			ExternalInterface.call('JSloadProjectUrlCallback', false);
 		}
@@ -1247,15 +1245,22 @@ public class Scratch extends Sprite {
 			ExternalInterface.call('JSSaveProjectCallback', e);
 		}
 
-		function getFingerprint(): void {
-			externalCall('getFingerprint', function (fp:String):void {
-				if(fp) {
-					squeakSoundsConverted(fp)
-				}
-			});
+		function handleComplete(e:Event):void {
+			log(LogLevel.DEBUG, "saved project");
 		}
 
-		function squeakSoundsConverted(user:String):void {
+		function callToSaveProject(): void {
+			if(!jsEnabled) return;
+			
+			addExternalCallback('ASSaveCurrentProject', saveCurrentProject);
+
+			externalCall('saveCurrentProject', function (flag:Boolean):void {
+                log(LogLevel.DEBUG, 'callback from js callToSaveProject');
+            });
+		}
+
+
+		function saveCurrentProject(user:String):void {
 			scriptsPane.saveScripts(false);
 			var projectType:String = extensionManager.hasExperimentalExtensions() ? '.sbx' : '.sb2';
 			var defaultName:String = StringUtil.trim(projectName());
@@ -1280,13 +1285,9 @@ public class Scratch extends Sprite {
 			loader.load(request);
 		}
 
-		function handleComplete(e:Event):void {
-			log(LogLevel.DEBUG, "saved project");
-		}
-
 		if (loadInProgress) return;
 		var projIO:ProjectIO = new ProjectIO(this);
-		projIO.convertSqueakSounds(stagePane, getFingerprint);
+		projIO.convertSqueakSounds(stagePane, callToSaveProject);
 
 	}
 

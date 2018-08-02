@@ -35,7 +35,8 @@ def jsonify_tool_callback(*args, **kwargs):
 cherrypy.tools.jsonify = cherrypy.Tool('before_finalize', jsonify_tool_callback, priority=30)
 
 class App(object):
-    FILE_TEMPLATE = "/tmp/%s_%s"
+    PROJECT_PATH = "internalapi/projects/"
+    FILE_TEMPLATE = "%s_%s"
 
     @cherrypy.expose
     def index(self, **args):
@@ -49,23 +50,27 @@ class App(object):
         filename = self.encode(args.get('filename'))
         print user, filename
 
-        with open(App.FILE_TEMPLATE % (user, filename), 'w') as f:
+        with open(App.PROJECT_PATH + App.FILE_TEMPLATE % (user, filename), 'w') as f:
             f.write(rawbody)
         return file('./readme.md')
     
-    @cherrypy.expose
-    def show(self, **args):
-        user = self.encode(args.get('user'))
-        project_files = [f[len(user)+1:] for f in listdir('/tmp') if f.startswith(user) and f.endswith('sb2')]
+    def show(self, user):
+        project_files = [f[len(user)+1:] for f in listdir(App.PROJECT_PATH) if f.startswith(user) and f.endswith('sb2')]
+        print project_files
         return project_files
 
     @cherrypy.expose
     def load(self, **args):
         user = self.encode(args.get('user'))
-        filename = self.encode(args.get('filename'))
-        print user, filename
+        project_files = self.show(user)
+        if len(project_files) > 0:
+            filename = project_files[0]
 
-        return file(App.FILE_TEMPLATE % (user, filename))
+        print filename
+        try:
+            return file(App.PROJECT_PATH + App.FILE_TEMPLATE % (user, filename))
+        except:
+            return ""
 
     
     def encode(self, _str, charset='uft-8'):
@@ -94,9 +99,9 @@ if __name__ == '__main__':
             'tools.staticdir.on': True,
             'tools.staticdir.dir': 'bin-debug'
         },
-        '/release': {
+        '/project': {
             'tools.staticdir.on': True,
-            'tools.staticdir.dir': 'bin-release'
+            'tools.staticdir.dir': 'internalapi/projects'
         },
         '/crossdomain.xml': {
             'tools.staticfile.on': True,

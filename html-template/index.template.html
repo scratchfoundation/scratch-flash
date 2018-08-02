@@ -47,23 +47,28 @@
                     return document[objectName];
                 }
             }
-            function JSeditorReady() {
-                try {
-                    getObject("Scratch").ASloadProjectUrl("http://localhost:4080/internalapi/first.sb2", "舞动名字");
-                    SWFready.resolve();
-                    return true;
-                } catch (error) {
-                    console.error(error.message, "\n", error.stack);
-                    throw error;
-                }
+
+            function saveCurrentProject() {
+                new Fingerprint2().get(function(result, components) {
+                    try {
+                        getObject("Scratch").ASSaveCurrentProject(result);
+                    } catch (error) {
+                        throw error;
+                    }
+                 });
+                return true;
             }
 
-            function getFingerprint(callback) {
+            function JSeditorReady() {
                 new Fingerprint2().get(function(result, components) {
-                    console.log(result) // a hash, representing your device fingerprint
-                    //console.log(components) // an array of FP components
-                    callback(result);
-                });
+                    try {
+                        getObject("Scratch").ASloadProjectUrl("http://localhost:4080/load?user="+result);
+                        SWFready.resolve();
+                    } catch (error) {
+                        throw error;
+                    }
+                 });
+                return true;
             }
 
             // For version detection, set to min. required Flash Player version, or 0 (or 0.0.0), for no version detection. 
