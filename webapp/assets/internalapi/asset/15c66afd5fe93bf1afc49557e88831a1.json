@@ -1,0 +1,126 @@
+{
+	"objName": "Anina Hip-Hop",
+	"sounds": [{
+			"soundName": "dance celebrate",
+			"soundID": -1,
+			"md5": "0edb8fb88af19e6e17d0f8cf64c1d136.wav",
+			"sampleCount": 176401,
+			"rate": 22050,
+			"format": "adpcm"
+		}],
+	"costumes": [{
+			"costumeName": "anina stance",
+			"baseLayerID": -1,
+			"baseLayerMD5": "6d01c961449223f9e61dda9281100806.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 76,
+			"rotationCenterY": 252
+		},
+		{
+			"costumeName": "anina top stand",
+			"baseLayerID": -1,
+			"baseLayerMD5": "34d6362cb4030d92be6fec73300f0aec.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 74,
+			"rotationCenterY": 280
+		},
+		{
+			"costumeName": "anina top R step",
+			"baseLayerID": -1,
+			"baseLayerMD5": "0477f7105d02b9a902382eca080476dc.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 248,
+			"rotationCenterY": 272
+		},
+		{
+			"costumeName": "anina top L step",
+			"baseLayerID": -1,
+			"baseLayerMD5": "62a89d8c6f7680e342132fcde59b2a5d.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 228,
+			"rotationCenterY": 274
+		},
+		{
+			"costumeName": "anina top freeze",
+			"baseLayerID": -1,
+			"baseLayerMD5": "dd67565519bdebea1b931deb19621384.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 110,
+			"rotationCenterY": 268
+		},
+		{
+			"costumeName": "anina R cross",
+			"baseLayerID": -1,
+			"baseLayerMD5": "22f3ca23b2f0ac67f8ebc36a8c3116a0.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 126,
+			"rotationCenterY": 268
+		},
+		{
+			"costumeName": "anina pop front",
+			"baseLayerID": -1,
+			"baseLayerMD5": "c163f1002f61421816386e52522b9133.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 68,
+			"rotationCenterY": 270
+		},
+		{
+			"costumeName": "anina pop down",
+			"baseLayerID": -1,
+			"baseLayerMD5": "e9e54ff1fa61c71507e25540d0326177.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 74,
+			"rotationCenterY": 156
+		},
+		{
+			"costumeName": "anina pop left",
+			"baseLayerID": -1,
+			"baseLayerMD5": "9fda30f66d51b2ad5f6fe11d57e199d6.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 238,
+			"rotationCenterY": 266
+		},
+		{
+			"costumeName": "anina pop right",
+			"baseLayerID": -1,
+			"baseLayerMD5": "cc2594e9278494e82f725be34369f178.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 66,
+			"rotationCenterY": 268
+		},
+		{
+			"costumeName": "anina pop L arm",
+			"baseLayerID": -1,
+			"baseLayerMD5": "843bff4a5ee3d61fd8cbd419cb2797a3.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 68,
+			"rotationCenterY": 274
+		},
+		{
+			"costumeName": "anina pop stand",
+			"baseLayerID": -1,
+			"baseLayerMD5": "de7cab2c8d567d49a5a1f378b5709bb4.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 76,
+			"rotationCenterY": 276
+		},
+		{
+			"costumeName": "anina pop R arm",
+			"baseLayerID": -1,
+			"baseLayerMD5": "e7e1a86233b7ad28d6ee9970b152be20.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 88,
+			"rotationCenterY": 272
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

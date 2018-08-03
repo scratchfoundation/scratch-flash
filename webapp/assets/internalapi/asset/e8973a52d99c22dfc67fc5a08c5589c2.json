@@ -1,0 +1,29 @@
+{
+	"objName": "Fruit Salad",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "fruitsalad",
+			"baseLayerID": -1,
+			"baseLayerMD5": "dbf8cc34f7ca18b4a008d2890dba56b7.svg",
+			"rotationCenterX": 30,
+			"rotationCenterY": 22
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

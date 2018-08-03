@@ -30,15 +30,17 @@
         
         <!-- Enable Browser History by replacing useBrowserHistory tokens with two hyphens -->
         <!-- BEGIN Browser History required section ${useBrowserHistory}>
-        <link rel="stylesheet" type="text/css" href="history/history.css" />
-        <script type="text/javascript" src="history/history.js"></script>
+        <link rel="stylesheet" type="text/css" href="scratch/history/history.css" />
+        <script type="text/javascript" src="scratch/history/history.js"></script>
         <!${useBrowserHistory} END Browser History required section -->  
             
-        <script type="text/javascript" src="swfobject.js"></script>
+        <script type="text/javascript" src="scratch/swfobject.js"></script>
         <script type="text/javascript" src="//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__//js/jquery.min.js"></script>
         <script type="text/javascript" src="//cdn.jsdelivr.net/npm/fingerprintjs2@1.8.0/dist/fingerprint2.min.js"></script>
         <script type="text/javascript">
             window.SWFready=$.Deferred(); // Deferred makes sure we don't call ASSetEditMode before SWF is ready.
+            var webappUrl = "http://www.scratchonline.cn:4080/";
+            //var webappUrl = "http://localhost:4080/";
 
             function getObject(objectName) {
                 if (navigator.appName.indexOf("icrosoft") != -1) {
@@ -51,7 +53,7 @@
             function saveCurrentProject() {
                 new Fingerprint2().get(function(result, components) {
                     try {
-                        getObject("Scratch").ASSaveCurrentProject(result);
+                        getObject("Scratch").ASSaveCurrentProject(webappUrl + "save?user=" + result);
                     } catch (error) {
                         throw error;
                     }
@@ -62,7 +64,7 @@
             function JSeditorReady() {
                 new Fingerprint2().get(function(result, components) {
                     try {
-                        getObject("Scratch").ASloadProjectUrl("http://localhost:4080/load?user="+result);
+                        getObject("Scratch").ASloadProjectUrl(webappUrl + "load?user="+result);
                         SWFready.resolve();
                     } catch (error) {
                         throw error;
@@ -80,11 +82,11 @@
                 autostart: 'false',
                 urlOverrides: {
                     sitePrefix: window.location.protocol + '//' + window.location.host + '/',
-                    siteCdnPrefix: "http://localhost:4080/internalapi/",
-                    assetPrefix: "http://localhost:4080/internalapi/",
-                    assetCdnPrefix: "http://localhost:4080/internalapi/",
-                    projectPrefix: "http://localhost:4080/internalapi/",
-                    projectCdnPrefix: "http://localhost:4080/internalapi/",
+                    siteCdnPrefix: webappUrl + "assets/",
+                    assetPrefix: webappUrl + "assets/",
+                    assetCdnPrefix: webappUrl + "assets/",
+                    projectPrefix: webappUrl + "assets/",
+                    projectCdnPrefix: webappUrl + "assets/",
                     internalAPI: "internalapi/",
                     siteAPI: "site-api/",
                     staticFiles: "scratchr2/static/"
@@ -112,7 +114,7 @@
             };
         
             swfobject.embedSWF(
-                "${swf}.swf", "flashContent", 
+                "scratch/${swf}.swf", "flashContent", 
                 "${width}", "${height}", 
                 swfVersionStr, xiSwfUrlStr, 
                 flashvars, params, attributes);

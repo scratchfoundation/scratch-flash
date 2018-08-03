@@ -1,0 +1,30 @@
+{
+	"objName": "Dragon",
+	"costumes": [{
+			"costumeName": "dragon1-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "ee0082b436d6d5dc3de33047166e7bf2.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 65,
+			"rotationCenterY": 60
+		},
+		{
+			"costumeName": "dragon1-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "bb58ce36997fa205a86a085f202837fd.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 84,
+			"rotationCenterY": 56
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

@@ -1,0 +1,30 @@
+{
+	"objName": "Snowflake",
+	"sounds": [{
+			"soundName": "meow",
+			"soundID": -1,
+			"md5": "83c36d806dc92327b9e7049a565c6bff.wav",
+			"sampleCount": 18688,
+			"rate": 22050,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "snowflake",
+			"baseLayerID": -1,
+			"baseLayerMD5": "67de2af723246de37d7379b76800ee0b.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 104,
+			"rotationCenterY": 103
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 0.65,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

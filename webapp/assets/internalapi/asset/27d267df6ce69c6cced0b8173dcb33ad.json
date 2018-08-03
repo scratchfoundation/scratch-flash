@@ -1,0 +1,135 @@
+{
+	"objName": "Anna Ode to Code",
+	"scripts": [[8, 77.65, [["whenKeyPressed", "space"], ["nextCostume"]]]],
+	"sounds": [{
+			"soundName": "odesong-b",
+			"soundID": -1,
+			"md5": "2c41921491b1da2bfa1ebcaba34265ca.wav",
+			"sampleCount": 212553,
+			"rate": 22050,
+			"format": "adpcm"
+		}],
+	"costumes": [{
+			"costumeName": "anna01",
+			"baseLayerID": -1,
+			"baseLayerMD5": "74b5e9c882deb81d88c175d548b8ff66.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 78,
+			"rotationCenterY": 190
+		},
+		{
+			"costumeName": "anna02",
+			"baseLayerID": -1,
+			"baseLayerMD5": "ece557e1c4500b30fd0e22b0d693cf4c.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 132,
+			"rotationCenterY": 260
+		},
+		{
+			"costumeName": "anna03",
+			"baseLayerID": -1,
+			"baseLayerMD5": "2e97d9d9d6bc1f174d3fc897638e8a46.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 138,
+			"rotationCenterY": 242
+		},
+		{
+			"costumeName": "anna04",
+			"baseLayerID": -1,
+			"baseLayerMD5": "69da72a9a29181425944e7963eb4f32a.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 138,
+			"rotationCenterY": 70
+		},
+		{
+			"costumeName": "anna05",
+			"baseLayerID": -1,
+			"baseLayerMD5": "1b396abf1336bceddb01166d975dad3b.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 134,
+			"rotationCenterY": 246
+		},
+		{
+			"costumeName": "anna06",
+			"baseLayerID": -1,
+			"baseLayerMD5": "d32ac2b2e9c8fa2f7b251275d8eec8c9.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 118,
+			"rotationCenterY": 224
+		},
+		{
+			"costumeName": "anna07",
+			"baseLayerID": -1,
+			"baseLayerMD5": "c0961caabfa8545b6080ea7825d6fc66.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 124,
+			"rotationCenterY": 224
+		},
+		{
+			"costumeName": "anna07b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "c21f0ef20be25af3b7c1ed42e974c75f.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 202,
+			"rotationCenterY": 224
+		},
+		{
+			"costumeName": "anna07c",
+			"baseLayerID": -1,
+			"baseLayerMD5": "54ed739e6ea31d128c319e8a3401af71.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 58,
+			"rotationCenterY": 218
+		},
+		{
+			"costumeName": "anna08",
+			"baseLayerID": -1,
+			"baseLayerMD5": "2d9bffdb6cda1ce0c77cfb3e001598f3.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 126,
+			"rotationCenterY": 212
+		},
+		{
+			"costumeName": "anna09",
+			"baseLayerID": -1,
+			"baseLayerMD5": "91f689627fa18d43ff6362ef872d90e2.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 130,
+			"rotationCenterY": 220
+		},
+		{
+			"costumeName": "anna10",
+			"baseLayerID": -1,
+			"baseLayerMD5": "eab5b5e2c4be253de024dd3deab68a66.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 148,
+			"rotationCenterY": 260
+		},
+		{
+			"costumeName": "anna11",
+			"baseLayerID": -1,
+			"baseLayerMD5": "859f95864d28fdb49d4170ce30fdd031.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 46,
+			"rotationCenterY": 278
+		},
+		{
+			"costumeName": "anna12",
+			"baseLayerID": -1,
+			"baseLayerMD5": "66133f695a23f669cc0fa6f06f275ab7.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 42,
+			"rotationCenterY": 206
+		}],
+	"currentCostumeIndex": 13,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

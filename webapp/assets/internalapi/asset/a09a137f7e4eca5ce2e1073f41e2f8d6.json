@@ -1,0 +1,30 @@
+{
+	"objName": "2-Glow",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "2-glow",
+			"baseLayerID": -1,
+			"baseLayerMD5": "b9faa5708a799a1607f0325a7af2561c.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 28,
+			"rotationCenterY": 41
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

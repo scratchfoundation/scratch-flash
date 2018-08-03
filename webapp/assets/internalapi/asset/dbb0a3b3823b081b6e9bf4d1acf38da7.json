@@ -1,0 +1,30 @@
+{
+	"objName": "N-Glow",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "N-glow",
+			"baseLayerID": -1,
+			"baseLayerMD5": "4b724479fb3b2184fd8be6f83fb20e54.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 37,
+			"rotationCenterY": 39
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

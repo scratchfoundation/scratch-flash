@@ -1,0 +1,29 @@
+{
+	"objName": "Sailboat",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "sail-boat",
+			"baseLayerID": -1,
+			"baseLayerMD5": "8f8d0ea2f0ab5ca533f33f0da1eecfa6.png",
+			"rotationCenterX": 112,
+			"rotationCenterY": 91
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

@@ -1,0 +1,30 @@
+{
+	"objName": "Heart Scratch",
+	"sounds": [{
+			"soundName": "dance snare beat",
+			"soundID": -1,
+			"md5": "562587bdb75e3a8124cdaa46ba0f648b.wav",
+			"sampleCount": 176401,
+			"rate": 22050,
+			"format": "adpcm"
+		}],
+	"costumes": [{
+			"costumeName": "heart scratch",
+			"baseLayerID": -1,
+			"baseLayerMD5": "2bfa5c3b41d4be160ab0c157ce0f96a9.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 81,
+			"rotationCenterY": 77
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 0.55,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

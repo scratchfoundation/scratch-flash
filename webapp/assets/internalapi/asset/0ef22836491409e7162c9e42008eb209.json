@@ -1,0 +1,30 @@
+{
+	"objName": "Star3",
+	"costumes": [{
+			"costumeName": "star3-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "04da262057dfe130860086031e5018ef.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 54,
+			"rotationCenterY": 55
+		},
+		{
+			"costumeName": "star3-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "a082be13c0e5d17230f448dd55029a7d.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 33,
+			"rotationCenterY": 34
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

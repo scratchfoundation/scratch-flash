@@ -1,0 +1,38 @@
+{
+	"objName": "Holly",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "holly1",
+			"baseLayerID": -1,
+			"baseLayerMD5": "1d8583ca1b5c687f3de004c27110a130.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 29,
+			"rotationCenterY": 44
+		},
+		{
+			"costumeName": "holly2",
+			"baseLayerID": -1,
+			"baseLayerMD5": "4b23f1d694ae8b400f1d7216dd8e49bc.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 27,
+			"rotationCenterY": 42
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

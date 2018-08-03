@@ -1,0 +1,86 @@
+{
+	"objName": "Bass",
+	"sounds": [{
+			"soundName": "C bass",
+			"soundID": -1,
+			"md5": "c3566ec797b483acde28f790994cc409.wav",
+			"sampleCount": 44608,
+			"rate": 22050,
+			"format": ""
+		},
+		{
+			"soundName": "D bass",
+			"soundID": -1,
+			"md5": "5a3ae8a2665f50fdc38cc301fbac79ba.wav",
+			"sampleCount": 40192,
+			"rate": 22050,
+			"format": ""
+		},
+		{
+			"soundName": "E bass",
+			"soundID": -1,
+			"md5": "0657e39bae81a232b01a18f727d3b891.wav",
+			"sampleCount": 36160,
+			"rate": 22050,
+			"format": ""
+		},
+		{
+			"soundName": "F bass",
+			"soundID": -1,
+			"md5": "ea21bdae86f70d60b28f1dddcf50d104.wav",
+			"sampleCount": 34368,
+			"rate": 22050,
+			"format": ""
+		},
+		{
+			"soundName": "G bass",
+			"soundID": -1,
+			"md5": "05c192194e8f1944514dce3833e33439.wav",
+			"sampleCount": 30976,
+			"rate": 22050,
+			"format": ""
+		},
+		{
+			"soundName": "A bass",
+			"soundID": -1,
+			"md5": "c04ebf21e5e19342fa1535e4efcdb43b.wav",
+			"sampleCount": 28160,
+			"rate": 22050,
+			"format": ""
+		},
+		{
+			"soundName": "B bass",
+			"soundID": -1,
+			"md5": "e31dcaf7bcdf58ac2a26533c48936c45.wav",
+			"sampleCount": 25792,
+			"rate": 22050,
+			"format": ""
+		},
+		{
+			"soundName": "C2 bass",
+			"soundID": -1,
+			"md5": "667d6c527b79321d398e85b526f15b99.wav",
+			"sampleCount": 24128,
+			"rate": 22050,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "bass",
+			"baseLayerID": -1,
+			"baseLayerMD5": "bdbd2876847e54309a5ff3ee0895d724.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 60,
+			"rotationCenterY": 110
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

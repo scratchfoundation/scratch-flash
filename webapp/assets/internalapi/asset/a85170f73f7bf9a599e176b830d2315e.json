@@ -1,0 +1,36 @@
+{
+	"objName": "Bat1",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "bat1-a ",
+			"baseLayerID": -1,
+			"baseLayerMD5": "7ad915f8e0884f497a24d5bb61ea8a4a.svg",
+			"rotationCenterX": 75,
+			"rotationCenterY": 75
+		},
+		{
+			"costumeName": "bat1-b ",
+			"baseLayerID": -1,
+			"baseLayerMD5": "f127434672b872a902346ef3c1af45f2.svg",
+			"rotationCenterX": 75,
+			"rotationCenterY": 75
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

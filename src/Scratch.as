@@ -1105,9 +1105,9 @@ public class Scratch extends Sprite {
 	}
 
 	protected function addFileMenuItems(b:*, m:Menu):void {
-		m.addItem('Load Project', runtime.selectProjectFile);
-		m.addItem('Export Project', exportProjectToFile);
-		m.addItem('Save Project ', saveProjectToServer);
+		m.addItem('Upload from your computer', runtime.selectProjectFile);
+		m.addItem('Download to your computer', exportProjectToFile);
+		m.addItem('Save Project', saveProjectToServer);
 		if (runtime.recording || runtime.ready==ReadyLabel.COUNTDOWN || runtime.ready==ReadyLabel.READY) {
 			m.addItem('Stop Video', runtime.stopVideo);
 		} else {
@@ -1260,7 +1260,7 @@ public class Scratch extends Sprite {
 		}
 
 
-		function saveCurrentProject(user:String):void {
+		function saveCurrentProject(url:String):void {
 			scriptsPane.saveScripts(false);
 			var projectType:String = extensionManager.hasExperimentalExtensions() ? '.sbx' : '.sb2';
 			var defaultName:String = StringUtil.trim(projectName());
@@ -1269,7 +1269,7 @@ public class Scratch extends Sprite {
 			var zipData:ByteArray = projIO.encodeProjectAsZipFile(stagePane);
 			
 			var header:URLRequestHeader = new URLRequestHeader("Content-type", "application/octet-stream;charset=utf-8");
-			var url:String = "http://localhost:4080/save?user=" + user + "&filename=" + encodeURIComponent(defaultName);
+			url = url + "&filename=" + encodeURIComponent(defaultName);
 			var request:URLRequest = new URLRequest(url);
 			log(LogLevel.DEBUG, url);
 

@@ -1,0 +1,54 @@
+{
+	"objName": "Dog Puppy",
+	"sounds": [{
+			"soundName": "dog2",
+			"soundID": -1,
+			"md5": "cd8fa8390b0efdd281882533fbfcfcfb.wav",
+			"sampleCount": 3168,
+			"rate": 22050,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "dog puppy right",
+			"baseLayerID": -1,
+			"baseLayerMD5": "fd6c2d1d10a163bc5b7458f7275750f0.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 107,
+			"rotationCenterY": 103
+		},
+		{
+			"costumeName": "dog puppy sit",
+			"baseLayerID": -1,
+			"baseLayerMD5": "00b1589467f939b9c61f666bca2d25d1.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 87,
+			"rotationCenterY": 112
+		},
+		{
+			"costumeName": "dog puppy side",
+			"baseLayerID": -1,
+			"baseLayerMD5": "63c3d6718943ecbf48f94b3b131ae8a4.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 104,
+			"rotationCenterY": 114
+		},
+		{
+			"costumeName": "dog puppy back",
+			"baseLayerID": -1,
+			"baseLayerMD5": "88559ad0334a8a51aca31035068682f6.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 234,
+			"rotationCenterY": 94
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

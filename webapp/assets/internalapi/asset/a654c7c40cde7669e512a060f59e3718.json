@@ -1,0 +1,46 @@
+{
+	"objName": "Monkey2",
+	"sounds": [{
+			"soundName": "chee chee",
+			"soundID": -1,
+			"md5": "25f4826cdd61e0a1c623ec2324c16ca0.wav",
+			"sampleCount": 34560,
+			"rate": 22050,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "monkey2-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "6e4de762dbd52cd2b6356694a9668211.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 68,
+			"rotationCenterY": 99
+		},
+		{
+			"costumeName": "monkey2-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "7662a3a0f4c6fa21fdf2de33bd80fe5f.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 68,
+			"rotationCenterY": 99
+		},
+		{
+			"costumeName": "monkey2-c",
+			"baseLayerID": -1,
+			"baseLayerMD5": "db8eb50b948047181922310bb94511fb.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 68,
+			"rotationCenterY": 99
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 0.75,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

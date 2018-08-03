@@ -1,0 +1,50 @@
+{
+	"objName": "Pico",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "pico-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "0579fe60bb3717c49dfd7743caa84ada.svg",
+			"rotationCenterX": 55,
+			"rotationCenterY": 66
+		},
+		{
+			"costumeName": "pico-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "26c688d7544757225ff51cd2fb1519b5.svg",
+			"rotationCenterX": 55,
+			"rotationCenterY": 66
+		},
+		{
+			"costumeName": "pico-c",
+			"baseLayerID": -1,
+			"baseLayerMD5": "adf61e2090f8060e1e8b2b0604d03751.svg",
+			"rotationCenterX": 55,
+			"rotationCenterY": 66
+		},
+		{
+			"costumeName": "pico-d",
+			"baseLayerID": -1,
+			"baseLayerMD5": "594704bf12e3c4d9e83bb91661ad709a.svg",
+			"rotationCenterX": 55,
+			"rotationCenterY": 66
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

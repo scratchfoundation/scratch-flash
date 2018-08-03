@@ -1,0 +1,38 @@
+{
+	"objName": "Hat Winter",
+	"sounds": [{
+			"soundName": "meow",
+			"soundID": -1,
+			"md5": "83c36d806dc92327b9e7049a565c6bff.wav",
+			"sampleCount": 18688,
+			"rate": 22050,
+			"format": ""
+		},
+		{
+			"soundName": "xylo3",
+			"soundID": -1,
+			"md5": "3395cade6d7c0cc9ce73a8c12f40319b.wav",
+			"sampleCount": 209502,
+			"rate": 22050,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "hat winter",
+			"baseLayerID": -1,
+			"baseLayerMD5": "6c2ee1b97f6ec2b3457a25a3975a2009.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 26,
+			"rotationCenterY": 101
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 0.9,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

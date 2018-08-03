@@ -1,0 +1,38 @@
+{
+	"objName": "Muffin",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "muffin-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "e00161f08c77d10e72e44b6e01243e63.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 85,
+			"rotationCenterY": 48
+		},
+		{
+			"costumeName": "muffin-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "fb60c3f8d6a892813299daa33b91df23.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 85,
+			"rotationCenterY": 48
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

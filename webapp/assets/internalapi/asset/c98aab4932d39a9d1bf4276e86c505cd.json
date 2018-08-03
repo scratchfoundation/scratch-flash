@@ -1,0 +1,29 @@
+{
+	"objName": "Helicopter",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "helicopter",
+			"baseLayerID": -1,
+			"baseLayerMD5": "8847e2d3383906dbabbf7ffa98945a7b.png",
+			"rotationCenterX": 90,
+			"rotationCenterY": 64
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

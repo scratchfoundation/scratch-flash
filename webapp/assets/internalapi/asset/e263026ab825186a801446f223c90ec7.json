@@ -1,0 +1,38 @@
+{
+	"objName": "Bear1",
+	"sounds": [{
+			"soundName": "plunge",
+			"soundID": -1,
+			"md5": "c09455ee9da0e7eeead42d4e73c2555d.wav",
+			"sampleCount": 22400,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "bear1-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "598722f70e86e6f9b23ef97680baaa9c.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 56,
+			"rotationCenterY": 93
+		},
+		{
+			"costumeName": "bear1-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "76ceb0de4409f42713b50cbc1fb45af5.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 56,
+			"rotationCenterY": 93
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

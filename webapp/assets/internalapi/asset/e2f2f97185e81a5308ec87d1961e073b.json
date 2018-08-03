@@ -1,0 +1,59 @@
+{
+	"objName": "Ukulele",
+	"variables": [{
+			"name": "counter",
+			"value": 5,
+			"isPersistent": false
+		}],
+	"sounds": [{
+			"soundName": "C major ukulele",
+			"soundID": -1,
+			"md5": "aa2ca112507b59b5337f341aaa75fb08.wav",
+			"sampleCount": 18203,
+			"rate": 22050,
+			"format": ""
+		},
+		{
+			"soundName": "F major ukulele",
+			"soundID": -1,
+			"md5": "cd0ab5d1b0120c6ed92a1654ccf81376.wav",
+			"sampleCount": 18235,
+			"rate": 22050,
+			"format": ""
+		},
+		{
+			"soundName": "A minor ukulele",
+			"soundID": -1,
+			"md5": "69d25af0fd065da39c71439174efc589.wav",
+			"sampleCount": 18267,
+			"rate": 22050,
+			"format": ""
+		},
+		{
+			"soundName": "G ukulele",
+			"soundID": -1,
+			"md5": "d20218f92ee606277658959005538e2d.wav",
+			"sampleCount": 18235,
+			"rate": 22050,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "ukulele",
+			"baseLayerID": -1,
+			"baseLayerMD5": "39215565394d6280c6c81e7ad86c7ca0.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 30,
+			"rotationCenterY": 78
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

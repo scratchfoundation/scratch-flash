@@ -1,0 +1,29 @@
+{
+	"objName": "Penguin2",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "penguin2",
+			"baseLayerID": -1,
+			"baseLayerMD5": "eaaaa7068e78a51d73ba437f1ec5763e.svg",
+			"rotationCenterX": 49,
+			"rotationCenterY": 79
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

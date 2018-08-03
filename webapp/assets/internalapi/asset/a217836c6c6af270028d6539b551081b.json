@@ -1,0 +1,30 @@
+{
+	"objName": "Squirrel",
+	"sounds": [{
+			"soundName": "meow",
+			"soundID": -1,
+			"md5": "83c36d806dc92327b9e7049a565c6bff.wav",
+			"sampleCount": 18688,
+			"rate": 22050,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "squirrel1",
+			"baseLayerID": -1,
+			"baseLayerMD5": "7e24c99c1b853e52f8e7f9004416fa34.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 158,
+			"rotationCenterY": 146
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

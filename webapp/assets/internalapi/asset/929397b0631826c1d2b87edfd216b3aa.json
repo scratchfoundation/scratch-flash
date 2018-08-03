@@ -1,0 +1,86 @@
+{
+	"objName": "CM Hip-Hop",
+	"sounds": [{
+			"soundName": "dance snare beat",
+			"soundID": -1,
+			"md5": "562587bdb75e3a8124cdaa46ba0f648b.wav",
+			"sampleCount": 176401,
+			"rate": 22050,
+			"format": "adpcm"
+		}],
+	"costumes": [{
+			"costumeName": "cm top stand",
+			"baseLayerID": -1,
+			"baseLayerMD5": "db291ec7e061ecd4d797875e3aec0a09.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 66,
+			"rotationCenterY": 226
+		},
+		{
+			"costumeName": "cm top R leg",
+			"baseLayerID": -1,
+			"baseLayerMD5": "b5cfa26a969dc001fb38d29c5ef8f1bf.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 90,
+			"rotationCenterY": 240
+		},
+		{
+			"costumeName": "cm top L leg",
+			"baseLayerID": -1,
+			"baseLayerMD5": "9b3224263e7c828c54326d9b4f22a74b.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 116,
+			"rotationCenterY": 238
+		},
+		{
+			"costumeName": "cm top ready",
+			"baseLayerID": -1,
+			"baseLayerMD5": "ab97d9c6e3c0efe27bfd9e44ac3af497.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 84,
+			"rotationCenterY": 180
+		},
+		{
+			"costumeName": "cm top L cross",
+			"baseLayerID": -1,
+			"baseLayerMD5": "3b0538ba8b6fcc0f938013b912e34305.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 122,
+			"rotationCenterY": 162
+		},
+		{
+			"costumeName": "cm top R cross",
+			"baseLayerID": -1,
+			"baseLayerMD5": "00716f8ab864ae479db3017146d28c64.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 156,
+			"rotationCenterY": 164
+		},
+		{
+			"costumeName": "cm pop L arm",
+			"baseLayerID": -1,
+			"baseLayerMD5": "ce0928c8dbc625661b44c3503debae7e.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 136,
+			"rotationCenterY": 243
+		},
+		{
+			"costumeName": "cm pop R arm",
+			"baseLayerID": -1,
+			"baseLayerMD5": "e5555af183c643c7006632b26d851a32.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 79,
+			"rotationCenterY": 229
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

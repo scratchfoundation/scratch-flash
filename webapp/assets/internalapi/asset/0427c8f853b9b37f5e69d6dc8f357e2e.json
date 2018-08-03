@@ -1,0 +1,38 @@
+{
+	"objName": "Dove2",
+	"sounds": [{
+			"soundName": "bird",
+			"soundID": -1,
+			"md5": "18bd4b634a3f992a16b30344c7d810e0.wav",
+			"sampleCount": 3840,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "dove2-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "42251c2649a073052eb4261d644281bb.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 99,
+			"rotationCenterY": 83
+		},
+		{
+			"costumeName": "dove2-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "469eb55a437364d831b80937c4ee1ab9.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 100,
+			"rotationCenterY": 82
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

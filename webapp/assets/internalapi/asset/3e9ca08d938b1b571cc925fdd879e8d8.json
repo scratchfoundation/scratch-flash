@@ -1,0 +1,126 @@
+{
+	"objName": "AZ Hip-Hop",
+	"sounds": [{
+			"soundName": "dance celebrate",
+			"soundID": -1,
+			"md5": "0edb8fb88af19e6e17d0f8cf64c1d136.wav",
+			"sampleCount": 176401,
+			"rate": 22050,
+			"format": "adpcm"
+		}],
+	"costumes": [{
+			"costumeName": "AZ stance",
+			"baseLayerID": -1,
+			"baseLayerMD5": "e64363afc7f1e6951cb7967f50de2ba7.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 70,
+			"rotationCenterY": 278
+		},
+		{
+			"costumeName": "AZ top stand",
+			"baseLayerID": -1,
+			"baseLayerMD5": "75b370524c92025cfa6f9071a6333e00.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 74,
+			"rotationCenterY": 274
+		},
+		{
+			"costumeName": "AZ top R step",
+			"baseLayerID": -1,
+			"baseLayerMD5": "3769dbe6e19b0e19ebf9416ba8660b88.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 200,
+			"rotationCenterY": 270
+		},
+		{
+			"costumeName": "AZ top L step",
+			"baseLayerID": -1,
+			"baseLayerMD5": "3d618085bce1a68829fa2cd5deab7871.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 144,
+			"rotationCenterY": 266
+		},
+		{
+			"costumeName": "AZ top freeze",
+			"baseLayerID": -1,
+			"baseLayerMD5": "ea33d5c631d8308b47685f1963becd4c.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 54,
+			"rotationCenterY": 258
+		},
+		{
+			"costumeName": "AZ top R cross",
+			"baseLayerID": -1,
+			"baseLayerMD5": "44216804569454067953fdd5c6b72928.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 206,
+			"rotationCenterY": 252
+		},
+		{
+			"costumeName": "AZ pop front",
+			"baseLayerID": -1,
+			"baseLayerMD5": "97c14e52551ae65679d61de6c94f0ec8.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 72,
+			"rotationCenterY": 266
+		},
+		{
+			"costumeName": "AZ pop down",
+			"baseLayerID": -1,
+			"baseLayerMD5": "2f8d07b568c8c67a0d211b5de09295d3.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 74,
+			"rotationCenterY": 188
+		},
+		{
+			"costumeName": "AZ pop left",
+			"baseLayerID": -1,
+			"baseLayerMD5": "4e7e43a86f1f09f1194e3579e7f385f5.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 184,
+			"rotationCenterY": 266
+		},
+		{
+			"costumeName": "AZ pop right",
+			"baseLayerID": -1,
+			"baseLayerMD5": "15a9d503613c649ca3a55829dbd98869.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 78,
+			"rotationCenterY": 276
+		},
+		{
+			"costumeName": "AZ pop L arm",
+			"baseLayerID": -1,
+			"baseLayerMD5": "0f6462025c20ac346a7f54164832d495.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 100,
+			"rotationCenterY": 280
+		},
+		{
+			"costumeName": "AZ pop stand",
+			"baseLayerID": -1,
+			"baseLayerMD5": "34b67b9e4db3aacbae735ade6a0539c2.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 92,
+			"rotationCenterY": 280
+		},
+		{
+			"costumeName": "AZ pop R arm",
+			"baseLayerID": -1,
+			"baseLayerMD5": "129472ac2779eb6bc2dd9bfbf0d33f56.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 74,
+			"rotationCenterY": 278
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

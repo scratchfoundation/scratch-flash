@@ -1,0 +1,36 @@
+{
+	"objName": "Starfish",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "starfish-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "3d1101bbc24ae292a36356af325f660c.svg",
+			"rotationCenterX": 75,
+			"rotationCenterY": 75
+		},
+		{
+			"costumeName": "starfish-b ",
+			"baseLayerID": -1,
+			"baseLayerMD5": "ad8007f4e63693984d4adc466ffa3ad2.svg",
+			"rotationCenterX": 53,
+			"rotationCenterY": 60
+		}],
+	"currentCostumeIndex": 1,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

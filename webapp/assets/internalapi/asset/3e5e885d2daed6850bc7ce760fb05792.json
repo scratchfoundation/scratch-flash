@@ -1,0 +1,30 @@
+{
+	"objName": "Star2",
+	"sounds": [{
+			"soundName": "meow",
+			"soundID": -1,
+			"md5": "83c36d806dc92327b9e7049a565c6bff.wav",
+			"sampleCount": 18688,
+			"rate": 22050,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "star2",
+			"baseLayerID": -1,
+			"baseLayerMD5": "0a0ef50bb5a59be1785c8bb12cdacae6.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 25,
+			"rotationCenterY": 27
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

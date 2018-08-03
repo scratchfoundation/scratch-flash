@@ -1,0 +1,50 @@
+{
+	"objName": "Cassy",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "cassy-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "db4e1ee1f9102e3da5e06f2d17881df5.png",
+			"rotationCenterX": 43,
+			"rotationCenterY": 100
+		},
+		{
+			"costumeName": "cassy-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "2f6f57d1ab69fc18a38fd30572530437.png",
+			"rotationCenterX": 35,
+			"rotationCenterY": 100
+		},
+		{
+			"costumeName": "cassy-c",
+			"baseLayerID": -1,
+			"baseLayerMD5": "662752d56bb77544f3e79ee8c16b3f2d.png",
+			"rotationCenterX": 70,
+			"rotationCenterY": 58
+		},
+		{
+			"costumeName": "cassy-d",
+			"baseLayerID": -1,
+			"baseLayerMD5": "24e9dac390ae4e5b0c17e7d922eb033b.png",
+			"rotationCenterX": 72,
+			"rotationCenterY": 100
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

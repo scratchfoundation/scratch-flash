@@ -1,0 +1,78 @@
+{
+	"objName": "Champ99",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "champ99-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "b940c99d8e677ac5773cb4d592b16734.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 248,
+			"rotationCenterY": 306
+		},
+		{
+			"costumeName": "champ99-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "2ebc7632bc9e665d9eeea93190fad7ad.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 164,
+			"rotationCenterY": 290
+		},
+		{
+			"costumeName": "champ99-c",
+			"baseLayerID": -1,
+			"baseLayerMD5": "bfcff80b0044c644c555ba24f2484106.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 152,
+			"rotationCenterY": 270
+		},
+		{
+			"costumeName": "champ99-d",
+			"baseLayerID": -1,
+			"baseLayerMD5": "34de53e52a768d60a96e3ae0c030dfc5.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 188,
+			"rotationCenterY": 260
+		},
+		{
+			"costumeName": "champ99-e",
+			"baseLayerID": -1,
+			"baseLayerMD5": "0cb685bf8584df9caf124da929ab3453.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 190,
+			"rotationCenterY": 248
+		},
+		{
+			"costumeName": "champ99-f",
+			"baseLayerID": -1,
+			"baseLayerMD5": "516d30b29aed8145718db421f4737953.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 114,
+			"rotationCenterY": 250
+		},
+		{
+			"costumeName": "champ99-g",
+			"baseLayerID": -1,
+			"baseLayerMD5": "49e0edcb319527d936981f06b4111d53.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 132,
+			"rotationCenterY": 258
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

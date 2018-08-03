@@ -1,0 +1,30 @@
+{
+	"objName": "Duck",
+	"sounds": [{
+			"soundName": "duck",
+			"soundID": -1,
+			"md5": "af5b039e1b05e0ccb12944f648a8884e.wav",
+			"sampleCount": 5792,
+			"rate": 22050,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "duck",
+			"baseLayerID": -1,
+			"baseLayerMD5": "c3baf7eedfbdac8cd1e4f1f1f779dc0c.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 61,
+			"rotationCenterY": 59
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}
