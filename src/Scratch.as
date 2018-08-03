@@ -1236,29 +1236,42 @@ public class Scratch extends Sprite {
 		d.showOnStage(stage);
 	}
 
-	public function saveProjectToServer():void {
-		
+	public function saveDataToServer(url:String, _data:ByteArray):void {
 		function handleError(e:ErrorEvent):void {
-			log(LogLevel.DEBUG, "error" + e.toString());
 			jsThrowError('Failed to save project: ' + e.toString());
 			removeLoadProgressBox();
 			ExternalInterface.call('JSSaveProjectCallback', e);
 		}
 
 		function handleComplete(e:Event):void {
-			log(LogLevel.DEBUG, "saved project");
+			log(LogLevel.DEBUG, "data saved");
 		}
+
+		var header:URLRequestHeader = new URLRequestHeader("Content-type", "application/octet-stream;charset=utf-8");
+		var request:URLRequest = new URLRequest(url);
+		log(LogLevel.DEBUG, url);
+
+		request.requestHeaders.push(header);
+		request.method = URLRequestMethod.POST;
+		request.data = _data;
+
+		var loader:URLLoader = new URLLoader(request);
+		loader.dataFormat = URLLoaderDataFormat.BINARY;
+		loader.addEventListener(Event.COMPLETE, handleComplete);
+		loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, handleError);
+		loader.addEventListener(IOErrorEvent.IO_ERROR, handleError);
+		loader.load(request);
+	}
+
+	public function saveProjectToServer():void {
 
 		function callToSaveProject(): void {
 			if(!jsEnabled) return;
-			
-			addExternalCallback('ASSaveCurrentProject', saveCurrentProject);
-
-			externalCall('saveCurrentProject', function (flag:Boolean):void {
-                log(LogLevel.DEBUG, 'callback from js callToSaveProject');
+			addExternalCallback('ASSaveDataToServer', saveCurrentProject);
+			externalCall('JSSaveDataToServer', function (flag:Boolean):void {
+                log(LogLevel.DEBUG, 'callback from JSSaveDataToServer');
             });
 		}
-
 
 		function saveCurrentProject(url:String):void {
 			scriptsPane.saveScripts(false);
@@ -1268,27 +1281,13 @@ public class Scratch extends Sprite {
 
 			var zipData:ByteArray = projIO.encodeProjectAsZipFile(stagePane);
 			
-			var header:URLRequestHeader = new URLRequestHeader("Content-type", "application/octet-stream;charset=utf-8");
-			url = url + "&filename=" + encodeURIComponent(defaultName);
-			var request:URLRequest = new URLRequest(url);
-			log(LogLevel.DEBUG, url);
-
-			request.requestHeaders.push(header);
-			request.method = URLRequestMethod.POST;
-			request.data = zipData;
-
-			var loader:URLLoader = new URLLoader(request);
-			loader.dataFormat = URLLoaderDataFormat.BINARY;
-			loader.addEventListener(Event.COMPLETE, handleComplete);
-			loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, handleError);
-			loader.addEventListener(IOErrorEvent.IO_ERROR, handleError);
-			loader.load(request);
+			url = url + "&type=project&filename=" + encodeURIComponent(defaultName);
+			saveDataToServer(url, zipData);
 		}
 
 		if (loadInProgress) return;
 		var projIO:ProjectIO = new ProjectIO(this);
 		projIO.convertSqueakSounds(stagePane, callToSaveProject);
-
 	}
 
 	public function exportProjectToFile(fromJS:Boolean = false, saveCallback:Function = null):void {

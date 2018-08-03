@@ -36,6 +36,7 @@ cherrypy.tools.jsonify = cherrypy.Tool('before_finalize', jsonify_tool_callback,
 
 class App(object):
     PROJECT_PATH = "projects/"
+    VIDEO_PATH = "videos/"
     FILE_TEMPLATE = "%s_%s"
 
     @cherrypy.expose
@@ -48,9 +49,12 @@ class App(object):
         rawbody = cherrypy.request.body.read(int(cl))
         user = self.encode(args.get('user'))
         filename = self.encode(args.get('filename'))
-        print user, filename
+        _type = args.get('type') if 'type' in args else 'project'
+        print user, filename, _type
 
-        with open(App.PROJECT_PATH + App.FILE_TEMPLATE % (user, filename), 'w') as f:
+        template = (App.PROJECT_PATH if _type == 'project' else App.VIDEO_PATH) + App.FILE_TEMPLATE
+
+        with open(template % (user, filename), 'w') as f:
             f.write(rawbody)
         return True
     
@@ -73,7 +77,10 @@ class App(object):
 
     
     def encode(self, _str, charset='uft-8'):
-        return "{}".format(_str.encode('utf-8'))
+        try:
+            return "{}".format(_str.encode('utf-8'))
+        except:
+            return _str
 
 
 if __name__ == '__main__':

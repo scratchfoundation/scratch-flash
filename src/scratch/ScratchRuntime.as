@@ -26,6 +26,8 @@ import assets.Resources;
 import blocks.Block;
 import blocks.BlockArg;
 
+import com.adobe.utils.StringUtil;
+
 import extensions.ExtensionManager;
 
 import flash.display.*;
@@ -498,19 +500,39 @@ public class ScratchRuntime {
 		var video:ByteArray;
 		video = baFlvEncoder.byteArray;
 		baFlvEncoder.kill();
-		function saveFile():void {
-			var file:FileReference = new FileReference();
-			file.save(video, "movie.flv");
-			Scratch.app.log(LogLevel.TRACK, "Video downloaded", {projectID: app.projectID, seconds: roundToTens(seconds), megabytes: roundToTens(video.length/1000000)});
-			var specEditor:SharingSpecEditor = new SharingSpecEditor();
-			DialogBox.close("Playing and Sharing Your Video",null,specEditor,"Back to Scratch");
-		    releaseVideo(false);
+		//function saveFileToLocal():void {
+		//	var file:FileReference = new FileReference();
+		//	file.save(video, "movie.flv");
+		//	Scratch.app.log(LogLevel.TRACK, "Video downloaded", {projectID: app.projectID, seconds: roundToTens(seconds), megabytes: roundToTens(video.length/1000000)});
+		//	var specEditor:SharingSpecEditor = new SharingSpecEditor();
+		//	DialogBox.close("Playing and Sharing Your Video",null,specEditor,"Back to Scratch");
+		//    releaseVideo(false);
+        //}
+        function saveVideoToServer():void {
+
+			function saveVideoFile(url:String) {
+				var projectType:String = ".flv";
+				var defaultName:String = StringUtil.trim(Scratch.app.projectName());
+				defaultName = ((defaultName.length > 0) ? defaultName : 'project') + projectType;
+				url = url + "&type=video&filename=" + encodeURIComponent(defaultName);
+				Scratch.app.saveDataToServer(url, video);
+				releaseVideo(false);
+			}
+
+			if(!Scratch.app.jsEnabled) return;
+			Scratch.app.addExternalCallback('ASSaveDataToServer', saveVideoFile);
+			Scratch.app.externalCall('JSSaveDataToServer', function (flag:Boolean):void {
+                Scratch.app.log(LogLevel.DEBUG, 'callback from JSSaveDataToServer');
+            });
+			// Scratch.app.log(LogLevel.TRACK, "Video downloaded", {projectID: app.projectID, seconds: roundToTens(seconds), megabytes: roundToTens(video.length/1000000)});
+			// var specEditor:SharingSpecEditor = new SharingSpecEditor();
+			// DialogBox.close("Playing and Sharing Your Video",null,specEditor,"Back to Scratch");
         }
 		function releaseVideo(log:Boolean = true):void {
 			if (log) Scratch.app.log(LogLevel.TRACK, "Video canceled", {projectID: app.projectID, seconds: roundToTens(seconds), megabytes: roundToTens(video.length/1000000)});
             video = null;
 		}
-		DialogBox.close("Video Finished!","To save, click the button below.",null,"Save and Download",app.stage,saveFile,releaseVideo,null,true);
+		DialogBox.close("Video Finished!","To save, click the button below.",null,"Save",app.stage,saveVideoToServer,releaseVideo,null,true);
 	}
 	
 	private function roundToTens(x:Number):Number {
