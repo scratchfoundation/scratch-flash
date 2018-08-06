@@ -515,9 +515,11 @@ public class ScratchRuntime {
 				var defaultName:String = StringUtil.trim(Scratch.app.projectName());
 				defaultName = ((defaultName.length > 0) ? defaultName : 'project') + projectType;
 				url = url + "&type=video&filename=" + encodeURIComponent(defaultName);
-				Scratch.app.saveDataToServer(url, video);
+				Scratch.app.saveDataToServer(url, video, );
 				releaseVideo(false);
 			}
+
+
 
 			if(!Scratch.app.jsEnabled) return;
 			Scratch.app.addExternalCallback('ASSaveDataToServer', saveVideoFile);
@@ -533,6 +535,7 @@ public class ScratchRuntime {
             video = null;
 		}
 		DialogBox.close("Video Finished!","To save, click the button below.",null,"Save",app.stage,saveVideoToServer,releaseVideo,null,true);
+		
 	}
 	
 	private function roundToTens(x:Number):Number {

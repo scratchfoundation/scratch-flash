@@ -3,7 +3,10 @@
 import cherrypy
 import os
 import ConfigParser
-from os import listdir, getcwd
+import subprocess
+import qrcode
+import socket
+
 # import os, tempfile, sys, socket, re
 # import importlib
 # from StringIO import StringIO
@@ -37,6 +40,7 @@ cherrypy.tools.jsonify = cherrypy.Tool('before_finalize', jsonify_tool_callback,
 class App(object):
     PROJECT_PATH = "projects/"
     VIDEO_PATH = "videos/"
+    SHARE_PATH = "share/"
     FILE_TEMPLATE = "%s_%s"
 
     @cherrypy.expose
@@ -52,28 +56,63 @@ class App(object):
         _type = args.get('type') if 'type' in args else 'project'
         print user, filename, _type
 
-        template = (App.PROJECT_PATH if _type == 'project' else App.VIDEO_PATH) + App.FILE_TEMPLATE
+        template = (App.VIDEO_PATH if _type == 'video' else App.PROJECT_PATH) + App.FILE_TEMPLATE
 
-        with open(template % (user, filename), 'w') as f:
+        _file = template % (user, filename)
+        with open(_file, 'w') as f:
             f.write(rawbody)
+
+        if _type == 'video':
+            ofilename = App.FILE_TEMPLATE % (user, filename[:-4]+".mp4")
+            outfile = App.SHARE_PATH + ofilename
+            flag = self.convert_video(_file, outfile)
+            if flag:
+                self.generate_qrcode('http://www.scratchonline.cn:4080/share.html?video=' + ofilename, outfile[:-4]+'.png')
+                return file(outfile[:-4]+'.png')
+
         return True
-    
-    def show(self, user):
-        project_files = [f[len(user)+1:] for f in listdir(App.PROJECT_PATH) if f.startswith(user) and f.endswith('sb2')]
-        return project_files
+
+    def generate_qrcode(self, url, img_name):
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=10,
+            border=4,
+        )
+        qr.add_data(url)
+        qr.make(fit=True)
+        img = qr.make_image()
+        img.save(img_name)
+
+
+    def convert_video(self, infile, outfile, to_format='mp4'):
+        command = "ffmpeg -i %s -f %s -vcodec libx264 -acodec libmp3lame %s; rm %s" % (infile, to_format, outfile, infile)
+        subprocess.call(command, shell=True)
+        return os.path.isfile(outfile)
+
+    def list_files(self, user, _type):
+        type_dir = App.VIDEO_PATH if _type == 'video' else App.PROJECT_PATH
+        print type_dir
+        return [f[len(user)+1:] for f in os.listdir(type_dir) if f.startswith(user)]
 
     @cherrypy.expose
     def load(self, **args):
         user = self.encode(args.get('user'))
-        project_files = self.show(user)
+        _type = args.get('type')
+        print user, _type
+
+        project_files = self.list_files(user, _type)
+        print project_files
+
         if len(project_files) > 0:
             filename = project_files[0]
             print filename
 
+        template = (App.VIDEO_PATH if _type == 'video' else App.PROJECT_PATH) + App.FILE_TEMPLATE
         try:
-            return file(App.PROJECT_PATH + App.FILE_TEMPLATE % (user, filename))
+            return file(template % (user, filename))
         except:
-            return file(App.PROJECT_PATH + "default.sb2")
+            if _type == 'project': return file(App.PROJECT_PATH + "default.sb2")
 
     
     def encode(self, _str, charset='uft-8'):
@@ -97,9 +136,17 @@ if __name__ == '__main__':
             'tools.staticdir.on': True,
             'tools.staticdir.dir': 'scratch'
         },
+        '/share': {
+            'tools.staticdir.on': True,
+            'tools.staticdir.dir': 'share'
+        },
+        '/share.html': {
+            'tools.staticfile.on': True,
+            'tools.staticfile.filename': os.getcwd() + '/scratch/share.html'
+        },
         '/crossdomain.xml': {
             'tools.staticfile.on': True,
-            'tools.staticfile.filename': getcwd() + '/crossdomain.xml'
+            'tools.staticfile.filename': os.getcwd() + '/crossdomain.xml'
         }
     }
     

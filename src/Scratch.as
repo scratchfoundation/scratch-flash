@@ -253,7 +253,9 @@ public class Scratch extends Sprite {
 	}
 
 	public function loadProjectUrl(url:String){
+		url += '&type=project'
 		log(LogLevel.DEBUG, url);
+
 		function handleComplete(e:Event):void {
 			lp.setInfo("Opening project...")
 			runtime.installProjectFromData(loader.data);
@@ -271,6 +273,7 @@ public class Scratch extends Sprite {
 			lp.setProgress(e.bytesLoaded / e.bytesTotal);
 			lp.setInfo("" + (Math.floor(e.bytesLoaded/100000)/10) + "MB / " + (Math.floor(e.bytesTotal/100000)/10) + "MB")
 		}
+		
  		addLoadProgressBox("Loading from OpenSprites...");
 		loadInProgress = true;
 		var request:URLRequest = new URLRequest(url);
