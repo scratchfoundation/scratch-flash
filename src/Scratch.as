@@ -252,21 +252,18 @@ public class Scratch extends Sprite {
 		addExternalCallback('ASloadProjectUrl', loadProjectUrl);
 	}
 
-	public function loadProjectUrl(url:String){
-		url += '&type=project'
+	public function loadDataFromUrl(url:String, whenDone:Function) {
 		log(LogLevel.DEBUG, url);
 
-		function handleComplete(e:Event):void {
-			lp.setInfo("Opening project...")
-			runtime.installProjectFromData(loader.data);
-			setProjectName("");
-			removeLoadProgressBox();
-			ExternalInterface.call('JSloadProjectUrlCallback', false);
-		}
  		function handleError(e:ErrorEvent):void {
-			jsThrowError('Failed to load project: ' + e.toString());
+			jsThrowError('Failed to load url: ' + e.toString());
 			removeLoadProgressBox();
-			ExternalInterface.call('JSloadProjectUrlCallback', e);
+		}
+
+		function handleComplete(e:Event):void {
+			if(whenDone) {
+				whenDone(e.target.data);
+			}
 		}
 		
 		function handleProgress(e:ProgressEvent) {
@@ -274,7 +271,6 @@ public class Scratch extends Sprite {
 			lp.setInfo("" + (Math.floor(e.bytesLoaded/100000)/10) + "MB / " + (Math.floor(e.bytesTotal/100000)/10) + "MB")
 		}
 		
- 		addLoadProgressBox("Loading from OpenSprites...");
 		loadInProgress = true;
 		var request:URLRequest = new URLRequest(url);
 		var loader:URLLoader = new URLLoader(request);
@@ -284,6 +280,20 @@ public class Scratch extends Sprite {
 		loader.addEventListener(IOErrorEvent.IO_ERROR, handleError);
 		loader.addEventListener(ProgressEvent.PROGRESS, handleProgress);
 		loader.load(request);
+	}
+
+	public function loadProjectUrl(url:String){
+		function loadProjectComplete(_data:ByteArray):void {
+			lp.setInfo("Opening project...")
+			runtime.installProjectFromData(_data);
+			setProjectName("");
+			removeLoadProgressBox();
+			ExternalInterface.call('JSloadProjectUrlCallback', false);
+		}
+
+		url += '&type=project'
+		addLoadProgressBox("Loading from Server...");
+		loadDataFromUrl(url, loadProjectComplete);
 	}
 
 	protected function jsEditorReady():void {
@@ -1239,7 +1249,9 @@ public class Scratch extends Sprite {
 		d.showOnStage(stage);
 	}
 
-	public function saveDataToServer(url:String, _data:ByteArray):void {
+	public function saveDataToServer(url:String, _data:ByteArray, whenDone:Function = null):void {
+		log(LogLevel.DEBUG, url);
+
 		function handleError(e:ErrorEvent):void {
 			jsThrowError('Failed to save project: ' + e.toString());
 			removeLoadProgressBox();
@@ -1247,18 +1259,19 @@ public class Scratch extends Sprite {
 		}
 
 		function handleComplete(e:Event):void {
-			log(LogLevel.DEBUG, "data saved");
+			if(whenDone) {
+				whenDone(e.target.data);
+			}
 		}
 
 		var header:URLRequestHeader = new URLRequestHeader("Content-type", "application/octet-stream;charset=utf-8");
 		var request:URLRequest = new URLRequest(url);
-		log(LogLevel.DEBUG, url);
+		var loader:URLLoader = new URLLoader(request);
 
 		request.requestHeaders.push(header);
 		request.method = URLRequestMethod.POST;
 		request.data = _data;
-
-		var loader:URLLoader = new URLLoader(request);
+		
 		loader.dataFormat = URLLoaderDataFormat.BINARY;
 		loader.addEventListener(Event.COMPLETE, handleComplete);
 		loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, handleError);

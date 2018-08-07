@@ -67,7 +67,7 @@ class App(object):
             outfile = App.SHARE_PATH + ofilename
             flag = self.convert_video(_file, outfile)
             if flag:
-                self.generate_qrcode('http://www.scratchonline.cn:4080/share.html?video=' + ofilename, outfile[:-4]+'.png')
+                self.generate_qrcode('http://www.scratchonline.cn:4080/share/' + ofilename, outfile[:-4]+'.png')
                 return file(outfile[:-4]+'.png')
 
         return True
@@ -86,7 +86,7 @@ class App(object):
 
 
     def convert_video(self, infile, outfile, to_format='mp4'):
-        command = "ffmpeg -i %s -f %s -vcodec libx264 -acodec libmp3lame %s; rm %s" % (infile, to_format, outfile, infile)
+        command = "ffmpeg -y -i %s -f %s -vcodec libx264 -acodec libmp3lame %s; rm %s" % (infile, to_format, outfile, infile)
         subprocess.call(command, shell=True)
         return os.path.isfile(outfile)
 

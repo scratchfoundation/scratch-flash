@@ -510,16 +510,25 @@ public class ScratchRuntime {
         //}
         function saveVideoToServer():void {
 
+        	function saveVideoComplete(_data:ByteArray) {
+        		var loader:Loader = new Loader();
+				loader.loadBytes(_data);
+				loader.contentLoaderInfo.addEventListener(Event.COMPLETE, function(event:Event):void {
+				    var loaderInfo:LoaderInfo = LoaderInfo(event.target);
+				    var bitmapData:BitmapData = new BitmapData(loaderInfo.width, loaderInfo.height, false, 0xFFFFFF);
+				    bitmapData.draw(loaderInfo.loader);
+				    DialogBox.close("Share Your Video",null,new Bitmap(bitmapData),"Back to Scratch");
+				});
+           	}
+
 			function saveVideoFile(url:String) {
 				var projectType:String = ".flv";
 				var defaultName:String = StringUtil.trim(Scratch.app.projectName());
 				defaultName = ((defaultName.length > 0) ? defaultName : 'project') + projectType;
 				url = url + "&type=video&filename=" + encodeURIComponent(defaultName);
-				Scratch.app.saveDataToServer(url, video, );
+				Scratch.app.saveDataToServer(url, video, saveVideoComplete);
 				releaseVideo(false);
 			}
-
-
 
 			if(!Scratch.app.jsEnabled) return;
 			Scratch.app.addExternalCallback('ASSaveDataToServer', saveVideoFile);
