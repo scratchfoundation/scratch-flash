@@ -5,24 +5,19 @@ import os
 import ConfigParser
 import subprocess
 import qrcode
-import socket
+import daemon
+import logging
+from cherrypy.lib.static import serve_file
 
-# import os, tempfile, sys, socket, re
-# import importlib
-# from StringIO import StringIO
+# create logger
+logger = logging.getLogger('cherrypy')
+logger.setLevel(logging.INFO)
 
-# sys.path.append("./modules")
-# import util, bconfig, brick
-
-# server_config = {
-#     'server.socket_host': '0.0.0.0',
-#     'server.socket_port': 4443,
-#     'server.ssl_module': 'pyopenssl',
-#     'server.ssl_certificate':'/home/y/conf/sslcerts/server.crt',
-#     'server.ssl_private_key':'/home/y/conf/sslcerts/server.key',
-#     'server.ssl_certificate_chain':'/home/y/conf/sslcerts/server.intermediate.crt',
-#     'response.timeout': 10*60
-# }
+fh = logging.FileHandler("/tmp/app.log")
+fh.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+fh.setFormatter(formatter)
+logger.addHandler(fh)
 
 server_config = {
     'server.socket_host': '0.0.0.0',
@@ -54,7 +49,7 @@ class App(object):
         user = self.encode(args.get('user'))
         filename = self.encode(args.get('filename'))
         _type = args.get('type') if 'type' in args else 'project'
-        print user, filename, _type
+        logger.debug("%s, %s, %s" % (user, filename, _type))
 
         template = (App.VIDEO_PATH if _type == 'video' else App.PROJECT_PATH) + App.FILE_TEMPLATE
 
@@ -84,29 +79,34 @@ class App(object):
         img = qr.make_image()
         img.save(img_name)
 
+    @cherrypy.expose
+    def share(self, **args):
+        video = args.get('video')
+        if video:
+            return serve_file(os.getcwd() + '/share/'+video)
 
     def convert_video(self, infile, outfile, to_format='mp4'):
-        command = "ffmpeg -y -i %s -f %s -vcodec libx264 -acodec libmp3lame %s; rm %s" % (infile, to_format, outfile, infile)
+        command = "ffmpeg -i %s -f %s -vcodec libx264 -acodec libmp3lame %s;" % (infile, to_format, outfile)
         subprocess.call(command, shell=True)
         return os.path.isfile(outfile)
 
     def list_files(self, user, _type):
         type_dir = App.VIDEO_PATH if _type == 'video' else App.PROJECT_PATH
-        print type_dir
+        logger.info(type_dir)
         return [f[len(user)+1:] for f in os.listdir(type_dir) if f.startswith(user)]
 
     @cherrypy.expose
     def load(self, **args):
         user = self.encode(args.get('user'))
         _type = args.get('type')
-        print user, _type
+        logger.debug("%s %s" % (user, _type))
 
         project_files = self.list_files(user, _type)
-        print project_files
+        logger.debug(",".join(project_files))
 
         if len(project_files) > 0:
             filename = project_files[0]
-            print filename
+            logger.info(filename)
 
         template = (App.VIDEO_PATH if _type == 'video' else App.PROJECT_PATH) + App.FILE_TEMPLATE
         try:
@@ -123,10 +123,11 @@ class App(object):
 
 
 if __name__ == '__main__':
+    working_directory = os.getcwd()    
     conf = {
         '/': {
             'tools.sessions.on': True,
-            'tools.staticdir.root': os.path.abspath(os.getcwd())
+            'tools.staticdir.root': os.path.abspath(working_directory)
         },
         '/assets': {
             'tools.staticdir.on': True,
@@ -142,11 +143,11 @@ if __name__ == '__main__':
         },
         '/share.html': {
             'tools.staticfile.on': True,
-            'tools.staticfile.filename': os.getcwd() + '/scratch/share.html'
+            'tools.staticfile.filename': working_directory + '/scratch/share.html'
         },
         '/crossdomain.xml': {
             'tools.staticfile.on': True,
-            'tools.staticfile.filename': os.getcwd() + '/crossdomain.xml'
+            'tools.staticfile.filename': working_directory + '/crossdomain.xml'
         }
     }
     
@@ -154,4 +155,5 @@ if __name__ == '__main__':
     webapp = App()
     webapp.config = ConfigParser.ConfigParser()
     webapp.config.read('./app.cnf')
-    cherrypy.quickstart(webapp, '/', conf)
+    with daemon.DaemonContext(files_preserve = [fh.stream],working_directory=working_directory):
+        cherrypy.quickstart(webapp, '/', conf)

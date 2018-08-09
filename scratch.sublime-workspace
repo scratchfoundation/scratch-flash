@@ -184,10 +184,62 @@
 	"buffers":
 	[
 		{
-			"file": "app.py",
+			"file": "src/Scratch.as",
 			"settings":
 			{
-				"buffer_size": 3408,
+				"buffer_size": 50052,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "html-template/index.template.html",
+			"settings":
+			{
+				"buffer_size": 8519,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "src/scratch/ScratchRuntime.as",
+			"settings":
+			{
+				"buffer_size": 53079,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "webapp/app.py",
+			"settings":
+			{
+				"buffer_size": 4817,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "bin-debug/share.html",
+			"settings":
+			{
+				"buffer_size": 983,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/sound/NotePlayer.as",
+			"settings":
+			{
+				"buffer_size": 5285,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/uiwidgets/DialogBox.as",
+			"settings":
+			{
+				"buffer_size": 15203,
 				"line_ending": "Unix"
 			}
 		}
@@ -257,13 +309,14 @@
 	"expanded_folders":
 	[
 		"/Users/zezhen/workspace/scratch-flash",
-		"/Users/zezhen/workspace/scratch-flash/src"
+		"/Users/zezhen/workspace/scratch-flash/src",
+		"/Users/zezhen/workspace/scratch-flash/src/sound"
 	],
 	"file_history":
 	[
+		"/Users/zezhen/workspace/scratch-flash/app.py",
 		"/Users/zezhen/workspace/scratch-flash/src/Scratch.as",
 		"/Users/zezhen/workspace/scratch-flash/html-template/index.template.html",
-		"/Users/zezhen/workspace/scratch-flash/app.py",
 		"/Users/zezhen/workspace/scratch-flash/src/scratch/ScratchSound.as",
 		"/Users/zezhen/workspace/scratch-flash/src/util/StringHelper.as",
 		"/Users/zezhen/workspace/scratch-flash/src/util/ProjectIO.as",
@@ -406,9 +459,20 @@
 	},
 	"find_state":
 	{
-		"case_sensitive": false,
+		"case_sensitive": true,
 		"find_history":
 		[
+			"specEditor",
+			"Â",
+			"DisplayObject",
+			"saveDataToServer",
+			"JSloadProjectUrlCallback",
+			"Function",
+			"DisplayObject",
+			"dialogbox",
+			"uiwidgets",
+			"DialogBox",
+			"saveto",
 			"callToSaveProject",
 			"getFingerprint",
 			"getFingerprint'",
@@ -525,18 +589,7 @@
 			"startInEditMode",
 			"isExtensionDevMode",
 			"getMediaLibrary",
-			"google",
-			"jquery.ui.base.css",
-			"loadGithubURL",
-			"projectUrl",
-			"http://cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__/",
-			"jquery-ui.min.js",
-			"http://cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__//",
-			"main.js.1",
-			"\"//",
-			"m_3TAXDreGTFyoYnEmU9mcKB4Xtw5mw6yRkuJtXRKxM",
-			"see-inside",
-			"account-nav.json"
+			"google"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -544,6 +597,7 @@
 		"regex": true,
 		"replace_history":
 		[
+			"",
 			"\\t",
 			"\\n",
 			"\\t",
@@ -567,24 +621,112 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 6,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "app.py",
+					"file": "src/Scratch.as",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3408,
+						"buffer_size": 50052,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2478,
-								2478
+								36476,
+								36484
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/ActionScript/ActionScript.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 21079.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "html-template/index.template.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 8519,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "src/scratch/ScratchRuntime.as",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 53079,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								17615,
+								17615
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/ActionScript/ActionScript.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 8324.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "webapp/app.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4817,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2226,
+								2226
 							]
 						],
 						"settings":
@@ -594,7 +736,94 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 214.0,
+						"translation.y": 957.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "bin-debug/share.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 983,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								897,
+								897
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "src/sound/NotePlayer.as",
+					"semi_transient": true,
+					"settings":
+					{
+						"buffer_size": 5285,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1393,
+								1393
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/ActionScript/ActionScript.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 631.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "src/uiwidgets/DialogBox.as",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 15203,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3756,
+								3984
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/ActionScript/ActionScript.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 974.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
@@ -664,16 +893,28 @@
 		"selected_items":
 		[
 			[
-				"app.p",
-				"app.py"
+				"share",
+				"bin-debug/share.html"
 			],
 			[
 				"app.py",
-				"app.py"
+				"webapp/app.py"
 			],
 			[
 				"index",
 				"html-template/index.template.html"
+			],
+			[
+				"dia",
+				"src/uiwidgets/DialogBox.as"
+			],
+			[
+				"runtime",
+				"src/scratch/ScratchRuntime.as"
+			],
+			[
+				"app.p",
+				"app.py"
 			],
 			[
 				"scratch.as",
@@ -710,10 +951,6 @@
 			[
 				"projectio",
 				"src/util/ProjectIO.as"
-			],
-			[
-				"runtime",
-				"src/scratch/ScratchRuntime.as"
 			],
 			[
 				"hist",
@@ -1166,14 +1403,6 @@
 			[
 				"data",
 				"src/main/yinst/data_client.yicf"
-			],
-			[
-				"producer",
-				"devel/src/fast_feedback_loop/target/test-classes/cms_info/producers.json"
-			],
-			[
-				"auto",
-				"devel/src/fast_feedback_loop/src/main/resources/autodeploy.sh"
 			]
 		],
 		"width": 0.0
