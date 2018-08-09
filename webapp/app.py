@@ -5,7 +5,6 @@ import os
 import ConfigParser
 import subprocess
 import qrcode
-import daemon
 import logging
 from cherrypy.lib.static import serve_file
 
@@ -62,7 +61,9 @@ class App(object):
             outfile = App.SHARE_PATH + ofilename
             flag = self.convert_video(_file, outfile)
             if flag:
-                self.generate_qrcode('http://www.scratchonline.cn:4080/share/' + ofilename, outfile[:-4]+'.png')
+                # Todo try to qrcode html code directly?
+                # <video id = "video_id" width="100%" height="100%" controls="true" src="VIDEO_LINK" type="video/mp4"></video>
+                self.generate_qrcode('http://www.scratchonline.cn:4080/share?video=' + ofilename, outfile[:-4]+'.png')
                 return file(outfile[:-4]+'.png')
 
         return True
@@ -86,7 +87,7 @@ class App(object):
             return serve_file(os.getcwd() + '/share/'+video)
 
     def convert_video(self, infile, outfile, to_format='mp4'):
-        command = "ffmpeg -i %s -f %s -vcodec libx264 -acodec libmp3lame %s;" % (infile, to_format, outfile)
+        command = "ffmpeg -i %s -f %s -vcodec libx264 -vf format=yuv420p -acodec libmp3lame %s;" % (infile, to_format, outfile)
         subprocess.call(command, shell=True)
         return os.path.isfile(outfile)
 
@@ -155,5 +156,9 @@ if __name__ == '__main__':
     webapp = App()
     webapp.config = ConfigParser.ConfigParser()
     webapp.config.read('./app.cnf')
-    with daemon.DaemonContext(files_preserve = [fh.stream],working_directory=working_directory):
+    try:
+        import daemon
+        with daemon.DaemonContext(files_preserve = [fh.stream],working_directory=working_directory):
+            cherrypy.quickstart(webapp, '/', conf)
+    except:
         cherrypy.quickstart(webapp, '/', conf)

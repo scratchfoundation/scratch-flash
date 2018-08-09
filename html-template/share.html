@@ -1,6 +1,4 @@
-<video id='videoid' controls autoplay name="media">
-  <source id='video_source' src="VIDEO_LINK" type="video/mp4">
-</video>
+<video id = "video_id" width="100%" height="100%" controls="true" src="VIDEO_LINK" type="video/mp4"></video>
 
 <script type="text/javascript" src="//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__//js/jquery.min.js"></script>
 <script type="text/javascript">
@@ -20,6 +18,6 @@
 	};
 
 	var video = getUrlParameter('video');
-	$("#video_source").attr("src", window.location.protocol + "//" + window.location.hostanme + ":" + window.location.port + "./share/"+video);
+	$("#videoid").attr("src", window.location.protocol + "//" + window.location.hostname + ":" + window.location.port + "/share?video="+video);
 	$("#videoid").load();
 </script>
