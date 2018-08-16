@@ -268,6 +268,16 @@ public class Server implements IServer {
 		return serverGet(url, whenDone);
 	}
 
+
+	public function getLoadDataURL():String {
+		return URLs.sitePrefix + URLs.loadDataAction;
+	}
+
+	public function getSaveDataURL():String {
+		return URLs.sitePrefix + URLs.saveDataAction;
+	}
+
+
 	public function getMediaLibrary(libraryType:String, whenDone:Function):URLLoader {
 		var url:String = getCdnStaticSiteURL() + 'medialibraries/' + libraryType + 'Library.json';
 		return serverGet(url, whenDone);

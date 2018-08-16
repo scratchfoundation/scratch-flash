@@ -7,6 +7,7 @@ import subprocess
 import qrcode
 import logging
 from cherrypy.lib.static import serve_file
+from StringIO import StringIO
 
 # create logger
 logger = logging.getLogger('cherrypy')
@@ -23,8 +24,11 @@ server_config = {
     'server.socket_port': 4080,
     'response.timeout': 10*60
 }
-
 cherrypy.config.update(server_config)
+
+def error_page_404(status, message, traceback, version):
+    return "Oops! Looks like you're lost"
+cherrypy.config.update({'error_page.404': error_page_404})
 
 def jsonify_tool_callback(*args, **kwargs):
     response = cherrypy.response
@@ -40,6 +44,13 @@ class App(object):
     @cherrypy.expose
     def index(self, **args):
         return file('scratch/Scratch.html')
+
+    @cherrypy.expose
+    def ide(self, **args):
+        user = args.get('userid') if 'userid' in args else 'Guest'
+        content = "".join(file('scratch/Scratch.html').readlines())
+        content = content.replace('__USER__', user)
+        return StringIO(unicode(content))
 
     @cherrypy.expose
     def save(self, **args):

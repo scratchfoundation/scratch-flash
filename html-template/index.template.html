@@ -39,7 +39,8 @@
         <script type="text/javascript" src="//cdn.jsdelivr.net/npm/fingerprintjs2@1.8.0/dist/fingerprint2.min.js"></script>
         <script type="text/javascript">
             window.SWFready=$.Deferred(); // Deferred makes sure we don't call ASSetEditMode before SWF is ready.
-            var webappUrl = "http://WEBAPPURL:4080/";
+            var webappUrl = window.location.protocol + '//' + window.location.host + '/';
+            console.log(webappUrl);
 
             function getObject(objectName) {
                 if (navigator.appName.indexOf("icrosoft") != -1) {
@@ -49,26 +50,12 @@
                 }
             }
 
-            function JSSaveDataToServer() {
-                new Fingerprint2().get(function(result, components) {
-                    try {
-                        getObject("Scratch").ASSaveDataToServer(webappUrl + "save?user=" + result);
-                    } catch (error) {
-                        throw error;
-                    }
-                 });
-                return true;
-            }
-
             function JSeditorReady() {
-                new Fingerprint2().get(function(result, components) {
-                    try {
-                        getObject("Scratch").ASloadProjectUrl(webappUrl + "load?user="+result);
-                        SWFready.resolve();
-                    } catch (error) {
-                        throw error;
-                    }
-                 });
+                try {
+                    SWFready.resolve();
+                } catch (error) {
+                    throw error;
+                }
                 return true;
             }
 
@@ -80,7 +67,7 @@
             var flashvars = {
                 autostart: 'false',
                 urlOverrides: {
-                    sitePrefix: window.location.protocol + '//' + window.location.host + '/',
+                    sitePrefix: webappUrl,
                     siteCdnPrefix: webappUrl + "assets/",
                     assetPrefix: webappUrl + "assets/",
                     assetCdnPrefix: webappUrl + "assets/",
@@ -88,8 +75,11 @@
                     projectCdnPrefix: webappUrl + "assets/",
                     internalAPI: "internalapi/",
                     siteAPI: "site-api/",
-                    staticFiles: "scratchr2/static/"
+                    staticFiles: "scratchr2/static/",
+                    loadDataAction: "load?",
+                    saveDataAction: "save?",
                 },
+                user: '__USER__',
                 project_isPrivate: 'true',
                 project_isNew: 'true',
                 inIE: (navigator.userAgent.indexOf('MSIE') > -1)

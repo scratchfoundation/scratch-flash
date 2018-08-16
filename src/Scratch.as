@@ -109,6 +109,7 @@ public class Scratch extends Sprite {
 	public var loadInProgress:Boolean;
 	public var debugOps:Boolean = false;
 	public var debugOpCmd:String = '';
+	public var user:String = '';
 
 	protected var autostart:Boolean;
 	private var viewedObject:ScratchObj;
@@ -169,8 +170,12 @@ public class Scratch extends Sprite {
 		isOffline = true;
 		log(LogLevel.DEBUG, loaderInfo.url);
 		log(LogLevel.DEBUG, "set isOffline to " + isOffline);
-
 		hostProtocol = URLUtil.getProtocol(loaderInfo.url);
+
+		user = loaderInfo.parameters["user"];
+		if(user == null || user == "" || user == "__USER__") {
+			user = "guest";
+		}
 		
 		isExtensionDevMode = (loaderInfo.parameters['extensionDevMode'] == 'true');
 		isMicroworld = (loaderInfo.parameters['microworldMode'] == 'true');
@@ -228,6 +233,8 @@ public class Scratch extends Sprite {
 		//Analyze.countMissingAssets();
 
 		handleStartupParameters();
+
+		loadLatestSavedProject();
 	}
 
 	protected function handleStartupParameters():void {
@@ -248,8 +255,6 @@ public class Scratch extends Sprite {
 			addExternalCallback('ASloadBase64SBX', loadBase64SBX);
 			addExternalCallback('ASsetModalOverlay', setModalOverlay);
 		}
-
-		addExternalCallback('ASloadProjectUrl', loadProjectUrl);
 	}
 
 	public function loadDataFromUrl(url:String, whenDone:Function) {
@@ -282,7 +287,8 @@ public class Scratch extends Sprite {
 		loader.load(request);
 	}
 
-	public function loadProjectUrl(url:String){
+	public function loadLatestSavedProject(){
+
 		function loadProjectComplete(_data:ByteArray):void {
 			lp.setInfo("Opening project...")
 			runtime.installProjectFromData(_data);
@@ -291,7 +297,7 @@ public class Scratch extends Sprite {
 			ExternalInterface.call('JSloadProjectUrlCallback', false);
 		}
 
-		url += '&type=project'
+		var url:String = server.getLoadDataURL() + "type=project&user=" + user;
 		addLoadProgressBox("Loading from Server...");
 		loadDataFromUrl(url, loadProjectComplete);
 	}
@@ -1281,15 +1287,7 @@ public class Scratch extends Sprite {
 
 	public function saveProjectToServer():void {
 
-		function callToSaveProject(): void {
-			if(!jsEnabled) return;
-			addExternalCallback('ASSaveDataToServer', saveCurrentProject);
-			externalCall('JSSaveDataToServer', function (flag:Boolean):void {
-                log(LogLevel.DEBUG, 'callback from JSSaveDataToServer');
-            });
-		}
-
-		function saveCurrentProject(url:String):void {
+		function saveCurrentProject():void {
 			scriptsPane.saveScripts(false);
 			var projectType:String = extensionManager.hasExperimentalExtensions() ? '.sbx' : '.sb2';
 			var defaultName:String = StringUtil.trim(projectName());
@@ -1297,13 +1295,13 @@ public class Scratch extends Sprite {
 
 			var zipData:ByteArray = projIO.encodeProjectAsZipFile(stagePane);
 			
-			url = url + "&type=project&filename=" + encodeURIComponent(defaultName);
+			var url:String = server.getSaveDataURL() + "type=project&filename=" + encodeURIComponent(defaultName) + "&user=" + user;
 			saveDataToServer(url, zipData);
 		}
 
 		if (loadInProgress) return;
 		var projIO:ProjectIO = new ProjectIO(this);
-		projIO.convertSqueakSounds(stagePane, callToSaveProject);
+		projIO.convertSqueakSounds(stagePane, saveCurrentProject);
 	}
 
 	public function exportProjectToFile(fromJS:Boolean = false, saveCallback:Function = null):void {
