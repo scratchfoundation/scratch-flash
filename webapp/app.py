@@ -59,7 +59,7 @@ class App(object):
         user = self.encode(args.get('user'))
         filename = self.encode(args.get('filename'))
         _type = args.get('type') if 'type' in args else 'project'
-        logger.debug("%s, %s, %s" % (user, filename, _type))
+        # logger.debug("%s, %s, %s" % (user, filename, _type))
 
         template = (App.VIDEO_PATH if _type == 'video' else App.PROJECT_PATH) + App.FILE_TEMPLATE
 
