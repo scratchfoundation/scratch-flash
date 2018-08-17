@@ -34,10 +34,8 @@ sync $root/webapp scratchonline
 
 # sync bin-* files 
 if [ $mode == 'dev' ]; then
-	sed -i '.tmp' 's/WEBAPPURL/rewardafford.corp.gq1.yahoo.com/' $root/bin-debug/Scratch.html
     sync $root/bin-debug scratchonline/scratch
 else
-	sed -i '.tmp' 's/WEBAPPURL/www.scratchonline.cn/' $root/bin-release/Scratch.html
     $root/bin-release scratchonline/scratch
 fi
 

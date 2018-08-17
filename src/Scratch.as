@@ -234,7 +234,7 @@ public class Scratch extends Sprite {
 
 		handleStartupParameters();
 
-		loadLatestSavedProject();
+		loadLatestSavedProject('default');
 	}
 
 	protected function handleStartupParameters():void {
@@ -287,17 +287,24 @@ public class Scratch extends Sprite {
 		loader.load(request);
 	}
 
-	public function loadLatestSavedProject(){
+	public function loadLatestSavedProject(project:String = null, user:String = null): void{
 
 		function loadProjectComplete(_data:ByteArray):void {
 			lp.setInfo("Opening project...")
 			runtime.installProjectFromData(_data);
-			setProjectName("");
+			setProjectName("Untitled");
 			removeLoadProgressBox();
-			ExternalInterface.call('JSloadProjectUrlCallback', false);
+			//ExternalInterface.call('JSloadProjectUrlCallback', false);
 		}
 
-		var url:String = server.getLoadDataURL() + "type=project&user=" + user;
+		var url:String = server.getLoadDataURL() + "type=project";
+		if (user != null) {
+			url += '&user=' + user;
+		}
+		if (project != null) {
+			url += '&project=' + project;	
+		}
+		
 		addLoadProgressBox("Loading from Server...");
 		loadDataFromUrl(url, loadProjectComplete);
 	}
@@ -1126,7 +1133,8 @@ public class Scratch extends Sprite {
 	protected function addFileMenuItems(b:*, m:Menu):void {
 		m.addItem('Upload from your computer', runtime.selectProjectFile);
 		m.addItem('Download to your computer', exportProjectToFile);
-		m.addItem('Save Project', saveProjectToServer);
+		m.addItem('Save to server', saveProjectToServer);
+		m.addItem('Load from server', loadProjectFromServer);
 		if (runtime.recording || runtime.ready==ReadyLabel.COUNTDOWN || runtime.ready==ReadyLabel.READY) {
 			m.addItem('Stop Video', runtime.stopVideo);
 		} else {
@@ -1283,6 +1291,27 @@ public class Scratch extends Sprite {
 		loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, handleError);
 		loader.addEventListener(IOErrorEvent.IO_ERROR, handleError);
 		loader.load(request);
+	}
+
+	public function loadProjectFromServer():void {
+
+		function loadProject():void {
+			log(LogLevel.DEBUG, "load project here");
+		}
+
+		function loadProjectListComplete(_data:String):void {
+			if(_data.length <= 0) return;
+			for each (var elem in _data.split(',')) {
+				var b:Button = new Button(_data, loadProject);
+					
+			}
+			
+
+			DialogBox.close("Select to load project",null,b,'Load',app.stage,loadProject);
+		}
+
+		var url:String = server.getLoadDataURL() + "type=listproject&user=" + user;
+		loadDataFromUrl(url, loadProjectListComplete);
 	}
 
 	public function saveProjectToServer():void {
