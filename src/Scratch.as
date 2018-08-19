@@ -234,7 +234,7 @@ public class Scratch extends Sprite {
 
 		handleStartupParameters();
 
-		loadLatestSavedProject('default');
+		loadProject('default');
 	}
 
 	protected function handleStartupParameters():void {
@@ -287,26 +287,30 @@ public class Scratch extends Sprite {
 		loader.load(request);
 	}
 
-	public function loadLatestSavedProject(project:String = null, user:String = null): void{
+	public function loadProject(project:String = null): void{
 
 		function loadProjectComplete(_data:ByteArray):void {
 			lp.setInfo("Opening project...")
 			runtime.installProjectFromData(_data);
-			setProjectName("Untitled");
+			setProjectName(project);
 			removeLoadProgressBox();
-			//ExternalInterface.call('JSloadProjectUrlCallback', false);
 		}
 
-		var url:String = server.getLoadDataURL() + "type=project";
-		if (user != null) {
-			url += '&user=' + user;
+		function doInstall() {
+			var url:String = server.getLoadDataURL() + "type=project";
+			if (user != null) {
+				url += '&user=' + user;
+			}
+			if (project != null) {
+				url += '&project=' + project;	
+			}
+			
+			addLoadProgressBox("Loading from Server...");
+			loadDataFromUrl(url, loadProjectComplete);
 		}
-		if (project != null) {
-			url += '&project=' + project;	
-		}
-		
-		addLoadProgressBox("Loading from Server...");
-		loadDataFromUrl(url, loadProjectComplete);
+
+		if (app.stagePane.isEmpty() || project == 'default') doInstall();
+		else DialogBox.confirm('Replace contents of the current project?', app.stage, doInstall);
 	}
 
 	protected function jsEditorReady():void {
@@ -1301,10 +1305,9 @@ public class Scratch extends Sprite {
 	public function loadProjectFromServer():void {
 
 		function loadProjectListComplete(_data:String):void {
-			if(_data.length <= 0) return;
+			addExternalCallback('ASLoadProject', loadProject);
 			if (jsEnabled) {
 				externalCall('JSListProject("' + _data + '")', function (success:Boolean):void {
-					
 				});
 			}
 		}
@@ -1315,21 +1318,24 @@ public class Scratch extends Sprite {
 
 	public function saveProjectToServer():void {
 
+		var projectName:String = StringUtil.trim(projectName());
+		projectName = ((projectName.length > 0) ? projectName : 'Untitled');
+
 		function saveCurrentProject():void {
 			scriptsPane.saveScripts(false);
 			var projectType:String = extensionManager.hasExperimentalExtensions() ? '.sbx' : '.sb2';
-			var defaultName:String = StringUtil.trim(projectName());
-			defaultName = ((defaultName.length > 0) ? defaultName : 'project') + projectType;
-
 			var zipData:ByteArray = projIO.encodeProjectAsZipFile(stagePane);
-			
-			var url:String = server.getSaveDataURL() + "type=project&filename=" + encodeURIComponent(defaultName) + "&user=" + user;
+			var url:String = server.getSaveDataURL() + "type=project&filename=" + encodeURIComponent(projectName + projectType) + "&user=" + user;
 			saveDataToServer(url, zipData);
 		}
 
-		if (loadInProgress) return;
+		function doLoad() {
+			if (loadInProgress) return;
+			projIO.convertSqueakSounds(stagePane, saveCurrentProject);	
+		}
+		
 		var projIO:ProjectIO = new ProjectIO(this);
-		projIO.convertSqueakSounds(stagePane, saveCurrentProject);
+		DialogBox.confirm('Save current project (' + projectName +  ') to server?', app.stage, doLoad);
 	}
 
 	public function exportProjectToFile(fromJS:Boolean = false, saveCallback:Function = null):void {

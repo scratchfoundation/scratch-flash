@@ -49,9 +49,10 @@ class App(object):
 
     @cherrypy.expose
     def ide(self, **args):
-        user = args.get('userid') if 'userid' in args else 'Guest'
+        uid = args.get('userid') if 'userid' in args else 'Guest'
+        uname = args.get('username') if 'username' in args else 'Guest'
         content = "".join(file('scratch/Scratch.html').readlines())
-        content = content.replace('__USER__', user)
+        content = content.replace('__USER__', uid)
         return StringIO(unicode(content))
 
     @cherrypy.expose
@@ -122,11 +123,13 @@ class App(object):
         if _type == 'project':
             project = args.get('project')
             if not project: return self.error('project name is necessary')
+            if (not project.endswith('.sb2')):
+                project += '.sb2'
             project_file = App.PROJECT_PATH + App.FILE_TEMPLATE % (user, project)
             try:
                 return file(project_file)
             except:
-                if project == 'default':
+                if project == 'default.sb2':
                     return file(App.PROJECT_PATH + '/default.sb2')
                 else:
                     return self.error('project %s is not exist, please try others' % (project_file))
@@ -142,6 +145,8 @@ class App(object):
 
         elif _type == 'listproject':
             pdir = App.PROJECT_PATH + App.FILE_TEMPLATE % (user, '')
+            if not os.path.exists(pdir): return ''
+            
             entries = (os.path.join(pdir, fn) for fn in os.listdir(pdir) if fn.endswith('sb2'))
             entries = ((os.stat(path), path) for path in entries)
             entries = ((stat[ST_MTIME], path) for stat, path in entries if S_ISREG(stat[ST_MODE]))
