@@ -234,7 +234,7 @@ public class Scratch extends Sprite {
 
 		handleStartupParameters();
 
-		loadLatestSavedProject();
+		loadProject('default');
 	}
 
 	protected function handleStartupParameters():void {
@@ -287,19 +287,30 @@ public class Scratch extends Sprite {
 		loader.load(request);
 	}
 
-	public function loadLatestSavedProject(){
+	public function loadProject(project:String = null): void{
 
 		function loadProjectComplete(_data:ByteArray):void {
 			lp.setInfo("Opening project...")
 			runtime.installProjectFromData(_data);
-			setProjectName("");
+			setProjectName(project);
 			removeLoadProgressBox();
-			ExternalInterface.call('JSloadProjectUrlCallback', false);
 		}
 
-		var url:String = server.getLoadDataURL() + "type=project&user=" + user;
-		addLoadProgressBox("Loading from Server...");
-		loadDataFromUrl(url, loadProjectComplete);
+		function doInstall() {
+			var url:String = server.getLoadDataURL() + "type=project";
+			if (user != null) {
+				url += '&user=' + user;
+			}
+			if (project != null) {
+				url += '&project=' + project;	
+			}
+			
+			addLoadProgressBox("Loading from Server...");
+			loadDataFromUrl(url, loadProjectComplete);
+		}
+
+		if (app.stagePane.isEmpty() || project == 'default') doInstall();
+		else DialogBox.confirm('Replace contents of the current project?', app.stage, doInstall);
 	}
 
 	protected function jsEditorReady():void {
@@ -1124,9 +1135,15 @@ public class Scratch extends Sprite {
 	}
 
 	protected function addFileMenuItems(b:*, m:Menu):void {
+		
 		m.addItem('Upload from your computer', runtime.selectProjectFile);
 		m.addItem('Download to your computer', exportProjectToFile);
-		m.addItem('Save Project', saveProjectToServer);
+		m.addLine();
+		
+		m.addItem('Load from server', loadProjectFromServer);
+		m.addItem('Save to server', saveProjectToServer);
+		m.addLine();
+
 		if (runtime.recording || runtime.ready==ReadyLabel.COUNTDOWN || runtime.ready==ReadyLabel.READY) {
 			m.addItem('Stop Video', runtime.stopVideo);
 		} else {
@@ -1285,23 +1302,40 @@ public class Scratch extends Sprite {
 		loader.load(request);
 	}
 
+	public function loadProjectFromServer():void {
+
+		function loadProjectListComplete(_data:String):void {
+			addExternalCallback('ASLoadProject', loadProject);
+			if (jsEnabled) {
+				externalCall('JSListProject("' + _data + '")', function (success:Boolean):void {
+				});
+			}
+		}
+
+		var url:String = server.getLoadDataURL() + "type=listproject&user=" + user;
+		loadDataFromUrl(url, loadProjectListComplete);
+	}
+
 	public function saveProjectToServer():void {
+
+		var projectName:String = StringUtil.trim(projectName());
+		projectName = ((projectName.length > 0) ? projectName : 'Untitled');
 
 		function saveCurrentProject():void {
 			scriptsPane.saveScripts(false);
 			var projectType:String = extensionManager.hasExperimentalExtensions() ? '.sbx' : '.sb2';
-			var defaultName:String = StringUtil.trim(projectName());
-			defaultName = ((defaultName.length > 0) ? defaultName : 'project') + projectType;
-
 			var zipData:ByteArray = projIO.encodeProjectAsZipFile(stagePane);
-			
-			var url:String = server.getSaveDataURL() + "type=project&filename=" + encodeURIComponent(defaultName) + "&user=" + user;
+			var url:String = server.getSaveDataURL() + "type=project&filename=" + encodeURIComponent(projectName + projectType) + "&user=" + user;
 			saveDataToServer(url, zipData);
 		}
 
-		if (loadInProgress) return;
+		function doLoad() {
+			if (loadInProgress) return;
+			projIO.convertSqueakSounds(stagePane, saveCurrentProject);	
+		}
+		
 		var projIO:ProjectIO = new ProjectIO(this);
-		projIO.convertSqueakSounds(stagePane, saveCurrentProject);
+		DialogBox.confirm('Save current project (' + projectName +  ') to server?', app.stage, doLoad);
 	}
 
 	public function exportProjectToFile(fromJS:Boolean = false, saveCallback:Function = null):void {

@@ -136,6 +136,7 @@ public class DialogBox extends Sprite {
 			var line:TextField = makeLabelFunc(Translator.map(s));
 			addChild(line);
 			textLines.push(line);
+			line.selectable = true;
 		}
 	}
 

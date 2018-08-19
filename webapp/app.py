@@ -8,13 +8,14 @@ import qrcode
 import logging
 from cherrypy.lib.static import serve_file
 from StringIO import StringIO
+from stat import S_ISREG, ST_MTIME, ST_MODE
+from time import gmtime, strftime
 
 # create logger
 logger = logging.getLogger('cherrypy')
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 
 fh = logging.FileHandler("/tmp/app.log")
-fh.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 fh.setFormatter(formatter)
 logger.addHandler(fh)
@@ -35,11 +36,12 @@ def jsonify_tool_callback(*args, **kwargs):
     response.headers['Content-Type'] = 'application/json'
 cherrypy.tools.jsonify = cherrypy.Tool('before_finalize', jsonify_tool_callback, priority=30)
 
+
 class App(object):
     PROJECT_PATH = "projects/"
     VIDEO_PATH = "videos/"
     SHARE_PATH = "share/"
-    FILE_TEMPLATE = "%s_%s"
+    FILE_TEMPLATE = "%s/%s"
 
     @cherrypy.expose
     def index(self, **args):
@@ -47,9 +49,10 @@ class App(object):
 
     @cherrypy.expose
     def ide(self, **args):
-        user = args.get('userid') if 'userid' in args else 'Guest'
+        uid = args.get('userid') if 'userid' in args else 'Guest'
+        uname = args.get('username') if 'username' in args else 'Guest'
         content = "".join(file('scratch/Scratch.html').readlines())
-        content = content.replace('__USER__', user)
+        content = content.replace('__USER__', uid)
         return StringIO(unicode(content))
 
     @cherrypy.expose
@@ -62,6 +65,10 @@ class App(object):
         # logger.debug("%s, %s, %s" % (user, filename, _type))
 
         template = (App.VIDEO_PATH if _type == 'video' else App.PROJECT_PATH) + App.FILE_TEMPLATE
+
+        directory = template % (user, '')
+        if not os.path.exists(directory):
+            os.makedirs(directory)
 
         _file = template % (user, filename)
         with open(_file, 'w') as f:
@@ -113,19 +120,50 @@ class App(object):
         _type = args.get('type')
         logger.debug("%s %s" % (user, _type))
 
-        project_files = self.list_files(user, _type)
-        logger.debug(",".join(project_files))
+        if _type == 'project':
+            project = args.get('project')
+            if not project: return self.error('project name is necessary')
+            if (not project.endswith('.sb2')):
+                project += '.sb2'
+            project_file = App.PROJECT_PATH + App.FILE_TEMPLATE % (user, project)
+            try:
+                return file(project_file)
+            except:
+                if project == 'default.sb2':
+                    return file(App.PROJECT_PATH + '/default.sb2')
+                else:
+                    return self.error('project %s is not exist, please try others' % (project_file))
 
-        if len(project_files) > 0:
-            filename = project_files[0]
-            logger.info(filename)
+        elif _type == 'video':
+            video = args.get('video')
+            if not video: return self.error('video name is necessary')
+            video_file = App.VIDEO_PATH + App.FILE_TEMPLATE % (user, video)
+            try:
+                return file(video_file)
+            except:
+                return self.error('video %s is not exist, please try others' % (video_file))
 
-        template = (App.VIDEO_PATH if _type == 'video' else App.PROJECT_PATH) + App.FILE_TEMPLATE
-        try:
-            return file(template % (user, filename))
-        except:
-            if _type == 'project': return file(App.PROJECT_PATH + "default.sb2")
+        elif _type == 'listproject':
+            pdir = App.PROJECT_PATH + App.FILE_TEMPLATE % (user, '')
+            if not os.path.exists(pdir): return ''
+            
+            entries = (os.path.join(pdir, fn) for fn in os.listdir(pdir) if fn.endswith('sb2'))
+            entries = ((os.stat(path), path) for path in entries)
+            entries = ((stat[ST_MTIME], path) for stat, path in entries if S_ISREG(stat[ST_MODE]))
 
+            plist = map(lambda (mdate, path): "|".join((os.path.basename(path)[:-len(".sb2")], strftime("%Y-%m-%d %H:%M:%S", gmtime(mdate)))), sorted(entries))
+            plistStr = ','.join(plist)
+            logger.debug(plistStr)
+            return plistStr
+
+        else:
+            return self.error('correct type is necessary')
+
+    def error(self, message):
+        return self.message('ERROR', message)
+
+    def message(self, code, message):
+        return "[%s]: %s" % (code, message)
     
     def encode(self, _str, charset='uft-8'):
         try:
@@ -152,6 +190,10 @@ if __name__ == '__main__':
         '/share': {
             'tools.staticdir.on': True,
             'tools.staticdir.dir': 'share'
+        },
+        '/js': {
+            'tools.staticdir.on': True,
+            'tools.staticdir.dir': 'js'
         },
         '/share.html': {
             'tools.staticfile.on': True,
