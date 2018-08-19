@@ -65,7 +65,7 @@ class App(object):
 
         directory = template % (user, '')
         if not os.path.exists(directory):
-            os.makedires(directory)
+            os.makedirs(directory)
 
         _file = template % (user, filename)
         with open(_file, 'w') as f:

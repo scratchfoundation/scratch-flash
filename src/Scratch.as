@@ -1133,8 +1133,10 @@ public class Scratch extends Sprite {
 	protected function addFileMenuItems(b:*, m:Menu):void {
 		m.addItem('Upload from your computer', runtime.selectProjectFile);
 		m.addItem('Download to your computer', exportProjectToFile);
+		m.addLine();
 		m.addItem('Save to server', saveProjectToServer);
 		m.addItem('Load from server', loadProjectFromServer);
+		m.addLine();
 		if (runtime.recording || runtime.ready==ReadyLabel.COUNTDOWN || runtime.ready==ReadyLabel.READY) {
 			m.addItem('Stop Video', runtime.stopVideo);
 		} else {
