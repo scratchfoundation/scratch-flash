@@ -1792,6 +1792,9 @@ msgstr "旋转模式："
 msgid "save to local file"
 msgstr "保存到计算机"
 
+msgid "Save to server"
+msgstr "保存到服务器"
+
 msgid "second"
 msgstr "秒"
 
@@ -1909,3 +1912,6 @@ msgstr "显示发送者"
 
 msgid "stored on server"
 msgstr "保存在服务器上"
+
+msgid "Load from server"
+msgstr "从服务器加载"

@@ -8,6 +8,8 @@ import qrcode
 import logging
 from cherrypy.lib.static import serve_file
 from StringIO import StringIO
+from stat import S_ISREG, ST_MTIME, ST_MODE
+from time import gmtime, strftime
 
 # create logger
 logger = logging.getLogger('cherrypy')
@@ -139,14 +141,15 @@ class App(object):
                 return self.error('video %s is not exist, please try others' % (video_file))
 
         elif _type == 'listproject':
-            try:
-                project_directory = App.PROJECT_PATH + App.FILE_TEMPLATE % (user, '')
-                plist = [ f[:-len('.sb2')] for f in os.listdir(project_directory) if f.endswith('sb2')]
-                plistStr = ','.join(plist)
-                logger.debug(plistStr)
-                return plistStr
-            except:
-                return ''
+            pdir = App.PROJECT_PATH + App.FILE_TEMPLATE % (user, '')
+            entries = (os.path.join(pdir, fn) for fn in os.listdir(pdir) if fn.endswith('sb2'))
+            entries = ((os.stat(path), path) for path in entries)
+            entries = ((stat[ST_MTIME], path) for stat, path in entries if S_ISREG(stat[ST_MODE]))
+
+            plist = map(lambda (mdate, path): "|".join((os.path.basename(path)[:-len(".sb2")], strftime("%Y-%m-%d %H:%M:%S", gmtime(mdate)))), sorted(entries))
+            plistStr = ','.join(plist)
+            logger.debug(plistStr)
+            return plistStr
 
         else:
             return self.error('correct type is necessary')
@@ -182,6 +185,10 @@ if __name__ == '__main__':
         '/share': {
             'tools.staticdir.on': True,
             'tools.staticdir.dir': 'share'
+        },
+        '/js': {
+            'tools.staticdir.on': True,
+            'tools.staticdir.dir': 'js'
         },
         '/share.html': {
             'tools.staticfile.on': True,

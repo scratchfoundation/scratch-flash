@@ -1131,12 +1131,15 @@ public class Scratch extends Sprite {
 	}
 
 	protected function addFileMenuItems(b:*, m:Menu):void {
+		
 		m.addItem('Upload from your computer', runtime.selectProjectFile);
 		m.addItem('Download to your computer', exportProjectToFile);
 		m.addLine();
-		m.addItem('Save to server', saveProjectToServer);
+		
 		m.addItem('Load from server', loadProjectFromServer);
+		m.addItem('Save to server', saveProjectToServer);
 		m.addLine();
+
 		if (runtime.recording || runtime.ready==ReadyLabel.COUNTDOWN || runtime.ready==ReadyLabel.READY) {
 			m.addItem('Stop Video', runtime.stopVideo);
 		} else {
@@ -1297,19 +1300,13 @@ public class Scratch extends Sprite {
 
 	public function loadProjectFromServer():void {
 
-		function loadProject():void {
-			log(LogLevel.DEBUG, "load project here");
-		}
-
 		function loadProjectListComplete(_data:String):void {
 			if(_data.length <= 0) return;
-			for each (var elem in _data.split(',')) {
-				var b:Button = new Button(_data, loadProject);
+			if (jsEnabled) {
+				externalCall('JSListProject("' + _data + '")', function (success:Boolean):void {
 					
+				});
 			}
-			
-
-			DialogBox.close("Select to load project",null,b,'Load',app.stage,loadProject);
 		}
 
 		var url:String = server.getLoadDataURL() + "type=listproject&user=" + user;
