@@ -35,14 +35,91 @@
         <!${useBrowserHistory} END Browser History required section -->  
             
         <script type="text/javascript" src="scratch/swfobject.js"></script>
-        <script type="text/javascript" src="//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__//js/jquery.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
         <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+
         <script type="text/javascript">
-            $('#test1').on('click', function(){
-                alert();
-                layer.msg('hello');
+            $.i18n = function(options){
+                options = $.extend({}, {
+                    lang: 'en',
+                    data: $.i18n,
+                    sliceLang: false
+                }, options);
+
+                var langStore = langStore || {},
+                    lang = options.lang.indexOf('-') < 0 && !options.sliceLang ? options.lang : options.lang.slice(0, 2);
+
+                if( typeof options.data !== 'string' ){
+                    langStore = options.data[lang];
+                } else {
+                    var urlParts = options.data.match(/(.*)[\/\\]([^\/\\]+)\.(\w+)$/);
+                    $.ajax({
+                        url: urlParts[1] + '/' + lang + '.' + urlParts[3],
+                        dataType: "json", 
+                        success: function(data) {
+                            // console.log(data)
+                            langStore = data;
+                        },
+                        error: function(error) {
+                            console.log(error);
+                            $.getJSON(urlParts[1] + '/' + lang + '.' + urlParts[3], function(data) {
+                                langStore = data;
+                            });
+                        }
+                    });
+                }
+
+                var storeData = function(data){
+                    if(!data) return;
+                    if(window.localStorage) {
+                        localStorage.setItem( "langStore", JSON.stringify(data) );
+                        langStore = data;          
+                    } else {
+                        langStore = data;
+                    }
+                };
+
+                if(window.localStorage) {
+                    var localLangStore = localStorage.getItem("langStore");
+                    storeData( localLangStore !== null ? JSON.parse(localLangStore) : langStore);
+                } else {
+                    storeData( langStore );
+                }
+
+                this.getLang = function(){ return lang; };
+                this.setLang = function(l){ lang = l; storeData(options.data[l]); };
+
+                this.getItem = function(key){ return langStore[key]; };
+                this.setItem = function(key, value){ options.data[lang][key] = value; storeData(langStore); };
+
+                return this;
+            };
+
+            $.i18n.en = {
+                "title": "Choose Your Project",
+                "project": "Project Name",
+                "time": "Last Modified Time",
+                "remove": "Remove",
+                "cancel": "Cancel",
+                "foo": {
+                    "bar": "foo"
+                }
+            }
+
+            $.getJSON("json/zh-cn.json", function (data) {
+                $.i18n['zh-cn'] = data;
             });
+
+
+            var i18n = $.i18n()
+
+            function JSChangeLang(lang) {
+                console.log('set lang to ' + lang);
+                i18n.setLang(lang);
+                return true;
+            }
+
         </script>
         <script type="text/javascript">
             window.SWFready=$.Deferred(); // Deferred makes sure we don't call ASSetEditMode before SWF is ready.
@@ -70,16 +147,22 @@
             function getRow(item) {
                 var row = ['<tr>'];
                 var arr = item.split('|');
-                row.push('<td><a href="javascript:ASLoadProject(\'' + arr[0] + '\')">' + arr[0] + '</td>');
+                row.push('<td><a href="javascript:ASLoadProject(\'' + arr[0] + '\')">' + arr[0] + '</a></td>');
                 row.push('<td>' + arr[1] + '</td>');
-                row.push('<td align="right">href="javascript:ASRemoveProject(\'' + arr[0] + '\')">x</td>');
+                row.push('<td align="right"><a href="javascript:ASRemoveProject(\'' + arr[0] + '\')">x</a></td>');
                 row.push('</tr>');
                 return row.join("");
             }
 
             function JSListProject(projects) {
+
+                var project = i18n.getItem('project');
+                var time   = i18n.getItem('time');
+                var remove = i18n.getItem('remove');
+                var title = i18n.getItem('title');
+
                 var table = ['<table class="table table-striped">'];
-                table.push('<thead><tr><th scope="col">项目名</th><th scope="col">最近编辑时间</th><th scope="col">是否删除?</th></tr></thead>');
+                table.push('<thead><tr><th scope="col">' + project + '</th><th scope="col">'+time+'</th><th scope="col">'+remove+'?</th></tr></thead>');
                 table.push('<tbody>');
                 projects.split(',').forEach(function(item) {
                     if(item.length > 0) {
@@ -90,6 +173,7 @@
                 table.push('</tbody></table>');
                 $('#modalbody').text("");
                 $('#modalbody').append(table.join(""));
+                $('#modallongtitle').text(title);
                 $('#button').click();
             }
 
@@ -168,7 +252,7 @@
           <div class="modal-dialog" role="document">
             <div class="modal-content">
               <div class="modal-header">
-                <h5 class="modal-title" id="modallongtitle">选择你的项目</h5>
+                <h5 class="modal-title" id="modallongtitle">Choose Your Project</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>

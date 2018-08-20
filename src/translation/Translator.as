@@ -81,7 +81,7 @@ public class Translator {
 		setFontsFor('en');
 		if ('en' == lang) Scratch.app.translationChanged(); // there is no .po file English
 		else Scratch.app.server.getPOFile(lang, gotPOFile);
-
+		Scratch.app.externalCall('JSChangeLang("' + lang + '")', function (success:Boolean):void {});
 	}
 	
 	public static function setLanguage(lang:String):void {

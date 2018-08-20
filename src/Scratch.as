@@ -315,23 +315,22 @@ public class Scratch extends Sprite {
 
 	public function removeProjectByName(project:String): void {
 
-		function removeProjectComplete(_data:Boolean) {
-			log(LogLevel.DEBUG, 'Remove project: ' + project + " return code: " + _data);
+		function removeProjectComplete(_msg:String) {
+			log(LogLevel.DEBUG, 'Remove project: ' + project + " return message: " + _msg);
 		}
 
 		function doRemove() {
 			var url:String = server.getLoadDataURL() + "type=removeproject";
-			if (user != null) {
-				url += '&user=' + user;
+			if (user == null || project == null) {
+				return;
 			}
-			if (project != null) {
-				url += '&project=' + project;	
-			}
-			
+
+			url += '&user=' + user;
+			url += '&project=' + project;
 			loadDataFromUrl(url, removeProjectComplete);
 		}
 
-		DialogBox.notify('Confirm to remove project?', project, app.stage, doRemove);
+		DialogBox.notify('Confirm to remove project?', project, app.stage, false, doRemove);
 	}
 
 	protected function jsEditorReady():void {
@@ -1338,6 +1337,7 @@ public class Scratch extends Sprite {
 
 		function loadProjectListComplete(_data:String):void {
 			addExternalCallback('ASLoadProject', loadProjectByName);
+			addExternalCallback('ASRemoveProject', removeProjectByName);
 			if (jsEnabled) {
 				externalCall('JSListProject("' + _data + '")', function (success:Boolean):void {
 				});
@@ -1369,7 +1369,7 @@ public class Scratch extends Sprite {
 		}
 		
 		var projIO:ProjectIO = new ProjectIO(this);
-		DialogBox.notify('Save to server', 'You can re-load project from server', app.stage, doLoad);
+		DialogBox.notify('Save to server', 'You can re-load project from server', app.stage, false, doLoad);
 	}
 
 	public function exportProjectToFile(fromJS:Boolean = false, saveCallback:Function = null):void {

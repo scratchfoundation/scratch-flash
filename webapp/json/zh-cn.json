@@ -1,0 +1,10 @@
+{
+    "title": "选择你的项目",
+    "project": "项目名称",
+    "time": "上次修改时间",
+    "remove": "删除",
+    "cancel": "取消",
+    "foo": {
+        "bar": "foo"
+    }
+}

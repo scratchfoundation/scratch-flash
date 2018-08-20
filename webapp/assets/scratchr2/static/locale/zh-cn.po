@@ -1969,3 +1969,6 @@ msgstr "点击方块按钮停止录制"
 
 msgid "Writing video to file..."
 msgstr "生成视频文件..."
+
+msgid "Confirm to remove project?"
+msgstr "确定删除如下项目?"
