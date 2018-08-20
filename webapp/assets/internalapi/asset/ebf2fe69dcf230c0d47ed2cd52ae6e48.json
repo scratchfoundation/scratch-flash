@@ -1,0 +1,38 @@
+{
+	"objName": "Horse1",
+	"sounds": [{
+			"soundName": "meow",
+			"soundID": -1,
+			"md5": "83c36d806dc92327b9e7049a565c6bff.wav",
+			"sampleCount": 18688,
+			"rate": 22050,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "horse1-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "32f4d80477cd070cb0848e555d374060.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 119,
+			"rotationCenterY": 83
+		},
+		{
+			"costumeName": "horse1-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "ffa6431c5ef2a4e975ecffacdb0efea7.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 103,
+			"rotationCenterY": 97
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

@@ -1,0 +1,22 @@
+{
+	"objName": "Stop",
+	"costumes": [{
+			"costumeName": "stop",
+			"baseLayerID": -1,
+			"baseLayerMD5": "5b9e3e8edffb0bd4914113609eec5e04.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 25,
+			"rotationCenterY": 25
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

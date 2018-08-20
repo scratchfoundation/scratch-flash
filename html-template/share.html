@@ -1,0 +1,23 @@
+<video id = "video_id" width="100%" height="100%" controls="true" src="VIDEO_LINK" type="video/mp4"></video>
+
+<script type="text/javascript" src="//cdn.scratch.mit.edu/scratchr2/static/__0e83330413f7a7b5731284573c98ccdc__//js/jquery.min.js"></script>
+<script type="text/javascript">
+	var getUrlParameter = function getUrlParameter(sParam) {
+	    var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+	        sURLVariables = sPageURL.split('&'),
+	        sParameterName,
+	        i;
+
+	    for (i = 0; i < sURLVariables.length; i++) {
+	        sParameterName = sURLVariables[i].split('=');
+
+	        if (sParameterName[0] === sParam) {
+	            return sParameterName[1] === undefined ? true : sParameterName[1];
+	        }
+	    }
+	};
+
+	var video = getUrlParameter('video');
+	$("#videoid").attr("src", window.location.protocol + "//" + window.location.hostname + ":" + window.location.port + "/share?video="+video);
+	$("#videoid").load();
+</script>

@@ -1,0 +1,47 @@
+{
+	"objName": "Penguin3",
+	"scripts": [[142, 432, [["setSizeTo:", 100]]]],
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "penguin3-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "3f1173e00f664fca5f493b408e1e6d69.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 59,
+			"rotationCenterY": 98
+		},
+		{
+			"costumeName": "penguin3-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "814c2ea372e64b98d5de97b75773f54b.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 57,
+			"rotationCenterY": 97
+		},
+		{
+			"costumeName": "penguin3-c",
+			"baseLayerID": -1,
+			"baseLayerMD5": "e28cd8b76b23db393d06c3a057e2dc68.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 64,
+			"rotationCenterY": 98
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

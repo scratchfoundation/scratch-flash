@@ -1,0 +1,87 @@
+{
+	"objName": "Lornz OdetoCode",
+	"scripts": [[10, 10, [["whenKeyPressed", "space"], ["nextCostume"]]]],
+	"sounds": [{
+			"soundName": "odesong-b",
+			"soundID": -1,
+			"md5": "2c41921491b1da2bfa1ebcaba34265ca.wav",
+			"sampleCount": 212553,
+			"rate": 22050,
+			"format": "adpcm"
+		}],
+	"costumes": [{
+			"costumeName": "lorenz01",
+			"baseLayerID": -1,
+			"baseLayerMD5": "bf911c597995031014bbf32a8eb9d997.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 71,
+			"rotationCenterY": 252
+		},
+		{
+			"costumeName": "lorenz02",
+			"baseLayerID": -1,
+			"baseLayerMD5": "a1fb3946afc4c064503656d5d8ed0def.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 120,
+			"rotationCenterY": 252
+		},
+		{
+			"costumeName": "lorenz03",
+			"baseLayerID": -1,
+			"baseLayerMD5": "1da2ed229f84c1e6d1693bce3bf2d27f.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 125,
+			"rotationCenterY": 252
+		},
+		{
+			"costumeName": "lorenz04",
+			"baseLayerID": -1,
+			"baseLayerMD5": "6b798489bdf2c48337ccb2d31fc64c5f.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 124,
+			"rotationCenterY": 109
+		},
+		{
+			"costumeName": "lorenz05",
+			"baseLayerID": -1,
+			"baseLayerMD5": "dc4e7a7e84f20802d4c1b12423738f62.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 141,
+			"rotationCenterY": 252
+		},
+		{
+			"costumeName": "lorenz06",
+			"baseLayerID": -1,
+			"baseLayerMD5": "92db5fdd19b29f32890926d808e764af.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 132,
+			"rotationCenterY": 250
+		},
+		{
+			"costumeName": "lorenz07",
+			"baseLayerID": -1,
+			"baseLayerMD5": "6b65c2e80daf820d0f277af4f7352cbc.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 121,
+			"rotationCenterY": 252
+		},
+		{
+			"costumeName": "lorenz07b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "97ef7f1f07248305725f74a0cc127eba.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 115,
+			"rotationCenterY": 252
+		}],
+	"currentCostumeIndex": 7,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

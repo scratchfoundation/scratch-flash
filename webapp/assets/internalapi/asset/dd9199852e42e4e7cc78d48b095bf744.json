@@ -1,0 +1,30 @@
+{
+	"objName": "9-Glow",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "9-glow",
+			"baseLayerID": -1,
+			"baseLayerMD5": "7bcb7e2e48f5cb770c83d4267922fec0.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 28,
+			"rotationCenterY": 36
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

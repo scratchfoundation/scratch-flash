@@ -1,0 +1,30 @@
+{
+	"objName": "P-Glow",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "P-glow",
+			"baseLayerID": -1,
+			"baseLayerMD5": "1cfa849cc967069730b7e9d0809c9dc1.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 32,
+			"rotationCenterY": 39
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

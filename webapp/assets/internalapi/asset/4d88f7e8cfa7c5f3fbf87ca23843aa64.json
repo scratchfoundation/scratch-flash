@@ -1,0 +1,50 @@
+{
+	"objName": "Nano",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "nano-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "02c5433118f508038484bbc5b111e187.svg",
+			"rotationCenterX": 61,
+			"rotationCenterY": 60
+		},
+		{
+			"costumeName": "nano-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "10d6d9130618cd092ae02158cde2e113.svg",
+			"rotationCenterX": 61,
+			"rotationCenterY": 60
+		},
+		{
+			"costumeName": "nano-c",
+			"baseLayerID": -1,
+			"baseLayerMD5": "85e762d45bc626ca2edb3472c7cfaa32.svg",
+			"rotationCenterX": 61,
+			"rotationCenterY": 60
+		},
+		{
+			"costumeName": "nano-d",
+			"baseLayerID": -1,
+			"baseLayerMD5": "b10925346da8080443f27e7dfaeff6f7.svg",
+			"rotationCenterX": 61,
+			"rotationCenterY": 60
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

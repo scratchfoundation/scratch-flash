@@ -263,9 +263,20 @@ public class Server implements IServer {
 //			whenDone(BackpackPart.localAssets[md5]);
 //			return null;
 //		}
-		var url:String = URLs.assetCdnPrefix + URLs.internalAPI + 'asset/' + md5 + '/get/';
+		//var url:String = URLs.assetCdnPrefix + URLs.internalAPI + 'asset/' + md5 + '/get/';
+		var url:String = URLs.assetCdnPrefix + URLs.internalAPI + 'asset/' + md5;
 		return serverGet(url, whenDone);
 	}
+
+
+	public function getLoadDataURL():String {
+		return URLs.sitePrefix + URLs.loadDataAction;
+	}
+
+	public function getSaveDataURL():String {
+		return URLs.sitePrefix + URLs.saveDataAction;
+	}
+
 
 	public function getMediaLibrary(libraryType:String, whenDone:Function):URLLoader {
 		var url:String = getCdnStaticSiteURL() + 'medialibraries/' + libraryType + 'Library.json';
@@ -324,23 +335,27 @@ public class Server implements IServer {
 	//------------------------------
 
 	public function getLanguageList(whenDone:Function):void {
-		serverGet('locale/lang_list.txt', whenDone);
+		serverGet(getCdnStaticSiteURL() + 'locale/lang_list.txt', whenDone);
 	}
 
 	public function getPOFile(lang:String, whenDone:Function):void {
-		serverGet('locale/' + lang + '.po', whenDone);
+		serverGet(getCdnStaticSiteURL() + 'locale/' + lang + '.po', whenDone);
 	}
 
 	public function getSelectedLang(whenDone:Function):void {
 		// Get the language setting.
 		var sharedObj:SharedObject = SharedObject.getLocal('Scratch');
-		if (sharedObj.data.lang) whenDone(sharedObj.data.lang);
+		if (sharedObj.data.lang) {
+			whenDone(sharedObj.data.lang);
+		} else{
+			whenDone('zh-cn');
+		}
 	}
 
 	public function setSelectedLang(lang:String):void {
 		// Record the language setting.
 		var sharedObj:SharedObject = SharedObject.getLocal('Scratch');
-		if (lang == '') lang = 'en';
+		if (lang == '') lang = 'zh-cn';
 		sharedObj.data.lang = lang;
 		sharedObj.flush();
 	}

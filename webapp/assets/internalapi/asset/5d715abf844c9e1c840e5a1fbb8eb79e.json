@@ -1,0 +1,38 @@
+{
+	"objName": "Parrot",
+	"sounds": [{
+			"soundName": "bird",
+			"soundID": -1,
+			"md5": "18bd4b634a3f992a16b30344c7d810e0.wav",
+			"sampleCount": 3840,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "parrot-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "098570b8e1aa85b32f9b4eb07bea3af2.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 86,
+			"rotationCenterY": 106
+		},
+		{
+			"costumeName": "parrot-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "721255a0733c9d8d2ba518ff09b3b7cb.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 49,
+			"rotationCenterY": 31
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

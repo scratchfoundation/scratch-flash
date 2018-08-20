@@ -371,7 +371,7 @@ public class StagePart extends UIPart {
 	}
 
 	protected function updateProjectInfo():void {
-		projectTitle.setEditable(false);
+		projectTitle.setEditable(true);
 		projectInfo.text = '';
 	}
 

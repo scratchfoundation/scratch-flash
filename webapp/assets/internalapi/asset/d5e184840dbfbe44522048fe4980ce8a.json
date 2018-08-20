@@ -1,0 +1,126 @@
+{
+	"objName": "Jouvi Hip-Hop",
+	"sounds": [{
+			"soundName": "dance celebrate2",
+			"soundID": -1,
+			"md5": "0edb8fb88af19e6e17d0f8cf64c1d136.wav",
+			"sampleCount": 176401,
+			"rate": 22050,
+			"format": "adpcm"
+		}],
+	"costumes": [{
+			"costumeName": "jo stance",
+			"baseLayerID": -1,
+			"baseLayerMD5": "cb4bf65491eaa9e8aeb1c1fdfe37e84a.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 94,
+			"rotationCenterY": 240
+		},
+		{
+			"costumeName": "jo top stand",
+			"baseLayerID": -1,
+			"baseLayerMD5": "a91fe6e180b524d27688aa0cd82cd629.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 68,
+			"rotationCenterY": 260
+		},
+		{
+			"costumeName": "jo top R leg",
+			"baseLayerID": -1,
+			"baseLayerMD5": "de64c526a57355af5fd6ff28f27b67ea.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 218,
+			"rotationCenterY": 262
+		},
+		{
+			"costumeName": "jo top L leg",
+			"baseLayerID": -1,
+			"baseLayerMD5": "987a667cd7984d9e5429c26b8a4cab2d.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 208,
+			"rotationCenterY": 268
+		},
+		{
+			"costumeName": "jo top R cross",
+			"baseLayerID": -1,
+			"baseLayerMD5": "ddbd8751df020cc32231ecb4e7b5388d.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 144,
+			"rotationCenterY": 270
+		},
+		{
+			"costumeName": "jo top L cross",
+			"baseLayerID": -1,
+			"baseLayerMD5": "33660046a3d37fa762f4a634ee3df75d.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 84,
+			"rotationCenterY": 268
+		},
+		{
+			"costumeName": "jo pop front",
+			"baseLayerID": -1,
+			"baseLayerMD5": "0503f4d712bc3184cf1b5f830d0df993.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 70,
+			"rotationCenterY": 228
+		},
+		{
+			"costumeName": "jo pop down",
+			"baseLayerID": -1,
+			"baseLayerMD5": "95a0f1bb3d8055a283aecc6bcb6303c9.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 68,
+			"rotationCenterY": 74
+		},
+		{
+			"costumeName": "jo pop left",
+			"baseLayerID": -1,
+			"baseLayerMD5": "98e8c2f9869f9356204ed19e43ae01cc.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 196,
+			"rotationCenterY": 226
+		},
+		{
+			"costumeName": "jo pop right",
+			"baseLayerID": -1,
+			"baseLayerMD5": "7bf1600ee75facb510c2922f899fb97c.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 66,
+			"rotationCenterY": 242
+		},
+		{
+			"costumeName": "jo pop L arm",
+			"baseLayerID": -1,
+			"baseLayerMD5": "2a907e6edf8a101addb2c27d0568896a.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 108,
+			"rotationCenterY": 258
+		},
+		{
+			"costumeName": "jo pop stand",
+			"baseLayerID": -1,
+			"baseLayerMD5": "361d1884737ef734f6a39fd66fc269ec.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 78,
+			"rotationCenterY": 262
+		},
+		{
+			"costumeName": "jo pop R arm",
+			"baseLayerID": -1,
+			"baseLayerMD5": "e633eb002deb20108bb5100d4b3a8fc5.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 108,
+			"rotationCenterY": 260
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

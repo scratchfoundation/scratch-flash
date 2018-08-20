@@ -1,0 +1,38 @@
+{
+	"objName": "Octopus",
+	"sounds": [{
+			"soundName": "meow",
+			"soundID": -1,
+			"md5": "83c36d806dc92327b9e7049a565c6bff.wav",
+			"sampleCount": 18688,
+			"rate": 22050,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "octopus-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "bb68d2e29d8572ef9de06f8033e668d9.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 75,
+			"rotationCenterY": 75
+		},
+		{
+			"costumeName": "octopus-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "b52bd3bc12553bb31b1395516c3cec4d.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 75,
+			"rotationCenterY": 75
+		}],
+	"currentCostumeIndex": 1,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

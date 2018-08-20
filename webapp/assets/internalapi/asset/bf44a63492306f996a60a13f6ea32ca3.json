@@ -1,0 +1,54 @@
+{
+	"objName": "Giga",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "giga-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "93cb048a1d199f92424b9c097fa5fa38.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 72,
+			"rotationCenterY": 96
+		},
+		{
+			"costumeName": "giga-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "528613711a7eae3a929025be04db081c.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 72,
+			"rotationCenterY": 96
+		},
+		{
+			"costumeName": "giga-c",
+			"baseLayerID": -1,
+			"baseLayerMD5": "ee4dd21d7ca6d1b889ee25d245cbcc66.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 73,
+			"rotationCenterY": 96
+		},
+		{
+			"costumeName": "giga-d",
+			"baseLayerID": -1,
+			"baseLayerMD5": "7708e2d9f83a01476ee6d17aa540ddf1.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 73,
+			"rotationCenterY": 96
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

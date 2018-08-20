@@ -1,0 +1,38 @@
+{
+	"objName": "Candle",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "candle1-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "9bb90825b1d7c360aa47ee18883cd3cd.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 12,
+			"rotationCenterY": 32
+		},
+		{
+			"costumeName": "candle1-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "4f2ab7fc559ecbbc61721f76639a4e44.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 12,
+			"rotationCenterY": 32
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 0.75,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

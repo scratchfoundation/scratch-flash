@@ -1,0 +1,50 @@
+{
+	"objName": "Giga walking",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "Giga walk1",
+			"baseLayerID": -1,
+			"baseLayerMD5": "f76bc420011db2cdb2de378c1536f6da.svg",
+			"rotationCenterX": 70,
+			"rotationCenterY": 107
+		},
+		{
+			"costumeName": "Giga walk2",
+			"baseLayerID": -1,
+			"baseLayerMD5": "43b5874e8a54f93bd02727f0abf6905b.svg",
+			"rotationCenterX": 71,
+			"rotationCenterY": 107
+		},
+		{
+			"costumeName": "Giga walk3",
+			"baseLayerID": -1,
+			"baseLayerMD5": "9aab3bbb375765391978be4f6d478ab3.svg",
+			"rotationCenterX": 71,
+			"rotationCenterY": 107
+		},
+		{
+			"costumeName": "Giga walk4",
+			"baseLayerID": -1,
+			"baseLayerMD5": "22e4ae40919cf0fe6b4d7649d14a6e71.svg",
+			"rotationCenterX": 73,
+			"rotationCenterY": 110
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

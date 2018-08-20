@@ -1,0 +1,38 @@
+{
+	"objName": "Cat1",
+	"sounds": [{
+			"soundName": "meow",
+			"soundID": -1,
+			"md5": "83c36d806dc92327b9e7049a565c6bff.wav",
+			"sampleCount": 18688,
+			"rate": 22050,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "cat1-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "f88bf1935daea28f8ca098462a31dbb0.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 47,
+			"rotationCenterY": 50
+		},
+		{
+			"costumeName": "cat1-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "6e8bd9ae68fdb02b7e1e3df656a75635.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 47,
+			"rotationCenterY": 55
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

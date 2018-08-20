@@ -1,0 +1,30 @@
+{
+	"objName": "Heart Face",
+	"sounds": [{
+			"soundName": "tom drum",
+			"soundID": -1,
+			"md5": "ca350a536d60bb8ed50f24677d65eed8.wav",
+			"sampleCount": 33920,
+			"rate": 22050,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "heart face",
+			"baseLayerID": -1,
+			"baseLayerMD5": "4ab84263da32069cf97cc0fa52729a0d.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 59,
+			"rotationCenterY": 52
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 0.55,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

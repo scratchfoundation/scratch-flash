@@ -1,0 +1,29 @@
+{
+	"objName": "Airplane",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "airplane2",
+			"baseLayerID": -1,
+			"baseLayerMD5": "58bcb130f226bda9017f1a443360a78a.png",
+			"rotationCenterX": 100,
+			"rotationCenterY": 32
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

@@ -1,0 +1,43 @@
+{
+	"objName": "Gobo",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "gobo-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "1f5ea0d12f85aed2e471cdd21b0bd6d7.svg",
+			"rotationCenterX": 47,
+			"rotationCenterY": 55
+		},
+		{
+			"costumeName": "gobo-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "73e493e4abd5d0954b677b97abcb7116.svg",
+			"rotationCenterX": 47,
+			"rotationCenterY": 55
+		},
+		{
+			"costumeName": "gobo-c",
+			"baseLayerID": -1,
+			"baseLayerMD5": "bc68a6bdf300df7b53d73b38f74c844e.svg",
+			"rotationCenterX": 47,
+			"rotationCenterY": 55
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

@@ -1,0 +1,38 @@
+{
+	"objName": "Avery",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "avery-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "21393c9114c7d34b1df7ccd12c793672.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 39,
+			"rotationCenterY": 94
+		},
+		{
+			"costumeName": "avery-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "cc55f2f09599edc4ae0876e8b3d187d0.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 39,
+			"rotationCenterY": 94
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

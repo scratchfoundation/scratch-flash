@@ -1,0 +1,54 @@
+{
+	"objName": "Heart Candy",
+	"sounds": [{
+			"soundName": "tom drum",
+			"soundID": -1,
+			"md5": "ca350a536d60bb8ed50f24677d65eed8.wav",
+			"sampleCount": 33920,
+			"rate": 22050,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "heart love it",
+			"baseLayerID": -1,
+			"baseLayerMD5": "d448acd247f10f32bef7823cd433f928.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 58,
+			"rotationCenterY": 61
+		},
+		{
+			"costumeName": "heart code",
+			"baseLayerID": -1,
+			"baseLayerMD5": "497c5df9e02467202ff93096dccaf91f.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 58,
+			"rotationCenterY": 61
+		},
+		{
+			"costumeName": "heart sweet",
+			"baseLayerID": -1,
+			"baseLayerMD5": "a39d78d33b051e8b12a4b2a10d77b249.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 58,
+			"rotationCenterY": 61
+		},
+		{
+			"costumeName": "heart smile",
+			"baseLayerID": -1,
+			"baseLayerMD5": "74a8f75d139d330b715787edbbacd83d.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 58,
+			"rotationCenterY": 61
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 0.55,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

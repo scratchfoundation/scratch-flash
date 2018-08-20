@@ -1,0 +1,54 @@
+{
+	"objName": "Cassy Dance",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "cassy dance-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "6cb3686db1fa658b6541cc9fa3ccfcc7.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 104,
+			"rotationCenterY": 192
+		},
+		{
+			"costumeName": "cassy dance-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "086dc4312d3bf4595d6b3fd4b1021b35.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 140,
+			"rotationCenterY": 192
+		},
+		{
+			"costumeName": "cassy dance-c",
+			"baseLayerID": -1,
+			"baseLayerMD5": "dffbfb382641655dbd698559ed49fd99.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 74,
+			"rotationCenterY": 188
+		},
+		{
+			"costumeName": "cassy dance-d",
+			"baseLayerID": -1,
+			"baseLayerMD5": "d0e98431c4744f684a13e8331d838203.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 94,
+			"rotationCenterY": 180
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

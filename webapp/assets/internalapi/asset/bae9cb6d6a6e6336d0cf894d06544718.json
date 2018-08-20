@@ -1,0 +1,86 @@
+{
+	"objName": "Guitar",
+	"sounds": [{
+			"soundName": "C guitar",
+			"soundID": -1,
+			"md5": "22baa07795a9a524614075cdea543793.wav",
+			"sampleCount": 44864,
+			"rate": 22050,
+			"format": ""
+		},
+		{
+			"soundName": "D guitar",
+			"soundID": -1,
+			"md5": "2dbcfae6a55738f94bbb40aa5fcbf7ce.wav",
+			"sampleCount": 41120,
+			"rate": 22050,
+			"format": ""
+		},
+		{
+			"soundName": "E guitar",
+			"soundID": -1,
+			"md5": "4b5d1da83e59bf35578324573c991666.wav",
+			"sampleCount": 38400,
+			"rate": 22050,
+			"format": ""
+		},
+		{
+			"soundName": "F guitar",
+			"soundID": -1,
+			"md5": "b51d086aeb1921ec405561df52ecbc50.wav",
+			"sampleCount": 36416,
+			"rate": 22050,
+			"format": ""
+		},
+		{
+			"soundName": "G guitar",
+			"soundID": -1,
+			"md5": "98a835713ecea2f3ef9f4f442d52ad20.wav",
+			"sampleCount": 33600,
+			"rate": 22050,
+			"format": ""
+		},
+		{
+			"soundName": "A guitar",
+			"soundID": -1,
+			"md5": "ee753e87d212d4b2fb650ca660f1e839.wav",
+			"sampleCount": 31872,
+			"rate": 22050,
+			"format": ""
+		},
+		{
+			"soundName": "B guitar",
+			"soundID": -1,
+			"md5": "2ae2d67de62df8ca54d638b4ad2466c3.wav",
+			"sampleCount": 29504,
+			"rate": 22050,
+			"format": ""
+		},
+		{
+			"soundName": "C2 guitar",
+			"soundID": -1,
+			"md5": "c8d2851bd99d8e0ce6c1f05e4acc7f34.wav",
+			"sampleCount": 27712,
+			"rate": 22050,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "guitar",
+			"baseLayerID": -1,
+			"baseLayerMD5": "dfa85e2a962b725ee53f61cea2edc1fb.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 37,
+			"rotationCenterY": 98
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

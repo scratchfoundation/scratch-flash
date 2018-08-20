@@ -1,0 +1,46 @@
+{
+	"objName": "Orange2",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "orange2-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "89b11d2a404c3972b65743f743cc968a.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 49,
+			"rotationCenterY": 24
+		},
+		{
+			"costumeName": "orange2-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "5f7998e007dfa70e70bbd8d43199ebba.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 49,
+			"rotationCenterY": 27
+		},
+		{
+			"costumeName": "orange2-c",
+			"baseLayerID": -1,
+			"baseLayerMD5": "466e9e2d62ee135a2dabd5593e6f8407.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 49,
+			"rotationCenterY": 33
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

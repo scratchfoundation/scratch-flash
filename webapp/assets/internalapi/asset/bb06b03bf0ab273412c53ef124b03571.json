@@ -1,0 +1,30 @@
+{
+	"objName": "Scratch Logo",
+	"sounds": [{
+			"soundName": "meow",
+			"soundID": -1,
+			"md5": "83c36d806dc92327b9e7049a565c6bff.wav",
+			"sampleCount": 18688,
+			"rate": 22050,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "scratch logo",
+			"baseLayerID": -1,
+			"baseLayerMD5": "978b16d68fa7834dfb327fa3e2c4ba3b.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 85,
+			"rotationCenterY": 26
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

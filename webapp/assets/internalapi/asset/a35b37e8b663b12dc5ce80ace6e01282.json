@@ -1,0 +1,86 @@
+{
+	"objName": "Guitar-Bass",
+	"sounds": [{
+			"soundName": "C elec bass",
+			"soundID": -1,
+			"md5": "69eee3d038ea0f1c34ec9156a789236d.wav",
+			"sampleCount": 5216,
+			"rate": 22050,
+			"format": ""
+		},
+		{
+			"soundName": "D elec bass",
+			"soundID": -1,
+			"md5": "67a6d1aa68233a2fa641aee88c7f051f.wav",
+			"sampleCount": 5568,
+			"rate": 22050,
+			"format": ""
+		},
+		{
+			"soundName": "E elec bass",
+			"soundID": -1,
+			"md5": "0704b8ceabe54f1dcedda8c98f1119fd.wav",
+			"sampleCount": 5691,
+			"rate": 22050,
+			"format": ""
+		},
+		{
+			"soundName": "F elec bass",
+			"soundID": -1,
+			"md5": "45eedb4ce62a9cbbd2207824b94a4641.wav",
+			"sampleCount": 5312,
+			"rate": 22050,
+			"format": ""
+		},
+		{
+			"soundName": "G elec bass",
+			"soundID": -1,
+			"md5": "97b187d72219b994a6ef6a5a6b09605c.wav",
+			"sampleCount": 5568,
+			"rate": 22050,
+			"format": ""
+		},
+		{
+			"soundName": "A elec bass",
+			"soundID": -1,
+			"md5": "5cb46ddd903fc2c9976ff881df9273c9.wav",
+			"sampleCount": 5920,
+			"rate": 22050,
+			"format": ""
+		},
+		{
+			"soundName": "B elec bass",
+			"soundID": -1,
+			"md5": "5a0701d0a914223b5288300ac94e90e4.wav",
+			"sampleCount": 6208,
+			"rate": 22050,
+			"format": ""
+		},
+		{
+			"soundName": "C2 elec bass",
+			"soundID": -1,
+			"md5": "56fc995b8860e713c5948ecd1c2ae572.wav",
+			"sampleCount": 5792,
+			"rate": 22050,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "guitar bass",
+			"baseLayerID": -1,
+			"baseLayerMD5": "83cf122ec4a291e2a17910f718b583a5.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 53,
+			"rotationCenterY": 145
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

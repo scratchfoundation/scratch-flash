@@ -1,0 +1,38 @@
+{
+	"objName": "Jeans",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "jeans-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "4e283da8c59bcbb9803bdc0016b14c21.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 22,
+			"rotationCenterY": 25
+		},
+		{
+			"costumeName": "jeans-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "01732aa03a48482093fbed3ea402c4a9.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 22,
+			"rotationCenterY": 25
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": true,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

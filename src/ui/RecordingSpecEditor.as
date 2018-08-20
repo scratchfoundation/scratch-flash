@@ -52,8 +52,8 @@ public class RecordingSpecEditor extends Sprite {
 		addChild(base = new Shape());
 		setWidthHeight(440, 10);
 
-		addChild(description = makeLabel('Capture and download a video of your project to your computer.\nYou can record up to 60 seconds of video.',14));
-		addChild(notSavedLabel = makeLabel('that the video will not be saved on Scratch.',14));
+		addChild(description = makeLabel('Your show time\nYou can record up to 60 seconds of video',14));
+		addChild(notSavedLabel = makeLabel('that the video will be saved on server and qrcode can scan to share',14));
 		addChild(pleaseNoteLabel = makeLabel('Please note',14,true));
 		addChild(moreLabel = makeLabel('More Options', 14));
 		moreLabel.addEventListener(MouseEvent.MOUSE_DOWN, toggleButtons);

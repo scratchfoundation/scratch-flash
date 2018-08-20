@@ -1,0 +1,38 @@
+{
+	"objName": "Spaceship",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "spaceship-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "028b6d5210a4a94d5cd3d2001fd3d74d.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 59,
+			"rotationCenterY": 84
+		},
+		{
+			"costumeName": "spaceship-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "55e3d48245934393402ab214c122ed8f.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 62,
+			"rotationCenterY": 83
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

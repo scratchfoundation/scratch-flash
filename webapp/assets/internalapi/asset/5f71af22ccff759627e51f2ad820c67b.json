@@ -1,0 +1,38 @@
+{
+	"objName": "Pencil",
+	"sounds": [{
+			"soundName": "meow",
+			"soundID": -1,
+			"md5": "83c36d806dc92327b9e7049a565c6bff.wav",
+			"sampleCount": 18688,
+			"rate": 22050,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "pencil-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "4495fcb0443cebc5d43e66243a88f1ac.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 49,
+			"rotationCenterY": 54
+		},
+		{
+			"costumeName": "pencil-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "21088922dbe127f6d2e58e2e83fb632e.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 48,
+			"rotationCenterY": 68
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

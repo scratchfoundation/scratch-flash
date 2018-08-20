@@ -1,0 +1,50 @@
+{
+	"objName": "Tera",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "tera-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "b54a4a9087435863ab6f6c908f1cac99.svg",
+			"rotationCenterX": 49,
+			"rotationCenterY": 63
+		},
+		{
+			"costumeName": "tera-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "1e6b3a29351cda80d1a70a3cc0e499f2.svg",
+			"rotationCenterX": 49,
+			"rotationCenterY": 64
+		},
+		{
+			"costumeName": "tera-c",
+			"baseLayerID": -1,
+			"baseLayerMD5": "7edf116cbb7111292361431521ae699e.svg",
+			"rotationCenterX": 49,
+			"rotationCenterY": 63
+		},
+		{
+			"costumeName": "tera-d",
+			"baseLayerID": -1,
+			"baseLayerMD5": "7c3c9c8b5f4ac77de2036175712a777a.svg",
+			"rotationCenterX": 49,
+			"rotationCenterY": 63
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

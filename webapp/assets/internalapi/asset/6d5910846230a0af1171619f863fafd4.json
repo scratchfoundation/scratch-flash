@@ -1,0 +1,50 @@
+{
+	"objName": "Pico walking",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "Pico walk1",
+			"baseLayerID": -1,
+			"baseLayerMD5": "8eab5fe20dd249bf22964298b1d377eb.svg",
+			"rotationCenterX": 54,
+			"rotationCenterY": 71
+		},
+		{
+			"costumeName": "Pico walk2",
+			"baseLayerID": -1,
+			"baseLayerMD5": "39ecd3c38d3f2cd81e3a17ee6c25699f.svg",
+			"rotationCenterX": 54,
+			"rotationCenterY": 71
+		},
+		{
+			"costumeName": "Pico walk3",
+			"baseLayerID": -1,
+			"baseLayerMD5": "43f7d92dcf9eadf77c07a6fc1eb4104f.svg",
+			"rotationCenterX": 54,
+			"rotationCenterY": 70
+		},
+		{
+			"costumeName": "Pico walk4",
+			"baseLayerID": -1,
+			"baseLayerMD5": "2582d012d57bca59bc0315c5c5954958.svg",
+			"rotationCenterX": 54,
+			"rotationCenterY": 70
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

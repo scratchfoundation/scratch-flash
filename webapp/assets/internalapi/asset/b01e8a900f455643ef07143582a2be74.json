@@ -1,0 +1,30 @@
+{
+	"objName": "Candles1",
+	"sounds": [{
+			"soundName": "strum",
+			"soundID": -1,
+			"md5": "b92de59d992a655c1b542223a784cda6.wav",
+			"sampleCount": 11247,
+			"rate": 22050,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "candles1",
+			"baseLayerID": -1,
+			"baseLayerMD5": "b8432a2c0d04408b3ba58ec3b01582f0.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 52,
+			"rotationCenterY": 37
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

@@ -1,0 +1,50 @@
+{
+	"objName": "Ballerina",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "ballerina-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "6051bb7008cf17c8853a6f81f04c8a0f.svg",
+			"rotationCenterX": 75,
+			"rotationCenterY": 75
+		},
+		{
+			"costumeName": "ballerina-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "8bc5e47fb1439e29e11e9e3f2e20c6de.svg",
+			"rotationCenterX": 75,
+			"rotationCenterY": 75
+		},
+		{
+			"costumeName": "ballerina-c",
+			"baseLayerID": -1,
+			"baseLayerMD5": "6d3a07761b294f705987b0af58f8e335.svg",
+			"rotationCenterX": 75,
+			"rotationCenterY": 75
+		},
+		{
+			"costumeName": "ballerina-d",
+			"baseLayerID": -1,
+			"baseLayerMD5": "c3164795edf39e436272f425b4f5e487.svg",
+			"rotationCenterX": 75,
+			"rotationCenterY": 75
+		}],
+	"currentCostumeIndex": 3,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

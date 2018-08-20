@@ -1,0 +1,46 @@
+{
+	"objName": "Text",
+	"costumes": [{
+			"costumeName": "text awesome",
+			"baseLayerID": -1,
+			"baseLayerMD5": "5ebbfead1d5728f6e93a4259b699f2e9.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 109,
+			"rotationCenterY": 32
+		},
+		{
+			"costumeName": "text keep scratching",
+			"baseLayerID": -1,
+			"baseLayerMD5": "b3de9a77e2c1bb2f3e29f29a03d869ea.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 135,
+			"rotationCenterY": 24
+		},
+		{
+			"costumeName": "text valentine's day",
+			"baseLayerID": -1,
+			"baseLayerMD5": "a765b830814192ab323b5893a65cabfa.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 172,
+			"rotationCenterY": 30
+		},
+		{
+			"costumeName": "text Halloween",
+			"baseLayerID": -1,
+			"baseLayerMD5": "7aee725d72bc077424690a0acce8589b.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 165,
+			"rotationCenterY": 34
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

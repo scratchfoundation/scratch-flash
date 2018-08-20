@@ -41,6 +41,8 @@ import flash.net.FileReferenceList;
 import flash.net.LocalConnection;
 import flash.net.SharedObject;
 import flash.net.URLLoader;
+import flash.net.URLRequestHeader;
+import flash.net.URLRequestMethod;
 import flash.net.URLLoaderDataFormat;
 import flash.net.URLRequest;
 import flash.system.*;
@@ -107,6 +109,7 @@ public class Scratch extends Sprite {
 	public var loadInProgress:Boolean;
 	public var debugOps:Boolean = false;
 	public var debugOpCmd:String = '';
+	public var user:String = '';
 
 	protected var autostart:Boolean;
 	private var viewedObject:ScratchObj;
@@ -163,9 +166,17 @@ public class Scratch extends Sprite {
 	}
 
 	protected function initialize():void {
-		isOffline = !URLUtil.isHttpURL(loaderInfo.url);
+		//isOffline = !URLUtil.isHttpURL(loaderInfo.url);
+		isOffline = true;
+		log(LogLevel.DEBUG, loaderInfo.url);
+		log(LogLevel.DEBUG, "set isOffline to " + isOffline);
 		hostProtocol = URLUtil.getProtocol(loaderInfo.url);
 
+		user = loaderInfo.parameters["user"];
+		if(user == null || user == "" || user == "__USER__") {
+			user = "guest";
+		}
+		
 		isExtensionDevMode = (loaderInfo.parameters['extensionDevMode'] == 'true');
 		isMicroworld = (loaderInfo.parameters['microworldMode'] == 'true');
 
@@ -222,6 +233,8 @@ public class Scratch extends Sprite {
 		//Analyze.countMissingAssets();
 
 		handleStartupParameters();
+
+		loadProjectByName('default');
 	}
 
 	protected function handleStartupParameters():void {
@@ -242,6 +255,82 @@ public class Scratch extends Sprite {
 			addExternalCallback('ASloadBase64SBX', loadBase64SBX);
 			addExternalCallback('ASsetModalOverlay', setModalOverlay);
 		}
+	}
+
+	public function loadDataFromUrl(url:String, whenDone:Function) {
+		log(LogLevel.DEBUG, url);
+
+ 		function handleError(e:ErrorEvent):void {
+			jsThrowError('Failed to load url: ' + e.toString());
+			removeLoadProgressBox();
+		}
+
+		function handleComplete(e:Event):void {
+			if(whenDone) {
+				whenDone(e.target.data);
+			}
+		}
+		
+		function handleProgress(e:ProgressEvent) {
+			lp.setProgress(e.bytesLoaded / e.bytesTotal);
+			lp.setInfo("" + (Math.floor(e.bytesLoaded/100000)/10) + "MB / " + (Math.floor(e.bytesTotal/100000)/10) + "MB")
+		}
+		
+		loadInProgress = true;
+		var request:URLRequest = new URLRequest(url);
+		var loader:URLLoader = new URLLoader(request);
+		loader.dataFormat = URLLoaderDataFormat.BINARY;
+		loader.addEventListener(Event.COMPLETE, handleComplete);
+		loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, handleError);
+		loader.addEventListener(IOErrorEvent.IO_ERROR, handleError);
+		loader.addEventListener(ProgressEvent.PROGRESS, handleProgress);
+		loader.load(request);
+	}
+
+	public function loadProjectByName(project:String = null): void{
+
+		function loadProjectComplete(_data:ByteArray):void {
+			lp.setInfo("Opening project...")
+			runtime.installProjectFromData(_data);
+			setProjectName(project);
+			removeLoadProgressBox();
+		}
+
+		function doInstall() {
+			var url:String = server.getLoadDataURL() + "type=project";
+			if (user != null) {
+				url += '&user=' + user;
+			}
+			if (project != null) {
+				url += '&project=' + project;	
+			}
+			
+			addLoadProgressBox("Loading from Server...");
+			loadDataFromUrl(url, loadProjectComplete);
+		}
+
+		if (app.stagePane.isEmpty() || project == 'default') doInstall();
+		else DialogBox.confirm('Replace existing project?', app.stage, doInstall);
+	}
+
+	public function removeProjectByName(project:String): void {
+
+		function removeProjectComplete(_msg:String) {
+			log(LogLevel.DEBUG, 'Remove project: ' + project + " return message: " + _msg);
+		}
+
+		function doRemove() {
+			var url:String = server.getLoadDataURL() + "type=removeproject";
+			if (user == null || project == null) {
+				return;
+			}
+
+			url += '&user=' + user;
+			url += '&project=' + project;
+			loadDataFromUrl(url, removeProjectComplete);
+		}
+
+		DialogBox.notify('Confirm to remove project?', project, app.stage, false, doRemove);
 	}
 
 	protected function jsEditorReady():void {
@@ -1066,8 +1155,15 @@ public class Scratch extends Sprite {
 	}
 
 	protected function addFileMenuItems(b:*, m:Menu):void {
-		m.addItem('Load Project', runtime.selectProjectFile);
-		m.addItem('Save Project', exportProjectToFile);
+		
+		m.addItem('Upload from your computer', runtime.selectProjectFile);
+		m.addItem('Download to your computer', exportProjectToFile);
+		m.addLine();
+		
+		m.addItem('Load from server', loadProjectListFromServer);
+		m.addItem('Save to server', saveProjectToServer);
+		m.addLine();
+
 		if (runtime.recording || runtime.ready==ReadyLabel.COUNTDOWN || runtime.ready==ReadyLabel.READY) {
 			m.addItem('Stop Video', runtime.stopVideo);
 		} else {
@@ -1113,6 +1209,17 @@ public class Scratch extends Sprite {
 		addEditMenuItems(b, m);
 		var p:Point = b.localToGlobal(new Point(0, 0));
 		m.showOnStage(stage, b.x, topBarPart.bottom() - 1);
+	}
+
+	public function showDemoMenu(b:*):void {
+		var m:Menu = new Menu(null, 'Demo', CSS.topBarColor(), 28);
+		m.addItem('Load Game', loadDemoList);
+		var p:Point = b.localToGlobal(new Point(0, 0));
+		m.showOnStage(stage, b.x, topBarPart.bottom() - 1);
+	}	
+
+	public function loadDemoList() {
+		loadProjectListFromServer('demo');
 	}
 
 	protected function addEditMenuItems(b:*, m:Menu):void {
@@ -1194,6 +1301,75 @@ public class Scratch extends Sprite {
 		d.addButton('Don\'t save', proceedWithoutSaving);
 		d.addButton('Cancel', cancel);
 		d.showOnStage(stage);
+	}
+
+	public function saveDataToServer(url:String, _data:ByteArray, whenDone:Function = null):void {
+		log(LogLevel.DEBUG, url);
+
+		function handleError(e:ErrorEvent):void {
+			jsThrowError('Failed to save project: ' + e.toString());
+			removeLoadProgressBox();
+			ExternalInterface.call('JSSaveProjectCallback', e);
+		}
+
+		function handleComplete(e:Event):void {
+			if(whenDone) {
+				whenDone(e.target.data);
+			}
+		}
+
+		var header:URLRequestHeader = new URLRequestHeader("Content-type", "application/octet-stream;charset=utf-8");
+		var request:URLRequest = new URLRequest(url);
+		var loader:URLLoader = new URLLoader(request);
+
+		request.requestHeaders.push(header);
+		request.method = URLRequestMethod.POST;
+		request.data = _data;
+		
+		loader.dataFormat = URLLoaderDataFormat.BINARY;
+		loader.addEventListener(Event.COMPLETE, handleComplete);
+		loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, handleError);
+		loader.addEventListener(IOErrorEvent.IO_ERROR, handleError);
+		loader.load(request);
+	}
+
+	public function loadProjectListFromServer(_user:String = null):void {
+
+		function loadProjectListComplete(_data:String):void {
+			addExternalCallback('ASLoadProject', loadProjectByName);
+			addExternalCallback('ASRemoveProject', removeProjectByName);
+			if (jsEnabled) {
+				externalCall('JSListProject("' + _data + '")', function (success:Boolean):void {
+				});
+			}
+		}
+		if (_user == null) {
+			_user = user;
+		}
+		var url:String = server.getLoadDataURL() + "type=listproject&user=" + _user;
+		loadDataFromUrl(url, loadProjectListComplete);
+	}
+
+	public function saveProjectToServer():void {
+
+		var projectName:String = StringUtil.trim(projectName());
+		projectName = ((projectName.length > 0) ? projectName : 'Untitled');
+
+		function saveCurrentProject():void {
+			scriptsPane.saveScripts(false);
+			var projectType:String = extensionManager.hasExperimentalExtensions() ? '.sbx' : '.sb2';
+			var zipData:ByteArray = projIO.encodeProjectAsZipFile(stagePane);
+			var url:String = server.getSaveDataURL() + "type=project&filename=" + encodeURIComponent(projectName + projectType) + "&user=" + user;
+			saveDataToServer(url, zipData);
+		}
+
+		function doLoad() {
+			if (loadInProgress) return;
+			projIO.convertSqueakSounds(stagePane, saveCurrentProject);	
+		}
+		
+		var projIO:ProjectIO = new ProjectIO(this);
+		DialogBox.notify('Save to server', 'You can re-load project from server', app.stage, false, doLoad);
 	}
 
 	public function exportProjectToFile(fromJS:Boolean = false, saveCallback:Function = null):void {

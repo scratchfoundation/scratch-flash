@@ -1,0 +1,38 @@
+{
+	"objName": "Shirt2",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "shirt2-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "5946e7a1e36c6d97ae47d41dd8595a41.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 39,
+			"rotationCenterY": 48
+		},
+		{
+			"costumeName": "shirt2-a2",
+			"baseLayerID": -1,
+			"baseLayerMD5": "5b78ab09592126b6bbe2d4907d203909.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 39,
+			"rotationCenterY": 48
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": true,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

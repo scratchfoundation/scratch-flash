@@ -1,0 +1,43 @@
+{
+	"objName": "Breakdancer1",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "breakdancer1-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "cafd225b63d3aeeedc8df926fe5b6ab4.png",
+			"rotationCenterX": 113,
+			"rotationCenterY": 90
+		},
+		{
+			"costumeName": "breakdancer1-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "84bcb1be206e8653a7d97549733c3db5.png",
+			"rotationCenterX": 30,
+			"rotationCenterY": 90
+		},
+		{
+			"costumeName": "breakdancer1-c",
+			"baseLayerID": -1,
+			"baseLayerMD5": "b345babf9f78b5e88a288a4b13a7ca29.png",
+			"rotationCenterX": 35,
+			"rotationCenterY": 90
+		}],
+	"currentCostumeIndex": 2,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

@@ -1,0 +1,94 @@
+{
+	"objName": "Trombone",
+	"sounds": [{
+			"soundName": "C trombone",
+			"soundID": -1,
+			"md5": "821b23a489201a0f21f47ba8528ba47f.wav",
+			"sampleCount": 19053,
+			"rate": 22050,
+			"format": ""
+		},
+		{
+			"soundName": "D trombone",
+			"soundID": -1,
+			"md5": "f3afca380ba74372d611d3f518c2f35b.wav",
+			"sampleCount": 17339,
+			"rate": 22050,
+			"format": ""
+		},
+		{
+			"soundName": "E trombone",
+			"soundID": -1,
+			"md5": "c859fb0954acaa25c4b329df5fb76434.wav",
+			"sampleCount": 16699,
+			"rate": 22050,
+			"format": ""
+		},
+		{
+			"soundName": "F trombone",
+			"soundID": -1,
+			"md5": "d6758470457aac2aa712717a676a5163.wav",
+			"sampleCount": 19373,
+			"rate": 22050,
+			"format": ""
+		},
+		{
+			"soundName": "G trombone",
+			"soundID": -1,
+			"md5": "9436fd7a0eacb4a6067e7db14236dde1.wav",
+			"sampleCount": 17179,
+			"rate": 22050,
+			"format": ""
+		},
+		{
+			"soundName": "A trombone",
+			"soundID": -1,
+			"md5": "863ccc8ba66e6dabbce2a1261c22be0f.wav",
+			"sampleCount": 17227,
+			"rate": 22050,
+			"format": "adpcm"
+		},
+		{
+			"soundName": "B trombone",
+			"soundID": -1,
+			"md5": "85b663229525b73d9f6647f78eb23e0a.wav",
+			"sampleCount": 15522,
+			"rate": 22050,
+			"format": ""
+		},
+		{
+			"soundName": "C2 trombone",
+			"soundID": -1,
+			"md5": "68aec107bd3633b2ee40c532eedc3897.wav",
+			"sampleCount": 13904,
+			"rate": 22050,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "trombone-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "7d7098a45ab54def8d919141e90db4c5.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 73,
+			"rotationCenterY": 43
+		},
+		{
+			"costumeName": "trombone-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "08edef976dbc09e8b62bce0f4607ea4a.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 73,
+			"rotationCenterY": 43
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

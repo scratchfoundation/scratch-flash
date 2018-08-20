@@ -1,0 +1,71 @@
+{
+	"objName": "Dinoaur1",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "dinosaur1-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "286094ffce382c8383519ab896711989.svg",
+			"rotationCenterX": 75,
+			"rotationCenterY": 84
+		},
+		{
+			"costumeName": "dinosaur1-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "d9eca17b8569f2cde20ef7d3ed0fe19f.svg",
+			"rotationCenterX": 116,
+			"rotationCenterY": 79
+		},
+		{
+			"costumeName": "dinosaur1-c",
+			"baseLayerID": -1,
+			"baseLayerMD5": "ade3d2ec5029693ecdcca17974bad5fd.svg",
+			"rotationCenterX": 65,
+			"rotationCenterY": 89
+		},
+		{
+			"costumeName": "dinosaur1-d",
+			"baseLayerID": -1,
+			"baseLayerMD5": "2aa7257a3e0a19ee315b23eaf7f56933.svg",
+			"rotationCenterX": 45,
+			"rotationCenterY": 87
+		},
+		{
+			"costumeName": "dinosaur1-e",
+			"baseLayerID": -1,
+			"baseLayerMD5": "ed46ee11478715f7596d01fb0f98aa3f.svg",
+			"rotationCenterX": 82,
+			"rotationCenterY": 84
+		},
+		{
+			"costumeName": "dinosaur1-f",
+			"baseLayerID": -1,
+			"baseLayerMD5": "39caf2473b1eee55edb688cfa3c240c7.svg",
+			"rotationCenterX": 69,
+			"rotationCenterY": 76
+		},
+		{
+			"costumeName": "dinosaur1-g",
+			"baseLayerID": -1,
+			"baseLayerMD5": "f0f2aa4e8e015de497050d8d44bbfbf1.svg",
+			"rotationCenterX": 68,
+			"rotationCenterY": 72
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

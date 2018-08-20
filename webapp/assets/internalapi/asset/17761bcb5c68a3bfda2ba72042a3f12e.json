@@ -1,0 +1,46 @@
+{
+	"objName": "L-Story",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "L-story-1",
+			"baseLayerID": -1,
+			"baseLayerMD5": "7ce306e9c9c0dd0a24279606301f1d05.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 19,
+			"rotationCenterY": 26
+		},
+		{
+			"costumeName": "L-story-2",
+			"baseLayerID": -1,
+			"baseLayerMD5": "067c21a9b2f91ed33e07131ce5a59210.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 19,
+			"rotationCenterY": 26
+		},
+		{
+			"costumeName": "L-story-3",
+			"baseLayerID": -1,
+			"baseLayerMD5": "488d66f17c0089a7796d44cfc70792e8.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 17,
+			"rotationCenterY": 23
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

@@ -1,0 +1,38 @@
+{
+	"objName": "Button4",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "button4-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "8782b457cdf4a10ca016ff1ec0c744ef.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 35,
+			"rotationCenterY": 34
+		},
+		{
+			"costumeName": "button4-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "840f4ef01849e459fd84f5470a3b0080.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 35,
+			"rotationCenterY": 34
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

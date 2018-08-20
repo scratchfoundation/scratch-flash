@@ -1,0 +1,29 @@
+{
+	"objName": "Fire hydrant",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "fire hydrant",
+			"baseLayerID": -1,
+			"baseLayerMD5": "5542c53bb0ba87b39eba6ff743b8115c.png",
+			"rotationCenterX": 40,
+			"rotationCenterY": 83
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

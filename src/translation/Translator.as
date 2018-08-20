@@ -36,7 +36,7 @@ import util.*;
 public class Translator {
 
 	public static var languages:Array = []; // contains pairs: [<language code>, <utf8 language name>]
-	public static var currentLang:String = 'en';
+	public static var currentLang:String = 'zh-cn';
 
 	public static var rightToLeft:Boolean;
 	public static var rightToLeftMath:Boolean; // true only for Arabic
@@ -81,7 +81,7 @@ public class Translator {
 		setFontsFor('en');
 		if ('en' == lang) Scratch.app.translationChanged(); // there is no .po file English
 		else Scratch.app.server.getPOFile(lang, gotPOFile);
-
+		Scratch.app.externalCall('JSChangeLang("' + lang + '")', function (success:Boolean):void {});
 	}
 	
 	public static function setLanguage(lang:String):void {

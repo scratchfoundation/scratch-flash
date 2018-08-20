@@ -1,0 +1,38 @@
+{
+	"objName": "Glass Water",
+	"sounds": [{
+			"soundName": "water drop",
+			"soundID": -1,
+			"md5": "aa488de9e2c871e9d4faecd246ed737a.wav",
+			"sampleCount": 8136,
+			"rate": 22050,
+			"format": "adpcm"
+		}],
+	"costumes": [{
+			"costumeName": "glass water-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "c364b9e1f4bcdc61705032d89eaaa0a1.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 39,
+			"rotationCenterY": 48
+		},
+		{
+			"costumeName": "glass water-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "bc07ce6a2004ac91ce704531a1c526e5.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 39,
+			"rotationCenterY": 48
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 0.6,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

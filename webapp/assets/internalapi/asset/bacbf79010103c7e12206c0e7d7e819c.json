@@ -1,0 +1,36 @@
+{
+	"objName": "Butterfly1",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": -1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "butterfly1-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "836d4cc7889f4a1cbcb0303934f31f79.svg",
+			"rotationCenterX": 75,
+			"rotationCenterY": 75
+		},
+		{
+			"costumeName": "butterfly1-b ",
+			"baseLayerID": -1,
+			"baseLayerMD5": "55dd0671a359d7c35f7b78f4176660e8.svg",
+			"rotationCenterX": 75,
+			"rotationCenterY": 75
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

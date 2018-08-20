@@ -1,0 +1,38 @@
+{
+	"objName": "Tree-lights",
+	"sounds": [{
+			"soundName": "meow",
+			"soundID": -1,
+			"md5": "83c36d806dc92327b9e7049a565c6bff.wav",
+			"sampleCount": 18688,
+			"rate": 22050,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "tree-lights-a",
+			"baseLayerID": -1,
+			"baseLayerMD5": "177682396be2961367a50289a5552314.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 59,
+			"rotationCenterY": 77
+		},
+		{
+			"costumeName": "tree-lights-b",
+			"baseLayerID": -1,
+			"baseLayerMD5": "b0282c029046fd1ed0541675911fe8bb.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 58,
+			"rotationCenterY": 76
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1.3000000000000005,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

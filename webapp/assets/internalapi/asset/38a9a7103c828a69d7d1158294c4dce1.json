@@ -1,0 +1,30 @@
+{
+	"objName": "Convertible3",
+	"sounds": [{
+			"soundName": "meow",
+			"soundID": -1,
+			"md5": "83c36d806dc92327b9e7049a565c6bff.wav",
+			"sampleCount": 18688,
+			"rate": 22050,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "convertible3",
+			"baseLayerID": -1,
+			"baseLayerMD5": "b6ac3c9e1789cba2302d2ef82d62d019.svg",
+			"bitmapResolution": 1,
+			"rotationCenterX": 75,
+			"rotationCenterY": 75
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}
