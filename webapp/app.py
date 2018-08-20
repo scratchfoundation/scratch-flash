@@ -125,14 +125,14 @@ class App(object):
             if not project: return self.error('project name is necessary')
             if (not project.endswith('.sb2')):
                 project += '.sb2'
-            project_file = App.PROJECT_PATH + App.FILE_TEMPLATE % (user, project)
-            try:
+
+            for _u in [user, 'demo', '']:
+                project_file = App.PROJECT_PATH + App.FILE_TEMPLATE % (_u, project)
+                logger.debug(project_file)
+                if not os.path.exists(project_file): continue
                 return file(project_file)
-            except:
-                if project == 'default.sb2':
-                    return file(App.PROJECT_PATH + '/default.sb2')
-                else:
-                    return self.error('project %s is not exist, please try others' % (project_file))
+
+            return self.error('project %s is not exist, please try others' % (project))
 
         elif _type == 'video':
             video = args.get('video')

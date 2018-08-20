@@ -234,7 +234,7 @@ public class Scratch extends Sprite {
 
 		handleStartupParameters();
 
-		loadProject('default');
+		loadProjectByName('default');
 	}
 
 	protected function handleStartupParameters():void {
@@ -287,7 +287,7 @@ public class Scratch extends Sprite {
 		loader.load(request);
 	}
 
-	public function loadProject(project:String = null): void{
+	public function loadProjectByName(project:String = null): void{
 
 		function loadProjectComplete(_data:ByteArray):void {
 			lp.setInfo("Opening project...")
@@ -1140,7 +1140,7 @@ public class Scratch extends Sprite {
 		m.addItem('Download to your computer', exportProjectToFile);
 		m.addLine();
 		
-		m.addItem('Load from server', loadProjectFromServer);
+		m.addItem('Load from server', loadProjectListFromServer);
 		m.addItem('Save to server', saveProjectToServer);
 		m.addLine();
 
@@ -1189,6 +1189,17 @@ public class Scratch extends Sprite {
 		addEditMenuItems(b, m);
 		var p:Point = b.localToGlobal(new Point(0, 0));
 		m.showOnStage(stage, b.x, topBarPart.bottom() - 1);
+	}
+
+	public function showGameMenu(b:*):void {
+		var m:Menu = new Menu(null, 'Game', CSS.topBarColor(), 28);
+		m.addItem('Game List', loadGameList);
+		var p:Point = b.localToGlobal(new Point(0, 0));
+		m.showOnStage(stage, b.x, topBarPart.bottom() - 1);
+	}	
+
+	public function loadGameList() {
+		loadProjectListFromServer('demo');
 	}
 
 	protected function addEditMenuItems(b:*, m:Menu):void {
@@ -1302,17 +1313,19 @@ public class Scratch extends Sprite {
 		loader.load(request);
 	}
 
-	public function loadProjectFromServer():void {
+	public function loadProjectListFromServer(_user:String = null):void {
 
 		function loadProjectListComplete(_data:String):void {
-			addExternalCallback('ASLoadProject', loadProject);
+			addExternalCallback('ASLoadProject', loadProjectByName);
 			if (jsEnabled) {
 				externalCall('JSListProject("' + _data + '")', function (success:Boolean):void {
 				});
 			}
 		}
-
-		var url:String = server.getLoadDataURL() + "type=listproject&user=" + user;
+		if (_user == null) {
+			_user = user;
+		}
+		var url:String = server.getLoadDataURL() + "type=listproject&user=" + _user;
 		loadDataFromUrl(url, loadProjectListComplete);
 	}
 

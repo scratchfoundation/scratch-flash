@@ -1910,8 +1910,14 @@ msgstr "显示接收者"
 msgid "show senders"
 msgstr "显示发送者"
 
-msgid "stored on server"
-msgstr "保存在服务器上"
-
 msgid "Load from server"
 msgstr "从服务器加载"
+
+msgid "Game"
+msgstr "游戏"
+
+msgid "Game List"
+msgstr "游戏列表"
+
+msgid "stored on server"
+msgstr "保存在服务器上"
