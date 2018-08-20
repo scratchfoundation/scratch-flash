@@ -1131,6 +1131,9 @@ msgstr "录制视频并导出"
 msgid "Record Project Video"
 msgstr "录制成视频"
 
+msgid "Stop Video"
+msgstr "停止录制"
+
 msgid "Record new sound"
 msgstr "录制新声音"
 
@@ -1789,6 +1792,9 @@ msgstr "旋转模式："
 msgid "save to local file"
 msgstr "保存到计算机"
 
+msgid "Save to server"
+msgstr "保存到服务器"
+
 msgid "second"
 msgstr "秒"
 
@@ -1904,5 +1910,20 @@ msgstr "显示接收者"
 msgid "show senders"
 msgstr "显示发送者"
 
+msgid "Load from server"
+msgstr "从服务器加载"
+
+msgid "Game"
+msgstr "游戏"
+
+msgid "Game List"
+msgstr "游戏列表"
+
 msgid "stored on server"
 msgstr "保存在服务器上"
+
+msgid "Edit block colors"
+msgstr "编辑方块颜色"
+
+msgid "You can re-load project from server"
+msgstr "你可以从服务器重新加载"

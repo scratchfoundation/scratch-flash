@@ -310,7 +310,7 @@ public class Scratch extends Sprite {
 		}
 
 		if (app.stagePane.isEmpty() || project == 'default') doInstall();
-		else DialogBox.confirm('Replace contents of the current project?', app.stage, doInstall);
+		else DialogBox.confirm('Replace existing project?', app.stage, doInstall);
 	}
 
 	protected function jsEditorReady():void {
@@ -1348,7 +1348,7 @@ public class Scratch extends Sprite {
 		}
 		
 		var projIO:ProjectIO = new ProjectIO(this);
-		DialogBox.confirm('Save current project (' + projectName +  ') to server?', app.stage, doLoad);
+		DialogBox.notify('Save to server', 'You can re-load project from server', app.stage, doLoad);
 	}
 
 	public function exportProjectToFile(fromJS:Boolean = false, saveCallback:Function = null):void {
