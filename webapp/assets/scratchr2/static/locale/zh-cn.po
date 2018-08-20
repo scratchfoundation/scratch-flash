@@ -1913,11 +1913,11 @@ msgstr "显示发送者"
 msgid "Load from server"
 msgstr "从服务器加载"
 
-msgid "Game"
-msgstr "游戏"
+msgid "Demo"
+msgstr "试玩"
 
-msgid "Game List"
-msgstr "游戏列表"
+msgid "Load Game"
+msgstr "加载游戏"
 
 msgid "stored on server"
 msgstr "保存在服务器上"
@@ -1927,3 +1927,45 @@ msgstr "编辑方块颜色"
 
 msgid "You can re-load project from server"
 msgstr "你可以从服务器重新加载"
+
+msgid "Your show time\nYou can record up to 60 seconds of video"
+msgstr "是时候炫耀一把啦\n最长可以录制1分钟"
+
+msgid "More Options"
+msgstr "更多选项"
+
+msgid "Fewer Options"
+msgstr "更少选项"
+
+msgid "Include sound from project"
+msgstr "项目声音"
+
+msgid "Include sound from microphone"
+msgstr "麦克风声音"
+
+msgid "Show mouse pointer"
+msgstr "显示鼠标指针"
+
+msgid "Record entire editor (may run slowly)"
+msgstr "录制整个屏幕(很慢)"
+
+msgid "Record at highest quality (may run slowly)"
+msgstr "录制高品质视频(很慢)"
+
+msgid "that the video will be saved on server and qrcode can scan to share"
+msgstr "视频会保存在服务器,可通过微信二维码分享"
+
+msgid "Please note"
+msgstr "注意"
+
+msgid "Video Finished!"
+msgstr "视频录制完成!"
+
+msgid "To save, click the button below."
+msgstr "点击保存到服务器"
+
+msgid "To stop recording, click the square"
+msgstr "点击方块按钮停止录制"
+
+msgid "Writing video to file..."
+msgstr "生成视频文件..."

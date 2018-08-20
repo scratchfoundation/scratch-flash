@@ -313,6 +313,27 @@ public class Scratch extends Sprite {
 		else DialogBox.confirm('Replace existing project?', app.stage, doInstall);
 	}
 
+	public function removeProjectByName(project:String): void {
+
+		function removeProjectComplete(_data:Boolean) {
+			log(LogLevel.DEBUG, 'Remove project: ' + project + " return code: " + _data);
+		}
+
+		function doRemove() {
+			var url:String = server.getLoadDataURL() + "type=removeproject";
+			if (user != null) {
+				url += '&user=' + user;
+			}
+			if (project != null) {
+				url += '&project=' + project;	
+			}
+			
+			loadDataFromUrl(url, removeProjectComplete);
+		}
+
+		DialogBox.notify('Confirm to remove project?', project, app.stage, doRemove);
+	}
+
 	protected function jsEditorReady():void {
 		if (jsEnabled) {
 			externalCall('JSeditorReady', function (success:Boolean):void {
@@ -1191,14 +1212,14 @@ public class Scratch extends Sprite {
 		m.showOnStage(stage, b.x, topBarPart.bottom() - 1);
 	}
 
-	public function showGameMenu(b:*):void {
-		var m:Menu = new Menu(null, 'Game', CSS.topBarColor(), 28);
-		m.addItem('Game List', loadGameList);
+	public function showDemoMenu(b:*):void {
+		var m:Menu = new Menu(null, 'Demo', CSS.topBarColor(), 28);
+		m.addItem('Load Game', loadDemoList);
 		var p:Point = b.localToGlobal(new Point(0, 0));
 		m.showOnStage(stage, b.x, topBarPart.bottom() - 1);
 	}	
 
-	public function loadGameList() {
+	public function loadDemoList() {
 		loadProjectListFromServer('demo');
 	}
 
