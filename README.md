@@ -26,6 +26,30 @@ things simple for new users. To learn more about our design philosophy, see [thi
 post](http://scratch.mit.edu/discuss/post/1576/) or [this
 paper](http://web.media.mit.edu/~jmaloney/papers/ScratchLangAndEnvironment.pdf).
 
+## Quick Start: Building and Debugging with Visual Studio Code
+
+1. Build at least once using the Gradle instructions listed in the "Building" instructions below.
+   * TL;DR: run `./gradlew build -Ptarget="11.6"` in a terminal (on Windows, replace `/` with `\` as usual).
+   * This will download and unpack the necessary SDKs.
+   * You may need to agree to a few licenses (press `y` then `enter`).
+   * It may take quite a while and appear to hang at times. Watch disk and network activity to be sure.
+2. Install [Visual Studio Code](https://code.visualstudio.com/).
+3. Install the "ActionScript & MXML" extension (search for `@ext:as3` in the `Extensions` pane).
+   * Reload VS Code when prompted.
+4. Add the `scratch-flash-online` folder to the VS Code workspace.
+5. Click "No SDK" then "Add more SDKs to this list...".
+6. Browse to your home directory, then go into `.gradle`, then `gradleFx`. Choose `sdks` and close the dialog.
+7. Your list of SDKs should now include something starting with "Apache Flex 4.15.0"; choose that.
+
+You should now be able to build and debug using your usual Visual Studio Code hotkeys. The defaults are Ctrl+Shift+B
+(or Cmd+Shift+B on Mac) to build and F5 to run.
+
+Note that this will build a SWF which requires a very recent version of Flash, so the IDE build should only be used
+for development and debugging. The Gradle builds (see below) are configured for compatibility with a broad range of
+Flash versions.
+
+Check `asconfig.json` for the configuration settings used by the IDE build.
+
 ## Building
 
 The Scratch 2.0 build process now uses [Gradle](http://gradle.org/) to simplify the process of acquiring dependencies:
@@ -40,13 +64,13 @@ determine the appropriate command for each version. When building on Windows, re
 
 Required Flash version | Features | Command
 --- | --- | ---
-11.6 or above | 3D-accelerated rendering | `./gradlew build -Ptarget=11.6`
-10.2 - 11.5 | Compatibility with older Flash (Linux, older OS X, etc.) | `./gradlew build -Ptarget=10.2`
+11.6 or above | 3D-accelerated rendering | `./gradlew build -Ptarget="11.6"`
+10.2 - 11.5 | Compatibility with older Flash (Linux, older OS X, etc.) | `./gradlew build -Ptarget="10.2"`
 
 A successful build should look something like this (SDK download information omitted):
 
 ```sh
-$ ./gradlew build -Ptarget=11.6
+$ ./gradlew build -Ptarget="11.6"
 Defining custom 'build' task when using the standard Gradle lifecycle plugins has been deprecated and is scheduled to be removed in Gradle 3.0
 Target is: 11.6
 Commit ID for scratch-flash is: e6df4f4

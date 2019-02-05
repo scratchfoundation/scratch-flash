@@ -1,0 +1,30 @@
+{
+    "config": "flex",
+    "type": "app",
+    "files": ["src/Scratch.as"],
+    "compilerOptions": {
+        "default-size": {
+            "width": 1024,
+            "height": 640
+        },
+        "output": "build/ide/Scratch.swf",
+        "source-path": [
+            "src"
+        ],
+        "library-path": [
+            "libs"
+        ],
+        "advanced-telemetry": true,
+        "static-link-runtime-shared-libraries": true,
+        "define": [
+            {
+                "name": "SCRATCH::allow3d",
+                "value": true
+            },
+            {
+                "name": "SCRATCH::revision",
+                "value": "'dev-ide'"
+            }
+        ]
+    }
+}
