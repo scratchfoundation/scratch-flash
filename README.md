@@ -36,7 +36,7 @@ paper](http://web.media.mit.edu/~jmaloney/papers/ScratchLangAndEnvironment.pdf).
 2. Install [Visual Studio Code](https://code.visualstudio.com/).
 3. Install the "ActionScript & MXML" extension (search for `@ext:as3` in the `Extensions` pane).
    * Reload VS Code when prompted.
-4. Add the `scratch-flash-online` folder to the VS Code workspace.
+4. Add the `scratch-flash` folder to the VS Code workspace.
 5. Click "No SDK" then "Add more SDKs to this list...".
 6. Browse to your home directory, then go into `.gradle`, then `gradleFx`. Choose `sdks` and close the dialog.
 7. Your list of SDKs should now include something starting with "Apache Flex 4.15.0"; choose that.
